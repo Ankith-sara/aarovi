@@ -61,11 +61,6 @@ const sendWelcomeMail = async (email, name = 'Admin') => {
               <div style="padding: 40px 30px;">
                   <!-- Personal Welcome -->
                   <div style="text-align: center; margin-bottom: 35px;">
-                      <!-- Profile Avatar -->
-                      <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: bold;">
-                          ${name.charAt(0).toUpperCase()}
-                      </div>
-                      
                       <h3 style="color: #333; margin: 0 0 10px 0; font-size: 22px;">Hello ${name}!</h3>
                       <p style="color: #666; margin: 0; font-size: 16px; line-height: 1.6;">
                           Thank you for joining the <strong>Aharyas Admin Team</strong>. We're excited to have you managing our premium fashion platform.

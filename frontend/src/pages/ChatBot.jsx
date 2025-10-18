@@ -10,11 +10,11 @@ const ChatBot = () => {
   const fileInputRef = useRef(null);
   const chatContainerRef = useRef(null);
 
-  const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyA4jOuoOcaGxCT_zQ8TDVpA_XQyUyLFCTs";
+  const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyAilTtlY7OBBuqOxTkTHUIcNI4uf8QPsKo";
 
   // Function to check if the question is fashion/Aharyas related
   const isRelevantQuery = (text, hasImage) => {
-    if (hasImage) return true; // Allow all image uploads for fashion analysis
+    if (hasImage) return true;
 
     const lowerText = text.toLowerCase();
 
@@ -32,7 +32,7 @@ const ChatBot = () => {
 
     // Aharyas company related keywords
     const companyKeywords = [
-      'aharyas', 'aharya', 'company', 'policy', 'policies', 'return', 'exchange', 'refund',
+      'aharyas', 'company', 'policy', 'policies', 'return', 'exchange', 'refund',
       'shipping', 'delivery', 'order', 'purchase', 'payment', 'customer service', 'support',
       'contact', 'help', 'assistance', 'complaint', 'feedback', 'store', 'branch', 'location',
       'hours', 'timing', 'discount', 'offer', 'sale', 'price', 'cost', 'warranty', 'guarantee',
@@ -197,7 +197,7 @@ Respond in a warm, knowledgeable tone, celebrating Indian heritage and conscious
   const quickSuggestions = [
     {
       icon: ShoppingBag,
-      text: "Show me handloom sarees collection",
+      text: "Show me handloom Dresses collection",
       category: "products"
     },
     {
@@ -289,7 +289,6 @@ Respond in a warm, knowledgeable tone, celebrating Indian heritage and conscious
 
           {/* Input Section */}
           <div className="bg-white border border-gray-200 shadow-lg p-6">
-            {/* Image Upload Section */}
             {image && (
               <div className="mb-6 flex items-center gap-4 p-4 bg-stone-50 border-l-4 border-black">
                 <div className="relative w-20 h-20">

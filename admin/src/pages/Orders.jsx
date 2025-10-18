@@ -2,61 +2,37 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { backendUrl, currency } from '../App';
 import { toast } from 'react-toastify';
-import { 
-  ShoppingBag, 
-  User, 
-  MapPin, 
-  CreditCard, 
-  Calendar,
-  Package2,
-  Filter,
-  Search,
-  ChevronDown,
-  CheckCircle,
-  Clock,
-  Truck,
-  Package,
-  PackageCheck,
-  AlertCircle,
-  Phone,
-  Mail,
-  IndianRupee,
-  Grid,
-  List as ListIcon,
-  Download,
-  RefreshCw,
-  Eye,
-  TrendingUp,
-  BarChart3
+import {
+  ShoppingBag, User, MapPin, CreditCard, Package2, Filter, Search, CheckCircle, Clock, Truck, Package, PackageCheck, AlertCircle, Phone, IndianRupee, Grid, List as ListIcon, RefreshCw, TrendingUp, BarChart3
 } from 'lucide-react';
 import Title from '../components/Title';
 
 const StatusBadge = ({ status }) => {
   const statusConfig = {
-    "Order Placed": { 
-      color: "bg-blue-100 text-blue-800 border-blue-200", 
+    "Order Placed": {
+      color: "bg-blue-100 text-blue-800 border-blue-200",
       icon: Package,
-      dotColor: "bg-blue-500" 
+      dotColor: "bg-blue-500"
     },
-    "Processing": { 
-      color: "bg-yellow-100 text-yellow-800 border-yellow-200", 
+    "Processing": {
+      color: "bg-yellow-100 text-yellow-800 border-yellow-200",
       icon: Clock,
-      dotColor: "bg-yellow-500" 
+      dotColor: "bg-yellow-500"
     },
-    "Shipping": { 
-      color: "bg-purple-100 text-purple-800 border-purple-200", 
+    "Shipping": {
+      color: "bg-purple-100 text-purple-800 border-purple-200",
       icon: Truck,
-      dotColor: "bg-purple-500" 
+      dotColor: "bg-purple-500"
     },
-    "Out of delivery": { 
-      color: "bg-orange-100 text-orange-800 border-orange-200", 
+    "Out of delivery": {
+      color: "bg-orange-100 text-orange-800 border-orange-200",
       icon: Package2,
-      dotColor: "bg-orange-500" 
+      dotColor: "bg-orange-500"
     },
-    "Delivered": { 
-      color: "bg-green-100 text-green-800 border-green-200", 
+    "Delivered": {
+      color: "bg-green-100 text-green-800 border-green-200",
       icon: PackageCheck,
-      dotColor: "bg-green-500" 
+      dotColor: "bg-green-500"
     }
   };
 
@@ -74,9 +50,8 @@ const StatusBadge = ({ status }) => {
 
 const PaymentBadge = ({ payment, paymentMethod }) => (
   <div className="space-y-1">
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${
-      payment ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
-    }`}>
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${payment ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
+      }`}>
       {payment ? <CheckCircle size={12} /> : <AlertCircle size={12} />}
       {payment ? 'Paid' : 'Pending'}
     </span>
@@ -86,16 +61,15 @@ const PaymentBadge = ({ payment, paymentMethod }) => (
 
 const OrderCard = ({ order, index, onStatusChange }) => (
   <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-200">
-    {/* Header */}
     <div className="bg-black text-white p-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <ShoppingBag size={24} className="text-gray-300" />
           <div>
             <h3 className="text-xl font-semibold">Order #{index + 1}</h3>
-            <p className="text-gray-300 mt-1">{new Date(order.date).toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'long', 
+            <p className="text-gray-300 mt-1">{new Date(order.date).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
               day: 'numeric',
               hour: '2-digit',
               minute: '2-digit'
@@ -188,9 +162,9 @@ const OrderCard = ({ order, index, onStatusChange }) => (
             <Package2 size={16} />
             Update Status
           </h4>
-          <select 
-            onChange={(event) => onStatusChange(event, order._id)} 
-            value={order.status} 
+          <select
+            onChange={(event) => onStatusChange(event, order._id)}
+            value={order.status}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors text-sm"
           >
             <option value="Order Placed">Order Placed</option>
@@ -284,9 +258,9 @@ const OrderTable = ({ orders, onStatusChange }) => (
                 <StatusBadge status={order.status} />
               </td>
               <td className="px-6 py-4">
-                <select 
-                  onChange={(event) => onStatusChange(event, order._id)} 
-                  value={order.status} 
+                <select
+                  onChange={(event) => onStatusChange(event, order._id)}
+                  value={order.status}
                   className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors text-sm"
                 >
                   <option value="Order Placed">Order Placed</option>
@@ -321,7 +295,7 @@ const Orders = ({ token }) => {
       const response = await axios.post(
         `${backendUrl}/api/order/list`,
         {},
-        { headers: { token } }
+        { headers: { 'Authorization': `Bearer ${token}` } }
       );
 
       if (response.data.success) {
@@ -348,9 +322,9 @@ const Orders = ({ token }) => {
   const statusHandler = async (event, orderId) => {
     try {
       const response = await axios.post(
-        backendUrl + '/api/order/status', 
-        { orderId, status: event.target.value }, 
-        { headers: { token } }
+        backendUrl + '/api/order/status',
+        { orderId, status: event.target.value },
+        { headers: { 'Authorization': `Bearer ${token}` } }
       );
       if (response.data.success) {
         toast.success('Order status updated successfully');
@@ -416,7 +390,6 @@ const Orders = ({ token }) => {
   return (
     <div className="min-h-screen bg-gray-50 px-4 sm:px-6 md:px-10 lg:px-20 py-10">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-8">
           <Title text1="ORDER" text2="MANAGEMENT" />
           <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
@@ -568,18 +541,16 @@ const Orders = ({ token }) => {
               <div className="flex bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('cards')}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === 'cards' ? 'bg-black text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'
-                  }`}
+                  className={`p-2 rounded-lg transition-colors ${viewMode === 'cards' ? 'bg-black text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'
+                    }`}
                   title="Cards View"
                 >
                   <Grid size={18} />
                 </button>
                 <button
                   onClick={() => setViewMode('table')}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === 'table' ? 'bg-black text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'
-                  }`}
+                  className={`p-2 rounded-lg transition-colors ${viewMode === 'table' ? 'bg-black text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'
+                    }`}
                   title="Table View"
                 >
                   <ListIcon size={18} />
@@ -613,8 +584,8 @@ const Orders = ({ token }) => {
                   {orders.length === 0 ? "No orders found" : "No matching orders"}
                 </h3>
                 <p className="text-gray-600 max-w-md mx-auto">
-                  {orders.length === 0 
-                    ? "Your store hasn't received any orders yet. Orders will appear here once customers start placing them." 
+                  {orders.length === 0
+                    ? "Your store hasn't received any orders yet. Orders will appear here once customers start placing them."
                     : "Try adjusting your search terms or filters to find the orders you're looking for"
                   }
                 </p>
@@ -645,9 +616,9 @@ const Orders = ({ token }) => {
                     ))}
                   </div>
                 ) : (
-                  <OrderTable 
-                    orders={filteredOrders} 
-                    onStatusChange={statusHandler} 
+                  <OrderTable
+                    orders={filteredOrders}
+                    onStatusChange={statusHandler}
                   />
                 )}
               </>

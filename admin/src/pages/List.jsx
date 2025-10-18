@@ -150,8 +150,8 @@ const List = ({ token }) => {
       sizes: ['28', '30', '32', '34', '36', '38', '40', '42', '44', '46']
     },
     Women: {
-      subCategories: ["", "Kurtis", "Kurta Sets", "Tops", "Blazers", "Dresses", "Corset-tops"],
-      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
+      subCategories: ["", "Kurtis", "Kurta Sets", "Tops", "Blazers", "Dresses", "Co-ord Sets", "Corset-tops", "Short-tops", "Shirts"],
+      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
     },
     "Handmade Toys": {
       subCategories: ["", "Home Décor", "Bonthapally Toys", "Baskets", "Bags and Pouches", "Wall Decor"],
@@ -188,7 +188,7 @@ const List = ({ token }) => {
     setLoading(true);
     try {
       const response = await axios.get(backendUrl + '/api/product/list', {
-        headers: { token }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.data.success) {
         const products = response.data.products || [];
@@ -217,7 +217,7 @@ const List = ({ token }) => {
     setLoading(true);
     try {
       const response = await axios.delete(backendUrl + `/api/product/remove/${id}`, {
-        headers: { token }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.data.success) {
         toast.success('Product removed successfully.');
@@ -258,7 +258,7 @@ const List = ({ token }) => {
       const response = await axios.put(
         backendUrl + `/api/product/edit/${editedProduct._id}`,
         formData,
-        { headers: { token } }
+        { headers: { 'Authorization': `Bearer ${token}` } }
       );
 
       if (response.data.success) {

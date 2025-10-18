@@ -71,8 +71,8 @@ const Add = ({ token }) => {
       sizes: ['28', '30', '32', '34', '36', '38', '40', '42', '44', '46']
     },
     Women: {
-      subCategories: ["", "Kurtis", "Kurta Sets", "Tops", "Blazers", "Dresses"],
-      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
+      subCategories: ["", "Kurtis", "Kurta Sets", "Tops", "Blazers", "Dresses", "Co-ord Sets", "Corset-tops", "Short-tops", "Shirts"],
+      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
     },
     "Handmade Toys": {
       subCategories: ["", "Home Décor", "Bonthapally Toys", "Baskets", "Bags and Pouches", "Wall Decor"],
@@ -136,7 +136,10 @@ const Add = ({ token }) => {
       });
 
       const response = await axios.post(`${backendUrl}/api/product/add`, formData, {
-        headers: { token },
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        },
       });
 
       if (response.data.success) {
@@ -148,7 +151,13 @@ const Add = ({ token }) => {
     } catch (error) {
       console.error("Error while submitting the product:", error);
       if (error.response) {
-        toast.error(`Server Error: ${error.response.data?.message || 'Unable to process your request.'}`);
+        if (error.response.status === 401) {
+          toast.error('Session expired. Please login again.');
+          // Optionally redirect to login
+          // window.location.href = '/login';
+        } else {
+          toast.error(`Server Error: ${error.response.data?.message || 'Unable to process your request.'}`);
+        }
       } else if (error.request) {
         toast.error('Network Error: Could not connect to the server. Please check your internet connection.');
       } else {

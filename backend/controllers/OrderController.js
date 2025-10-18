@@ -1,22 +1,35 @@
 import orderModel from "../models/OrderModel.js";
 import userModel from "../models/UserModel.js";
 import productModel from "../models/ProductModal.js"
-import Stripe from 'stripe'
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import sendOrderEmails from "../middlewares/sendOrderMail.js";
+import sendOrderWhatsApp from "../middlewares/sendOrderWhatsapp.js";
 dotenv.config();
 
 const currency = 'inr'
 const deliveryCharge = 50
 
-// gateway initialize
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_SECRET_KEY,
 });
+
+// Helper function to send notifications
+const sendOrderNotifications = async (order, user) => {
+  try {
+    await sendOrderEmails(order, user);
+  } catch (emailError) {
+    console.error('Email sending failed:', emailError);
+  }
+
+  try {
+    await sendOrderWhatsApp(order, user);
+  } catch (whatsappError) {
+    console.error('WhatsApp sending failed:', whatsappError);
+  }
+};
 
 // Placing orders using COD Method
 const placeOrder = async (req, res) => {
@@ -47,15 +60,11 @@ const placeOrder = async (req, res) => {
 
     const user = await userModel.findById(userId);
     if (!user) {
-      console.error('User not found for email notification');
+      console.error('User not found for notifications');
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    try {
-      await sendOrderEmails(newOrder, user);
-    } catch (emailError) {
-      console.error('Email sending failed:', emailError)
-    }
+    await sendOrderNotifications(newOrder, user);
 
     res.status(201).json({
       success: true,
@@ -69,99 +78,42 @@ const placeOrder = async (req, res) => {
   }
 };
 
-// Placing orders using Stripe Method
-const placeOrderStripe = async (req, res) => {
+// Verify COD Order (for consistency in verification flow)
+const verifyCOD = async (req, res) => {
   try {
-    const { userId, items, amount, address } = req.body;
-    const { origin } = req.headers;
+    const { orderId } = req.body;
 
-    if (!userId || !items || !amount || !address) {
+    if (!orderId) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required fields'
+        message: "Order ID required"
       });
     }
 
-    const orderData = {
-      userId,
-      items,
-      amount,
-      address,
-      paymentMethod: "Stripe",
-      payment: false,
-      date: Date.now()
-    };
+    const order = await orderModel.findById(orderId);
+    
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found"
+      });
+    }
 
-    const newOrder = new orderModel(orderData);
-    await newOrder.save();
+    if (order.paymentMethod !== "COD") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid payment method for this verification"
+      });
+    }
 
-    const line_items = items.map((item) => ({
-      price_data: {
-        currency: currency,
-        product_data: {
-          name: item.name
-        },
-        unit_amount: item.price * 100
-      },
-      quantity: item.quantity
-    }));
-
-    line_items.push({
-      price_data: {
-        currency: currency,
-        product_data: {
-          name: 'Delivery Charges'
-        },
-        unit_amount: deliveryCharge * 100
-      },
-      quantity: 1
-    })
-
-    const session = await stripe.checkout.sessions.create({
-      line_items,
-      mode: "payment",
-      success_url: `${origin}/verify?success=true&orderId=${newOrder._id}`,
-      cancel_url: `${origin}/verify?success=false&orderId=${newOrder._id}`,
+    return res.json({
+      success: true,
+      message: "COD Order confirmed",
+      order: order
     });
 
-    res.status(200).json({ success: true, session_url: session.url });
   } catch (error) {
-    console.error("Error placing Stripe order:", error.message);
-    res.status(500).json({ success: false, message: "Failed to create order. Please try again." });
-  }
-};
-
-// Verify Stripe Payment
-const verifyStripe = async (req, res) => {
-  const { orderId, success, userId } = req.body;
-
-  try {
-    if (!success) {
-      await orderModel.findByIdAndDelete(orderId);
-      return res.json({ success: false, message: "Payment not successful" });
-    }
-
-    const order = await orderModel.findById(orderId);
-    const user = await userModel.findById(userId);
-
-    if (!order || !user) {
-      await orderModel.findByIdAndDelete(orderId);
-      return res.json({ success: false, message: "Invalid order or user" });
-    }
-
-    await orderModel.findByIdAndUpdate(orderId, { payment: true });
-    await userModel.findByIdAndUpdate(userId, { cartData: {} });
-
-    try {
-      await sendOrderEmails(order, user);
-    } catch (emailError) {
-      console.error('Email sending failed after Stripe payment:', emailError);
-    }
-
-    return res.json({ success: true, message: "Payment successful" });
-
-  } catch (error) {
-    console.error("Stripe verification error:", error);
+    console.error("COD verification error:", error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -171,18 +123,44 @@ const placeOrderRazorpay = async (req, res) => {
   try {
     const { userId, items, amount, address } = req.body;
 
-    if (!amount) {
-      return res.status(400).json({ success: false, message: "Amount required" });
+    if (!amount || !userId || !items || !address) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "All fields required" 
+      });
     }
 
+    // Create order data first
+    const orderData = {
+      userId,
+      items,
+      amount,
+      address,
+      paymentMethod: "Razorpay",
+      payment: false,
+      date: Date.now()
+    };
+
+    const newOrder = new orderModel(orderData);
+    await newOrder.save();
+
+    // Create Razorpay order
     const options = {
       amount: amount * 100,
       currency: "INR",
-      receipt: `receipt_order_${Date.now()}`,
+      receipt: `receipt_${newOrder._id}`,
+      notes: {
+        orderId: newOrder._id.toString()
+      }
     };
 
-    const order = await razorpayInstance.orders.create(options);
-    res.json({ success: true, order });
+    const razorpayOrder = await razorpayInstance.orders.create(options);
+    
+    res.json({ 
+      success: true, 
+      order: razorpayOrder,
+      orderId: newOrder._id
+    });
 
   } catch (error) {
     console.error("Razorpay order error:", error);
@@ -190,17 +168,50 @@ const placeOrderRazorpay = async (req, res) => {
   }
 };
 
+// Verify Razorpay Payment
 const verifyRazorpay = async (req, res) => {
   try {
     const {
-      userId,
+      orderId,
       razorpay_order_id,
       razorpay_payment_id,
-      razorpay_signature,
-      items,
-      amount,
-      address,
+      razorpay_signature
     } = req.body;
+
+    // If only orderId is provided (from verify page redirect)
+    if (orderId && !razorpay_payment_id) {
+      const order = await orderModel.findById(orderId);
+      
+      if (!order) {
+        return res.status(404).json({
+          success: false,
+          message: "Order not found"
+        });
+      }
+
+      // Check if already verified
+      if (order.payment) {
+        return res.json({
+          success: true,
+          message: "Payment already verified",
+          order: order
+        });
+      }
+
+      // If payment not verified yet, return pending status
+      return res.json({
+        success: false,
+        message: "Payment verification pending"
+      });
+    }
+
+    // Full verification with payment details
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing payment verification details"
+      });
+    }
 
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_SECRET_KEY)
@@ -214,39 +225,26 @@ const verifyRazorpay = async (req, res) => {
       });
     }
 
-    const user = await userModel.findById(userId);
-    if (!user) {
+    const order = await orderModel.findById(orderId);
+    const user = await userModel.findById(order.userId);
+
+    if (!order || !user) {
       return res.status(404).json({
         success: false,
-        message: "User not found"
+        message: "Order or user not found"
       });
     }
 
-    const orderData = {
-      userId,
-      items,
-      amount,
-      address,
-      paymentMethod: "Razorpay",
-      payment: true,
-      date: Date.now(),
-    };
+    // Update order payment status
+    await orderModel.findByIdAndUpdate(orderId, { payment: true });
+    await userModel.findByIdAndUpdate(order.userId, { cartData: {} });
 
-    const newOrder = new orderModel(orderData);
-    await newOrder.save();
-
-    await userModel.findByIdAndUpdate(userId, { cartData: {} });
-
-    try {
-      await sendOrderEmails(newOrder, user);
-    } catch (emailError) {
-      console.error('Email sending failed after Razorpay payment:', emailError);
-    }
+    await sendOrderNotifications(order, user);
 
     return res.json({
       success: true,
       message: "Payment verified & order placed",
-      orderId: newOrder._id,
+      orderId: order._id,
     });
 
   } catch (error) {
@@ -255,7 +253,7 @@ const verifyRazorpay = async (req, res) => {
   }
 };
 
-// All orders using COD Method
+// All orders
 const allOrders = async (req, res) => {
   try {
     const adminId = req.user.id;
@@ -308,4 +306,4 @@ const orderStatus = async (req, res) => {
   }
 };
 
-export { verifyRazorpay, verifyStripe, placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus, orderStatus };
+export { verifyRazorpay, verifyCOD,placeOrder, placeOrderRazorpay, allOrders, userOrders, updateStatus, orderStatus };

@@ -33,7 +33,7 @@ const Login = ({ setToken }) => {
     }
   };
 
-  const handleSendOtp = async (e) => { // Fixed: added 'e' parameter
+  const handleSendOtp = async (e) => {
     e.preventDefault();
     if (!email) return toast.error('Please enter a valid email');
     if (!name) return toast.error('Please enter your full name');
@@ -42,8 +42,8 @@ const Login = ({ setToken }) => {
 
     setLoading(true);
     try {
-      // Send name and password along with email
-      const res = await axios.post(`${backendUrl}/api/user/send-otp`, {
+      // ✅ FIXED: Use admin endpoint instead of regular user endpoint
+      const res = await axios.post(`${backendUrl}/api/user/send-admin-otp`, {
         email,
         name,
         password
@@ -69,8 +69,8 @@ const Login = ({ setToken }) => {
 
     setLoading(true);
     try {
-      // Only send email and otp - user details are already stored
-      const res = await axios.post(`${backendUrl}/api/user/verify-otp`, {
+      // ✅ FIXED: Use admin OTP verification endpoint
+      const res = await axios.post(`${backendUrl}/api/user/verify-admin-otp`, {
         email,
         otp
       });
@@ -126,7 +126,7 @@ const Login = ({ setToken }) => {
   }, [otpTimer]);
 
   return (
-    <div className="min--+h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header Card */}
         <div className="bg-white rounded-t-xl shadow-sm border border-gray-200 p-8 text-center">

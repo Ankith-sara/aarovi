@@ -26,12 +26,22 @@ const AdminPanel = ({ token, setToken }) => {
         const fetchAdminData = async () => {
             try {
                 const decoded = jwtDecode(token);
-                const res = await axios.get(`${backendUrl}/api/user/profile/${decoded.id}`, { headers: { token } });
+                // ✅ FIXED: Use proper Authorization header
+                const res = await axios.get(`${backendUrl}/api/user/profile/${decoded.id}`, {
+                    headers: { 
+                        'Authorization': `Bearer ${token}` 
+                    }
+                });
                 if (res.data.success) {
                     setAdminData(res.data.user);
                 }
             } catch (error) {
-                if (error.response?.status === 401) navigate("/login");
+                console.error('Error fetching admin data:', error);
+                if (error.response?.status === 401) {
+                    toast.error('Session expired. Please login again.');
+                    localStorage.removeItem('token');
+                    navigate("/login");
+                }
             }
         };
         if (token) fetchAdminData();
@@ -104,7 +114,12 @@ const AdminDashboard = ({ token, adminData }) => {
 
     const fetchOrders = async () => {
         try {
-            const response = await axios.post(`${backendUrl}/api/order/list`, {}, { headers: { token } });
+            // ✅ FIXED: Changed POST to GET and added proper Authorization header
+            const response = await axios.get(`${backendUrl}/api/order/list`, {
+                headers: { 
+                    'Authorization': `Bearer ${token}` 
+                }
+            });
             if (response.data.success) {
                 const fetchedOrders = response.data.orders || [];
                 setOrders(fetchedOrders.slice().reverse());
@@ -112,20 +127,35 @@ const AdminDashboard = ({ token, adminData }) => {
                 setStats(prev => ({ ...prev, totalRevenue, totalOrders: fetchedOrders.length }));
             }
         } catch (error) {
-            if (error.response?.status === 401) navigate("/login");
+            console.error('Error fetching orders:', error);
+            if (error.response?.status === 401) {
+                toast.error('Session expired. Please login again.');
+                localStorage.removeItem('token');
+                navigate("/login");
+            }
         }
     };
 
     const fetchProducts = async () => {
         try {
-            const response = await axios.get(`${backendUrl}/api/product/list`, { headers: { token } });
+            // ✅ FIXED: Added proper Authorization header
+            const response = await axios.get(`${backendUrl}/api/product/list`, {
+                headers: { 
+                    'Authorization': `Bearer ${token}` 
+                }
+            });
             if (response.data.success) {
                 const fetchedProducts = response.data.products || [];
                 setProducts(fetchedProducts);
                 setStats(prev => ({ ...prev, totalProducts: fetchedProducts.length }));
             }
         } catch (error) {
-            if (error.response?.status === 401) navigate("/login");
+            console.error('Error fetching products:', error);
+            if (error.response?.status === 401) {
+                toast.error('Session expired. Please login again.');
+                localStorage.removeItem('token');
+                navigate("/login");
+            }
         }
     };
 
@@ -398,8 +428,12 @@ const AdminProfile = ({ token, adminData, setAdminData }) => {
         }
 
         try {
+            // ✅ FIXED: Added proper Authorization header
             const res = await axios.put(`${backendUrl}/api/user/profile/${adminData._id}`, formData, {
-                headers: { token, "Content-Type": "multipart/form-data" }
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data" 
+                }
             });
             if (res.data.success) {
                 setAdminData(res.data.user);
@@ -409,6 +443,7 @@ const AdminProfile = ({ token, adminData, setAdminData }) => {
                 toast.error(res.data.message || "Failed to update profile.");
             }
         } catch (err) {
+            console.error('Error updating profile:', err);
             toast.error("An error occurred while updating the profile.");
         } finally {
             setLoading(false);

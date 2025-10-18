@@ -48,13 +48,6 @@ const sendOtpMail = async (email, otp, role = 'user') => {
 
               <!-- Main Content -->
               <div style="padding: 40px 30px; text-align: center;">
-                  <!-- Security Icon -->
-                  <div style="width: 80px; height: 80px; background: linear-gradient(135deg, ${isAdmin ? '#FF6B35' : '#667eea'} 0%, ${isAdmin ? '#F7931E' : '#764ba2'} 100%); border-radius: 50%; margin: 0 auto 25px; display: flex; align-items: center; justify-content: center;">
-                      <div style="width: 40px; height: 40px; border: 3px solid white; border-radius: 50%; position: relative;">
-                          <div style="width: 12px; height: 8px; background: white; border-radius: 2px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -60%);"></div>
-                      </div>
-                  </div>
-
                   <h2 style="color: #333; margin: 0 0 15px 0; font-size: 24px;">Email Verification Required</h2>
                   <p style="color: #666; margin: 0 0 30px 0; font-size: 16px; line-height: 1.5;">
                       We've sent you a verification code to complete your ${registrationType}. 

@@ -170,16 +170,6 @@ const PlaceOrder = () => {
           }
           break;
 
-        case 'stripe':
-          const responseStripe = await axios.post(`${backendUrl}/api/order/stripe`, orderData, { headers: { Authorization: `Bearer ${token}` } });
-          if (responseStripe.data.success) {
-            const { session_url } = responseStripe.data;
-            window.location.replace(session_url);
-          } else {
-            toast.error(responseStripe.data.message);
-          }
-          break;
-
         case 'razorpay':
           const responseRazorpay = await axios.post(`${backendUrl}/api/order/razorpay`, orderData, { headers: { Authorization: `Bearer ${token}` } });
           if (responseRazorpay.data.success) {
@@ -433,7 +423,6 @@ const PlaceOrder = () => {
                 </div>
 
                 <div className="p-6 space-y-4">
-                  <PaymentOption method={method} setMethod={setMethod} type="stripe" logo={assets.stripe_logo} />
                   <PaymentOption method={method} setMethod={setMethod} type="razorpay" logo={assets.razorpay_logo} />
                   <PaymentOption method={method} setMethod={setMethod} type="cod" />
                 </div>
@@ -525,7 +514,7 @@ const PaymentOption = ({ method, setMethod, type, logo }) => (
         <div className="flex flex-col">
           <span className="font-medium text-black capitalize tracking-wide">{type}</span>
           <span className="text-xs text-gray-500 font-light">
-            {type === 'stripe' ? 'Credit/Debit Cards' : 'UPI, Net Banking, Wallets'}
+            {type === 'Razorpay' ? 'Credit/Debit Cards' : 'UPI, Net Banking, Wallets'}
           </span>
         </div>
       </div>
