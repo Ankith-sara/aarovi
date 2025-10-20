@@ -8,7 +8,6 @@ import productRouter from './routes/ProductRoute.js';
 import cartRouter from './routes/CartRoute.js';
 import orderRouter from './routes/OrderRoute.js';
 import wishlistRouter from './routes/WishlistRoute.js';
-import ChatRouter from './routes/ChatRoute.js';
 
 // App Config
 const app = express();
@@ -33,7 +32,6 @@ app.use('/api/product', productRouter)
 app.use('/api/cart', cartRouter)
 app.use('/api/order', orderRouter)
 app.use('/api/wishlist', wishlistRouter)
-app.use('/api/ai', ChatRouter)
 
 app.get('/', (req, res) => {
     res.send("API is working");

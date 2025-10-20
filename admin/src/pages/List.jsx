@@ -75,7 +75,7 @@ const ProductCard = ({ item, index, onEdit, onRemove, currency }) => (
 
     <div className="p-4">
       <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 text-md">{item.name}</h3>
-      
+
       <div className="flex items-center gap-2 mb-3">
         <Tag size={14} className="text-gray-400" />
         <span className="text-sm text-gray-600 font-medium">{item.category}</span>
@@ -139,19 +139,20 @@ const List = ({ token }) => {
   const [companies, setCompanies] = useState([
     'Biba',
     'Fabindia',
-    'Vasudhaa Vastrram Vishram'
+    'Vasudhaa Vastrram Vishram',
+    'Anemone Vinkel'
   ]);
   const [newCompanyName, setNewCompanyName] = useState('');
   const [showAddCompany, setShowAddCompany] = useState(false);
 
   const categoryData = {
-    Men: {
-      subCategories: ["", "Shirts", "Sleeve Shirts", "Kurtas", "Co-ord Sets", "Vests", "Trousers", "Jackets"],
-      sizes: ['28', '30', '32', '34', '36', '38', '40', '42', '44', '46']
-    },
     Women: {
       subCategories: ["", "Kurtis", "Kurta Sets", "Tops", "Blazers", "Dresses", "Co-ord Sets", "Corset-tops", "Short-tops", "Shirts"],
       sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
+    },
+    Men: {
+      subCategories: ["", "Shirts", "Sleeve Shirts", "Kurtas", "Co-ord Sets", "Vests", "Trousers", "Jackets"],
+      sizes: ['28', '30', '32', '34', '36', '38', '40', '42', '44', '46']
     },
     "Handmade Toys": {
       subCategories: ["", "Home Décor", "Bonthapally Toys", "Baskets", "Bags and Pouches", "Wall Decor"],
@@ -413,18 +414,16 @@ const List = ({ token }) => {
               <div className="flex bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === 'grid' ? 'bg-black text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'
-                  }`}
+                  className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-black text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'
+                    }`}
                   title="Grid View"
                 >
                   <Grid size={18} />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2 rounded-lg transition-colors ${
-                    viewMode === 'list' ? 'bg-black text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'
-                  }`}
+                  className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-black text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'
+                    }`}
                   title="List View"
                 >
                   <ListIcon size={18} />
@@ -458,8 +457,8 @@ const List = ({ token }) => {
                   {list.length === 0 ? "No products found" : "No matching products"}
                 </h3>
                 <p className="text-gray-600 max-w-md mx-auto">
-                  {list.length === 0 
-                    ? "Start building your product catalog by adding your first product" 
+                  {list.length === 0
+                    ? "Start building your product catalog by adding your first product"
                     : "Try adjusting your search terms or filters to find what you're looking for"
                   }
                 </p>
@@ -602,7 +601,7 @@ const List = ({ token }) => {
                 </button>
               </div>
 
-              <form onSubmit={(e) => {e.preventDefault(); editProduct();}} className="p-6 space-y-6">
+              <form onSubmit={(e) => { e.preventDefault(); editProduct(); }} className="p-6 space-y-6">
                 {/* Product Images */}
                 <div className="bg-gray-50 rounded-xl p-6">
                   <div className="flex items-center gap-3 mb-4">
@@ -635,7 +634,7 @@ const List = ({ token }) => {
                       <Package size={20} />
                       Product Information
                     </h3>
-                    
+
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
@@ -708,7 +707,7 @@ const List = ({ token }) => {
                             </button>
                             <button
                               type="button"
-                              onClick={() => {setShowAddCompany(false); setNewCompanyName('');}}
+                              onClick={() => { setShowAddCompany(false); setNewCompanyName(''); }}
                               className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg transition-colors font-medium"
                             >
                               Cancel
@@ -800,11 +799,10 @@ const List = ({ token }) => {
                             key={size}
                             type="button"
                             onClick={() => toggleSize(size)}
-                            className={`px-4 py-2 rounded-lg border-2 font-medium transition-all duration-200 ${
-                              editedProduct.sizes?.includes(size)
+                            className={`px-4 py-2 rounded-lg border-2 font-medium transition-all duration-200 ${editedProduct.sizes?.includes(size)
                                 ? 'bg-black text-white border-black'
                                 : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
-                            }`}
+                              }`}
                           >
                             {size}
                           </button>

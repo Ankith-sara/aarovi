@@ -3,7 +3,6 @@ import userModel from '../models/UserModel.js';
 
 const adminAuth = async (req, res, next) => {
   try {
-    // Look for Authorization: Bearer <token>
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
       return res.status(401).json({ success: false, message: "Access denied. No token provided." });

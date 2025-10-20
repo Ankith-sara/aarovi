@@ -50,7 +50,7 @@ const Add = ({ token }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
-  const [category, setCategory] = useState('Men');
+  const [category, setCategory] = useState('Women');
   const [subCategory, setSubCategory] = useState('');
   const [company, setCompany] = useState('Aharyas');
   const [newCompanyName, setNewCompanyName] = useState('');
@@ -62,17 +62,18 @@ const Add = ({ token }) => {
   const [companies, setCompanies] = useState([
     'Biba',
     'Fabindia',
-    'Vasudhaa Vastrram Vishram'
+    'Vasudhaa Vastrram Vishram',
+    'Anemone Vinkel'
   ]);
 
   const categoryData = {
-    Men: {
-      subCategories: ["", "Shirts", "Sleeve Shirts", "Kurtas", "Co-ord Sets", "Vests", "Trousers"],
-      sizes: ['28', '30', '32', '34', '36', '38', '40', '42', '44', '46']
-    },
     Women: {
       subCategories: ["", "Kurtis", "Kurta Sets", "Tops", "Blazers", "Dresses", "Co-ord Sets", "Corset-tops", "Short-tops", "Shirts"],
       sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
+    },
+    Men: {
+      subCategories: ["", "Shirts", "Sleeve Shirts", "Kurtas", "Co-ord Sets", "Vests", "Trousers"],
+      sizes: ['28', '30', '32', '34', '36', '38', '40', '42', '44', '46']
     },
     "Handmade Toys": {
       subCategories: ["", "Home Décor", "Bonthapally Toys", "Baskets", "Bags and Pouches", "Wall Decor"],
@@ -136,7 +137,7 @@ const Add = ({ token }) => {
       });
 
       const response = await axios.post(`${backendUrl}/api/product/add`, formData, {
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         },
@@ -172,7 +173,7 @@ const Add = ({ token }) => {
     setName('');
     setDescription('');
     setPrice('');
-    setCategory('Men');
+    setCategory('Women');
     setSubCategory('');
     setCompany('Aharyas');
     setBestseller(false);
@@ -332,7 +333,7 @@ const Add = ({ token }) => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => {setShowAddCompany(false); setNewCompanyName('');}}
+                      onClick={() => { setShowAddCompany(false); setNewCompanyName(''); }}
                       className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg transition-colors font-medium"
                     >
                       Cancel

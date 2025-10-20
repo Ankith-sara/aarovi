@@ -5,7 +5,6 @@ import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 import sendOrderEmails from "../middlewares/sendOrderMail.js";
-import sendOrderWhatsApp from "../middlewares/sendOrderWhatsapp.js";
 dotenv.config();
 
 const currency = 'inr'
@@ -22,12 +21,6 @@ const sendOrderNotifications = async (order, user) => {
     await sendOrderEmails(order, user);
   } catch (emailError) {
     console.error('Email sending failed:', emailError);
-  }
-
-  try {
-    await sendOrderWhatsApp(order, user);
-  } catch (whatsappError) {
-    console.error('WhatsApp sending failed:', whatsappError);
   }
 };
 
@@ -78,7 +71,7 @@ const placeOrder = async (req, res) => {
   }
 };
 
-// Verify COD Order (for consistency in verification flow)
+// Verify COD Order
 const verifyCOD = async (req, res) => {
   try {
     const { orderId } = req.body;
@@ -178,7 +171,7 @@ const verifyRazorpay = async (req, res) => {
       razorpay_signature
     } = req.body;
 
-    // If only orderId is provided (from verify page redirect)
+    // If only orderId is provided
     if (orderId && !razorpay_payment_id) {
       const order = await orderModel.findById(orderId);
       

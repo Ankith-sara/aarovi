@@ -14,7 +14,12 @@ const Collections = () => {
   const categories = [
     {
       name: 'Dresses',
-      imageUrl: 'https://res.cloudinary.com/dfzhqsfp7/image/upload/v1757401935/yyawql2qlmnnhgnde8ld.webp',
+      imageUrl: 'https://res.cloudinary.com/dfzhqsfp7/image/upload/v1760774064/z6gonpmd9fqihaq0bw7x.webp',
+      description: 'Elegant, handcrafted designs'
+    },
+    {
+      name: 'Tops',
+      imageUrl: 'https://res.cloudinary.com/dfzhqsfp7/image/upload/v1760803957/zoavoiw2al1kj8zy2uee.webp',
       description: 'Elegant, handcrafted designs'
     },
     {
@@ -23,13 +28,8 @@ const Collections = () => {
       description: 'Classic and trendy for every occasion'
     },
     {
-      name: 'Bonthapally Toys',
-      imageUrl: 'https://res.cloudinary.com/dfzhqsfp7/image/upload/v1757919879/juyacfxma9nbrbqc3uoo.png',
-      description: 'Artful pieces for your space'
-    },
-    {
-      name: 'Bags',
-      imageUrl: 'https://res.cloudinary.com/dfzhqsfp7/image/upload/v1757762609/zghzsufllegtx8qc2ci1.webp',
+      name: 'Sleeve Shirts',
+      imageUrl: 'https://res.cloudinary.com/dfzhqsfp7/image/upload/v1757408272/x9rzv13ziubou4qbrt84.webp',
       description: 'Handcrafted with care'
     },
   ];
