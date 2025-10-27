@@ -3,7 +3,7 @@ import { ShopContext } from '../context/ShopContext';
 import { Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
 
-const ProductItem = ({ id, image, name, price }) => {
+const ProductItem = ({ id, image, name, price, company }) => {
   const { currency, toggleWishlist, isInWishlist, navigate, token } = useContext(ShopContext);
   const [isWishlistLoading, setIsWishlistLoading] = useState(false);
 
@@ -25,6 +25,7 @@ const ProductItem = ({ id, image, name, price }) => {
   };
 
   const isWishlisted = isInWishlist(id);
+  const showCompanyName = company && company.toLowerCase() === 'anemone vinkel';
 
   return (
     <Link
@@ -55,8 +56,8 @@ const ProductItem = ({ id, image, name, price }) => {
               onClick={handleWishlistToggle}
               disabled={isWishlistLoading}
               className={`absolute top-3 right-3 p-2 rounded-full shadow-md transition-all duration-300 ${isWishlisted
-                  ? 'bg-black text-white opacity-100 transform translate-x-0'
-                  : 'bg-white/90 hover:bg-white text-gray-700 transform translate-x-8 opacity-0 group-hover:translate-x-0 group-hover:opacity-100'
+                ? 'bg-black text-white opacity-100 transform translate-x-0'
+                : 'bg-white/90 hover:bg-white text-gray-700 transform translate-x-8 opacity-0 group-hover:translate-x-0 group-hover:opacity-100'
                 } ${isWishlistLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
               title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
             >
@@ -69,6 +70,12 @@ const ProductItem = ({ id, image, name, price }) => {
         </div>
 
         <div className="p-2">
+          {showCompanyName && (
+            <p className="text-xs uppercase tracking-widest text-gray-500 font-medium mb-1">
+              {company}
+            </p>
+          )}
+
           <h3 className="text-sm font-medium text-black mb-2 tracking-wide leading-relaxed group-hover:text-gray-800 transition-colors duration-300 line-clamp-2">
             {name}
           </h3>

@@ -142,6 +142,7 @@ const BestSeller = () => {
                     image={item.images} 
                     name={item.name} 
                     price={item.price}
+                    company={item.company}
                   />
                   {index < 1 && (
                     <div className="absolute top-3 right-3 bg-black text-white text-xs px-3 py-1 font-medium">

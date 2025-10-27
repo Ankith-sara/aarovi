@@ -60,8 +60,8 @@ const ShopContextProvider = (props) => {
 
         try {
             const response = await axios.post(
-                backendUrl + '/api/wishlist/add', 
-                { itemId }, 
+                backendUrl + '/api/wishlist/add',
+                { itemId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -87,8 +87,8 @@ const ShopContextProvider = (props) => {
 
         try {
             const response = await axios.post(
-                backendUrl + '/api/wishlist/remove', 
-                { itemId }, 
+                backendUrl + '/api/wishlist/remove',
+                { itemId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -110,8 +110,8 @@ const ShopContextProvider = (props) => {
 
         try {
             const response = await axios.post(
-                backendUrl + '/api/wishlist/toggle', 
-                { itemId }, 
+                backendUrl + '/api/wishlist/toggle',
+                { itemId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -138,8 +138,8 @@ const ShopContextProvider = (props) => {
     const getUserWishlist = async (token) => {
         try {
             const response = await axios.post(
-                backendUrl + '/api/wishlist/get', 
-                {}, 
+                backendUrl + '/api/wishlist/get',
+                {},
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 

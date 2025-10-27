@@ -27,6 +27,7 @@ const RecentlyViewed = () => {
             name={item.name}
             price={item.price}
             image={item.images}
+            company={item.company}
           />
         ))}
       </div>

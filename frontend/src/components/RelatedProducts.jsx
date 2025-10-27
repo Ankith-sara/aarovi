@@ -26,7 +26,7 @@ const RelatedProducts = ({ category, subCategory, currentProductId }) => {
           <p>No related products found.</p>
         ) : (
           related.map((item) => (
-            <ProductItem key={item._id} id={item._id} name={item.name} price={item.price} image={item.images} />
+            <ProductItem key={item._id} id={item._id} name={item.name} price={item.price} image={item.images} company={item.company} />
           ))
         )}
       </div>

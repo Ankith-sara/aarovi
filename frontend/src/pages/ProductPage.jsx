@@ -485,10 +485,7 @@ const ProductPage = () => {
                             price={product.price}
                             image={product.images}
                             currency={currency}
-                            onSale={product.onSale}
-                            discount={product.discount}
-                            rating={product.rating}
-                            isNew={product.isNew}
+                            company={product.company}
                           />
                         </div>
                       ))}
