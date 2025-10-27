@@ -147,11 +147,11 @@ const List = ({ token }) => {
 
   const categoryData = {
     Women: {
-      subCategories: ["", "Kurtis", "Kurta Sets", "Tops", "Blazers", "Dresses", "Co-ord Sets", "Corset-tops", "Short-tops", "Shirts"],
+      subCategories: ["", "Kurtis", "Kurta Sets", "Tops", "Blazers", "Dresses", "Women Co-ord Sets", "Corset tops", "Short-tops", "Women Shirts"],
       sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
     },
     Men: {
-      subCategories: ["", "Shirts", "Sleeve Shirts", "Kurtas", "Co-ord Sets", "Vests", "Trousers", "Jackets"],
+      subCategories: ["", "Men Shirts", "Sleeve Shirts", "Kurtas", "Men Co-ord Sets", "Vests", "Trousers"],
       sizes: ['28', '30', '32', '34', '36', '38', '40', '42', '44', '46']
     },
     "Handmade Toys": {

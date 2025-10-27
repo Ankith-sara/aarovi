@@ -23,7 +23,7 @@ const Collections = () => {
       description: 'Elegant, handcrafted designs'
     },
     {
-      name: 'Shirts',
+      name: 'Men Shirts',
       imageUrl: 'https://res.cloudinary.com/dfzhqsfp7/image/upload/v1757408846/ab80rkpc7iqiekkdlhnx.webp',
       description: 'Classic and trendy for every occasion'
     },

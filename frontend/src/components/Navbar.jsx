@@ -99,20 +99,20 @@ const Navbar = () => {
         { name: 'Tops', path: '/shop/Tops' },
         { name: 'Blazers', path: '/shop/blazers' }, 
         { name: 'Dresses', path: '/shop/Dresses' },
-        {name: 'Co-ord Sets', path: '/shop/Co-ord Sets' },
+        {name: 'Co-ord Sets', path: '/shop/Women Co-ord Sets' },
         {name: 'Corset-tops', path: '/shop/Corset-tops' },
         {name: 'Short-tops', path: '/shop/Short-tops' },
-        {name: 'Shirts', path: '/shop/Shirts' }
+        {name: 'Shirts', path: '/shop/Women Shirts' }
       ]
     },
     {
       name: 'Men',
       id: 'men',
       subcategories: [
-        { name: 'Shirts', path: '/shop/Shirts' },
+        { name: 'Shirts', path: '/shop/Men Shirts' },
         { name: 'Sleeve Shirts', path: '/shop/Sleeve-Shirts' },
         { name: 'Kurtas', path: '/shop/Kurtas' },
-        { name: 'Co-ord Sets', path: '/shop/Co-ord-Sets' },
+        { name: 'Co-ord Sets', path: '/shop/Men Co-ord Sets' },
         { name: 'Trousers', path: '/shop/Trousers' },
       ]
     },
