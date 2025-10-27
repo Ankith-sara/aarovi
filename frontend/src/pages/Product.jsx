@@ -1,18 +1,17 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
-import { Camera, ChevronDown, ChevronUp, Minus, Plus, Heart, Share2 } from 'lucide-react';
+import { Camera, ChevronDown, ChevronUp, Minus, Plus, Heart, Share2, Building2 } from 'lucide-react';
 import RelatedProducts from '../components/RelatedProducts';
 import RecentlyViewed from '../components/RecentlyViewed';
-import Title from '../components/Title';
 
 const Product = () => {
   const { productId } = useParams();
-  const { 
-    products, 
-    currency, 
-    addToCart, 
-    navigate, 
+  const {
+    products,
+    currency,
+    addToCart,
+    navigate,
     addProductToRecentlyViewed,
     toggleWishlist,
     isInWishlist,
@@ -80,7 +79,7 @@ const Product = () => {
       navigate('/login');
       return;
     }
-    
+
     const wasAdded = await toggleWishlist(productId);
     if (wasAdded !== undefined) {
       setIsWishlisted(wasAdded);
@@ -229,7 +228,6 @@ const Product = () => {
       <section className="py-12 px-4 sm:px-8 md:px-10 lg:px-20">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-6 items-start">
-            {/* Image Gallery */}
             <div className="space-y-4">
               <div className="relative group">
                 <div className="relative overflow-hidden">
@@ -242,29 +240,20 @@ const Product = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
 
                   <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openModal(productData.images[currentIndex]);
-                    }}
+                    onClick={(e) => { e.stopPropagation(); openModal(productData.images[currentIndex]); }}
                     className="absolute top-4 right-4 bg-black/70 text-white px-2 py-1 text-xs rounded cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
                     Click to zoom
                   </div>
 
                   <button
                     className="absolute top-1/2 left-4 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/90 text-black rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePrev();
-                    }}
+                    onClick={(e) => { e.stopPropagation(); handlePrev(); }}
                   >
                     ◀
                   </button>
                   <button
                     className="absolute top-1/2 right-4 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/90 text-black rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleNext();
-                    }}
+                    onClick={(e) => { e.stopPropagation(); handleNext(); }}
                   >
                     ▶
                   </button>
@@ -293,42 +282,47 @@ const Product = () => {
 
             {/* Product Details */}
             <div className="bg-white border border-gray-200 shadow-lg">
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center justify-between mb-4">
-                  <h1 className="text-2xl tracking-wide text-black">{productData.name}</h1>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={handleWishlistToggle}
-                      className={`p-2 border transition-all duration-300 ${isWishlisted
-                        ? 'bg-black text-white border-black'
-                        : 'bg-white text-black border-gray-300 hover:border-black'
-                        }`}
-                      title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-                    >
-                      <Heart
-    size={16}
-    className={isWishlisted ? 'text-white' : 'text-black'}
-    fill={isWishlisted ? 'currentColor' : 'none'}   // <- key fix
-    stroke="currentColor"
-  />
-                    </button>
-                    <button 
-                      onClick={handleShare} 
-                      className="p-2 border border-gray-300 bg-white text-black hover:border-black transition-all duration-300"
-                      title="Share product"
-                    >
-                      <Share2 size={16} />
-                    </button>
+              <div className="p-6 bg-white rounded-b-2xl shadow-sm border border-gray-100 transition-all duration-500 hover:shadow-md">
+                <div className="flex flex-wrap items-center justify-between mb-6">
+                  <div>
+                    <h1 className="text-2xl font-medium tracking-tight mb-2">
+                      {productData.name}
+                    </h1>
+                    <div className="flex items-center gap-3">
+                      {productData.company && (
+                        <span className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-gray-600 font-medium bg-gray-50 px-3 py-1.5 border border-gray-200">
+                          <Building2 size={12} />
+                          {productData.company}
+                        </span>
+                      )}
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={handleWishlistToggle}
+                          className={`p-2 border transition-all duration-300 ${isWishlisted ? "bg-black text-white border-black" : "bg-white text-black border-gray-300 hover:border-black"}`}
+                          title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                        >
+                          <Heart size={16} className={isWishlisted ? "text-white" : "text-black"} fill={isWishlisted ? "currentColor" : "none"} />
+                        </button>
+
+                        <button onClick={handleShare} className="p-2 border border-gray-300 bg-white text-black hover:border-black transition-all duration-300" title="Share product"
+                        >
+                          <Share2 size={16} />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-baseline justify-between mb-6">
-                  <div className="text-xl font-medium text-black">{currency}{productData.price}</div>
+                <div className="flex items-baseline justify-between mb-8">
+                  <div className="text-2xl font-semibold text-gray-900">
+                    {currency}{productData.price}
+                  </div>
                   <div className="text-sm text-gray-500 font-light">Prices include GST</div>
                 </div>
 
-                <div className="mb-6">
-                  <label className="block text-xs uppercase tracking-wider text-gray-500 font-light mb-3">
+                <div className="mb-8">
+                  <label className="block text-xs uppercase tracking-widest text-gray-500 mb-3">
                     Select Size
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -336,46 +330,47 @@ const Product = () => {
                       <button
                         key={index}
                         onClick={() => setSize(s)}
-                        className={`py-2 px-3 border transition-all duration-300 ${size === s
-                          ? 'bg-black text-white border-black'
-                          : 'bg-white text-black border-gray-300 hover:border-black'
+                        className={`py-2 px-4 border text-sm font-light transition-all duration-300 ${size === s
+                          ? "bg-black text-white border-black"
+                          : "bg-white text-gray-800 border-gray-300 hover:border-black"
                           }`}
                       >
-                        <span className="font-light">{s}</span>
+                        {s}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                <div className="mb-6">
-                  <label className="block text-xs uppercase tracking-wider text-gray-500 font-light mb-3">
+                <div className="mb-8">
+                  <label className="block text-xs uppercase tracking-widest text-gray-500 mb-3">
                     Quantity
                   </label>
-                  <div className="flex items-center border border-gray-300 w-fit">
+                  <div className="flex items-center border border-gray-300 overflow-hidden w-fit">
                     <button
-                      onClick={() => handleQuantityChange('decrease')}
-                      className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 transition-colors border-r border-gray-300"
+                      onClick={() => handleQuantityChange("decrease")}
+                      className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors border-r border-gray-200"
                       disabled={quantity <= 1}
                     >
-                      <Minus size={14} className={quantity <= 1 ? "text-gray-300" : "text-black"} />
+                      <Minus
+                        size={16}
+                        className={quantity <= 1 ? "text-gray-300" : "text-gray-800"}
+                      />
                     </button>
                     <input
                       type="number"
-                      className="w-12 h-8 text-center focus:outline-none bg-white font-light text-sm"
+                      className="w-12 h-10 text-center bg-white text-gray-800 focus:outline-none text-sm"
                       value={quantity}
                       min="1"
                       onChange={(e) => {
                         const value = e.target.value;
-                        if (value !== "" && value !== "0") {
-                          setQuantity(Number(value));
-                        }
+                        if (value !== "" && value !== "0") setQuantity(Number(value));
                       }}
                     />
                     <button
-                      onClick={() => handleQuantityChange('increase')}
-                      className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 transition-colors border-l border-gray-300"
+                      onClick={() => handleQuantityChange("increase")}
+                      className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors border-l border-gray-200"
                     >
-                      <Plus size={14} />
+                      <Plus size={16} className="text-gray-800" />
                     </button>
                   </div>
                 </div>
@@ -383,21 +378,23 @@ const Product = () => {
                 <div className="space-y-3">
                   <button
                     onClick={() => addToCart(productData._id, size, quantity)}
-                    className="w-full py-3 bg-black text-white font-light tracking-wide hover:bg-gray-800 transition-all duration-300"
+                    className="w-full py-3 bg-black text-white font-medium tracking-wide hover:bg-gray-800 transition-all duration-300"
                   >
                     ADD TO CART
                   </button>
                   <button
-                    onClick={() => navigate('/try-on', { state: { image: productData.images[currentIndex] } })}
-                    className="w-full py-3 flex justify-center items-center gap-2 border border-black bg-white text-black font-light hover:bg-gray-50 transition-all duration-300"
+                    onClick={() =>
+                      navigate("/try-on", { state: { image: productData.images[currentIndex] } })
+                    }
+                    className="w-full py-3 flex justify-center items-center gap-2 border border-black bg-white text-black font-medium hover:bg-gray-50 transition-all duration-300"
                   >
-                    <Camera size={16} />
+                    <Camera size={18} />
                     <span className="text-sm">TRY-ON</span>
                   </button>
                 </div>
               </div>
 
-              {/* Product Information Dropdowns */}
+              {/* Product Information */}
               <div>
                 <div className="border-b border-gray-200">
                   <button onClick={() => toggleSection('description')} className="w-full py-4 px-6 flex justify-between items-center text-left font-medium transition-colors hover:bg-gray-50">
