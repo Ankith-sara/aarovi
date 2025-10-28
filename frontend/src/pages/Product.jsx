@@ -44,25 +44,6 @@ const Product = () => {
     }
   };
 
-  // Modal drag handling
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-    setStartY(e.pageY - scrollTop);
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    const y = e.pageY - startY;
-    if (modalRef.current) {
-      modalRef.current.scrollTop = y;
-      setScrollTop(y);
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
   // Quantity handlers
   const handleQuantityChange = (action) => {
     if (action === 'increase') {

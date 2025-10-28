@@ -37,8 +37,7 @@ const Support = () => {
 
   return (
     <div className="min-h-screen text-black mt-20">
-      {/* Hero Section */}
-      <section className="py-24 px-4 sm:px-8 md:px-10 lg:px-20">
+      <section className="py-20 px-4 sm:px-8 md:px-10 lg:px-20">
         <div className="max-w-5xl mx-auto text-center">
           <div className="text-3xl text-center mb-8">
             <Title text1="CUSTOMER" text2="SUPPORT" />
@@ -62,7 +61,6 @@ const Support = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            {/* Phone Support */}
             <div className="bg-white shadow-lg p-8 border-l-4 border-black hover:shadow-xl transition-shadow">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">

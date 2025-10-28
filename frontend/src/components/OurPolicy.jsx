@@ -21,7 +21,6 @@ const OurPolicy = () => {
   return (
     <div className="py-16 px-4 md:px-10">
       <div className="max-w-6xl mx-auto">
-        {/* Header Section */}
         <div className="text-center mb-8">
           <Title text1="WHY CHOOSE" text2="AHARYAS?" />
           <p className="max-w-2xl mx-auto text-gray-700 text-lg mt-6">

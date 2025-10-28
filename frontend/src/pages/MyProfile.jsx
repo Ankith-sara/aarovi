@@ -3,7 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import {
   ChevronRight, Heart, Clock, User, ShoppingBag, Settings, LogOut, Edit2, Trash2,
-  MapPinHouse, X, Camera, Mail, Calendar, Plus, ArrowRight, Package, Phone
+  MapPinHouse, X, Camera, Mail, Calendar, Plus, ArrowRight,
 } from "lucide-react";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
@@ -191,7 +191,6 @@ const MyProfile = () => {
 
   return (
     <div className="min-h-screen bg-white text-black mt-20">
-      {/* Header Section */}
       <section className="py-12 px-4 sm:px-8 md:px-10 lg:px-20">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
@@ -272,10 +271,7 @@ const MyProfile = () => {
                     </div>
                   </div>
 
-                  <button 
-                    className="w-full py-3 bg-black text-white font-light tracking-wide hover:bg-gray-800 transition-all duration-300 uppercase"
-                    onClick={() => setActiveSection("Edit Profile")}
-                  >
+                  <button className="w-full py-3 bg-black text-white font-light tracking-wide hover:bg-gray-800 transition-all duration-300 uppercase" onClick={() => setActiveSection("Edit Profile")}>
                     Edit Profile
                   </button>
                 </div>
@@ -403,11 +399,9 @@ const MyProfile = () => {
       {activeSection === "Edit Profile" && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
           <div className="bg-white w-full max-w-sm shadow-xl overflow-hidden">
-            {/* Header */}
             <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
               <h2 className="text-sm font-medium tracking-wide uppercase">Edit Profile</h2>
             </div>
-
             <form className="p-4 space-y-4" onSubmit={handleEditProfileSubmit}>
               {/* Profile Image */}
               <div className="flex items-center gap-3">

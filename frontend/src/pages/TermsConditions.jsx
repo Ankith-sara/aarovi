@@ -9,7 +9,7 @@ const TermsConditions = () => {
 
   return (
     <div className="min-h-screen text-black mt-20">
-      <section className="py-24 px-4 sm:px-8 md:px-10 lg:px-20">
+      <section className="py-20 px-4 sm:px-8 md:px-10 lg:px-20">
         <div className="max-w-5xl mx-auto text-center">
           <div className="text-3xl text-center mb-8">
             <Title text1="TERMS &" text2="CONDITIONS" />

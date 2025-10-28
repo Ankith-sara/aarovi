@@ -41,15 +41,10 @@ const About = () => {
                 <p className="first-letter:text-5xl first-letter:font-light first-letter:text-black first-letter:mr-1 first-letter:float-left first-letter:leading-none">
                   We, at Aharyas, are driven by the potential of handcrafted narratives. We're not creating a brand — we're creating a bridge between India's storied craft heritage and the world of mindful fashion.
                 </p>
-
                 <p>Aharyas was born from our profound respect for artisans and our ambitious vision to bring their work the visibility and audience it rightly deserves.</p>
-
                 <p>Through our online platform, Aharyas unites craftsmanship, technology, and meaning. We employ AI and AR to design an immersive shopping experience that enables customers to engage with each product — to view, touch, and learn the story behind it.</p>
-
                 <p>Aharyas operates under three essential categories — authentic handmade craft from artisans, sustainable and affordable fashion for daily wear, and a luxury segment specific to high-end fashion with Indian sensibilities.</p>
-
                 <p>Until now, Aharyas has on-boarded more than 300 artisans, many belonging to self-help groups, providing them a platform to feature their work, earn equitable income, and revive their creative identity.</p>
-
                 <blockquote className="border-l-2 border-black pl-6 py-4 italic text-xl text-black font-light">
                   "At Aharyas, we're driven by purpose, powered by innovation, and grounded in tradition."
                 </blockquote>
@@ -60,11 +55,10 @@ const About = () => {
       </section>
 
       {/* Vision & Mission */}
-      <section className="relative py-24">
+      <section className="relative py-20">
         <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-50"></div>
         <div className="relative px-4 sm:px-8 md:px-10 lg:px-20">
           <div className="max-w-7xl mx-auto">
-
             <div className="grid md:grid-cols-2 gap-16">
               <div className="group">
                 <div className="bg-white/90 backdrop-blur-sm p-12 shadow-xl hover:shadow-2xl transition-all duration-500 border-l-4 border-black">

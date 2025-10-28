@@ -97,10 +97,9 @@ const Navbar = () => {
         { name: 'Kurtis', path: '/shop/Kurtis' },
         { name: 'Kurta Sets', path: '/shop/Kurta Sets' },
         { name: 'Tops', path: '/shop/Tops' },
-        { name: 'Blazers', path: '/shop/blazers' }, 
+        { name: 'Blazers', path: '/shop/Blazers' }, 
         { name: 'Dresses', path: '/shop/Dresses' },
         {name: 'Co-ord Sets', path: '/shop/Women Co-ord Sets' },
-        {name: 'Corset-tops', path: '/shop/Corset-tops' },
         {name: 'Short-tops', path: '/shop/Short-tops' },
         {name: 'Shirts', path: '/shop/Women Shirts' }
       ]
@@ -110,7 +109,7 @@ const Navbar = () => {
       id: 'men',
       subcategories: [
         { name: 'Shirts', path: '/shop/Men Shirts' },
-        { name: 'Sleeve Shirts', path: '/shop/Sleeve-Shirts' },
+        { name: 'Sleeve Shirts', path: '/shop/Sleeve Shirts' },
         { name: 'Kurtas', path: '/shop/Kurtas' },
         { name: 'Co-ord Sets', path: '/shop/Men Co-ord Sets' },
         { name: 'Trousers', path: '/shop/Trousers' },
@@ -158,7 +157,7 @@ const Navbar = () => {
               className="p-2.5 transition-all duration-200 group"
               aria-label="Search"
             >
-              <Search size={20} className="group-hover:scale-110 transition-transform duration-200" />
+              <Search size={20} className="transition-transform duration-200" />
             </button>
 
             <div className="relative group hidden md:block">
@@ -167,7 +166,7 @@ const Navbar = () => {
                 className="p-2.5 transition-all duration-200 group/profile"
                 aria-label="Profile"
               >
-                <User size={20} className="group-hover/profile:scale-110 transition-transform duration-200" />
+                <User size={20} className="transition-transform duration-200" />
               </button>
 
               {token && (
@@ -209,7 +208,7 @@ const Navbar = () => {
                 className="p-2.5 transition-all duration-200 group relative"
                 aria-label="Wishlist"
               >
-                <Heart size={20} className="group-hover:scale-110 transition-transform duration-200" />
+                <Heart size={20} className="transition-transform duration-200" />
                 {getWishlistCount() > 0 && (
                   <span className={`absolute -top-1 -right-1 min-w-[20px] h-5 flex items-center justify-center rounded-full text-xs font-medium transition-all duration-200 ${isHomePage && !isScrolled ? 'bg-white text-black' : 'bg-white text-black'} shadow-md`}>
                     {getWishlistCount()}
@@ -220,7 +219,7 @@ const Navbar = () => {
 
             <Link to='/cart' className='relative group'>
               <button className="p-2.5 transition-all duration-200" aria-label="Cart">
-                <ShoppingBagIcon size={20} className="group-hover:scale-110 transition-transform duration-200" />
+                <ShoppingBagIcon size={20} className="transition-transform duration-200" />
                 {getCartCount() > 0 && (
                   <div className={`absolute -top-1 -right-1 min-w-[20px] h-5 flex items-center justify-center rounded-full text-xs font-medium transition-all duration-200 ${isHomePage && !isScrolled ? 'bg-white text-black' : 'bg-white text-black'} shadow-md`}>
                     {getCartCount()}
@@ -236,7 +235,7 @@ const Navbar = () => {
               className="p-2.5 transition-all duration-200 group"
               aria-label="Menu"
             >
-              <Menu size={20} className="group-hover:scale-110 transition-transform duration-200" />
+              <Menu size={20} className="transition-transform duration-200" />
             </button>
           </div>
         </div>
