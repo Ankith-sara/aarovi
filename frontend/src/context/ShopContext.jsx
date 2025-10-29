@@ -390,7 +390,7 @@ const ShopContextProvider = (props) => {
                 viewedAt: new Date().toISOString()
             });
 
-            viewedProducts = viewedProducts.slice(0, 10);
+            viewedProducts = viewedProducts.slice(0, 5);
             localStorage.setItem('recentlyViewed', JSON.stringify(viewedProducts));
         } catch (error) {
             console.error('Add to recently viewed error:', error);

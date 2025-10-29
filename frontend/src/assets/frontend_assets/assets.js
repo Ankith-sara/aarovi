@@ -18,6 +18,8 @@ import seller_1 from './seller_1.jpg'
 import seller_2 from './seller_2.jpg'
 import mallesh_img from './mallesh.jpg'
 import indian from './india.svg'
+import size_top from './size_top.jpg'
+import size_bottom from './size_bottom.jpg'
 
 export const assets = {
     logo,
@@ -37,7 +39,9 @@ export const assets = {
     seller_1,
     seller_2,
     mallesh_img,
-    indian
+    indian,
+    size_top,
+    size_bottom
 }
 
 export const products = [
