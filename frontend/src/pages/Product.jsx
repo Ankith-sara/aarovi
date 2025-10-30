@@ -33,6 +33,39 @@ const Product = () => {
     }
   };
 
+  // Determine which size chart to show based on category
+  const getSizeChartImage = () => {
+    if (!productData) return assets.size_top;
+    
+    const category = productData.category?.toLowerCase() || '';
+    const subCategory = productData.subCategory?.toLowerCase() || '';
+    
+    // Define bottom categories
+    const bottomCategories = ['bottom', 'trousers', 'pants'];
+    
+    // Check if product is a bottom
+    const isBottom = bottomCategories.some(cat => 
+      category.includes(cat) || subCategory.includes(cat)
+    );
+    
+    return isBottom ? assets.size_bottom : assets.size_top;
+  };
+
+  // Get chart type for display
+  const getChartType = () => {
+    if (!productData) return 'Top';
+    
+    const category = productData.category?.toLowerCase() || '';
+    const subCategory = productData.subCategory?.toLowerCase() || '';
+    
+    const bottomCategories = ['bottom','pants', 'trousers'];
+    const isBottom = bottomCategories.some(cat => 
+      category.includes(cat) || subCategory.includes(cat)
+    );
+    
+    return isBottom ? 'Bottom' : 'Top';
+  };
+
   // Quantity handlers
   const handleQuantityChange = (action) => {
     if (action === 'increase') {
@@ -45,7 +78,6 @@ const Product = () => {
   // Wishlist handler
   const handleWishlistToggle = async () => {
     if (!token) {
-      // If not logged in, show a message and redirect to login
       navigate('/login');
       return;
     }
@@ -166,7 +198,6 @@ const Product = () => {
     if (product) {
       setProductData(product);
       addProductToRecentlyViewed(product);
-      // Check if product is in wishlist
       setIsWishlisted(isInWishlist(productId));
     }
   }, [productId, products, addProductToRecentlyViewed, isInWishlist]);
@@ -177,7 +208,6 @@ const Product = () => {
     }
   }, [productData?.name]);
 
-  // Update wishlist state when wishlist changes
   useEffect(() => {
     if (productId) {
       setIsWishlisted(isInWishlist(productId));
@@ -209,7 +239,7 @@ const Product = () => {
                     src={productData.images[currentIndex]}
                     alt={productData.name}
                     onClick={handleImageClick}
-                    className="w-full h-full object-contain transition-all duration-500 hover:scale-105 cursor-pointer filter"
+                    className="w-full h-[80vh] object-contain transition-all duration-500 hover:scale-105 cursor-pointer filter"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
 
@@ -491,7 +521,9 @@ const Product = () => {
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
               <div className="flex items-center gap-2">
                 <Ruler size={20} className="text-black" />
-                <h3 className="text-xl font-medium text-black tracking-wide">SIZE GUIDE</h3>
+                <h3 className="text-xl font-medium text-black tracking-wide">
+                  SIZE GUIDE - {getChartType()}
+                </h3>
               </div>
               <button
                 onClick={() => setShowSizeChart(false)}
@@ -506,8 +538,8 @@ const Product = () => {
             
             <div className="p-6">
               <img 
-                src={assets.size_top} 
-                alt="Size Chart" 
+                src={getSizeChartImage()} 
+                alt={`Size Chart for ${getChartType()}`}
                 className="w-full h-auto shadow-md"
               />
               <div className="mt-6 p-4 bg-gray-50 border-l-4 border-black">
@@ -592,11 +624,7 @@ const Product = () => {
 
       {/* Related Products Section */}
       <section className="px-4 sm:px-8 md:px-10 lg:px-20">
-        <RelatedProducts
-          category={productData.category}
-          subCategory={productData.subCategory}
-          currentProductId={productId}
-        />
+        <RelatedProducts category={productData.category} subCategory={productData.subCategory} currentProductId={productId} />
       </section>
 
       {/* Recently Viewed Section */}
