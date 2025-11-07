@@ -5,6 +5,7 @@ import { Camera, ChevronDown, ChevronUp, Minus, Plus, Heart, Share2, Ruler } fro
 import RelatedProducts from '../components/RelatedProducts';
 import RecentlyViewed from '../components/RecentlyViewed';
 import { assets } from '../assets/frontend_assets/assets';
+import SizeChartModal from '../components/SizeChartModal';
 
 const Product = () => {
   const { productId } = useParams();
@@ -36,33 +37,33 @@ const Product = () => {
   // Determine which size chart to show based on category
   const getSizeChartImage = () => {
     if (!productData) return assets.size_top;
-    
+
     const category = productData.category?.toLowerCase() || '';
     const subCategory = productData.subCategory?.toLowerCase() || '';
-    
+
     // Define bottom categories
     const bottomCategories = ['bottom', 'trousers', 'pants'];
-    
+
     // Check if product is a bottom
-    const isBottom = bottomCategories.some(cat => 
+    const isBottom = bottomCategories.some(cat =>
       category.includes(cat) || subCategory.includes(cat)
     );
-    
+
     return isBottom ? assets.size_bottom : assets.size_top;
   };
 
   // Get chart type for display
   const getChartType = () => {
     if (!productData) return 'Top';
-    
+
     const category = productData.category?.toLowerCase() || '';
     const subCategory = productData.subCategory?.toLowerCase() || '';
-    
-    const bottomCategories = ['bottom','pants', 'trousers'];
-    const isBottom = bottomCategories.some(cat => 
+
+    const bottomCategories = ['bottom', 'pants', 'trousers'];
+    const isBottom = bottomCategories.some(cat =>
       category.includes(cat) || subCategory.includes(cat)
     );
-    
+
     return isBottom ? 'Bottom' : 'Top';
   };
 
@@ -327,17 +328,16 @@ const Product = () => {
                       <span className="underline">Size Guide</span>
                     </button>
                   </div>
-                  
+
                   <div className="flex flex-wrap gap-2">
                     {productData.sizes.map((s, index) => (
                       <button
                         key={index}
                         onClick={() => setSize(s)}
-                        className={`py-2.5 px-4 transition-all duration-300 font-light ${
-                          size === s 
-                            ? 'bg-black text-white shadow-md' 
+                        className={`py-2.5 px-4 transition-all duration-300 font-light ${size === s
+                            ? 'bg-black text-white shadow-md'
                             : 'bg-white text-gray-700 border border-gray-300 hover:border-black'
-                        }`}
+                          }`}
                       >
                         {s}
                       </button>
@@ -369,8 +369,8 @@ const Product = () => {
                         }
                       }}
                     />
-                    <button 
-                      onClick={() => handleQuantityChange('increase')} 
+                    <button
+                      onClick={() => handleQuantityChange('increase')}
                       className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors border-l border-gray-300"
                     >
                       <Plus size={16} />
@@ -379,14 +379,14 @@ const Product = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <button 
-                    onClick={() => addToCart(productData._id, size, quantity)} 
+                  <button
+                    onClick={() => addToCart(productData._id, size, quantity)}
                     className="w-full py-4 bg-black text-white font-light tracking-wide hover:bg-gray-800 transition-all duration-300"
                   >
                     ADD TO CART
                   </button>
-                  <button 
-                    onClick={() => navigate('/try-on', { state: { image: productData.images[currentIndex] } })} 
+                  <button
+                    onClick={() => navigate('/try-on', { state: { image: productData.images[currentIndex] } })}
                     className="w-full py-4 flex justify-center items-center gap-2 border border-black bg-white text-black font-light hover:bg-gray-50 transition-all duration-300"
                   >
                     <Camera size={16} />
@@ -509,49 +509,13 @@ const Product = () => {
       </section>
 
       {/* Size Chart Modal */}
-      {showSizeChart && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-          onClick={() => setShowSizeChart(false)}
-        >
-          <div 
-            className="bg-white shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
-              <div className="flex items-center gap-2">
-                <Ruler size={20} className="text-black" />
-                <h3 className="text-xl font-medium text-black tracking-wide">
-                  SIZE GUIDE - {getChartType()}
-                </h3>
-              </div>
-              <button
-                onClick={() => setShowSizeChart(false)}
-                className="w-8 h-8 hover:bg-gray-100 flex items-center justify-center transition-colors"
-                aria-label="Close"
-              >
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            
-            <div className="p-6">
-              <img 
-                src={getSizeChartImage()} 
-                alt={`Size Chart for ${getChartType()}`}
-                className="w-full h-auto shadow-md"
-              />
-              <div className="mt-6 p-4 bg-gray-50 border-l-4 border-black">
-                <p className="text-sm text-gray-700 font-light">
-                  <span className="font-medium">💡 Tip:</span> For the best fit, measure yourself and compare with the size chart above. 
-                  If you're between sizes, we recommend sizing up for comfort.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <SizeChartModal
+        isOpen={showSizeChart}
+        onClose={() => setShowSizeChart(false)}
+        productName={productData.name}
+        category={productData.category}
+        subCategory={productData.subCategory}
+      />
 
       {/* Image Modal */}
       {isModalOpen && (

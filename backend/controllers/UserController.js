@@ -370,7 +370,50 @@ const adminLogin = async (req, res) => {
 
 // ============ OTHER FUNCTIONS ============
 
-export const getUserDetails = async (req, res) => {
+const getUserProfile = async (req, res) => {
+    try {
+        // userId is set by authUser middleware from token
+        const userId = req.body.userId;
+        
+        if (!userId) {
+            return res.status(401).json({ 
+                success: false, 
+                message: "Unauthorized - No user ID found" 
+            });
+        }
+
+        const user = await userModel.findById(userId).select('-password -otp -otpExpiry');
+        
+        if (!user) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "User not found" 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                image: user.image,
+                addresses: user.addresses,
+                role: user.role,
+                isVerified: user.isVerified
+            }
+        });
+    } catch (error) {
+        console.error('Get user profile error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Internal server error" 
+        });
+    }
+};
+
+const getUserDetails = async (req, res) => {
     try {
         const { id } = req.params;
         if (!id) return res.status(400).json({ success: false, message: "User ID is required" });
@@ -471,5 +514,5 @@ const changePassword = async (req, res) => {
 };
 
 export {
-    sendOtp, verifyOtp, registerUser, loginUser, sendAdminOtp, verifyAdminOtp, adminLogin, updateUserProfile, addOrUpdateAddress, deleteAddress, changePassword
+    sendOtp, verifyOtp, registerUser, loginUser, sendAdminOtp, verifyAdminOtp, adminLogin, getUserDetails, getUserProfile, updateUserProfile, addOrUpdateAddress, deleteAddress, changePassword
 };
