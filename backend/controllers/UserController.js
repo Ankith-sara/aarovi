@@ -5,6 +5,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import userModel from '../models/UserModel.js';
 import sendOtpMail from '../middlewares/sendOtpMail.js';
 import sendWelcomeMail from '../middlewares/sendWelcomeMail.js';
+import sendNewsletterMail from '../middlewares/sendNewsletterMail.js';
 
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -12,7 +13,6 @@ const createToken = (id, role = 'user') =>
     jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
 // ============ USER REGISTRATION (OTP-BASED) ============
-
 const sendOtp = async (req, res) => {
     const { email, name, password } = req.body;
 
@@ -188,7 +188,6 @@ const registerUser = async (req, res) => {
 };
 
 // ============ USER LOGIN ============
-
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -225,7 +224,6 @@ const loginUser = async (req, res) => {
 };
 
 // ============ ADMIN REGISTRATION (OTP-BASED) ============
-
 const sendAdminOtp = async (req, res) => {
     const { email, name, password } = req.body;
 
@@ -268,8 +266,8 @@ const sendAdminOtp = async (req, res) => {
             // Update existing user to admin role
             user.name = name;
             user.password = hashedPassword;
-            user.role = 'admin';  // ✅ ADDED: Ensure role is set to admin
-            user.isAdmin = true;  // ✅ ADDED: Ensure isAdmin flag is true
+            user.role = 'admin';
+            user.isAdmin = true;
             user.otp = otp;
             user.otpExpiry = otpExpiry;
             user.isVerified = false;
@@ -351,7 +349,6 @@ const verifyAdminOtp = async (req, res) => {
 };
 
 // ============ ADMIN LOGIN ============
-
 const adminLogin = async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -369,30 +366,29 @@ const adminLogin = async (req, res) => {
 };
 
 // ============ OTHER FUNCTIONS ============
-
 const getUserProfile = async (req, res) => {
     try {
         // userId is set by authUser middleware from token
         const userId = req.body.userId;
-        
+
         if (!userId) {
-            return res.status(401).json({ 
-                success: false, 
-                message: "Unauthorized - No user ID found" 
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized - No user ID found"
             });
         }
 
         const user = await userModel.findById(userId).select('-password -otp -otpExpiry');
-        
+
         if (!user) {
-            return res.status(404).json({ 
-                success: false, 
-                message: "User not found" 
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
             });
         }
 
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             user: {
                 _id: user._id,
                 name: user.name,
@@ -406,9 +402,9 @@ const getUserProfile = async (req, res) => {
         });
     } catch (error) {
         console.error('Get user profile error:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: "Internal server error" 
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
         });
     }
 };
@@ -513,6 +509,31 @@ const changePassword = async (req, res) => {
     }
 };
 
-export {
-    sendOtp, verifyOtp, registerUser, loginUser, sendAdminOtp, verifyAdminOtp, adminLogin, getUserDetails, getUserProfile, updateUserProfile, addOrUpdateAddress, deleteAddress, changePassword
+const subscribeNewsletter = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: "Email is required"
+            });
+        }
+
+        await sendNewsletterMail(email);
+
+        res.json({
+            success: true,
+            message: "Email sent! Check your inbox for the WhatsApp join link."
+        });
+
+    } catch (error) {
+        console.error("Newsletter error:", error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
 };
+
+export { sendOtp, verifyOtp, registerUser, loginUser, sendAdminOtp, verifyAdminOtp, adminLogin, getUserDetails, getUserProfile, updateUserProfile, addOrUpdateAddress, deleteAddress, changePassword, subscribeNewsletter };

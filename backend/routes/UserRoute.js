@@ -1,7 +1,8 @@
 import express from 'express';
 import upload from '../middlewares/multer.js';
 import {
-    loginUser, registerUser, adminLogin, getUserDetails, updateUserProfile, changePassword, addOrUpdateAddress, deleteAddress, sendOtp, verifyOtp, sendAdminOtp, verifyAdminOtp
+    loginUser, registerUser, adminLogin, getUserDetails, updateUserProfile, changePassword, addOrUpdateAddress, deleteAddress, sendOtp, verifyOtp, sendAdminOtp, verifyAdminOtp,
+    subscribeNewsletter
 } from '../controllers/UserController.js';
 
 const userRouter = express.Router();
@@ -10,6 +11,7 @@ userRouter.post('/register', registerUser);
 userRouter.post('/login', loginUser);
 userRouter.post('/send-otp', sendOtp);
 userRouter.post('/verify-otp', verifyOtp);
+userRouter.post("/newsletter/subscribe", subscribeNewsletter);
 userRouter.post('/admin-login', adminLogin);
 userRouter.post('/send-admin-otp', sendAdminOtp);
 userRouter.post('/verify-admin-otp', verifyAdminOtp);

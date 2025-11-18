@@ -19,11 +19,8 @@ const Product = () => {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [showSizeChart, setShowSizeChart] = useState(false);
   const modalRef = useRef(null);
-
-  // Wishlist state - check if current product is in wishlist
   const [isWishlisted, setIsWishlisted] = useState(false);
-
-  // Dropdown state management
+  const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [expandedSection, setExpandedSection] = useState('description');
 
   const toggleSection = (section) => {
@@ -34,39 +31,6 @@ const Product = () => {
     }
   };
 
-  // Determine which size chart to show based on category
-  const getSizeChartImage = () => {
-    if (!productData) return assets.size_top;
-
-    const category = productData.category?.toLowerCase() || '';
-    const subCategory = productData.subCategory?.toLowerCase() || '';
-
-    // Define bottom categories
-    const bottomCategories = ['bottom', 'trousers', 'pants'];
-
-    // Check if product is a bottom
-    const isBottom = bottomCategories.some(cat =>
-      category.includes(cat) || subCategory.includes(cat)
-    );
-
-    return isBottom ? assets.size_bottom : assets.size_top;
-  };
-
-  // Get chart type for display
-  const getChartType = () => {
-    if (!productData) return 'Top';
-
-    const category = productData.category?.toLowerCase() || '';
-    const subCategory = productData.subCategory?.toLowerCase() || '';
-
-    const bottomCategories = ['bottom', 'pants', 'trousers'];
-    const isBottom = bottomCategories.some(cat =>
-      category.includes(cat) || subCategory.includes(cat)
-    );
-
-    return isBottom ? 'Bottom' : 'Top';
-  };
-
   // Quantity handlers
   const handleQuantityChange = (action) => {
     if (action === 'increase') {
@@ -74,6 +38,19 @@ const Product = () => {
     } else if (action === 'decrease' && quantity > 1) {
       setQuantity(quantity - 1);
     }
+  };
+
+  // Enhanced Add to Cart handler
+  const handleAddToCart = () => {
+    addToCart(productData._id, size, quantity);
+    setIsAddedToCart(true);
+    setSize('');
+    setQuantity(1);
+  };
+
+  // Handle View Cart click
+  const handleViewCart = () => {
+    navigate('/cart');
   };
 
   // Wishlist handler
@@ -205,7 +182,7 @@ const Product = () => {
 
   useEffect(() => {
     if (productData?.name) {
-      document.title = `${productData.name} | Puppet.in.co`;
+      document.title = `${productData.name} | Aharyas`;
     }
   }, [productData?.name]);
 
@@ -214,6 +191,11 @@ const Product = () => {
       setIsWishlisted(isInWishlist(productId));
     }
   }, [productId, isInWishlist]);
+
+  // Reset cart button state when product changes
+  useEffect(() => {
+    setIsAddedToCart(false);
+  }, [productId]);
 
   if (!productData) {
     return (
@@ -314,7 +296,7 @@ const Product = () => {
                   <div className="text-sm text-gray-500 font-light">Prices include GST</div>
                 </div>
 
-                {/* Size Selector with Size Guide Link */}
+                {/* Size Selector */}
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-3">
                     <label className="block text-xs uppercase tracking-wider text-gray-500 font-light">
@@ -330,10 +312,21 @@ const Product = () => {
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    {productData.sizes.map((s, index) => (
+                    {[...productData.sizes].sort((a, b) => {
+                      const sizeOrder = { 'XS': 1, 'S': 2, 'M': 3, 'L': 4, 'XL': 5, 'XXL': 6, 'XXXL': 7 };
+                      const aNum = parseInt(a);
+                      const bNum = parseInt(b);
+                      if (!isNaN(aNum) && !isNaN(bNum)) {
+                        return aNum - bNum;
+                      }
+
+                      const aOrder = sizeOrder[a.toUpperCase()] || 999;
+                      const bOrder = sizeOrder[b.toUpperCase()] || 999;
+                      return aOrder - bOrder;
+                    }).map((s, index) => (
                       <button
                         key={index}
-                        onClick={() => setSize(s)}
+                        onClick={() => setSize(size === s ? '' : s)}
                         className={`py-2.5 px-4 transition-all duration-300 font-light ${size === s
                             ? 'bg-black text-white shadow-md'
                             : 'bg-white text-gray-700 border border-gray-300 hover:border-black'
@@ -379,12 +372,21 @@ const Product = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <button
-                    onClick={() => addToCart(productData._id, size, quantity)}
-                    className="w-full py-4 bg-black text-white font-light tracking-wide hover:bg-gray-800 transition-all duration-300"
-                  >
-                    ADD TO CART
-                  </button>
+                  {!isAddedToCart ? (
+                    <button
+                      onClick={handleAddToCart}
+                      className="w-full py-4 bg-black text-white font-light tracking-wide hover:bg-gray-800 transition-all duration-300"
+                    >
+                      ADD TO CART
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleViewCart}
+                      className="w-full py-4 bg-gray-900 text-white font-light tracking-wide hover:bg-gray-800 transition-all duration-300"
+                    >
+                      VIEW CART
+                    </button>
+                  )}
                   <button
                     onClick={() => navigate('/try-on', { state: { image: productData.images[currentIndex] } })}
                     className="w-full py-4 flex justify-center items-center gap-2 border border-black bg-white text-black font-light hover:bg-gray-50 transition-all duration-300"
@@ -519,14 +521,8 @@ const Product = () => {
 
       {/* Image Modal */}
       {isModalOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-90 backdrop-blur-sm flex items-center justify-center z-50"
-          onClick={closeModal}
-        >
-          <div
-            className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 bg-black bg-opacity-90 backdrop-blur-sm flex items-center justify-center z-50" onClick={closeModal}>
+          <div className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
             <img
               src={modalImage}
               alt="Product Detail View"
