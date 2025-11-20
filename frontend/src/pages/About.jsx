@@ -38,9 +38,7 @@ const About = () => {
               </div>
 
               <div className="space-y-4 text-gray-700 text-lg leading-loose font-light">
-                <p className="first-letter:text-5xl first-letter:font-light first-letter:text-black first-letter:mr-1 first-letter:float-left first-letter:leading-none">
-                  We, at Aharyas, are driven by the potential of handcrafted narratives. We're not creating a brand — we're creating a bridge between India's storied craft heritage and the world of mindful fashion.
-                </p>
+                <p>We, at Aharyas, are driven by the potential of handcrafted narratives. We're not creating a brand — we're creating a bridge between India's storied craft heritage and the world of mindful fashion.</p>
                 <p>Aharyas was born from our profound respect for artisans and our ambitious vision to bring their work the visibility and audience it rightly deserves.</p>
                 <p>Through our online platform, Aharyas unites craftsmanship, technology, and meaning. We employ AI and AR to design an immersive shopping experience that enables customers to engage with each product — to view, touch, and learn the story behind it.</p>
                 <p>Aharyas operates under three essential categories — authentic handmade craft from artisans, sustainable and affordable fashion for daily wear, and a luxury segment specific to high-end fashion with Indian sensibilities.</p>
@@ -54,38 +52,126 @@ const About = () => {
         </div>
       </section>
 
-      {/* Vision & Mission */}
-      <section className="relative py-20">
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-50"></div>
-        <div className="relative px-4 sm:px-8 md:px-10 lg:px-20">
+      {/* Mission & Vision Section */}
+      <section className="relative py-24 bg-gradient-to-br from-stone-50 via-white to-stone-50">
+        <div className="px-4 sm:px-8 md:px-10 lg:px-20">
           <div className="max-w-7xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-16">
-              <div className="group">
-                <div className="bg-white/90 backdrop-blur-sm p-12 shadow-xl hover:shadow-2xl transition-all duration-500 border-l-4 border-black">
-                  <div className="mb-6">
-                    <h3 className="text-2xl font-light mb-2 tracking-wider text-black">OUR VISION</h3>
-                    <div className="w-12 h-0.5 bg-black"></div>
+            {/* Section Header */}
+            <div className="text-center mb-20">
+              <div className="inline-block">
+                <h2 className="text-4xl md:text-5xl font-light mb-4 tracking-wide">
+                  Our Mission <span className="font-medium">& Vision</span>
+                </h2>
+              </div>
+            </div>
+
+            {/* Mission Card */}
+            <div className="mb-32 group">
+              <div className="grid lg:grid-cols-2 gap-16 items-center">
+                {/* Mission Content */}
+                <div className="order-2 lg:order-1">
+                  <div className="relative bg-white p-12 shadow-xl hover:shadow-2xl transition-all duration-500 border-l-4 border-black">
+                    <div className="mb-6">
+                      <h3 className="text-3xl md:text-4xl font-light text-black leading-tight">
+                        Mission
+                      </h3>
+                    </div>
+
+                    <div className="w-20 h-0.5 bg-gradient-to-r from-black to-transparent mb-6"></div>
+
+                    <p className="text-gray-700 text-lg md:text-xl font-light leading-relaxed">
+                      To preserve dying crafts, uplift artisan voices, and create fashion that feels timeless, ethical, and soulfully elegant.
+                    </p>
+                    {/* Bottom decorative element */}
+                    <div className="absolute -top-6 -left-6 w-16 h-16 border-2 border-black/10"></div>
+                    <div className="absolute -bottom-6 -right-6 w-16 h-16 border-2 border-black/10"></div>
                   </div>
-                  <p className="text-gray-700 text-lg font-light leading-relaxed">
-                    To craft India's first luxury clothing brand where heritage meets high design, rooted deeply in culture, craft, and community.
-                  </p>
+                </div>
+
+                {/* Mission Image */}
+                <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
+                  <div className="relative">
+                    {/* Main circular image */}
+                    <div className="relative w-80 h-80 md:w-96 md:h-96">
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gray-100 to-gray-50 animate-pulse"></div>
+                      <div className="absolute inset-4 rounded-full overflow-hidden shadow-2xl border-8 border-white group-hover:scale-105 transition-transform duration-700">
+                        <img
+                          src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=600"
+                          alt="Mission - Artisan Hands"
+                          className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div className="group">
-                <div className="bg-white/90 backdrop-blur-sm p-12 shadow-xl hover:shadow-2xl transition-all duration-500 border-l-4 border-black">
-                  <div className="mb-6">
-                    <h3 className="text-2xl font-light mb-2 tracking-wider text-black">OUR MISSION</h3>
-                    <div className="w-12 h-0.5 bg-black"></div>
+            {/* Vision Card */}
+            <div className="group">
+              <div className="grid lg:grid-cols-2 gap-16 items-center">
+                {/* Vision Image */}
+                <div className="flex justify-center lg:justify-start">
+                  <div className="relative">
+                    {/* Main circular image */}
+                    <div className="relative w-80 h-80 md:w-96 md:h-96">
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gray-100 to-gray-50 animate-pulse"></div>
+                      <div className="absolute inset-4 rounded-full overflow-hidden shadow-2xl border-8 border-white group-hover:scale-105 transition-transform duration-700">
+                        <img
+                          src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600"
+                          alt="Vision - Traditional Weaving"
+                          className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-gray-700 text-lg font-light leading-relaxed">
-                    To preserve dying crafts, uplift artisan voices, and create fashion that feels timeless, ethical, and soulfully elegant.
-                  </p>
+                </div>
+
+                {/* Vision Content */}
+                <div>
+                  <div className="relative bg-white p-12 shadow-xl hover:shadow-2xl transition-all duration-500 border-l-4 border-black">
+                    <div className="mb-6">
+                      <span className="inline-block px-4 py-1 bg-black text-white text-xs font-light tracking-widest uppercase mb-4">
+                        Vision
+                      </span>
+                      <h3 className="text-3xl md:text-4xl font-light text-black leading-tight">
+                        Heritage Meets<br />
+                        <span className="font-medium">High Design</span>
+                      </h3>
+                    </div>
+
+                    <div className="w-20 h-0.5 bg-gradient-to-r from-black to-transparent mb-6"></div>
+
+                    <p className="text-gray-700 text-lg md:text-xl font-light leading-relaxed">
+                      To craft India's first luxury clothing brand where heritage meets high design, rooted deeply in culture, craft, and community.
+                    </p>
+                    {/* Bottom decorative element */}
+                    <div className="absolute -top-6 -left-6 w-16 h-16 border-2 border-black/10"></div>
+                    <div className="absolute -bottom-6 -right-6 w-16 h-16 border-2 border-black/10"></div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        <style jsx>{`
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 0.6;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.3;
+        transform: scale(1.05);
+      }
+    }
+    .animate-pulse {
+      animation: pulse 4s ease-in-out infinite;
+    }
+  `}</style>
       </section>
 
       {/* What Drives Us */}
@@ -149,9 +235,7 @@ const About = () => {
                 {!showFullStory ? (
                   <>
                     <div className="text-gray-700 font-light leading-relaxed space-y-6">
-                      <p className="first-letter:text-4xl first-letter:font-light first-letter:text-black first-letter:mr-1 first-letter:float-left first-letter:leading-none">
-                        From the weaving town of Pochampally, Mallesh Anna has spent over 40 years breathing life into threads. He began as a young boy, watching his parents tie and dye yarn late into the night, slowly learning that every motif held a meaning and every weave, a memory.
-                      </p>
+                      <p>From the weaving town of Pochampally, Mallesh Anna has spent over 40 years breathing life into threads. He began as a young boy, watching his parents tie and dye yarn late into the night, slowly learning that every motif held a meaning and every weave, a memory.</p>
                       <p>Today, at 56, he still rises before dawn, preparing yarns with care and weaving with quiet pride. The journey hasn't been easy—rising costs, fewer buyers—but he never let go of the loom that shaped his life.</p>
                       <p><em>Now a treasured part of the Aharyas family, Mallesh Anna's work is more than craftsmanship… it's legacy. When you wear his weave, you carry a story. His story.</em></p>
                     </div>
@@ -167,9 +251,7 @@ const About = () => {
                 ) : (
                   <>
                     <div className="text-gray-700 font-light leading-relaxed space-y-6 whitespace-pre-line">
-                      <p className="first-letter:text-4xl first-letter:font-light first-letter:text-black first-letter:mr-2 first-letter:float-left first-letter:leading-none">
-                        In the quiet village lanes of Pochampally, as the world still sleeps, a soft rhythm begins. It's not a song, but a sound, a tap, pull, beat—the sacred hum of a loom guided by hands that have known its music for over 40 years... Those hands belong to Mallesh Anna, a master Ikkat weaver, now 56, whose story is woven deep into the fabric of India's heritage.
-                      </p>
+                      <p>In the quiet village lanes of Pochampally, as the world still sleeps, a soft rhythm begins. It's not a song, but a sound, a tap, pull, beat—the sacred hum of a loom guided by hands that have known its music for over 40 years... Those hands belong to Mallesh Anna, a master Ikkat weaver, now 56, whose story is woven deep into the fabric of India's heritage.</p>
                       <p>He learned by watching, small feet by the loom, wide eyes on his parents' weathered fingers as they tied, dyed, and wove stories under lantern light. "Back then, I thought it was magic," he says. "Now I know... it's devotion."</p>
                       <p>Each day, before the sun graces the fields, Mallesh rises. He prepares the yarns with near-meditative precision—from boiling, dyeing, to aligning them into harmony. His eyes have seen thousands of patterns form and fade, yet he remembers each one. "Every motif means something. Some are for love, others for rain, or joy, or sorrow. It's like a language," he says, with a smile that carries both pride and pain.</p>
                       <p>But tradition has not come without its trials... There were years when buyers vanished. When cloth went unsold. When his heart broke seeing fellow weavers give up, sell their looms, and walk away from legacies centuries old. "We kept going… because the loom is not just work. It's who we are."</p>

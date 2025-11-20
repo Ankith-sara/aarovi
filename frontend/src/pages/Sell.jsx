@@ -3,7 +3,6 @@ import { ArrowRight, TrendingUp, Package, Truck, CreditCard } from 'lucide-react
 import Title from '../components/Title';
 
 const Sell = () => {
-    const [showFullTestimonial, setShowFullTestimonial] = useState(false);
 
     useEffect(() => {
         document.title = 'Become a Seller | Aharyas - Join Our Artisan Community'

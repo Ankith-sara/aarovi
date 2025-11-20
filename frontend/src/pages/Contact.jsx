@@ -11,7 +11,6 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen text-black mt-20">
-      {/* Hero Section - Contact Us */}
       <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
@@ -34,14 +33,9 @@ const Contact = () => {
               </div>
 
               <div className="space-y-4 text-gray-700 text-lg leading-loose font-light">
-                <p className="first-letter:text-6xl first-letter:font-light first-letter:text-black first-letter:mr-2 first-letter:float-left first-letter:leading-none">
-                  We believe in the power of connection — between artisan and buyer, tradition and modernity, story and style. At Aharyas, every conversation matters.
-                </p>
-
+                <p>We believe in the power of connection — between artisan and buyer, tradition and modernity, story and style. At Aharyas, every conversation matters.</p>
                 <p>Whether you have questions about our handcrafted pieces, need assistance with your order, or want to learn more about the artisans behind your favorite garments, we're here to help.</p>
-
                 <p>Our customer service team understands that each Aharyas piece carries a story, and we're committed to ensuring your experience with us is as meaningful as the craftsmanship we celebrate.</p>
-
                 <blockquote className="border-l-2 border-black pl-6 py-4 italic text-xl text-black font-light">
                   "Every question is an opportunity to share our passion for heritage craft and conscious fashion."
                 </blockquote>
@@ -56,9 +50,9 @@ const Contact = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-50"></div>
         <div className="relative px-4 sm:px-8 md:px-10 lg:px-20">
           <div className="max-w-7xl mx-auto">
-              <div className="text-3xl text-center mb-6">
-                <Title text1="GET IN" text2="TOUCH" />
-              </div>
+            <div className="text-3xl text-center mb-6">
+              <Title text1="GET IN" text2="TOUCH" />
+            </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="group">
@@ -127,12 +121,8 @@ const Contact = () => {
               </div>
 
               <div className="space-y-6 text-gray-700 text-lg leading-loose font-light">
-                <p className="first-letter:text-6xl first-letter:font-light first-letter:text-black first-letter:mr-2 first-letter:float-left first-letter:leading-none">
-                  At Aharyas, we're building more than a brand — we're nurturing a movement that celebrates heritage, empowers artisans, and creates conscious fashion for the world.
-                </p>
-
+                <p>At Aharyas, we're building more than a brand — we're nurturing a movement that celebrates heritage, empowers artisans, and creates conscious fashion for the world.</p>
                 <p>We're looking for passionate individuals who believe in the power of tradition, the beauty of handcraft, and the importance of sustainable fashion. Join our team and help us bridge the gap between India's rich craft heritage and global conscious consumers.</p>
-
                 <p>Whether you're interested in design, technology, marketing, or operations, there's a place for you in our growing family.</p>
               </div>
 

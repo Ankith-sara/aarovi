@@ -2,13 +2,15 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
 import Title from '../components/Title';
 import CartTotal from '../components/CartTotal';
-import { Trash2, ShoppingBag, Package } from 'lucide-react';
+import { Trash2, ShoppingBag, Package, X } from 'lucide-react';
 import RecentlyViewed from '../components/RecentlyViewed';
 import { Link } from 'react-router-dom';
 
 const Cart = () => {
   const { products, currency, cartItems, updateQuantity, navigate, token } = useContext(ShopContext);
   const [cartData, setCartData] = useState([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => {
     const tempData = [];
@@ -26,10 +28,22 @@ const Cart = () => {
     setCartData(tempData);
   }, [cartItems, products]);
 
-  const handleDelete = (id, size) => {
-    if (window.confirm('Are you sure you want to remove this item from the cart?')) {
-      updateQuantity(id, size, 0);
+  const handleDeleteClick = (id, size) => {
+    setItemToDelete({ id, size });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (itemToDelete) {
+      updateQuantity(itemToDelete.id, itemToDelete.size, 0);
+      setShowDeleteModal(false);
+      setItemToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setItemToDelete(null);
   };
 
   const handleQuantityChange = (id, size, newQuantity) => {
@@ -38,7 +52,6 @@ const Cart = () => {
     }
   };
 
-  // Handle checkout with login check
   const handleCheckout = () => {
     if (!token) {
       sessionStorage.setItem('returnUrl', '/cart');
@@ -54,6 +67,45 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen bg-white text-black mt-20">
+      {/* Delete Confirmation */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-fadeIn">
+          <div className="bg-white rounded-sm shadow-2xl max-w-md w-full animate-slideUp">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-xl font-medium tracking-wide">Remove Item</h3>
+              <button
+                onClick={cancelDelete}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Close"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <p className="text-gray-600 font-light leading-relaxed">
+                Are you sure you want to remove this item from your cart?
+              </p>
+            </div>
+            
+            <div className="p-6 border-t border-gray-200 flex gap-3">
+              <button
+                onClick={cancelDelete}
+                className="flex-1 py-3 border border-gray-300 text-black font-light tracking-wide hover:bg-gray-50 transition-all duration-300 uppercase"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 py-3 bg-white text-black border border-gray-300 font-light tracking-wide hover:bg-red-100 hover:text-red-600 transition-all duration-300 uppercase"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <section className="py-12 px-4 sm:px-8 md:px-10 lg:px-20">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
@@ -69,11 +121,9 @@ const Cart = () => {
         </div>
       </section>
 
-      {/* Cart Content */}
       <section className="px-4 sm:px-8 md:px-10 lg:px-20 pb-20">
         <div className="max-w-7xl mx-auto">
           {cartData.length === 0 ? (
-            // Empty Cart State
             <div className="flex flex-col items-center justify-center py-20 bg-white border border-gray-200 shadow-sm">
               <div className="w-16 h-16 border-2 border-gray-300 rounded-full flex items-center justify-center mb-6">
                 <ShoppingBag size={32} className="text-gray-400" />
@@ -93,7 +143,6 @@ const Cart = () => {
             </div>
           ) : (
             <div className="grid xl:grid-cols-[2fr_1fr] gap-8">
-              {/* Cart Items */}
               <div className="space-y-6">
                 <div className="bg-white border border-gray-200 shadow-sm">
                   <div className="p-6 border-b border-gray-100 bg-gray-50">
@@ -197,7 +246,7 @@ const Cart = () => {
 
                               <div className="flex lg:flex-col items-center lg:items-end justify-end lg:justify-start">
                                 <button
-                                  onClick={() => handleDelete(item._id, item.size)}
+                                  onClick={() => handleDeleteClick(item._id, item.size)}
                                   className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 border border-transparent hover:border-red-200 transition-all duration-300"
                                   aria-label="Remove item"
                                 >
@@ -213,7 +262,6 @@ const Cart = () => {
                 </div>
               </div>
 
-              {/* Order Summary */}
               <div className="space-y-6">
                 <div className="bg-white border border-gray-200 shadow-sm sticky top-6">
                   <div className="p-6 border-b border-gray-100 bg-gray-50">
@@ -252,7 +300,6 @@ const Cart = () => {
         </div>
       </section>
 
-      {/* Recently Viewed */}
       {cartData.length > 0 && (
         <section className="px-4 sm:px-8 md:px-10 lg:px-20 pb-20">
           <div className="max-w-7xl mx-auto">
@@ -260,8 +307,25 @@ const Cart = () => {
           </div>
         </section>
       )}
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.2s ease-out;
+        }
+        .animate-slideUp {
+          animation: slideUp 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 };
 
-export default Cart
+export default Cart;

@@ -582,12 +582,12 @@ const Product = () => {
         </div>
       )}
 
-      {/* Related Products Section */}
+      {/* Related Products */}
       <section className="px-4 sm:px-8 md:px-10 lg:px-20">
         <RelatedProducts category={productData.category} subCategory={productData.subCategory} currentProductId={productId} />
       </section>
 
-      {/* Recently Viewed Section */}
+      {/* Recently Viewed */}
       <section className="px-4 sm:px-8 md:px-10 lg:px-20 mb-20">
         <RecentlyViewed />
       </section>

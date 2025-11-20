@@ -3,7 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import {
   ChevronRight, Heart, Clock, User, ShoppingBag, Settings, LogOut, Edit2, Trash2,
-  MapPinHouse, X, Camera, Mail, Calendar, Plus, ArrowRight,
+  MapPinHouse, X, Camera, Mail, Calendar, Plus, ArrowRight, AlertCircle,
 } from "lucide-react";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
@@ -17,6 +17,12 @@ const MyProfile = () => {
   const [editProfile, setEditProfile] = useState({ name: "", email: "", image: "" });
   const [addressModal, setAddressModal] = useState({ open: false, address: {}, index: -1 });
   const [loading, setLoading] = useState(false);
+
+  // Custom modal states
+  const [logoutModal, setLogoutModal] = useState(false);
+  const [deleteAddressModal, setDeleteAddressModal] = useState({ open: false, index: -1 });
+  const [errorModal, setErrorModal] = useState({ open: false, message: "" });
+
   const { backendUrl, setToken, navigate } = useContext(ShopContext);
 
   // Fetch user details
@@ -108,11 +114,11 @@ const MyProfile = () => {
         });
         setActiveSection(null);
       } else {
-        alert(res.data.message || "Failed to update profile.");
+        setErrorModal({ open: true, message: res.data.message || "Failed to update profile." });
       }
     } catch (err) {
       console.error("Edit profile failed:", err);
-      alert("Failed to update profile.");
+      setErrorModal({ open: true, message: "Failed to update profile." });
     } finally {
       setLoading(false);
     }
@@ -132,16 +138,16 @@ const MyProfile = () => {
         setUserData((prev) => ({ ...prev, addresses: res.data.addresses }));
         setAddressModal({ open: false, address: {}, index: -1 });
       } else {
-        alert(res.data.message || "Failed to save address.");
+        setErrorModal({ open: true, message: res.data.message || "Failed to save address." });
       }
     } catch (err) {
-      alert("Failed to save address.");
+      setErrorModal({ open: true, message: "Failed to save address." });
     }
     setLoading(false);
   };
 
-  const deleteAddress = async (index) => {
-    if (!window.confirm("Delete this address?")) return;
+  const confirmDeleteAddress = async () => {
+    const index = deleteAddressModal.index;
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
@@ -151,11 +157,12 @@ const MyProfile = () => {
       );
       if (res.data.success) {
         setUserData((prev) => ({ ...prev, addresses: res.data.addresses }));
+        setDeleteAddressModal({ open: false, index: -1 });
       } else {
-        alert(res.data.message || "Failed to delete address.");
+        setErrorModal({ open: true, message: res.data.message || "Failed to delete address." });
       }
     } catch (err) {
-      alert("Failed to delete address.");
+      setErrorModal({ open: true, message: "Failed to delete address." });
     }
     setLoading(false);
   };
@@ -191,6 +198,121 @@ const MyProfile = () => {
 
   return (
     <div className="min-h-screen bg-white text-black mt-20">
+      {/* Logout Confirmation Modal */}
+      {logoutModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-fadeIn">
+          <div className="bg-white rounded-sm shadow-2xl max-w-md w-full animate-slideUp">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-xl font-medium tracking-wide">Confirm Logout</h3>
+              <button
+                onClick={() => setLogoutModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Close"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <p className="text-gray-600 font-light leading-relaxed">
+                Are you sure you want to log out of your account?
+              </p>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex gap-3">
+              <button
+                onClick={() => setLogoutModal(false)}
+                className="flex-1 py-3 border border-gray-300 text-black font-light tracking-wide hover:bg-gray-50 transition-all duration-300 uppercase"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => { setLogoutModal(false); logout(); }}
+                className="flex-1 py-3 bg-white text-black border border-gray-300 font-light tracking-wide hover:bg-red-100 hover:text-red-600 transition-all duration-300 uppercase"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Address Confirmation Modal */}
+      {deleteAddressModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-fadeIn">
+          <div className="bg-white rounded-sm shadow-2xl max-w-md w-full animate-slideUp">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-xl font-medium tracking-wide">Delete Address</h3>
+              <button
+                onClick={() => setDeleteAddressModal({ open: false, index: -1 })}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Close"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <p className="text-gray-600 font-light leading-relaxed">
+                Are you sure you want to delete this delivery address? This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex gap-3">
+              <button
+                onClick={() => setDeleteAddressModal({ open: false, index: -1 })}
+                className="flex-1 py-3 border border-gray-300 text-black font-light tracking-wide hover:bg-gray-50 transition-all duration-300 uppercase"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteAddress}
+                disabled={loading}
+                className="flex-1 py-3 bg-red-500 text-white font-light tracking-wide hover:bg-red-600 transition-all duration-300 uppercase disabled:opacity-50"
+              >
+                {loading ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error Modal */}
+      {errorModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-fadeIn">
+          <div className="bg-white rounded-sm shadow-2xl max-w-md w-full animate-slideUp">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <AlertCircle size={20} className="text-red-500" />
+                <h3 className="text-xl font-medium tracking-wide">Error</h3>
+              </div>
+              <button
+                onClick={() => setErrorModal({ open: false, message: "" })}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Close"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <p className="text-gray-600 font-light leading-relaxed">
+                {errorModal.message}
+              </p>
+            </div>
+
+            <div className="p-6 border-t border-gray-200">
+              <button
+                onClick={() => setErrorModal({ open: false, message: "" })}
+                className="w-full py-3 bg-black text-white font-light tracking-wide hover:bg-gray-800 transition-all duration-300 uppercase"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <section className="py-12 px-4 sm:px-8 md:px-10 lg:px-20">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
@@ -281,9 +403,7 @@ const MyProfile = () => {
               <div className="bg-white border border-gray-200 shadow-sm">
                 <button
                   className="w-full flex items-center justify-center gap-3 p-6 text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300 font-light tracking-wide"
-                  onClick={() => {
-                    if (window.confirm("Are you sure you want to log out?")) logout();
-                  }}
+                  onClick={() => setLogoutModal(true)}
                 >
                   <LogOut size={18} />
                   <span className="uppercase">Sign Out</span>
@@ -540,7 +660,7 @@ const MyProfile = () => {
                               <Edit2 size={14} />
                             </button>
                             <button
-                              onClick={() => deleteAddress(idx)}
+                              onClick={() => setDeleteAddressModal({ open: true, index: idx })}
                               className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                             >
                               <Trash2 size={14} />
@@ -586,6 +706,23 @@ const MyProfile = () => {
           </div>
         </div>
       )}
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.2s ease-out;
+        }
+        .animate-slideUp {
+          animation: slideUp 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 };

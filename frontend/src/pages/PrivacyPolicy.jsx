@@ -64,7 +64,7 @@ const PrivacyPolicy = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
                 <Database size={24} />
               </div>
               <h2 className="text-2xl font-light tracking-wider text-black">INFORMATION WE COLLECT</h2>
