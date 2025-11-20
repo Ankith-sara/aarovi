@@ -56,7 +56,6 @@ const About = () => {
       <section className="relative py-24 bg-gradient-to-br from-stone-50 via-white to-stone-50">
         <div className="px-4 sm:px-8 md:px-10 lg:px-20">
           <div className="max-w-7xl mx-auto">
-            {/* Section Header */}
             <div className="text-center mb-20">
               <div className="inline-block">
                 <h2 className="text-4xl md:text-5xl font-light mb-4 tracking-wide">
@@ -65,33 +64,26 @@ const About = () => {
               </div>
             </div>
 
-            {/* Mission Card */}
-            <div className="mb-32 group">
-              <div className="grid lg:grid-cols-2 gap-16 items-center">
-                {/* Mission Content */}
+            {/* Mission */}
+            <div className="mb-24 group">
+              <div className="grid lg:grid-cols-2 gap-12 items-center">
                 <div className="order-2 lg:order-1">
                   <div className="relative bg-white p-12 shadow-xl hover:shadow-2xl transition-all duration-500 border-l-4 border-black">
                     <div className="mb-6">
-                      <h3 className="text-3xl md:text-4xl font-light text-black leading-tight">
+                      <h3 className="text-3xl md:text-4xl font-medium text-black leading-tight">
                         Mission
                       </h3>
                     </div>
-
                     <div className="w-20 h-0.5 bg-gradient-to-r from-black to-transparent mb-6"></div>
-
                     <p className="text-gray-700 text-lg md:text-xl font-light leading-relaxed">
                       To preserve dying crafts, uplift artisan voices, and create fashion that feels timeless, ethical, and soulfully elegant.
                     </p>
-                    {/* Bottom decorative element */}
                     <div className="absolute -top-6 -left-6 w-16 h-16 border-2 border-black/10"></div>
                     <div className="absolute -bottom-6 -right-6 w-16 h-16 border-2 border-black/10"></div>
                   </div>
                 </div>
-
-                {/* Mission Image */}
                 <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
                   <div className="relative">
-                    {/* Main circular image */}
                     <div className="relative w-80 h-80 md:w-96 md:h-96">
                       <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gray-100 to-gray-50 animate-pulse"></div>
                       <div className="absolute inset-4 rounded-full overflow-hidden shadow-2xl border-8 border-white group-hover:scale-105 transition-transform duration-700">
@@ -108,13 +100,11 @@ const About = () => {
               </div>
             </div>
 
-            {/* Vision Card */}
+            {/* Vision */}
             <div className="group">
               <div className="grid lg:grid-cols-2 gap-16 items-center">
-                {/* Vision Image */}
                 <div className="flex justify-center lg:justify-start">
                   <div className="relative">
-                    {/* Main circular image */}
                     <div className="relative w-80 h-80 md:w-96 md:h-96">
                       <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gray-100 to-gray-50 animate-pulse"></div>
                       <div className="absolute inset-4 rounded-full overflow-hidden shadow-2xl border-8 border-white group-hover:scale-105 transition-transform duration-700">
@@ -128,26 +118,17 @@ const About = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Vision Content */}
                 <div>
                   <div className="relative bg-white p-12 shadow-xl hover:shadow-2xl transition-all duration-500 border-l-4 border-black">
                     <div className="mb-6">
-                      <span className="inline-block px-4 py-1 bg-black text-white text-xs font-light tracking-widest uppercase mb-4">
-                        Vision
-                      </span>
-                      <h3 className="text-3xl md:text-4xl font-light text-black leading-tight">
-                        Heritage Meets<br />
-                        <span className="font-medium">High Design</span>
+                      <h3 className="text-3xl md:text-4xl font-medium text-black leading-tight">
+                        Vision<br />
                       </h3>
                     </div>
-
                     <div className="w-20 h-0.5 bg-gradient-to-r from-black to-transparent mb-6"></div>
-
                     <p className="text-gray-700 text-lg md:text-xl font-light leading-relaxed">
                       To craft India's first luxury clothing brand where heritage meets high design, rooted deeply in culture, craft, and community.
                     </p>
-                    {/* Bottom decorative element */}
                     <div className="absolute -top-6 -left-6 w-16 h-16 border-2 border-black/10"></div>
                     <div className="absolute -bottom-6 -right-6 w-16 h-16 border-2 border-black/10"></div>
                   </div>
@@ -156,22 +137,6 @@ const About = () => {
             </div>
           </div>
         </div>
-
-        <style jsx>{`
-    @keyframes pulse {
-      0%, 100% {
-        opacity: 0.6;
-        transform: scale(1);
-      }
-      50% {
-        opacity: 0.3;
-        transform: scale(1.05);
-      }
-    }
-    .animate-pulse {
-      animation: pulse 4s ease-in-out infinite;
-    }
-  `}</style>
       </section>
 
       {/* What Drives Us */}
@@ -373,6 +338,23 @@ const About = () => {
       <section className="py-24 px-4 sm:px-8 md:px-16 bg-gradient-to-b from-white to-stone-50">
         <NewsletterBox />
       </section>
+
+      <style jsx>{`
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 0.6;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.3;
+            transform: scale(1.05);
+          }
+        }
+        .animate-pulse {
+          animation: pulse 4s ease-in-out infinite;
+        }
+      `}</style>
+
     </div>
   );
 };
