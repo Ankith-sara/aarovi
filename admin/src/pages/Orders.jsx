@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { backendUrl, currency } from '../App';
 import { toast } from 'react-toastify';
 import {
   ShoppingBag, User, MapPin, CreditCard, Package2, Filter, Search, CheckCircle, Clock, Truck, Package, PackageCheck, AlertCircle, Phone, IndianRupee, Grid, List as ListIcon, RefreshCw, TrendingUp, BarChart3
 } from 'lucide-react';
-import Title from '../components/Title';
+
+// Mock data for demonstration
+const backendUrl = 'http://localhost:4000';
+const currency = '₹';
 
 const StatusBadge = ({ status }) => {
   const statusConfig = {
@@ -50,8 +52,7 @@ const StatusBadge = ({ status }) => {
 
 const PaymentBadge = ({ payment, paymentMethod }) => (
   <div className="space-y-1">
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${payment ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
-      }`}>
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${payment ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
       {payment ? <CheckCircle size={12} /> : <AlertCircle size={12} />}
       {payment ? 'Paid' : 'Pending'}
     </span>
@@ -179,105 +180,6 @@ const OrderCard = ({ order, index, onStatusChange }) => (
   </div>
 );
 
-const OrderTable = ({ orders, onStatusChange }) => (
-  <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-    <div className="bg-black text-white p-6">
-      <div className="flex items-center gap-3">
-        <ListIcon size={24} className="text-gray-300" />
-        <h2 className="text-xl font-semibold">Orders Table View</h2>
-      </div>
-    </div>
-
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead className="bg-gray-50 border-b border-gray-200">
-          <tr>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Order Details</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Customer</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Items</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Amount</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Payment</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Update</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200">
-          {orders.map((order, index) => (
-            <tr key={index} className="hover:bg-gray-50 transition-colors">
-              <td className="px-6 py-4">
-                <div>
-                  <p className="font-bold text-gray-900">#{index + 1}</p>
-                  <p className="text-sm text-gray-600 font-medium">
-                    {new Date(order.date).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {new Date(order.date).toLocaleTimeString('en-US', {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </p>
-                </div>
-              </td>
-              <td className="px-6 py-4">
-                <div>
-                  <p className="font-semibold text-gray-900">{order.address.Name}</p>
-                  <div className="flex items-center gap-1 mt-1">
-                    <Phone size={12} className="text-gray-400" />
-                    <span className="text-sm text-gray-600">{order.address.phone}</span>
-                  </div>
-                </div>
-              </td>
-              <td className="px-6 py-4">
-                <div className="space-y-1">
-                  {order.items.slice(0, 2).map((item, idx) => (
-                    <p key={idx} className="text-sm font-medium text-gray-900">
-                      {item.name} × {item.quantity}
-                    </p>
-                  ))}
-                  {order.items.length > 2 && (
-                    <p className="text-sm text-blue-600 font-medium">
-                      +{order.items.length - 2} more items
-                    </p>
-                  )}
-                </div>
-              </td>
-              <td className="px-6 py-4">
-                <div className="flex items-center gap-1 font-bold text-green-600">
-                  <IndianRupee size={16} />
-                  {order.amount}
-                </div>
-              </td>
-              <td className="px-6 py-4">
-                <PaymentBadge payment={order.payment} paymentMethod={order.paymentMethod} />
-              </td>
-              <td className="px-6 py-4">
-                <StatusBadge status={order.status} />
-              </td>
-              <td className="px-6 py-4">
-                <select
-                  onChange={(event) => onStatusChange(event, order._id)}
-                  value={order.status}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors text-sm"
-                >
-                  <option value="Order Placed">Order Placed</option>
-                  <option value="Processing">Processing</option>
-                  <option value="Shipping">Shipping</option>
-                  <option value="Out of delivery">Out of delivery</option>
-                  <option value="Delivered">Delivered</option>
-                </select>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </div>
-);
-
 const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -285,34 +187,67 @@ const Orders = ({ token }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('');
-  const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
+  const [viewMode, setViewMode] = useState('cards');
+  const [authError, setAuthError] = useState(false);
 
-  // Fetch Orders
+  // Fetch Orders with improved error handling
   const fetchAllOrders = async () => {
-    if (!token) return;
+    if (!token) {
+      toast.error('Authentication token is missing. Please log in again.');
+      setAuthError(true);
+      return;
+    }
+
     setLoading(true);
+    setAuthError(false);
+
     try {
-      const response = await axios.post(
+      const response = await axios.get(
         `${backendUrl}/api/order/list`,
-        {},
-        { headers: { 'Authorization': `Bearer ${token}` } }
+        { 
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          } 
+        }
       );
+
+      console.log('Response:', response.data);
 
       if (response.data.success) {
         const ordersData = response.data.orders.reverse();
         setOrders(ordersData);
         setFilteredOrders(ordersData);
       } else {
-        toast.error(response.data.message);
+        toast.error(response.data.message || 'Failed to fetch orders');
       }
     } catch (error) {
       console.error('Error fetching orders:', error);
+      
       if (error.response) {
-        toast.error(`Server Error: ${error.response.data?.message || 'Unable to fetch orders.'}`);
+        // Server responded with error
+        const status = error.response.status;
+        const message = error.response.data?.message;
+
+        if (status === 401) {
+          setAuthError(true);
+          toast.error('Authentication failed. Please log in again.');
+          console.error('Auth error details:', {
+            status,
+            message,
+            token: token ? 'Present (length: ' + token.length + ')' : 'Missing'
+          });
+        } else if (status === 403) {
+          toast.error('Access denied. You do not have permission to view orders.');
+        } else if (status === 404) {
+          toast.error('Orders endpoint not found. Please check the API configuration.');
+        } else {
+          toast.error(`Server Error: ${message || 'Unable to fetch orders'}`);
+        }
       } else if (error.request) {
-        toast.error('Network Error: Could not connect to the server. Please check your internet connection.');
+        toast.error('Network Error: Could not connect to the server');
       } else {
-        toast.error(`Unexpected Error: ${error.message}`);
+        toast.error(`Error: ${error.message}`);
       }
     } finally {
       setLoading(false);
@@ -320,31 +255,40 @@ const Orders = ({ token }) => {
   };
 
   const statusHandler = async (event, orderId) => {
+    if (!token) {
+      toast.error('Authentication required');
+      return;
+    }
+
     try {
       const response = await axios.post(
-        backendUrl + '/api/order/status',
+        `${backendUrl}/api/order/status`,
         { orderId, status: event.target.value },
-        { headers: { 'Authorization': `Bearer ${token}` } }
+        { 
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          } 
+        }
       );
+
       if (response.data.success) {
         toast.success('Order status updated successfully');
         await fetchAllOrders();
       } else {
-        toast.error(response.data.message);
+        toast.error(response.data.message || 'Failed to update status');
       }
     } catch (error) {
       console.error('Error updating status:', error);
-      if (error.response) {
-        toast.error(`Server Error: ${error.response.data?.message || 'Unable to update status.'}`);
-      } else if (error.request) {
-        toast.error('Network Error: Could not connect to the server. Please check your internet connection.');
+      if (error.response?.status === 401) {
+        toast.error('Authentication failed. Please log in again.');
       } else {
-        toast.error(`Unexpected Error: ${error.message}`);
+        toast.error('Failed to update order status');
       }
     }
   };
 
-  // Filter orders based on search and filters
+  // Filter orders
   useEffect(() => {
     let filtered = orders;
 
@@ -387,11 +331,35 @@ const Orders = ({ token }) => {
     revenue: orders.reduce((sum, order) => sum + parseFloat(order.amount || 0), 0)
   };
 
+  // Show authentication error message
+  if (authError) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
+          <AlertCircle className="mx-auto text-red-500 mb-4" size={64} />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Authentication Required</h2>
+          <p className="text-gray-600 mb-6">
+            Your session has expired or you don't have permission to view orders. Please log in again.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 px-4 sm:px-6 md:px-10 lg:px-20 py-10">
       <div className="max-w-7xl mx-auto">
+        {/* Header */}
         <div className="text-center mb-8">
-          <Title text1="ORDER" text2="MANAGEMENT" />
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            ORDER <span className="text-gray-600">MANAGEMENT</span>
+          </h1>
           <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
             Track, manage, and update all customer orders from one dashboard
           </p>
@@ -462,22 +430,19 @@ const Orders = ({ token }) => {
                 <Search size={24} className="text-gray-300" />
                 <h2 className="text-xl font-semibold">Search & Filter Orders</h2>
               </div>
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={fetchAllOrders}
-                  disabled={loading}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors disabled:opacity-50"
-                >
-                  <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-                  Refresh
-                </button>
-              </div>
+              <button
+                onClick={fetchAllOrders}
+                disabled={loading}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors disabled:opacity-50"
+              >
+                <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+                Refresh
+              </button>
             </div>
           </div>
 
           <div className="p-6">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              {/* Search */}
               <div className="lg:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Search Orders</label>
                 <div className="relative">
@@ -492,66 +457,50 @@ const Orders = ({ token }) => {
                 </div>
               </div>
 
-              {/* Status Filter */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Status</label>
-                <div className="relative">
-                  <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors appearance-none"
-                  >
-                    <option value="">All Status</option>
-                    <option value="Order Placed">Order Placed</option>
-                    <option value="Processing">Processing</option>
-                    <option value="Shipping">Shipping</option>
-                    <option value="Out of delivery">Out of delivery</option>
-                    <option value="Delivered">Delivered</option>
-                  </select>
-                </div>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
+                >
+                  <option value="">All Status</option>
+                  <option value="Order Placed">Order Placed</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Shipping">Shipping</option>
+                  <option value="Out of delivery">Out of delivery</option>
+                  <option value="Delivered">Delivered</option>
+                </select>
               </div>
 
-              {/* Payment Filter */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Payment Status</label>
-                <div className="relative">
-                  <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                  <select
-                    value={paymentFilter}
-                    onChange={(e) => setPaymentFilter(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors appearance-none"
-                  >
-                    <option value="">All Payments</option>
-                    <option value="paid">Paid</option>
-                    <option value="pending">Pending</option>
-                  </select>
-                </div>
+                <select
+                  value={paymentFilter}
+                  onChange={(e) => setPaymentFilter(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
+                >
+                  <option value="">All Payments</option>
+                  <option value="paid">Paid</option>
+                  <option value="pending">Pending</option>
+                </select>
               </div>
             </div>
 
-            {/* View Mode Toggle & Results Info */}
             <div className="flex justify-between items-center mt-6 pt-6 border-t border-gray-200">
               <div className="text-sm text-gray-600">
                 Showing {filteredOrders.length} of {orders.length} orders
-                {searchTerm && ` matching "${searchTerm}"`}
-                {statusFilter && ` with status "${statusFilter}"`}
-                {paymentFilter && ` with ${paymentFilter} payment`}
               </div>
               <div className="flex bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('cards')}
-                  className={`p-2 rounded-lg transition-colors ${viewMode === 'cards' ? 'bg-black text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'
-                    }`}
-                  title="Cards View"
+                  className={`p-2 rounded-lg transition-colors ${viewMode === 'cards' ? 'bg-black text-white' : 'text-gray-600 hover:bg-gray-200'}`}
                 >
                   <Grid size={18} />
                 </button>
                 <button
-                  onClick={() => setViewMode('table')}
-                  className={`p-2 rounded-lg transition-colors ${viewMode === 'table' ? 'bg-black text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'
-                    }`}
-                  title="Table View"
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-black text-white' : 'text-gray-600 hover:bg-gray-200'}`}
                 >
                   <ListIcon size={18} />
                 </button>
@@ -580,48 +529,24 @@ const Orders = ({ token }) => {
             ) : filteredOrders.length === 0 ? (
               <div className="text-center py-20">
                 <ShoppingBag className="mx-auto text-gray-300 mb-4" size={64} />
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {orders.length === 0 ? "No orders found" : "No matching orders"}
-                </h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">No orders found</h3>
                 <p className="text-gray-600 max-w-md mx-auto">
                   {orders.length === 0
-                    ? "Your store hasn't received any orders yet. Orders will appear here once customers start placing them."
-                    : "Try adjusting your search terms or filters to find the orders you're looking for"
-                  }
+                    ? "Your store hasn't received any orders yet"
+                    : "Try adjusting your filters"}
                 </p>
-                {(searchTerm || statusFilter || paymentFilter) && (
-                  <button
-                    onClick={() => {
-                      setSearchTerm('');
-                      setStatusFilter('');
-                      setPaymentFilter('');
-                    }}
-                    className="mt-4 px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
-                  >
-                    Clear All Filters
-                  </button>
-                )}
               </div>
             ) : (
-              <>
-                {viewMode === 'cards' ? (
-                  <div className="space-y-6">
-                    {filteredOrders.map((order, index) => (
-                      <OrderCard
-                        key={order._id || index}
-                        order={order}
-                        index={index}
-                        onStatusChange={statusHandler}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <OrderTable
-                    orders={filteredOrders}
+              <div className="space-y-6">
+                {filteredOrders.map((order, index) => (
+                  <OrderCard
+                    key={order._id || index}
+                    order={order}
+                    index={index}
                     onStatusChange={statusHandler}
                   />
-                )}
-              </>
+                ))}
+              </div>
             )}
           </div>
         </div>

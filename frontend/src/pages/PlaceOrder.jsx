@@ -383,9 +383,9 @@ const PlaceOrder = () => {
                       <div className="flex-1">
                         <label htmlFor="agree-terms" className="block text-sm text-gray-700 cursor-pointer leading-relaxed font-light">
                           I agree to the{' '}
-                          <a href="/termsconditions" target="_blank" className="text-black font-medium underline hover:text-gray-700 transition-colors"> Terms & Conditions </a> ,{' '}
-                          <a href="/privacypolicy" target="_blank" className="text-black font-medium underline hover:text-gray-700 transition-colors"> Privacy Policy </a> , and{' '}
-                          <a href="/shippingpolicy" target="_blank" className="text-black font-medium underline hover:text-gray-700 transition-colors"> Shipping Policy </a>
+                          <a href="/termsconditions" target="_blank" className="text-black font-medium underline hover:text-gray-700 transition-colors"> Terms & Conditions</a>,{' '}
+                          <a href="/privacypolicy" target="_blank" className="text-black font-medium underline hover:text-gray-700 transition-colors"> Privacy Policy</a>, and{' '}
+                          <a href="/shippingpolicy" target="_blank" className="text-black font-medium underline hover:text-gray-700 transition-colors"> Shipping Policy</a>
                           . I understand that orders are processed within 0-7 days and Aharya is not liable for courier delays. *
                         </label>
 

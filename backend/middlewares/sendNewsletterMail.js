@@ -25,132 +25,216 @@ const sendNewsletterMail = async (email) => {
   const mailOptions = {
     from: `"Aharyas" <${process.env.EMAIL_USER}>`,
     to: email,
-    subject: '✨ Welcome to the Aharyas Community!',
+    subject: 'Welcome to the Aharyas Community',
     html: `
       <!DOCTYPE html>
-      <html>
+      <html lang="en">
       <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Welcome to Aharyas</title>
+          <title>Welcome to Aharyas Newsletter</title>
+          <style>
+              @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+          </style>
       </head>
-      <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa;">
-          <div style="max-width: 650px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-              
-              <!-- Header -->
-              <div style="background: linear-gradient(135deg, #8B4513 0%, #D2B48C 100%); padding: 40px 20px; text-align: center;">
-                  <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 300; letter-spacing: 3px;">AHARYAS</h1>
-                  <p style="color: rgba(255,255,255,0.95); margin: 12px 0 0 0; font-size: 15px; letter-spacing: 1px;">HANDCRAFTED WITH HERITAGE</p>
-              </div>
+      <body style="margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: linear-gradient(to bottom, #fafaf9 0%, #ffffff 100%); color: #1a1a1a;">
+          <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(to bottom, #fafaf9 0%, #ffffff 100%); min-height: 100vh;">
+              <tr>
+                  <td align="center" style="padding: 60px 20px;">
+                      <table cellpadding="0" cellspacing="0" border="0" width="680" style="max-width: 680px; background-color: #ffffff; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);">
+                          
+                          <!-- Decorative Top Border -->
+                          <tr>
+                              <td style="height: 6px; background: linear-gradient(90deg, #1a1a1a 0%, #4a4a4a 50%, #1a1a1a 100%);"></td>
+                          </tr>
 
-              <!-- Main Content -->
-              <div style="padding: 40px 30px; text-align: center;">
-                  <div style="font-size: 48px; margin-bottom: 20px;">🎉</div>
-                  
-                  <h2 style="color: #333; margin: 0 0 15px 0; font-size: 26px; font-weight: 400;">Welcome to Our Community!</h2>
-                  
-                  <p style="color: #666; margin: 0 0 25px 0; font-size: 16px; line-height: 1.6;">
-                      Thank you for joining the Aharyas family! We're thrilled to have you as part of our community 
-                      that celebrates heritage, sustainability, and conscious fashion.
-                  </p>
+                          <!-- Header -->
+                          <tr>
+                              <td style="padding: 50px 60px 40px; text-align: center; background: linear-gradient(135deg, #fafaf9 0%, #f5f5f4 100%); border-bottom: 1px solid #e7e7e7;">
+                                  <h1 style="margin: 0 0 8px 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 48px; font-weight: 300; letter-spacing: 8px; color: #1a1a1a; text-transform: uppercase;">AHARYAS</h1>
+                                  <div style="width: 40px; height: 1px; background: #1a1a1a; margin: 0 auto 12px;"></div>
+                                  <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 11px; letter-spacing: 3px; color: #6b6b6b; text-transform: uppercase; font-weight: 400;">Conscious Luxury · Indian Heritage</p>
+                              </td>
+                          </tr>
 
-                  <!-- WhatsApp CTA -->
-                  <div style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); border-radius: 12px; padding: 35px 25px; margin: 30px 0; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);">
-                      <div style="font-size: 42px; margin-bottom: 15px;">💬</div>
-                      <h3 style="color: white; margin: 0 0 12px 0; font-size: 22px;">Join Our WhatsApp Community</h3>
-                      <p style="color: rgba(255,255,255,0.95); margin: 0 0 25px 0; font-size: 15px; line-height: 1.5;">
-                          Get exclusive updates, early access to collections, and connect with fellow fashion enthusiasts!
-                      </p>
-                      <a href="${whatsappLink}" 
-                         style="display: inline-block; background: white; color: #128C7E; padding: 15px 40px; 
-                                text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; 
-                                box-shadow: 0 4px 8px rgba(0,0,0,0.15);">
-                          Join WhatsApp Group →
-                      </a>
-                  </div>
+                          <!-- Welcome Hero -->
+                          <tr>
+                              <td style="padding: 60px 60px 50px; text-align: center; background: #ffffff;">
+                                  <h2 style="margin: 0 0 16px 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 36px; font-weight: 400; letter-spacing: 2px; color: #1a1a1a; line-height: 1.3;">Welcome to Our Community</h2>
+                                  <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 16px; color: #525252; font-weight: 300; line-height: 1.8; max-width: 500px; margin: 0 auto;">
+                                      Thank you for joining the Aharyas family. We're honored to have you as part of our community that celebrates heritage, sustainability, and conscious fashion.
+                                  </p>
+                              </td>
+                          </tr>
 
-                  <!-- Benefits Grid -->
-                  <div style="margin: 35px 0;">
-                      <h3 style="color: #333; margin: 0 0 25px 0; font-size: 20px; font-weight: 400;">What You'll Receive:</h3>
-                      
-                      <div style="text-align: left; margin-bottom: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #8B4513;">
-                          <div style="font-size: 24px; margin-bottom: 8px;">✨</div>
-                          <h4 style="margin: 0 0 8px 0; color: #333; font-size: 16px; font-weight: 600;">Exclusive Drops</h4>
-                          <p style="margin: 0; color: #666; font-size: 14px; line-height: 1.5;">
-                              Be the first to know about new collections and limited-edition pieces
-                          </p>
-                      </div>
+                          <!-- WhatsApp CTA -->
+                          <tr>
+                              <td style="padding: 0 60px 50px;">
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); border-radius: 4px; overflow: hidden;">
+                                      <tr>
+                                          <td style="padding: 40px 36px; text-align: center;">
+                                              <h3 style="margin: 0 0 12px 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 26px; font-weight: 400; letter-spacing: 1px; color: #ffffff;">Join Our WhatsApp Community</h3>
+                                              <p style="margin: 0 0 28px 0; font-family: 'Inter', sans-serif; font-size: 15px; color: rgba(255,255,255,0.85); font-weight: 300; line-height: 1.7; max-width: 440px; margin-left: auto; margin-right: auto;">
+                                                  Get exclusive updates, early access to collections, behind-the-scenes artisan stories, and special offers.
+                                              </p>
+                                              <a href="${whatsappLink}" 
+                                                 style="display: inline-block; background: #25D366; color: #ffffff; padding: 16px 48px; 
+                                                        font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; 
+                                                        text-transform: uppercase; text-decoration: none; border-radius: 2px; 
+                                                        box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);">
+                                                  Join WhatsApp Group
+                                              </a>
+                                          </td>
+                                      </tr>
+                                  </table>
+                              </td>
+                          </tr>
 
-                      <div style="text-align: left; margin-bottom: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #D2B48C;">
-                          <div style="font-size: 24px; margin-bottom: 8px;">🎨</div>
-                          <h4 style="margin: 0 0 8px 0; color: #333; font-size: 16px; font-weight: 600;">Artisan Stories</h4>
-                          <p style="margin: 0; color: #666; font-size: 14px; line-height: 1.5;">
-                              Behind-the-scenes glimpses into our makers' craftsmanship and heritage
-                          </p>
-                      </div>
+                          <!-- What You'll Receive -->
+                          <tr>
+                              <td style="padding: 0 60px 40px;">
+                                  <h3 style="margin: 0 0 28px 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 26px; font-weight: 400; letter-spacing: 1px; color: #1a1a1a; text-align: center;">What You'll Receive</h3>
+                                  
+                                  <!-- Benefit 1 -->
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom: 16px; background: #fafaf9; border: 1px solid #e7e7e7; border-left: 4px solid #1a1a1a;">
+                                      <tr>
+                                          <td style="padding: 24px 28px;">
+                                              <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                                  <tr>
+                                                      <td style="padding-left: 16px;">
+                                                          <h4 style="margin: 0 0 6px 0; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; color: #1a1a1a;">Exclusive Collection Drops</h4>
+                                                          <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #525252; font-weight: 300; line-height: 1.7;">Be the first to know about new collections and limited-edition handcrafted pieces</p>
+                                                      </td>
+                                                  </tr>
+                                              </table>
+                                          </td>
+                                      </tr>
+                                  </table>
 
-                      <div style="text-align: left; margin-bottom: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #8B4513;">
-                          <div style="font-size: 24px; margin-bottom: 8px;">🌿</div>
-                          <h4 style="margin: 0 0 8px 0; color: #333; font-size: 16px; font-weight: 600;">Sustainability Updates</h4>
-                          <p style="margin: 0; color: #666; font-size: 14px; line-height: 1.5;">
-                              Learn about our eco-friendly practices and community impact initiatives
-                          </p>
-                      </div>
+                                  <!-- Benefit 2 -->
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom: 16px; background: #fafaf9; border: 1px solid #e7e7e7; border-left: 4px solid #1a1a1a;">
+                                      <tr>
+                                          <td style="padding: 24px 28px;">
+                                              <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                                  <tr>
+                                                      <td style="padding-left: 16px;">
+                                                          <h4 style="margin: 0 0 6px 0; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; color: #1a1a1a;">Artisan Stories & Heritage</h4>
+                                                          <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #525252; font-weight: 300; line-height: 1.7;">Behind-the-scenes glimpses into our makers' craftsmanship and cultural traditions</p>
+                                                      </td>
+                                                  </tr>
+                                              </table>
+                                          </td>
+                                      </tr>
+                                  </table>
 
-                      <div style="text-align: left; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #D2B48C;">
-                          <div style="font-size: 24px; margin-bottom: 8px;">🎁</div>
-                          <h4 style="margin: 0 0 8px 0; color: #333; font-size: 16px; font-weight: 600;">Special Offers</h4>
-                          <p style="margin: 0; color: #666; font-size: 14px; line-height: 1.5;">
-                              Subscriber-only discounts and early-bird pricing on new launches
-                          </p>
-                      </div>
-                  </div>
+                                  <!-- Benefit 3 -->
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom: 16px; background: #fafaf9; border: 1px solid #e7e7e7; border-left: 4px solid #1a1a1a;">
+                                      <tr>
+                                          <td style="padding: 24px 28px;">
+                                              <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                                  <tr>
+                                                      <td style="padding-left: 16px;">
+                                                          <h4 style="margin: 0 0 6px 0; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; color: #1a1a1a;">Sustainability Updates</h4>
+                                                          <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #525252; font-weight: 300; line-height: 1.7;">Learn about our eco-friendly practices and community impact initiatives</p>
+                                                      </td>
+                                                  </tr>
+                                              </table>
+                                          </td>
+                                      </tr>
+                                  </table>
 
-                  <!-- Divider -->
-                  <div style="height: 1px; background: #e0e0e0; margin: 35px 0;"></div>
+                                  <!-- Benefit 4 -->
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #fafaf9; border: 1px solid #e7e7e7; border-left: 4px solid #1a1a1a;">
+                                      <tr>
+                                          <td style="padding: 24px 28px;">
+                                              <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                                  <tr>
+                                                      <td style="padding-left: 16px;">
+                                                          <h4 style="margin: 0 0 6px 0; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; color: #1a1a1a;">Exclusive Offers</h4>
+                                                          <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #525252; font-weight: 300; line-height: 1.7;">Subscriber-only discounts and early-bird pricing on new launches</p>
+                                                      </td>
+                                                  </tr>
+                                              </table>
+                                          </td>
+                                      </tr>
+                                  </table>
+                              </td>
+                          </tr>
 
-                  <!-- Social Media -->
-                  <div style="margin: 30px 0;">
-                      <p style="color: #666; margin: 0 0 15px 0; font-size: 15px;">Follow us on social media:</p>
-                      <div>
-                          <a href="https://instagram.com/aharyas" style="display: inline-block; margin: 0 10px; text-decoration: none; color: #E4405F; font-size: 14px;">
-                              📷 Instagram
-                          </a>
-                          <a href="https://facebook.com/aharyas" style="display: inline-block; margin: 0 10px; text-decoration: none; color: #1877F2; font-size: 14px;">
-                              📘 Facebook
-                          </a>
-                          <a href="https://twitter.com/aharyas" style="display: inline-block; margin: 0 10px; text-decoration: none; color: #1DA1F2; font-size: 14px;">
-                              🐦 Twitter
-                          </a>
-                      </div>
-                  </div>
+                          <!-- Follow Us Section -->
+                          <tr>
+                              <td style="padding: 0 60px 50px;">
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(135deg, #fafaf9 0%, #f5f5f4 100%); border: 1px solid #e7e7e7;">
+                                      <tr>
+                                          <td style="padding: 32px 36px; text-align: center;">
+                                              <h4 style="margin: 0 0 16px 0; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 1px; color: #1a1a1a; text-transform: uppercase;">Follow Us</h4>
+                                              <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                                  <tr>
+                                                      <td align="center">
+                                                          <a href="https://www.instagram.com/aharyass/" style="display: inline-block; margin: 0 12px; font-family: 'Inter', sans-serif; font-size: 13px; color: #525252; text-decoration: none; font-weight: 500;">
+                                                              Instagram
+                                                          </a>
+                                                          <a href="https://in.linkedin.com/in/aharya-in-3a265633a" style="display: inline-block; margin: 0 12px; font-family: 'Inter', sans-serif; font-size: 13px; color: #525252; text-decoration: none; font-weight: 500;">
+                                                              LinkedIn
+                                                          </a>
+                                                      </td>
+                                                  </tr>
+                                              </table>
+                                          </td>
+                                      </tr>
+                                  </table>
+                              </td>
+                          </tr>
 
-                  <!-- Thank You Message -->
-                  <div style="background: #fff8e1; border-radius: 8px; padding: 25px; margin: 30px 0; border-left: 4px solid #ffb74d;">
-                      <p style="color: #666; margin: 0; font-size: 15px; line-height: 1.6; font-style: italic;">
-                          "Every piece tells a story, every thread connects us to our heritage. 
-                          Thank you for being part of our journey towards sustainable and meaningful fashion."
-                      </p>
-                      <p style="color: #999; margin: 10px 0 0 0; font-size: 13px;">
-                          — The Aharyas Team
-                      </p>
-                  </div>
-              </div>
+                          <!-- Closing Quote -->
+                          <tr>
+                              <td style="padding: 0 60px 50px;">
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #fffbf5; border: 1px solid #fde68a; border-left: 4px solid #d97706;">
+                                      <tr>
+                                          <td style="padding: 32px 36px; text-align: center;">
+                                              <p style="margin: 0 0 12px 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 17px; color: #78350f; font-weight: 300; font-style: italic; line-height: 1.7;">
+                                                  "Every piece tells a story, every thread connects us to our heritage. Thank you for being part of our journey towards sustainable and meaningful fashion."
+                                              </p>
+                                              <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 13px; color: #92400e; font-weight: 500;">
+                                                  — The Aharyas Team
+                                              </p>
+                                          </td>
+                                      </tr>
+                                  </table>
+                              </td>
+                          </tr>
 
-              <!-- Footer -->
-              <div style="background: #f8f9fa; padding: 25px 20px; text-align: center; border-top: 1px solid #eee;">
-                  <p style="margin: 0 0 10px 0; color: #666; font-size: 14px;">
-                      You're receiving this because you subscribed to Aharyas newsletter
-                  </p>
-                  <p style="margin: 0 0 15px 0; color: #999; font-size: 12px;">
-                      Questions? Contact us at <a href="mailto:support@aharyas.com" style="color: #8B4513; text-decoration: none;">support@aharyas.com</a>
-                  </p>
-                  <p style="margin: 0; color: #999; font-size: 11px;">
-                      <a href="#" style="color: #999; text-decoration: none;">Unsubscribe</a> | 
-                      <a href="#" style="color: #999; text-decoration: none;">Privacy Policy</a>
-                  </p>
-              </div>
-          </div>
+                          <!-- Footer -->
+                          <tr>
+                              <td style="padding: 40px 60px; text-align: center; background: #fafaf9; border-top: 1px solid #e7e7e7;">
+                                  <p style="margin: 0 0 8px 0; font-family: 'Inter', sans-serif; font-size: 13px; color: #737373; font-weight: 300;">
+                                      You're receiving this because you subscribed to the Aharyas newsletter
+                                  </p>
+                                  <p style="margin: 0 0 16px 0; font-family: 'Inter', sans-serif; font-size: 12px; color: #737373; font-weight: 300;">
+                                      Questions? Contact us at <a href="mailto:support@aharyas.com" style="color: #1a1a1a; text-decoration: none; font-weight: 500; border-bottom: 1px solid #d4d4d4;">support@aharyas.com</a>
+                                  </p>
+                                  <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 11px; color: #a3a3a3;">
+                                      <a href="#" style="color: #a3a3a3; text-decoration: none;">Unsubscribe</a> • 
+                                      <a href="#" style="color: #a3a3a3; text-decoration: none;">Privacy Policy</a>
+                                  </p>
+                                  <div style="margin: 20px 0 0 0; padding-top: 20px; border-top: 1px solid #e7e7e7;">
+                                      <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 11px; color: #a3a3a3; font-weight: 300; line-height: 1.6;">
+                                          © ${new Date().getFullYear()} Aharyas. All rights reserved.<br>
+                                          Preserving heritage, one thread at a time.
+                                      </p>
+                                  </div>
+                              </td>
+                          </tr>
+
+                          <!-- Decorative Bottom Border -->
+                          <tr>
+                              <td style="height: 6px; background: linear-gradient(90deg, #1a1a1a 0%, #4a4a4a 50%, #1a1a1a 100%);"></td>
+                          </tr>
+
+                      </table>
+                  </td>
+              </tr>
+          </table>
       </body>
       </html>
     `,

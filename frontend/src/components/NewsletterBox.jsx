@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Mail } from "lucide-react";
+import axios from "axios";
+import { ShopContext } from "../context/ShopContext";
 
 const NewsletterBox = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
+  const { backendUrl } = useContext(ShopContext);
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -12,19 +15,33 @@ const NewsletterBox = () => {
     setMessage({ type: "", text: "" });
 
     try {
-      // Simulating API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Simulate success
-      setMessage({
-        type: "success",
-        text: "Check your inbox for the WhatsApp join link!",
-      });
-      setEmail("");
+      const response = await axios.post(
+        `${backendUrl}/api/user/newsletter/subscribe`,
+        { email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setMessage({
+          type: "success",
+          text: response.data.message || "Check your inbox for the WhatsApp join link!",
+        });
+        setEmail("");
+      } else {
+        setMessage({
+          type: "error",
+          text: response.data.message || "Something went wrong. Please try again.",
+        });
+      }
     } catch (err) {
+      console.error("Newsletter subscription error:", err);
       setMessage({
         type: "error",
-        text: "Failed! Please try again later.",
+        text: err.response?.data?.message || "Failed to subscribe. Please try again later.",
       });
     } finally {
       setIsSubmitting(false);
@@ -32,22 +49,26 @@ const NewsletterBox = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+    <div className="bg-gradient-to-br from-stone-50 via-white to-stone-50 py-16 px-4">
       <div className="max-w-7xl w-full mx-auto">
-        <div className="bg-white p-8 md:p-16">
-          
+        <div className="bg-white p-8 md:p-16 shadow-lg border border-stone-100">
+
+          {/* Icon */}
           <div className="flex justify-center mb-8">
-            <div className="w-20 h-20 bg-black flex items-center justify-center shadow-lg">
+            <div className="w-20 h-20 bg-black flex items-center justify-center">
               <Mail size={32} className="text-white" />
             </div>
           </div>
 
-          <h1 className="text-3xl md:text-5xl font-light tracking-wider text-black mb-4 text-center">
+          {/* Title */}
+          <h1 className="text-3xl md:text-5xl font-light tracking-[0.2em] text-black mb-4 text-center">
             JOIN THE <span className="font-medium">AHARYAS</span> COMMUNITY
           </h1>
 
+          {/* Divider */}
           <div className="w-24 h-0.5 bg-black mx-auto mb-8"></div>
 
+          {/* Description */}
           <p className="text-gray-700 text-base md:text-lg font-light leading-relaxed mb-12 max-w-3xl mx-auto text-center">
             Be the first to explore handcrafted collections, exclusive artisan
             stories, and meaningful initiatives. Join a community that celebrates
@@ -57,7 +78,7 @@ const NewsletterBox = () => {
           {/* Newsletter Form */}
           <form onSubmit={onSubmitHandler} className="max-w-2xl mx-auto mb-8">
             <div className="flex flex-col md:flex-row gap-3 items-stretch">
-              
+
               {/* Email Input */}
               <div className="flex-1 relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -90,13 +111,12 @@ const NewsletterBox = () => {
             {/* Success/Error Message */}
             {message.text && (
               <div
-                className={`mt-4 p-4 rounded text-center ${
-                  message.type === "success"
-                    ? "bg-green-50 text-green-800 border border-green-200"
-                    : "bg-red-50 text-red-800 border border-red-200"
-                }`}
+                className={`mt-6 p-5 text-center border-l-4 ${message.type === "success"
+                    ? "bg-green-50 text-green-900 border-green-600"
+                    : "bg-red-50 text-red-900 border-red-600"
+                  }`}
               >
-                {message.text}
+                <p className="font-medium text-sm md:text-base">{message.text}</p>
               </div>
             )}
           </form>

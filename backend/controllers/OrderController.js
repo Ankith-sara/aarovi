@@ -4,7 +4,7 @@ import productModel from "../models/ProductModal.js"
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
-import sendOrderEmails from "../middlewares/sendOrderMail.js";
+import sendOrderEmails, { sendShippingEmail, sendDeliveredEmail } from "../middlewares/sendOrderMail.js";
 dotenv.config();
 
 const currency = 'inr'
@@ -123,7 +123,6 @@ const placeOrderRazorpay = async (req, res) => {
       });
     }
 
-    // Create order data first
     const orderData = {
       userId,
       items,
@@ -137,7 +136,6 @@ const placeOrderRazorpay = async (req, res) => {
     const newOrder = new orderModel(orderData);
     await newOrder.save();
 
-    // Create Razorpay order
     const options = {
       amount: amount * 100,
       currency: "INR",
@@ -171,7 +169,6 @@ const verifyRazorpay = async (req, res) => {
       razorpay_signature
     } = req.body;
 
-    // If only orderId is provided
     if (orderId && !razorpay_payment_id) {
       const order = await orderModel.findById(orderId);
       
@@ -182,7 +179,6 @@ const verifyRazorpay = async (req, res) => {
         });
       }
 
-      // Check if already verified
       if (order.payment) {
         return res.json({
           success: true,
@@ -191,14 +187,12 @@ const verifyRazorpay = async (req, res) => {
         });
       }
 
-      // If payment not verified yet, return pending status
       return res.json({
         success: false,
         message: "Payment verification pending"
       });
     }
 
-    // Full verification with payment details
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return res.status(400).json({
         success: false,
@@ -228,7 +222,6 @@ const verifyRazorpay = async (req, res) => {
       });
     }
 
-    // Update order payment status
     await orderModel.findByIdAndUpdate(orderId, { payment: true });
     await userModel.findByIdAndUpdate(order.userId, { cartData: {} });
 
@@ -272,15 +265,56 @@ const userOrders = async (req, res) => {
   }
 }
 
-// Update orders status
+// Update orders status - NOW WITH EMAIL NOTIFICATIONS
 const updateStatus = async (req, res) => {
   try {
-    const { orderId, status } = req.body
-    await orderModel.findByIdAndUpdate(orderId, { status })
-    res.json({ success: true, message: "Order status updated" })
+    const { orderId, status } = req.body;
+
+    // Get current order to check previous status
+    const order = await orderModel.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    const previousStatus = order.status;
+
+    // Update the status
+    await orderModel.findByIdAndUpdate(orderId, { status });
+
+    // Get user for email notifications
+    const user = await userModel.findById(order.userId);
+
+    // Send email notifications based on status change
+    if (user && user.email) {
+      // Refresh order data with updated status
+      const updatedOrder = await orderModel.findById(orderId);
+
+      if (status === "Shipping" && previousStatus !== "Shipping") {
+        // Send shipping notification
+        try {
+          await sendShippingEmail(updatedOrder, user);
+          console.log(`Shipping email sent for order ${orderId}`);
+        } catch (emailError) {
+          console.error('Shipping email failed:', emailError);
+        }
+      }
+
+      if (status === "Delivered" && previousStatus !== "Delivered") {
+        // Send delivered notification
+        try {
+          await sendDeliveredEmail(updatedOrder, user);
+          console.log(`Delivered email sent for order ${orderId}`);
+        } catch (emailError) {
+          console.error('Delivered email failed:', emailError);
+        }
+      }
+    }
+
+    res.json({ success: true, message: "Order status updated" });
+
   } catch (error) {
-    console.log(error)
-    res.json({ success: false, message: error.message })
+    console.log(error);
+    res.json({ success: false, message: error.message });
   }
 }
 
@@ -299,4 +333,4 @@ const orderStatus = async (req, res) => {
   }
 };
 
-export { verifyRazorpay, verifyCOD,placeOrder, placeOrderRazorpay, allOrders, userOrders, updateStatus, orderStatus };
+export { verifyRazorpay, verifyCOD, placeOrder, placeOrderRazorpay, allOrders, userOrders, updateStatus, orderStatus };

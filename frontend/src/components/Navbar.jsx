@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import { assets } from '../assets/frontend_assets/assets';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
-import { ChevronDown, ChevronRight, X, Search, User, ShoppingCart, Menu, LogOut, ShoppingBagIcon, ShoppingCartIcon, Heart } from 'lucide-react';
+import { ChevronDown, ChevronRight, X, Search, User, Menu, LogOut, ShoppingBagIcon, ShoppingCartIcon, Heart } from 'lucide-react';
 import { jwtDecode } from "jwt-decode";
 
 const Navbar = () => {
@@ -219,7 +219,7 @@ const Navbar = () => {
 
             <Link to='/cart' className='relative group'>
               <button className="p-2.5 transition-all duration-200" aria-label="Cart">
-                <ShoppingBagIcon size={20} className="transition-transform duration-200" />
+                <ShoppingCartIcon size={20} className="transition-transform duration-200" />
                 {getCartCount() > 0 && (
                   <div className={`absolute -top-1 -right-1 min-w-[20px] h-5 flex items-center justify-center rounded-full text-xs font-medium transition-all duration-200 ${isHomePage && !isScrolled ? 'bg-white text-black' : 'bg-white text-black'} shadow-md`}>
                     {getCartCount()}
