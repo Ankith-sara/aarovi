@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
-import { assets } from '../assets/assets';
 import NewsletterBox from '../components/NewsletterBox';
-import { MapPin, Phone, Mail, Briefcase, Clock, Send, Users, MessageCircle } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, MessageCircle } from 'lucide-react';
 
 const Contact = () => {
   useEffect(() => {
-    document.title = 'Contact Customer Service | Aasvi'
+    document.title = 'Contact Customer Service | Aarovi'
   });
 
   return (
@@ -19,7 +18,7 @@ const Contact = () => {
           </h1>
           <div className="w-24 h-1 bg-secondary mx-auto mb-8"></div>
           <p className="text-xl sm:text-2xl text-text/90 max-w-4xl mx-auto font-light leading-relaxed">
-            We believe in the power of connection — between artisan and buyer, tradition and modernity, story and style. At Aasvi, every conversation matters.
+            We believe in the power of connection — between artisan and buyer, tradition and modernity, story and style. At Aarovi, every conversation matters.
           </p>
         </div>
       </div>
@@ -34,7 +33,7 @@ const Contact = () => {
                 <img
                   className="w-full h-[500px] object-cover"
                   src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&q=80"
-                  alt="Aasvi Contact"
+                  alt="Aarovi Contact"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#2C1810]/30 to-transparent"></div>
               </div>
@@ -57,7 +56,7 @@ const Contact = () => {
                   Whether you have questions about our handcrafted pieces, need assistance with your order, or want to learn more about the artisans behind your favorite garments, we're here to help.
                 </p>
                 <p>
-                  Our customer service team understands that each Aasvi piece carries a story, and we're committed to ensuring your experience with us is as meaningful as the craftsmanship we celebrate.
+                  Our customer service team understands that each Aarovi piece carries a story, and we're committed to ensuring your experience with us is as meaningful as the craftsmanship we celebrate.
                 </p>
                 <p>
                   From styling advice to order tracking, size consultations to custom requests, our dedicated team is ready to assist you with all your needs.
@@ -150,8 +149,8 @@ const Contact = () => {
                 
                 <div className="space-y-3 text-text/70 font-light">
                   <p className="font-medium text-text">General Inquiries</p>
-                  <a href="mailto:aharyasofficial@gmail.com" className="block text-lg font-semibold text-secondary hover:text-[#8B6F47] transition-colors break-all">
-                    aasviofficial@gmail.com
+                  <a href="mailto:aaroviofficial@gmail.com" className="block text-lg font-semibold text-secondary hover:text-[#8B6F47] transition-colors break-all">
+                    aaroviofficial@gmail.com
                   </a>
                   <div className="flex items-center gap-2 text-sm text-text/50 pt-2">
                     <Send size={14} />

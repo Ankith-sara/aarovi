@@ -3,7 +3,7 @@ import { Truck, Globe, Package, Clock, MapPin, Mail, Phone, CheckCircle, AlertCi
 
 const ShippingDeliveryPolicy = () => {
   useEffect(() => {
-    document.title = 'Shipping & Delivery Policy | Aasvi'
+    document.title = 'Shipping & Delivery Policy | Aarovi'
   });
 
   return (
@@ -15,7 +15,7 @@ const ShippingDeliveryPolicy = () => {
             Shipping & Delivery
           </h1>
           <p className="text-lg sm:text-xl text-text/70 mb-8 max-w-3xl mx-auto font-light">
-            We ensure your handcrafted Aasvi pieces reach you safely and promptly, whether you're in India or anywhere across the globe.
+            We ensure your handcrafted Aarovi pieces reach you safely and promptly, whether you're in India or anywhere across the globe.
           </p>
         </div>
       </div>
@@ -208,7 +208,7 @@ const ShippingDeliveryPolicy = () => {
                 <h3 className="font-serif font-semibold text-text">Delivery Responsibility</h3>
               </div>
               <p className="text-sm text-text/70 leading-relaxed">
-                <strong className="text-text">Aasvi is not liable for delays by courier companies.</strong> We guarantee to hand over your order to the courier within the specified timeframe from confirmation and payment.
+                <strong className="text-text">Aarovi is not liable for delays by courier companies.</strong> We guarantee to hand over your order to the courier within the specified timeframe from confirmation and payment.
               </p>
             </div>
 
@@ -260,7 +260,7 @@ const ShippingDeliveryPolicy = () => {
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
               <Mail className="w-10 h-10 text-secondary mx-auto mb-4" />
               <h4 className="font-serif font-semibold text-text mb-3">Email Support</h4>
-              <p className="text-xl text-text mb-2">aasviofficial@gmail.com</p>
+              <p className="text-xl text-text mb-2">aaroviofficial@gmail.com</p>
               <p className="text-sm text-text/60">Response within 24 hours</p>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Instagram, Linkedin, Twitter, Mail, Phone, MapPin, Shield, Truck, Heart, ArrowRight
+  Instagram, Linkedin, Twitter, Mail, Phone, MapPin
 } from 'lucide-react';
 
 const Footer = () => {
@@ -13,7 +13,7 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="lg:col-span-4 space-y-6">
             <div>
-              <h2 className="text-3xl font-serif font-bold text-white mb-4">Aasvi</h2>
+              <h2 className="text-3xl font-serif font-bold text-white mb-4">Aarovi</h2>
               <p className="text-white/60 leading-relaxed font-light text-sm">
                 Bringing you the finest curated handcrafted fashion with a commitment to quality,
                 authenticity, and exceptional service. Each piece tells a story of artisan craftsmanship
@@ -26,7 +26,7 @@ const Footer = () => {
               <h4 className="text-white text-sm font-semibold mb-3 uppercase tracking-wider">Connect With Us</h4>
               <div className="flex space-x-3">
                 <a
-                  href="https://www.instagram.com/aasviofficial/"
+                  href="https://www.instagram.com/aaroviofficial/"
                   target='_blank'
                   rel="noopener noreferrer"
                   className="w-10 h-10 flex items-center justify-center bg-white/10 border border-white/20 hover:bg-secondary hover:border-secondary transition-all duration-300 rounded-lg group backdrop-blur-sm"
@@ -34,7 +34,7 @@ const Footer = () => {
                   <Instagram size={18} className="text-white" />
                 </a>
                 <a
-                  href="https://in.linkedin.com/company/aasvi"
+                  href="https://in.linkedin.com/company/aarovi"
                   target='_blank'
                   rel="noopener noreferrer"
                   className="w-10 h-10 flex items-center justify-center bg-white/10 border border-white/20 hover:bg-secondary hover:border-secondary transition-all duration-300 rounded-lg group backdrop-blur-sm"
@@ -42,7 +42,7 @@ const Footer = () => {
                   <Linkedin size={18} className="text-white" />
                 </a>
                 <a
-                  href="https://twitter.com/aasviofficial"
+                  href="https://twitter.com/aaroviofficial"
                   target='_blank'
                   rel="noopener noreferrer"
                   className="w-10 h-10 flex items-center justify-center bg-white/10 border border-white/20 hover:bg-secondary hover:border-secondary transition-all duration-300 rounded-lg group backdrop-blur-sm"
@@ -160,8 +160,8 @@ const Footer = () => {
                   <li className="flex items-start gap-2 text-white/60 font-light text-sm">
                     <Mail size={16} className="text-white/60 flex-shrink-0 mt-0.5" />
                     <div>
-                      <a href="mailto:aasviofficial@gmail.com" className="hover:text-white transition-colors break-all">
-                        aasviofficial@gmail.com
+                      <a href="mailto:aaroviofficial@gmail.com" className="hover:text-white transition-colors break-all">
+                        aaroviofficial@gmail.com
                       </a>
                     </div>
                   </li>
@@ -185,7 +185,7 @@ const Footer = () => {
             {/* Copyright */}
             <div className="text-center md:text-left">
               <p className="text-white/60 text-sm font-light">
-                &copy; {currentYear} <span className="text-secondary font-semibold">Aasvi Fashions</span>. All rights reserved.
+                &copy; {currentYear} <span className="text-secondary font-semibold">Aarovi Fashions</span>. All rights reserved.
               </p>
             </div>
 

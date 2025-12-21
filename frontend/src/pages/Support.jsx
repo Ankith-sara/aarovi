@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { Phone, Mail, Clock, Headphones, HelpCircle, Truck, RefreshCw, CreditCard, MapPin, MessageCircle, CheckCircle } from 'lucide-react';
+import { Phone, Mail, Clock, HelpCircle, Truck, RefreshCw, CreditCard, MapPin, MessageCircle, CheckCircle } from 'lucide-react';
 
 const Support = () => {
   useEffect(() => {
-    document.title = 'Customer Support | Aasvi'
+    document.title = 'Customer Support | Aarovi'
   });
 
   const supportCategories = [
@@ -42,7 +42,7 @@ const Support = () => {
             Customer Support
           </h1>
           <p className="text-lg sm:text-xl text-text/70 mb-8 max-w-3xl mx-auto font-light">
-            We're here to help! Get in touch with our support team for assistance with orders, returns, or any questions about your handcrafted Aasvi experience.
+            We're here to help! Get in touch with our support team for assistance with orders, returns, or any questions about your handcrafted Aarovi experience.
           </p>
         </div>
       </div>
@@ -97,7 +97,7 @@ const Support = () => {
 
               <div className="space-y-4">
                 <div className="bg-gradient-to-br from-background/20 to-primary p-5 rounded-lg">
-                  <p className="text-xl font-serif font-semibold text-text mb-2">aasviofficial@gmail.com</p>
+                  <p className="text-xl font-serif font-semibold text-text mb-2">aaroiviofficial@gmail.com</p>
                   <p className="text-sm text-text/70">Response within 24 hours</p>
                 </div>
                 <p className="text-sm text-text/70 italic">Perfect for detailed inquiries</p>
@@ -215,7 +215,7 @@ const Support = () => {
             <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary mb-4">Professional Support Team</h2>
             <p className="text-text/70 max-w-2xl mx-auto leading-relaxed">
               Our dedicated customer support team understands the value of handcrafted artistry and
-              is committed to ensuring your complete satisfaction with every Aasvi purchase.
+              is committed to ensuring your complete satisfaction with every Aarovi purchase.
             </p>
           </div>
 
@@ -230,7 +230,7 @@ const Support = () => {
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
               <Mail className="w-10 h-10 text-secondary mx-auto mb-4" />
               <h4 className="font-serif font-semibold text-text mb-3">Email Support</h4>
-              <p className="text-xl text-text mb-2">aasviofficial@gmail.com</p>
+              <p className="text-xl text-text mb-2">aaroiviofficial@gmail.com</p>
               <p className="text-sm text-text/60">Response within 24 hours</p>
             </div>
 

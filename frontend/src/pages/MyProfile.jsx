@@ -3,9 +3,8 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import {
   ChevronRight, Heart, Clock, User, ShoppingBag, Settings, LogOut, Edit2, Trash2,
-  MapPinHouse, X, Camera, Mail, Calendar, Plus, ArrowRight, AlertCircle, Package,
+  MapPinHouse, X, Camera, Mail, Calendar, Plus, ArrowRight, AlertCircle
 } from "lucide-react";
-import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
 import { ShopContext } from "../context/ShopContext";
 import { Link } from "react-router-dom";

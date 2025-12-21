@@ -37,7 +37,6 @@ const Collections = () => {
   return (
     <section className="bg-gradient-to-b from-background/20 to-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-4">
             Our Collections
@@ -63,7 +62,6 @@ const Collections = () => {
                 className="block h-full"
               >
                 <div className="relative h-full bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-background">
-                  {/* Image Container */}
                   <div className="relative overflow-hidden ">
                     <img 
                       src={category.imageUrl} 
@@ -72,7 +70,6 @@ const Collections = () => {
                     />
                   </div>
 
-                  {/* Content */}
                   <div className="p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -83,15 +80,11 @@ const Collections = () => {
                           {category.description}
                         </p>
                       </div>
-                      
-                      {/* Arrow Icon */}
                       <div className="ml-4 w-10 h-10 rounded-full bg-gradient-to-br from-secondary/80 to-secondary/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110 group-hover:bg-secondary flex-shrink-0">
                         <ArrowRight size={18} className="text-secondary group-hover:text-white transition-colors" />
                       </div>
                     </div>
                   </div>
-
-                  {/* Decorative Corner */}
                   <div className="absolute -bottom-2 -right-2 w-16 h-16 border-2 border-secondary/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 -z-10"></div>
                 </div>
               </NavLink>

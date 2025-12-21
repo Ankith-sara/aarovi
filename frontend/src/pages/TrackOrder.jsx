@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
-import Title from '../components/Title';
 import {
   Package, Truck, CheckCircle, Clock, MapPin, AlertCircle,
   ChevronDown, ChevronUp, ArrowLeft, Calendar, Phone,

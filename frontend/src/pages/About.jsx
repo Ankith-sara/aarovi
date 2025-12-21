@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Sparkles, Heart, Users, Palette, Shield, Star } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const About = () => {
@@ -9,9 +9,8 @@ const About = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section with Background Image */}
+      {/* Hero Section */}
       <div className="relative bg-gradient-to-b from-background to-white px-4 sm:px-6 lg:px-8 py-32 sm:py-40 overflow-hidden">
-        {/* Content */}
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6">
             About Us
@@ -27,7 +26,6 @@ const About = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Image Side */}
             <div className="relative">
               <div className="relative overflow-hidden rounded-lg shadow-xl">
                 <img
@@ -37,12 +35,10 @@ const About = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#2C1810]/30 to-transparent"></div>
               </div>
-              {/* Decorative Elements */}
               <div className="absolute -top-6 -left-6 w-24 h-24 border-2 border-secondary rounded-lg"></div>
               <div className="absolute -bottom-6 -right-6 w-24 h-24 border-2 border-secondary rounded-lg"></div>
             </div>
 
-            {/* Content Side */}
             <div>
               <div className="mb-8">
                 <Sparkles className="w-12 h-12 text-secondary mb-4" />

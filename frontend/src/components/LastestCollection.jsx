@@ -104,7 +104,6 @@ function LatestCollection() {
   return (
     <section className="bg-gradient-to-b from-white to-background/20 py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-12 gap-6">
           <div>
             <h2 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-3">
@@ -125,7 +124,7 @@ function LatestCollection() {
         </div>
 
         {latestProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             {latestProducts.map((item, index) => (
               <div 
                 key={index} 
@@ -152,11 +151,8 @@ function LatestCollection() {
                       </div>
                     </div>
                   )}
-                  
-                  {/* Hover Overlay */}
                 </div>
                 
-                {/* Decorative Corner - appears on hover */}
                 <div className="absolute -bottom-2 -right-2 w-12 h-12 border-2 border-secondary/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 -z-10"></div>
               </div>
             ))}

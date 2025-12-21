@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Title from '../components/Title';
 import CartTotal from '../components/CartTotal';
@@ -6,8 +6,7 @@ import { assets } from '../assets/assets';
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { CreditCard, Home, Shield, ArrowLeft, MapPin, Phone, Mail, User, Package } from 'lucide-react';
-import { useEffect } from 'react';
+import { CreditCard, Home, Shield, ArrowLeft, MapPin, Phone, Mail, User, Package, CheckCircle } from 'lucide-react';
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState('cod');
@@ -51,7 +50,6 @@ const PlaceOrder = () => {
         if (res.data.success) {
           const user = res.data.user;
 
-          // Autofill the form
           setFormData(prev => ({
             ...prev,
             Name: user.name || '',
@@ -70,9 +68,12 @@ const PlaceOrder = () => {
     };
 
     fetchUser();
+  }, [backendUrl]);
+
+  useEffect(() => {
+    document.title = 'Checkout | Aarovi'
   }, []);
 
-  // Handles input changes
   const onChangeHandler = (event) => {
     const { name, value } = event.target;
     setFormData((data) => ({ ...data, [name]: value }));
@@ -85,7 +86,7 @@ const PlaceOrder = () => {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
       amount: order.amount,
       currency: order.currency,
-      name: 'Aharyas',
+      name: 'Aarovi',
       description: 'Payment for order',
       order_id: order.id,
       handler: async (response) => {
@@ -188,54 +189,68 @@ const PlaceOrder = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-black mt-20">
-      <section className="py-12 px-4 sm:px-8 md:px-10 lg:px-20">
+    <div className="mt-20 min-h-screen">
+      {/* Header Section */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8 border-b border-background/30">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <div className="text-3xl mb-6">
-              <Title text1="CHECKOUT" text2="DETAILS" />
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-2">
+                Checkout
+              </h1>
+              <p className="text-text/50 font-light flex items-center gap-2">
+                <Package size={16} />
+                Complete your purchase
+              </p>
             </div>
-            <p className="text-gray-500 font-light">
-              Complete your order by providing delivery and payment information
-            </p>
+            <button
+              onClick={() => navigate('/cart')}
+              className="hidden sm:flex items-center gap-2 px-6 py-3 text-secondary hover:text-secondary/80 font-medium transition-colors"
+            >
+              <ArrowLeft size={18} />
+              <span>Back to Cart</span>
+            </button>
           </div>
         </div>
       </section>
 
       {/* Checkout Content */}
-      <section className="px-4 sm:px-8 md:px-10 lg:px-20 pb-20">
+      <section className="px-4 sm:px-6 lg:px-8 pb-20">
         <div className="max-w-7xl mx-auto">
-          <form onSubmit={onSubmitHandler} className="grid xl:grid-cols-[2fr_1fr] gap-8">
+          <form onSubmit={onSubmitHandler} className="grid xl:grid-cols-[1.5fr_1fr] gap-10 mt-12">
             <div className="space-y-6">
               {/* Delivery Information */}
-              <div className="bg-white border border-gray-200 shadow-sm">
-                <div className="p-6 border-b border-gray-100 bg-gray-50">
-                  <div className="flex items-center gap-2">
-                    <Home size={16} className="text-gray-400" />
-                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Delivery Information
-                    </span>
+              <div className="bg-white rounded-2xl border border-background/50 shadow-lg overflow-hidden">
+                <div className="p-6 bg-gradient-to-r from-background/20 to-background/10 border-b border-background/30">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                      <Home size={18} className="text-secondary" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-serif font-bold text-text">Delivery Information</h2>
+                      <p className="text-xs text-text/50 font-light">Where should we send your order?</p>
+                    </div>
                   </div>
                 </div>
 
                 <div className="p-6 space-y-6">
                   {/* Personal Information */}
                   <div className="space-y-4">
-                    <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
-                      <User size={14} className="text-gray-400" />
+                    <h3 className="text-sm font-semibold text-text uppercase tracking-wider mb-4 flex items-center gap-2">
+                      <User size={14} className="text-secondary" />
                       Personal Details
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
                           Full Name *
                         </label>
                         <input
                           onChange={onChangeHandler}
                           name="Name"
                           value={formData.Name}
-                          className="w-full px-4 py-3 border border-gray-300 bg-white focus:outline-none focus:border-black transition-colors font-light"
+                          className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
                           type="text"
                           placeholder="Enter your full name"
                           required
@@ -243,18 +258,18 @@ const PlaceOrder = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
                           Email Address *
                         </label>
                         <div className="relative">
-                          <Mail size={14} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                          <Mail size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text/40" />
                           <input
                             onChange={onChangeHandler}
                             name="email"
                             value={formData.email}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 bg-white focus:outline-none focus:border-black transition-colors font-light"
+                            className="w-full pl-10 pr-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
                             type="email"
-                            placeholder="Enter your email"
+                            placeholder="you@example.com"
                             required
                           />
                         </div>
@@ -262,18 +277,18 @@ const PlaceOrder = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
                         Phone Number *
                       </label>
                       <div className="relative">
-                        <Phone size={14} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                        <Phone size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text/40" />
                         <input
                           onChange={onChangeHandler}
                           name="phone"
                           value={formData.phone}
-                          className="w-full pl-10 pr-4 py-3 border border-gray-300 bg-white focus:outline-none focus:border-black transition-colors font-light"
+                          className="w-full pl-10 pr-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
                           type="tel"
-                          placeholder="Enter your phone number"
+                          placeholder="+1 (555) 000-0000"
                           required
                         />
                       </div>
@@ -281,54 +296,54 @@ const PlaceOrder = () => {
                   </div>
 
                   {/* Address Information */}
-                  <div className="space-y-4 pt-6 border-t border-gray-200">
-                    <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
-                      <MapPin size={14} className="text-gray-400" />
+                  <div className="space-y-4 pt-6 border-t border-background/30">
+                    <h3 className="text-sm font-semibold text-text uppercase tracking-wider mb-4 flex items-center gap-2">
+                      <MapPin size={14} className="text-secondary" />
                       Delivery Address
                     </h3>
 
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
                           Street Address *
                         </label>
                         <input
                           onChange={onChangeHandler}
                           name="street"
                           value={formData.street}
-                          className="w-full px-4 py-3 border border-gray-300 bg-white focus:outline-none focus:border-black transition-colors font-light"
+                          className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
                           type="text"
-                          placeholder="House number, street name, area"
+                          placeholder="House number, street name"
                           required
                         />
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
                             City *
                           </label>
                           <input
                             onChange={onChangeHandler}
                             name="city"
                             value={formData.city}
-                            className="w-full px-4 py-3 border border-gray-300 bg-white focus:outline-none focus:border-black transition-colors font-light"
+                            className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
                             type="text"
-                            placeholder="Enter your city"
+                            placeholder="Your city"
                             required
                           />
                         </div>
                         <div className="space-y-2">
-                          <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
                             State *
                           </label>
                           <input
                             onChange={onChangeHandler}
                             name="state"
                             value={formData.state}
-                            className="w-full px-4 py-3 border border-gray-300 bg-white focus:outline-none focus:border-black transition-colors font-light"
+                            className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
                             type="text"
-                            placeholder="Enter your state"
+                            placeholder="Your state"
                             required
                           />
                         </div>
@@ -336,30 +351,30 @@ const PlaceOrder = () => {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
                             Postal Code *
                           </label>
                           <input
                             onChange={onChangeHandler}
                             name="pincode"
                             value={formData.pincode}
-                            className="w-full px-4 py-3 border border-gray-300 bg-white focus:outline-none focus:border-black transition-colors font-light"
+                            className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
                             type="text"
-                            placeholder="Enter postal code"
+                            placeholder="ZIP/Postal code"
                             required
                           />
                         </div>
                         <div className="space-y-2">
-                          <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
                             Country *
                           </label>
                           <input
                             onChange={onChangeHandler}
                             name="country"
                             value={formData.country}
-                            className="w-full px-4 py-3 border border-gray-300 bg-white focus:outline-none focus:border-black transition-colors font-light"
+                            className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
                             type="text"
-                            placeholder="Enter your country"
+                            placeholder="Your country"
                             required
                           />
                         </div>
@@ -368,43 +383,62 @@ const PlaceOrder = () => {
                   </div>
 
                   {/* Terms and Conditions */}
-                  <div className="pt-6 border-t border-gray-200">
-                    <div className="flex items-start gap-4">
-                      <div className="flex items-center mt-1">
-                        <input
-                          type="checkbox"
-                          id="agree-terms"
-                          checked={agreeToTerms}
-                          onChange={(e) => setAgreeToTerms(e.target.checked)}
-                          className="w-4 h-4 text-black bg-white border-gray-300 focus:ring-black focus:ring-2 cursor-pointer"
-                          required
-                        />
+                  <div className="pt-6 border-t border-background/30">
+                    <div className="bg-background/10 rounded-xl p-5">
+                      <div className="flex items-start gap-3">
+                        <div className="flex items-center mt-1">
+                          <input
+                            type="checkbox"
+                            id="agree-terms"
+                            checked={agreeToTerms}
+                            onChange={(e) => setAgreeToTerms(e.target.checked)}
+                            className="w-5 h-5 text-secondary bg-white border-background/50 focus:ring-secondary focus:ring-2 cursor-pointer rounded"
+                            required
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <label htmlFor="agree-terms" className="block text-sm text-text/80 cursor-pointer leading-relaxed font-light">
+                            I agree to the{' '}
+                            <a href="/termsconditions" target="_blank" className="text-secondary font-medium underline hover:text-secondary/80 transition-colors">Terms & Conditions</a>,{' '}
+                            <a href="/privacypolicy" target="_blank" className="text-secondary font-medium underline hover:text-secondary/80 transition-colors">Privacy Policy</a>, and{' '}
+                            <a href="/shippingpolicy" target="_blank" className="text-secondary font-medium underline hover:text-secondary/80 transition-colors">Shipping Policy</a>. 
+                            I understand that orders are processed within 0-7 days and Aarovi is not liable for courier delays. *
+                          </label>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <label htmlFor="agree-terms" className="block text-sm text-gray-700 cursor-pointer leading-relaxed font-light">
-                          I agree to the{' '}
-                          <a href="/termsconditions" target="_blank" className="text-black font-medium underline hover:text-gray-700 transition-colors"> Terms & Conditions</a>,{' '}
-                          <a href="/privacypolicy" target="_blank" className="text-black font-medium underline hover:text-gray-700 transition-colors"> Privacy Policy</a>, and{' '}
-                          <a href="/shippingpolicy" target="_blank" className="text-black font-medium underline hover:text-gray-700 transition-colors"> Shipping Policy</a>
-                          . I understand that orders are processed within 0-7 days and Aharya is not liable for courier delays. *
-                        </label>
 
-                        {!agreeToTerms && (
-                          <p className="text-xs text-red-600 mt-2 flex items-center gap-1 font-light">
-                            <Shield size={10} />
-                            You must agree to our terms before placing your order
+                      {!agreeToTerms && (
+                        <div className="mt-3 p-3 bg-red-50 rounded-lg">
+                          <p className="text-xs text-red-600 flex items-center gap-2 font-medium">
+                            <Shield size={12} />
+                            Please agree to our terms before placing your order
                           </p>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
 
-                    <div className="mt-4 p-4 border border-gray-200 bg-gray-50">
-                      <h4 className="font-medium text-black text-sm mb-2 tracking-wide">Key Policy Highlights:</h4>
-                      <ul className="text-xs text-gray-600 space-y-1 font-light">
-                        <li>• Processing time: 0-7 days from order confirmation</li>
-                        <li>• Shipping via registered courier services (domestic & international)</li>
-                        <li>• Aharya ensures timely handover to courier companies</li>
-                        <li>• Support available at +91 9063284008 or aharyasofficial@gmail.com</li>
+                    <div className="mt-4 p-5 border border-background/30 rounded-xl bg-gradient-to-br from-background/5 to-background/10">
+                      <h4 className="font-semibold text-text text-sm mb-3 flex items-center gap-2">
+                        <CheckCircle size={14} className="text-secondary" />
+                        Key Policy Highlights
+                      </h4>
+                      <ul className="text-xs text-text/70 space-y-2 font-light">
+                        <li className="flex items-start gap-2">
+                          <span className="text-secondary mt-0.5">•</span>
+                          <span>Processing time: 0-7 days from order confirmation</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-secondary mt-0.5">•</span>
+                          <span>Shipping via registered courier services (domestic & international)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-secondary mt-0.5">•</span>
+                          <span>Aarovi ensures timely handover to courier companies</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-secondary mt-0.5">•</span>
+                          <span>Support available at +91 9063284008 or aaroviofficial@gmail.com</span>
+                        </li>
                       </ul>
                     </div>
                   </div>
@@ -412,17 +446,20 @@ const PlaceOrder = () => {
               </div>
 
               {/* Payment Method */}
-              <div className="bg-white border border-gray-200 shadow-sm">
-                <div className="p-6 border-b border-gray-100 bg-gray-50">
-                  <div className="flex items-center gap-2">
-                    <CreditCard size={16} className="text-gray-400" />
-                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Payment Method
-                    </span>
+              <div className="bg-white rounded-2xl border border-background/50 shadow-lg overflow-hidden">
+                <div className="p-6 bg-gradient-to-r from-background/20 to-background/10 border-b border-background/30">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                      <CreditCard size={18} className="text-secondary" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-serif font-bold text-text">Payment Method</h2>
+                      <p className="text-xs text-text/50 font-light">Choose how you'd like to pay</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="p-6 space-y-4">
+                <div className="p-6 space-y-3">
                   <PaymentOption method={method} setMethod={setMethod} type="razorpay" logo={assets.razorpay_logo} />
                   <PaymentOption method={method} setMethod={setMethod} type="cod" />
                 </div>
@@ -431,59 +468,61 @@ const PlaceOrder = () => {
 
             {/* Order Summary */}
             <div className="space-y-6">
-              <div className="bg-white border border-gray-200 shadow-sm sticky top-6">
-                <div className="p-6 border-b border-gray-100 bg-gray-50">
-                  <div className="flex items-center gap-2">
-                    <Package size={16} className="text-gray-400" />
-                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Order Summary
-                    </span>
+              <div className="bg-gradient-to-br from-white to-background/20 rounded-2xl border border-background/50 shadow-xl sticky top-6">
+                <div className="p-6 bg-gradient-to-r from-background/20 to-background/10 border-b border-background/30">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                      <Package size={18} className="text-secondary" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-serif font-bold text-text">Order Summary</h2>
+                      <p className="text-xs text-text/50 font-light">Review your purchase</p>
+                    </div>
                   </div>
                 </div>
 
                 <div className="p-6 space-y-6">
                   <CartTotal />
 
-                  <div className="space-y-4 pt-6 border-t border-gray-200">
+                  <div className="space-y-3 pt-6 border-t border-background/30">
                     <button
                       type="submit"
                       disabled={isLoading || !agreeToTerms}
-                      className={`w-full py-4 font-light tracking-wide transition-all duration-300 uppercase ${!agreeToTerms
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        : 'bg-black text-white hover:bg-gray-800'
-                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      className={`group w-full py-4 font-bold rounded-full transition-all duration-300 flex items-center justify-center gap-3 ${
+                        !agreeToTerms
+                          ? 'bg-background/30 text-text/40 cursor-not-allowed'
+                          : 'bg-secondary text-white hover:bg-secondary/90 shadow-xl shadow-secondary/30 hover:shadow-2xl hover:shadow-secondary/40 hover:-translate-y-0.5'
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       {isLoading ? (
-                        <div className="flex items-center justify-center gap-2">
+                        <>
                           <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                          <span className="font-light">Processing...</span>
-                        </div>
+                          <span>Processing...</span>
+                        </>
                       ) : (
-                        'Place Order'
+                        <>
+                          <span>Place Order</span>
+                          <CheckCircle size={20} className="group-hover:scale-110 transition-transform" />
+                        </>
                       )}
                     </button>
 
                     <button
                       type="button"
                       onClick={() => navigate('/cart')}
-                      className="w-full py-4 border border-gray-300 text-black font-light tracking-wide hover:border-black hover:bg-gray-50 transition-all duration-300 uppercase"
+                      className="w-full py-4 bg-background/30 text-text font-semibold rounded-full hover:bg-background/50 transition-all duration-300 flex items-center justify-center gap-2"
                     >
-                      <div className="flex items-center justify-center gap-2">
-                        <ArrowLeft size={16} />
-                        <span>Back to Cart</span>
-                      </div>
+                      <ArrowLeft size={18} />
+                      <span>Back to Cart</span>
                     </button>
                   </div>
 
                   {/* Security Badge */}
-                  <div className="pt-4 border-t border-gray-200">
-                    <div className="flex items-center justify-center gap-2 text-xs text-gray-500 mb-3 font-light">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="uppercase tracking-wider">Secure Checkout</span>
+                  <div className="pt-4 border-t border-background/30">
+                    <div className="flex items-center justify-center gap-2 text-xs text-text/60 font-medium bg-green-50 py-3 rounded-xl">
+                      <Shield size={16} className="text-green-600" />
+                      <span>Secure SSL Encrypted Checkout</span>
                     </div>
-                    <p className="text-xs text-gray-500 leading-relaxed text-center font-light">
-                      Your information is protected with industry-standard encryption
-                    </p>
                   </div>
                 </div>
               </div>
@@ -498,34 +537,34 @@ const PlaceOrder = () => {
 const PaymentOption = ({ method, setMethod, type, logo }) => (
   <div
     onClick={() => setMethod(type)}
-    className={`flex items-center gap-4 p-4 border cursor-pointer transition-all duration-300 hover:shadow-sm ${method === type
-      ? 'border-black bg-gray-50'
-      : 'border-gray-200 hover:border-gray-400'
-      }`}
+    className={`group flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-all duration-300 ${
+      method === type
+        ? 'border-secondary bg-secondary/5 shadow-lg'
+        : 'border-background/50 hover:border-background hover:shadow-md'
+    }`}
   >
-    <div className={`w-5 h-5 border-2 flex items-center justify-center transition-colors ${method === type ? 'border-black' : 'border-gray-300'
-      }`}>
-      {method === type && <div className="w-2.5 h-2.5 bg-black"></div>}
+    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+      method === type ? 'border-secondary' : 'border-background/50'
+    }`}>
+      {method === type && <div className="w-2.5 h-2.5 bg-secondary rounded-full"></div>}
     </div>
 
     {logo ? (
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-1">
         <img className="h-6 object-contain" src={logo} alt={`${type} payment`} />
         <div className="flex flex-col">
-          <span className="font-medium text-black capitalize tracking-wide">{type}</span>
-          <span className="text-xs text-gray-500 font-light">
-            {type === 'Razorpay' ? 'Credit/Debit Cards' : 'UPI, Net Banking, Wallets'}
-          </span>
+          <span className="font-semibold text-text capitalize">{type}</span>
+          <span className="text-xs text-text/50 font-light">Credit/Debit Cards, UPI, Net Banking</span>
         </div>
       </div>
     ) : (
-      <div className="flex items-center gap-3">
-        <div className="bg-white p-2 border border-gray-200">
-          <CreditCard size={18} className="text-gray-600" />
+      <div className="flex items-center gap-3 flex-1">
+        <div className="bg-background/20 p-2 rounded-lg group-hover:bg-background/30 transition-colors">
+          <Package size={18} className="text-text" />
         </div>
         <div className="flex flex-col">
-          <span className="font-medium text-black tracking-wide">Cash on Delivery</span>
-          <span className="text-xs text-gray-500 font-light">Pay when you receive</span>
+          <span className="font-semibold text-text">Cash on Delivery</span>
+          <span className="text-xs text-text/50 font-light">Pay when you receive your order</span>
         </div>
       </div>
     )}

@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
-import Title from '../components/Title';
 import CartTotal from '../components/CartTotal';
 import { Trash2, ShoppingBag, Package, X, Plus, Minus, ArrowRight, Shield } from 'lucide-react';
 import RecentlyViewed from '../components/RecentlyViewed';
@@ -67,7 +66,6 @@ const Cart = () => {
 
   return (
     <div className="mt-20 min-h-screen">
-      {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-slideUp overflow-hidden">
@@ -80,18 +78,12 @@ const Cart = () => {
                 This item will be removed from your cart. You can always add it back later.
               </p>
             </div>
-            
+
             <div className="px-8 pb-8 flex gap-3">
-              <button
-                onClick={cancelDelete}
-                className="flex-1 py-3.5 bg-gray-100 text-text font-semibold rounded-xl hover:bg-gray-200 transition-all duration-300"
-              >
+              <button onClick={cancelDelete} className="flex-1 py-3.5 bg-gray-100 text-text font-semibold rounded-xl hover:bg-gray-200 transition-all duration-300">
                 Keep Item
               </button>
-              <button
-                onClick={confirmDelete}
-                className="flex-1 py-3.5 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition-all duration-300 shadow-lg shadow-red-500/30"
-              >
+              <button onClick={confirmDelete} className="flex-1 py-3.5 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition-all duration-300 shadow-lg shadow-red-500/30">
                 Remove
               </button>
             </div>
@@ -99,7 +91,6 @@ const Cart = () => {
         </div>
       )}
 
-      {/* Hero Section */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 border-b border-background/30">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
@@ -154,7 +145,6 @@ const Cart = () => {
             </div>
           ) : (
             <div className="grid xl:grid-cols-[1.5fr_1fr] gap-10">
-              {/* Cart Items */}
               <div className="space-y-4">
                 {cartData.map((item, index) => {
                   const productData = products.find(
@@ -173,7 +163,6 @@ const Cart = () => {
                   return (
                     <div key={index} className="group bg-white rounded-2xl p-6 hover:shadow-lg transition-all duration-300 border border-background/50">
                       <div className="flex flex-col sm:flex-row gap-6">
-                        {/* Product Image */}
                         <div className="flex-shrink-0">
                           <Link to={`/product/${item._id}`}>
                             <div className="relative w-full sm:w-32 h-40 sm:h-32">
@@ -186,7 +175,6 @@ const Cart = () => {
                           </Link>
                         </div>
 
-                        {/* Product Details */}
                         <div className="flex-grow flex flex-col justify-between">
                           <div>
                             <Link
@@ -213,7 +201,6 @@ const Cart = () => {
                               </div>
                             </div>
 
-                            {/* Quantity Controls */}
                             <div className="flex items-center gap-4">
                               <div className="flex items-center bg-background/30 rounded-xl overflow-hidden">
                                 <button
@@ -247,7 +234,6 @@ const Cart = () => {
                           </div>
                         </div>
 
-                        {/* Delete Button */}
                         <div className="flex sm:flex-col items-center sm:items-end justify-end">
                           <button
                             onClick={() => handleDeleteClick(item._id, item.size)}
@@ -263,7 +249,6 @@ const Cart = () => {
                 })}
               </div>
 
-              {/* Order Summary */}
               <div className="space-y-6">
                 <div className="bg-gradient-to-br from-white to-background/20 rounded-2xl p-8 border border-background/50 shadow-xl sticky top-6">
                   <h3 className="text-2xl font-serif font-bold text-text mb-6">Order Summary</h3>

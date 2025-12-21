@@ -52,7 +52,7 @@ const Orders = () => {
   }, [token]);
 
   useEffect(() => {
-    document.title = 'Order History | Aasvi';
+    document.title = 'Order History | Aarovi';
   }, []);
 
   const formatDate = (dateString) => {

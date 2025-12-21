@@ -33,12 +33,12 @@ const NewsletterBox = () => {
             </div>
 
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-4">
-              Join the <span className="text-secondary">Aasvi</span> Community
+              Join the <span className="text-secondary">Aarovi</span> Community
             </h2>
 
             <div className="w-24 h-1 bg-secondary mx-auto rounded-full mb-6"></div>
 
-            <p className="text-text/70 text-base sm:text-lg font-light leading-relaxed max-w-2xl mx-auto">
+            <p className="text-text/70 text-base sm:text-lg font-light leading-relaxed max-w-4xl mx-auto">
               Be the first to explore handcrafted collections, exclusive artisan
               stories, and meaningful initiatives. Join a community that celebrates
               heritage, sustainability, and conscious fashion.

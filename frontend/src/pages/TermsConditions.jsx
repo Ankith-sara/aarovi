@@ -3,7 +3,7 @@ import { Scale, FileText, AlertTriangle, Shield, Link, CreditCard, User, Shoppin
 
 const TermsConditions = () => {
   useEffect(() => {
-    document.title = 'Terms & Conditions | Aasvi'
+    document.title = 'Terms & Conditions | Aarovi'
   });
 
   return (
@@ -15,7 +15,7 @@ const TermsConditions = () => {
             Terms & Conditions
           </h1>
           <p className="text-lg sm:text-xl text-text/70 mb-8 max-w-3xl mx-auto font-light">
-            These terms outline the rules and guidelines for using Aasvi's website, services, and purchasing our handcrafted and custom-made fashion products.
+            These terms outline the rules and guidelines for using Aarovi's website, services, and purchasing our handcrafted and custom-made fashion products.
           </p>
         </div>
       </div>
@@ -31,11 +31,11 @@ const TermsConditions = () => {
           <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <div className="bg-white p-8 rounded-lg shadow-sm border border-[#E8DCC4]">
               <p className="text-text/80 leading-relaxed mb-6">
-                These terms and conditions apply to AASVI and all users interacting with our platform, products, or services.
+                These terms and conditions apply to AAROVI and all users interacting with our platform, products, or services.
               </p>
               <div className="bg-gradient-to-br from-background/30 to-primary p-6 rounded-lg">
                 <h4 className="font-serif font-semibold text-text mb-3">Legal Entity</h4>
-                <p className="font-medium text-text">AASVI FASHIONS</p>
+                <p className="font-medium text-text">AAROVI FASHIONS</p>
                 <p className="text-sm text-text/70 mt-3">
                   Registered / Operational Address:<br />
                   Hyderabad, Telangana - 502345, India
@@ -48,7 +48,7 @@ const TermsConditions = () => {
               <div className="space-y-4">
                 <div>
                   <p className="font-semibold text-text">"We", "Us", "Our"</p>
-                  <p className="text-text/70 text-sm">Refers to Aasvi / Aasvi Fashions</p>
+                  <p className="text-text/70 text-sm">Refers to Aarovi / Aarovi Fashions</p>
                 </div>
                 <div>
                   <p className="font-semibold text-text">"You", "User", "Customer"</p>
@@ -77,12 +77,12 @@ const TermsConditions = () => {
               {
                 icon: FileText,
                 title: "Content Updates",
-                description: "Aasvi reserves the right to update or modify website content, pricing, or product availability at any time without prior notice."
+                description: "Aarovi reserves the right to update or modify website content, pricing, or product availability at any time without prior notice."
               },
               {
                 icon: AlertTriangle,
                 title: "Accuracy of Information",
-                description: "While we ensure all details are accurate, Aasvi does not guarantee completeness, reliability, or error-free information on the website."
+                description: "While we ensure all details are accurate, Aarovi does not guarantee completeness, reliability, or error-free information on the website."
               },
               {
                 icon: User,
@@ -97,7 +97,7 @@ const TermsConditions = () => {
               {
                 icon: Link,
                 title: "Third-Party Links",
-                description: "Aasvi is not responsible for the content, safety, or policies of external websites linked on our platform."
+                description: "Aarovi is not responsible for the content, safety, or policies of external websites linked on our platform."
               },
               {
                 icon: Gavel,
@@ -126,7 +126,7 @@ const TermsConditions = () => {
           <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <div className="p-8 rounded-lg shadow-sm border border-background">
               <p className="text-text/80 leading-relaxed mb-6">
-                By placing an order with Aasvi, you agree to provide accurate and complete purchase details.
+                By placing an order with Aarovi, you agree to provide accurate and complete purchase details.
               </p>
               <div className="bg-gradient-to-br from-background/30 to-primary p-6 rounded-lg">
                 <h4 className="font-serif font-semibold text-[#2C1810] mb-4">Order Process</h4>
@@ -153,13 +153,13 @@ const TermsConditions = () => {
 
             <div className="bg-gradient-to-br from-background/20 to-primary p-8 rounded-lg shadow-sm border border-[#E8DCC4]">
               <CreditCard className="w-10 h-10 text-secondary mb-4" />
-              <h3 className="font-serif font-semibold text-[#2C1810] mb-4 text-xl">Payment Terms</h3>
-              <p className="text-[#2C1810]/80 text-sm leading-relaxed mb-6">
+              <h3 className="font-serif font-semibold text-text mb-4 text-xl">Payment Terms</h3>
+              <p className="text-text/80 text-sm leading-relaxed mb-6">
                 Orders may be cancelled if fraudulent activity or unauthorized payment is detected.
               </p>
               <div className="bg-white/60 p-5 rounded-lg">
-                <h4 className="font-semibold text-[#2C1810] mb-3">Accepted Payment Methods:</h4>
-                <ul className="space-y-2 text-sm text-[#2C1810]/80">
+                <h4 className="font-semibold text-text mb-3">Accepted Payment Methods:</h4>
+                <ul className="space-y-2 text-sm text-text/80">
                   <li className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
                     UPI
@@ -196,7 +196,7 @@ const TermsConditions = () => {
               {
                 icon: AlertTriangle,
                 title: "Limitation of Liability",
-                description: "Aasvi shall not be held responsible for any direct or indirect damages arising from website usage, order processing, or product handling."
+                description: "Aarovi shall not be held responsible for any direct or indirect damages arising from website usage, order processing, or product handling."
               },
               {
                 icon: Shield,
@@ -206,7 +206,7 @@ const TermsConditions = () => {
               {
                 icon: Scale,
                 title: "Force Majeure",
-                description: "Aasvi is not liable for delays or failures caused by events outside our control, such as natural disasters, transportation issues, or unexpected disruptions."
+                description: "Aarovi is not liable for delays or failures caused by events outside our control, such as natural disasters, transportation issues, or unexpected disruptions."
               }
             ].map((item, index) => (
               <div key={index} className="bg-white p-6 rounded-lg shadow-sm border border-background">
@@ -229,7 +229,7 @@ const TermsConditions = () => {
 
           <div className="max-w-5xl mx-auto">
             <p className="text-center text-text/80 text-lg mb-10 leading-relaxed">
-              Aasvi values your privacy and follows strict measures to protect your personal information.
+              Aarovi values your privacy and follows strict measures to protect your personal information.
             </p>
 
             <div className="grid md:grid-cols-2 gap-8">
@@ -287,7 +287,7 @@ const TermsConditions = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary mb-4">Questions About These Terms?</h2>
             <p className="text-text/70 text-lg max-w-2xl mx-auto">
-              We're here to help. Contact Aasvi support anytime for clarity regarding these terms.
+              We're here to help. Contact Aarovi support anytime for clarity regarding these terms.
             </p>
           </div>
 
@@ -302,7 +302,7 @@ const TermsConditions = () => {
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
               <Mail className="w-10 h-10 text-secondary mx-auto mb-4" />
               <h4 className="font-serif font-semibold text-text mb-2">Email Support</h4>
-              <p className="text-xl text-text mb-1">aasviofficial@gmail.com</p>
+              <p className="text-xl text-text mb-1">aaroiviofficial@gmail.com</p>
               <p className="text-sm text-text/60">Reply within 24 hours</p>
             </div>
           </div>

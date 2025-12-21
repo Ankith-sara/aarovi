@@ -156,7 +156,7 @@ const Product = () => {
 
   useEffect(() => {
     if (productData?.name) {
-      document.title = `${productData.name} | Aasvi`;
+      document.title = `${productData.name} | Aarovi`;
     }
   }, [productData?.name]);
 

@@ -204,7 +204,7 @@ const Collection = () => {
   }, [sortType]);
 
   useEffect(() => {
-    document.title = 'Aasvi Collection | Aasvi';
+    document.title = 'Aarovi Collection | Aarovi';
   }, []);
 
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -512,13 +512,13 @@ const Collection = () => {
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="mt-16 min-h-screen">
       {/* Header Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-text mb-4">
-              AASVI COLLECTION
+              AAROVI COLLECTION
             </h1>
             {filterProducts.length > 0 && (
               <p className="text-text/60 font-light text-lg">
@@ -639,7 +639,7 @@ const Collection = () => {
               ) : filterProducts.length > 0 ? (
                 <>
                   {viewMode === 'grid' ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                       {currentProducts.map((product, index) => {
                         if (!product.name || !product._id || !product.price || !product.images?.length) {
                           return null;

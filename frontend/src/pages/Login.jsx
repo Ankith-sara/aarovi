@@ -72,7 +72,7 @@ const Login = () => {
   }, [token, navigate]);
 
   useEffect(() => {
-    document.title = 'Login | Aasvi';
+    document.title = 'Login | Aarovi';
   }, []);
 
   // Reset form when switching between Login/SignUp
@@ -211,7 +211,7 @@ const Login = () => {
         <div className="relative z-10 flex flex-col justify-between p-12 xl:p-16 w-full">
           {/* Logo/Brand */}
           <div>
-            <h2 className="text-4xl font-serif font-bold text-white mb-2">AASVI</h2>
+            <h2 className="text-4xl font-serif font-bold text-white mb-2">AAROVI</h2>
             <div className="w-16 h-1 bg-white/60"></div>
           </div>
 
@@ -269,7 +269,7 @@ const Login = () => {
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden mb-8 text-center">
-            <h2 className="text-3xl font-serif font-bold text-text">AASVI</h2>
+            <h2 className="text-3xl font-serif font-bold text-text">AAROVI</h2>
             <div className="w-16 h-1 bg-secondary mx-auto mt-2"></div>
           </div>
 
@@ -544,7 +544,7 @@ const Login = () => {
             <p className="text-center text-text/60 font-light text-sm">
               {currentState === 'Login' ? (
                 <>
-                  New to Aasvi?{' '}
+                  New to Aarovi?{' '}
                   <button
                     type="button"
                     onClick={() => {

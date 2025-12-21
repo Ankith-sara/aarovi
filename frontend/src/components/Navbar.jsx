@@ -115,7 +115,6 @@ const Navbar = () => {
 
   return (
     <>
-      {/* Overlay */}
       <div
         className={`fixed inset-0 bg-black/60 backdrop-blur-sm transition-all duration-300 z-40 ${mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
           }`}
@@ -126,11 +125,9 @@ const Navbar = () => {
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${getNavbarClasses()}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-
-            {/* Logo */}
             <Link to='/' className="flex-shrink-0">
               <span className={`text-3xl font-serif font-bold tracking-tight ${getTextColor()} hover:text-secondary transition-colors`}>
-                AASVI
+                AAROVI
               </span>
             </Link>
 
@@ -139,20 +136,19 @@ const Navbar = () => {
               <NavLink
                 to="/"
                 className={({ isActive }) => `px-5 py-2 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${isActive
-                    ? 'text-secondary bg-background/20'
-                    : `${getTextColor()} ${getHoverClass()}`
+                  ? 'text-secondary bg-background/20'
+                  : `${getTextColor()} ${getHoverClass()}`
                   }`}
               >
                 Home
               </NavLink>
-
-              {/* Women Dropdown */}
+            
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => toggleDropdown('women')}
                   className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${activeDropdown === 'women'
-                      ? 'text-secondary bg-background/20'
-                      : `${getTextColor()} ${getHoverClass()}`
+                    ? 'text-secondary bg-background/20'
+                    : `${getTextColor()} ${getHoverClass()}`
                     }`}
                 >
                   Women
@@ -173,8 +169,8 @@ const Navbar = () => {
                             to={sub.path}
                             onClick={() => handleCategoryClick(sub.name)}
                             className={`block px-5 py-3 text-sm font-medium transition-all duration-200 ${isSubActive
-                                ? 'bg-gradient-to-r from-background/30 to-primary text-secondary'
-                                : 'text-text hover:bg-background/20 hover:text-secondary hover:pl-6'
+                              ? 'bg-gradient-to-r from-background/30 to-primary text-secondary'
+                              : 'text-text hover:bg-background/20 hover:text-secondary hover:pl-6'
                               }`}
                           >
                             {sub.name}
@@ -186,13 +182,12 @@ const Navbar = () => {
                 )}
               </div>
 
-              {/* Men Dropdown */}
               <div className="relative">
                 <button
                   onClick={() => toggleDropdown('men')}
                   className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${activeDropdown === 'men'
-                      ? 'text-secondary bg-background/20'
-                      : `${getTextColor()} ${getHoverClass()}`
+                    ? 'text-secondary bg-background/20'
+                    : `${getTextColor()} ${getHoverClass()}`
                     }`}
                 >
                   Men
@@ -213,8 +208,8 @@ const Navbar = () => {
                             to={sub.path}
                             onClick={() => handleCategoryClick(sub.name)}
                             className={`block px-5 py-3 text-sm font-medium transition-all duration-200 ${isSubActive
-                                ? 'bg-gradient-to-r from-background/30 to-primary text-secondary'
-                                : 'text-text hover:bg-background/20 hover:text-secondary hover:pl-6'
+                              ? 'bg-gradient-to-r from-background/30 to-primary text-secondary'
+                              : 'text-text hover:bg-background/20 hover:text-secondary hover:pl-6'
                               }`}
                           >
                             {sub.name}
@@ -229,25 +224,34 @@ const Navbar = () => {
               <NavLink
                 to="/about"
                 className={({ isActive }) => `px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${isActive
-                    ? 'text-secondary bg-background/20'
-                    : `${getTextColor()} ${getHoverClass()}`
+                  ? 'text-secondary bg-background/20'
+                  : `${getTextColor()} ${getHoverClass()}`
                   }`}
               >
                 About
               </NavLink>
 
               <NavLink
+                to="/customize"
+                className={({ isActive }) => `px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${isActive
+                  ? 'text-secondary bg-background/20'
+                  : `${getTextColor()} ${getHoverClass()}`
+                  }`}
+              >
+                Customize
+              </NavLink>
+
+              <NavLink
                 to="/contact"
                 className={({ isActive }) => `px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${isActive
-                    ? 'text-secondary bg-background/20'
-                    : `${getTextColor()} ${getHoverClass()}`
+                  ? 'text-secondary bg-background/20'
+                  : `${getTextColor()} ${getHoverClass()}`
                   }`}
               >
                 Contact
               </NavLink>
             </div>
 
-            {/* Right Actions */}
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => { setShowSearch(true); navigate('/shop/collection') }}
@@ -262,8 +266,8 @@ const Navbar = () => {
                 <button
                   onClick={() => token ? toggleDropdown('profile') : navigate('/login')}
                   className={`p-2.5 rounded-lg transition-all duration-300 ${activeDropdown === 'profile'
-                      ? 'text-secondary bg-background/20'
-                      : `${getTextColor()} ${getHoverClass()}`
+                    ? 'text-secondary bg-background/20'
+                    : `${getTextColor()} ${getHoverClass()}`
                     }`}
                   aria-label="User Profile"
                 >
@@ -345,7 +349,7 @@ const Navbar = () => {
         }`}>
         <div className="bg-gradient-to-br from-secondary to-secondary/80 p-6">
           <div className="flex items-center justify-between">
-            <span className="text-2xl font-serif font-bold text-white tracking-tight">AASVI</span>
+            <span className="text-2xl font-serif font-bold text-white tracking-tight">AAROVI</span>
             <button
               onClick={() => setMobileMenuOpen(false)}
               className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
@@ -361,14 +365,13 @@ const Navbar = () => {
               to="/"
               onClick={() => setMobileMenuOpen(false)}
               className={({ isActive }) => `block px-5 py-3.5 rounded-lg font-semibold transition-all duration-300 ${isActive
-                  ? 'bg-gradient-to-r from-background/30 to-primary text-secondary shadow-sm'
-                  : 'text-text hover:bg-background/20 hover:text-secondary'
+                ? 'bg-gradient-to-r from-background/30 to-primary text-secondary shadow-sm'
+                : 'text-text hover:bg-background/20 hover:text-secondary'
                 }`}
             >
               Home
             </NavLink>
 
-            {/* Women Mobile */}
             <div>
               <button
                 onClick={() => setActiveDropdown(activeDropdown === 'women-mobile' ? null : 'women-mobile')}
@@ -388,8 +391,8 @@ const Navbar = () => {
                       to={sub.path}
                       onClick={() => { handleCategoryClick(sub.name); setMobileMenuOpen(false); }}
                       className={({ isActive }) => `block px-5 py-2.5 text-sm rounded-lg font-medium transition-all duration-200 ${isActive
-                          ? 'bg-gradient-to-r from-background/30 to-primary text-secondary'
-                          : 'text-text/80 hover:bg-background/10 hover:text-secondary hover:pl-6'
+                        ? 'bg-gradient-to-r from-background/30 to-primary text-secondary'
+                        : 'text-text/80 hover:bg-background/10 hover:text-secondary hover:pl-6'
                         }`}
                     >
                       {sub.name}
@@ -399,7 +402,6 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Men Mobile */}
             <div>
               <button
                 onClick={() => setActiveDropdown(activeDropdown === 'men-mobile' ? null : 'men-mobile')}
@@ -419,8 +421,8 @@ const Navbar = () => {
                       to={sub.path}
                       onClick={() => { handleCategoryClick(sub.name); setMobileMenuOpen(false); }}
                       className={({ isActive }) => `block px-5 py-2.5 text-sm rounded-lg font-medium transition-all duration-200 ${isActive
-                          ? 'bg-gradient-to-r from-background/30 to-primary text-secondary'
-                          : 'text-text/80 hover:bg-background/10 hover:text-secondary hover:pl-6'
+                        ? 'bg-gradient-to-r from-background/30 to-primary text-secondary'
+                        : 'text-text/80 hover:bg-background/10 hover:text-secondary hover:pl-6'
                         }`}
                     >
                       {sub.name}
@@ -434,25 +436,35 @@ const Navbar = () => {
               to="/about"
               onClick={() => setMobileMenuOpen(false)}
               className={({ isActive }) => `block px-5 py-3.5 rounded-lg font-semibold transition-all duration-300 ${isActive
-                  ? 'bg-gradient-to-r from-background/30 to-primary text-secondary shadow-sm'
-                  : 'text-text hover:bg-background/20 hover:text-secondary'
+                ? 'bg-gradient-to-r from-background/30 to-primary text-secondary shadow-sm'
+                : 'text-text hover:bg-background/20 hover:text-secondary'
                 }`}
             >
               About
             </NavLink>
 
             <NavLink
+              to="/customize"
+              onClick={() => setMobileMenuOpen(false)}
+              className={({ isActive }) => `block px-5 py-3.5 rounded-lg font-semibold transition-all duration-300 ${isActive
+                ? 'bg-gradient-to-r from-background/30 to-primary text-secondary shadow-sm'
+                : 'text-text hover:bg-background/20 hover:text-secondary'
+                }`}
+            >
+              Customize
+            </NavLink>
+
+            <NavLink
               to="/contact"
               onClick={() => setMobileMenuOpen(false)}
               className={({ isActive }) => `block px-5 py-3.5 rounded-lg font-semibold transition-all duration-300 ${isActive
-                  ? 'bg-gradient-to-r from-background/30 to-primary text-secondary shadow-sm'
-                  : 'text-text hover:bg-background/20 hover:text-secondary'
+                ? 'bg-gradient-to-r from-background/30 to-primary text-secondary shadow-sm'
+                : 'text-text hover:bg-background/20 hover:text-secondary'
                 }`}
             >
               Contact
             </NavLink>
 
-            {/* Account Section */}
             <div className="pt-6 mt-6 border-t border-background">
               <p className="px-5 text-xs font-bold text-text/50 uppercase tracking-wider mb-3">
                 Account

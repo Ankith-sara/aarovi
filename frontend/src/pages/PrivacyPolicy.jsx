@@ -3,7 +3,7 @@ import { Shield, Eye, Lock, Cookie, Database, Settings, AlertCircle, Mail, Phone
 
 const PrivacyPolicy = () => {
   useEffect(() => {
-    document.title = 'Privacy Policy | Aasvi'
+    document.title = 'Privacy Policy | Aarovi'
   });
 
   return (
@@ -15,7 +15,7 @@ const PrivacyPolicy = () => {
             Privacy Policy
           </h1>
           <p className="text-lg sm:text-xl text-text/70 mb-8 max-w-3xl mx-auto font-light">
-            Your privacy matters to us. This policy explains how Aasvi collects, uses, and protects your personal information when you visit our website or purchase our handcrafted fashion products.
+            Your privacy matters to us. This policy explains how Aarovi collects, uses, and protects your personal information when you visit our website or purchase our handcrafted fashion products.
           </p>
         </div>
       </div>
@@ -31,12 +31,12 @@ const PrivacyPolicy = () => {
           <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <div className="bg-white p-8 rounded-lg shadow-sm border border-[#E8DCC4]">
               <p className="text-text/80 leading-relaxed mb-6">
-                Aasvi Fashions is committed to ensuring that your privacy is protected. When you provide information that identifies you on our website, you can be assured it will only be used in accordance with this privacy statement.
+                Aarovi Fashions is committed to ensuring that your privacy is protected. When you provide information that identifies you on our website, you can be assured it will only be used in accordance with this privacy statement.
               </p>
               <div className="bg-gradient-to-br from-background/30 to-primary p-6 rounded-lg">
                 <h4 className="font-serif font-semibold text-text mb-3">About This Policy</h4>
                 <p className="text-sm text-text/80">
-                  This privacy policy sets out how Aasvi Fashions uses and protects any information 
+                  This privacy policy sets out how Aarovi Fashions uses and protects any information 
                   you provide when you visit our website and/or agree to purchase from us.
                 </p>
               </div>
@@ -358,7 +358,7 @@ const PrivacyPolicy = () => {
                   you may change your mind at any time by writing to or emailing us at:
                 </p>
                 <div className="mt-4 p-4 bg-white/60 rounded-lg">
-                  <p className="text-text font-semibold">aasviofficial@gmail.com</p>
+                  <p className="text-text font-semibold">aaroviofficial@gmail.com</p>
                 </div>
               </div>
             </div>
@@ -388,7 +388,7 @@ const PrivacyPolicy = () => {
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
               <Mail className="w-10 h-10 text-secondary mx-auto mb-4" />
               <h4 className="font-serif font-semibold text-text mb-3">Email</h4>
-              <p className="text-lg text-text mb-2">aasviofficial@gmail.com</p>
+              <p className="text-lg text-text mb-2">aaroviofficial@gmail.com</p>
               <p className="text-sm text-text/60">Response within 24 hours</p>
             </div>
 
@@ -405,7 +405,7 @@ const PrivacyPolicy = () => {
           <div className="mt-12 max-w-3xl mx-auto bg-gradient-to-r from-background to-primary p-10 rounded-lg text-center shadow-lg">
             <h3 className="font-serif text-2xl font-semibold text-text mb-4">Your Privacy Matters</h3>
             <p className="text-text/90 leading-relaxed">
-              At Aasvi, we are committed to protecting your privacy and handling your data with care and transparency. 
+              At Aarovi, we are committed to protecting your privacy and handling your data with care and transparency. 
               Your trust is important to us, and we continuously work to ensure your information remains secure.
             </p>
           </div>
