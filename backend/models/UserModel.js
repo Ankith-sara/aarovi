@@ -20,11 +20,18 @@ const userSchema = new mongoose.Schema(
         phone: String,
       }
     ],
-    wishlist: [{ 
-        type: String,
-        default: [] 
+    wishlist: [{
+      type: String,
+      default: []
     }],
-    cartData: { type: Object, default: {} },
+    savedCustomizations: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "customization"
+    }],
+    cartData: {
+      type: Object,
+      default: {}
+    },
     role: { type: String, default: 'user', enum: ['user', 'admin'] },
     isAdmin: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
@@ -32,7 +39,7 @@ const userSchema = new mongoose.Schema(
     otp: { type: String },
     otpExpiry: { type: Date },
   },
-  { timestamps: true, minimize: false }
+  { timestamps: true, minimize: false },
 );
 
 const userModel = mongoose.models.user || mongoose.model('user', userSchema);

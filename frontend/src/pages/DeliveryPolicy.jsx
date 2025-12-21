@@ -1,205 +1,274 @@
 import React, { useEffect } from 'react';
-import Title from '../components/Title';
-import { Truck, Globe, Package, Clock, MapPin, Mail } from 'lucide-react';
+import { Truck, Globe, Package, Clock, MapPin, Mail, Phone, CheckCircle, AlertCircle } from 'lucide-react';
 
 const ShippingDeliveryPolicy = () => {
   useEffect(() => {
-    document.title = 'Shipping & Delivery Policy | Aharyas'
+    document.title = 'Shipping & Delivery Policy | Aasvi'
   });
 
   return (
-    <div className="min-h-screen text-black mt-20">
-      <section className="py-20 px-4 sm:px-8 md:px-10 lg:px-20">
-        <div className="max-w-5xl mx-auto text-center">
-          <div className="text-3xl text-center mb-8">
-            <Title text1="SHIPPING &" text2="DELIVERY POLICY" />
-          </div>
-          <p className="text-xl text-gray-600 font-light leading-relaxed max-w-3xl mx-auto">
-            We ensure your handcrafted Aharyas pieces reach you safely and promptly, whether you're in India or anywhere across the globe.
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6">
+            Shipping & Delivery
+          </h1>
+          <p className="text-lg sm:text-xl text-text/70 mb-8 max-w-3xl mx-auto font-light">
+            We ensure your handcrafted Aasvi pieces reach you safely and promptly, whether you're in India or anywhere across the globe.
           </p>
         </div>
-      </section>
+      </div>
 
       {/* Shipping Methods */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20">
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-2xl font-light tracking-wider text-black mb-6">SHIPPING METHODS</h2>
+            <Package className="w-12 h-12 mx-auto mb-4 text-secondary" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Shipping Methods</h2>
+            <p className="text-text/70 mt-4 max-w-2xl mx-auto">
+              We partner with trusted courier services to deliver your orders safely
+            </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-16">
-            <div className="bg-white shadow-lg p-8 border-l-4 border-black hover:shadow-xl transition-shadow">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                  <Globe size={24} />
+          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            {/* International Shipping */}
+            <div className="bg-white rounded-lg shadow-sm border border-background overflow-hidden hover:shadow-md transition-shadow">
+              <div className="bg-gradient-to-r from-background/20 to-primary p-6 border-b border-background">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-secondary rounded-full flex items-center justify-center">
+                    <Globe size={28} className="text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-serif font-semibold text-text">International Shipping</h3>
+                    <p className="text-sm text-text/60">Worldwide Delivery</p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-medium text-black">International Shipping</h3>
               </div>
 
-              <div className="space-y-4 text-gray-700 font-light">
-                <p> For our global customers, we ship through registered international courier companies and international speed post services. </p>
+              <div className="p-6 space-y-4">
+                <p className="text-text/80 font-light leading-relaxed">
+                  For our global customers, we ship through registered international courier companies and international speed post services.
+                </p>
                 
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <h4 className="font-medium text-black mb-2">Available Services:</h4>
-                  <ul className="space-y-1 text-sm">
-                    <li>• Registered International Courier Companies</li>
-                    <li>• International Speed Post</li>
+                <div className="bg-gradient-to-br from-background/20 to-primary p-5 rounded-lg">
+                  <h4 className="font-semibold text-text mb-3 flex items-center gap-2">
+                    <CheckCircle size={16} className="text-secondary" />
+                    Available Services
+                  </h4>
+                  <ul className="space-y-2 text-sm text-text/80">
+                    <li className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Registered International Courier Companies</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <span>International Speed Post</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Tracking & Insurance Included</span>
+                    </li>
                   </ul>
                 </div>
 
-                <p className="text-sm text-gray-600 italic">
-                  All international shipments include tracking and insurance for your peace of mind.
-                </p>
+                <div className="flex items-start gap-2 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                  <AlertCircle size={16} className="text-blue-500 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-blue-800">
+                    All international shipments include tracking and insurance for your peace of mind.
+                  </p>
+                </div>
               </div>
             </div>
 
             {/* Domestic Shipping */}
-            <div className="bg-white shadow-lg p-8 border-l-4 border-black hover:shadow-xl transition-shadow">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                  <MapPin size={24} />
+            <div className="bg-white rounded-lg shadow-sm border border-background overflow-hidden hover:shadow-md transition-shadow">
+              <div className="bg-gradient-to-r from-background/20 to-primary p-6 border-b border-background">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-secondary rounded-full flex items-center justify-center">
+                    <MapPin size={28} className="text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-serif font-semibold text-text">Domestic Shipping</h3>
+                    <p className="text-sm text-text/60">All Across India</p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-medium text-black">Domestic Shipping</h3>
               </div>
 
-              <div className="space-y-4 text-gray-700 font-light">
-                <p> Within India, we ensure reliable delivery through registered domestic courier companies and speed post services. </p>
+              <div className="p-6 space-y-4">
+                <p className="text-text/80 font-light leading-relaxed">
+                  Within India, we ensure reliable delivery through registered domestic courier companies and speed post services.
+                </p>
                 
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <h4 className="font-medium text-black mb-2">Available Services:</h4>
-                  <ul className="space-y-1 text-sm">
-                    <li>• Registered Domestic Courier Companies</li>
-                    <li>• Speed Post</li>
+                <div className="bg-gradient-to-br from-background/20 to-primary p-5 rounded-lg">
+                  <h4 className="font-semibold text-text mb-3 flex items-center gap-2">
+                    <CheckCircle size={16} className="text-secondary" />
+                    Available Services
+                  </h4>
+                  <ul className="space-y-2 text-sm text-text/80">
+                    <li className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Registered Domestic Courier Companies</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Speed Post Services</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Coverage Across Major Cities & Towns</span>
+                    </li>
                   </ul>
                 </div>
 
-                <p className="text-sm text-gray-600 italic">
-                  Fast and secure delivery across all major cities and towns in India.
-                </p>
+                <div className="flex items-start gap-2 p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
+                  <CheckCircle size={16} className="text-green-500 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-green-800">
+                    Fast and secure delivery across all major cities and towns in India.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Processing & Delivery Timeline */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20">
+      {/* Processing Timeline */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-primary">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                <Clock size={24} />
-              </div>
-              <h2 className="text-2xl font-light tracking-wider text-black">PROCESSING TIME</h2>
-            </div>
+            <Clock className="w-12 h-12 mx-auto mb-4 text-secondary" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Processing Timeline</h2>
+            <p className="text-text/70 mt-4 max-w-2xl mx-auto">
+              Your order journey from confirmation to delivery
+            </p>
           </div>
 
-          <div className="bg-gradient-to-r from-gray-100 to-white p-12 border-l-4 border-black">
-            <div className="max-w-4xl mx-auto text-center">
-              <div className="mb-8">
-                <div className="text-4xl font-light mb-4">0-7 Days</div>
-                <h3 className="text-xl font-medium text-black mb-4">Order Processing & Shipping</h3>
-                <p className="text-gray-700 font-light leading-relaxed">
+          <div className="max-w-5xl mx-auto">
+            <div className="bg-white rounded-lg shadow-lg border border-background overflow-hidden mb-8">
+              <div className="bg-gradient-to-r from-background to-primary p-10 text-center">
+                <div className="inline-block mb-4">
+                  <div className="text-6xl font-serif font-bold text-secondary">0-7</div>
+                  <div className="text-xl font-semibold text-text mt-2">Business Days</div>
+                </div>
+                <h3 className="text-2xl font-serif font-semibold text-text mb-3">Order Processing & Shipping</h3>
+                <p className="text-text/70 font-light leading-relaxed max-w-2xl mx-auto">
                   Orders are processed and shipped within 0-7 days from order confirmation, 
                   or as per the delivery date agreed at the time of order placement.
                 </p>
               </div>
+            </div>
 
-              <div className="grid md:grid-cols-3 gap-6 text-center">
-                <div className="bg-white p-6 shadow-sm rounded-lg">
-                  <Package className="text-gray-600 mx-auto mb-3" size={24} />
-                  <h4 className="font-medium text-black mb-2">Order Confirmation</h4>
-                  <p className="text-sm text-gray-600">Within 24 hours of payment</p>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-background text-center hover:shadow-md transition-shadow">
+                <div className="w-16 h-16 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Package size={28} className="text-secondary" />
                 </div>
-                
-                <div className="bg-white p-6 shadow-sm rounded-lg">
-                  <Truck className="text-gray-600 mx-auto mb-3" size={24} />
-                  <h4 className="font-medium text-black mb-2">Processing</h4>
-                  <p className="text-sm text-gray-600">0-7 days preparation time</p>
+                <h4 className="font-serif font-semibold text-text mb-2">Order Confirmation</h4>
+                <p className="text-sm text-text/60">Within 24 hours of payment verification</p>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-background text-center hover:shadow-md transition-shadow">
+                <div className="w-16 h-16 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Clock size={28} className="text-secondary" />
                 </div>
-                
-                <div className="bg-white p-6 shadow-sm rounded-lg">
-                  <Globe className="text-gray-600 mx-auto mb-3" size={24} />
-                  <h4 className="font-medium text-black mb-2">Shipment</h4>
-                  <p className="text-sm text-gray-600">Handed to courier partner</p>
+                <h4 className="font-serif font-semibold text-text mb-2">Processing Time</h4>
+                <p className="text-sm text-text/60">0-7 days preparation and quality check</p>
+              </div>
+              
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-background text-center hover:shadow-md transition-shadow">
+                <div className="w-16 h-16 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Truck size={28} className="text-secondary" />
                 </div>
+                <h4 className="font-serif font-semibold text-text mb-2">Shipment</h4>
+                <p className="text-sm text-text/60">Handed to courier with tracking</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Important Notice */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20">
-        <div className="max-w-5xl mx-auto">
-          <div className="bg-white/90 backdrop-blur-sm p-12 shadow-xl border-l-4 border-black">
-            <h2 className="text-2xl font-light tracking-wider text-black mb-8 text-center">IMPORTANT NOTICE</h2>
-            
-            <div className="space-y-6 text-gray-700 font-light leading-relaxed">
-              <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <Clock size={16} />
-                  Delivery Responsibility
-                </h3>
-                <p>
-                  <strong>Aharyas is not liable for any delay in delivery by courier companies or postal authorities.</strong> 
-                  We guarantee to hand over the consignment to the courier company or postal authorities within 
-                  the specified timeframe from the date of order and payment.
-                </p>
-              </div>
+      {/* Important Information */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <AlertCircle className="w-12 h-12 mx-auto mb-4 text-secondary" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Important Information</h2>
+            <p className="text-text/70 mt-4 max-w-2xl mx-auto">
+              Please read these important shipping details carefully
+            </p>
+          </div>
 
-              <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <MapPin size={16} />
-                  Delivery Address
-                </h3>
-                <p>
-                  All orders will be delivered to the address provided by the buyer at the time of order placement. 
-                  Please ensure your address is complete and accurate to avoid delivery delays.
-                </p>
+          <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-background">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center flex-shrink-0">
+                  <Clock size={20} className="text-secondary" />
+                </div>
+                <h3 className="font-serif font-semibold text-text">Delivery Responsibility</h3>
               </div>
+              <p className="text-sm text-text/70 leading-relaxed">
+                <strong className="text-text">Aasvi is not liable for delays by courier companies.</strong> We guarantee to hand over your order to the courier within the specified timeframe from confirmation and payment.
+              </p>
+            </div>
 
-              <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <Mail size={16} />
-                  Delivery Confirmation
-                </h3>
-                <p>
-                  Delivery confirmation will be sent to your registered email address. 
-                  You'll receive tracking information once your order is dispatched.
-                </p>
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-background">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center flex-shrink-0">
+                  <MapPin size={20} className="text-secondary" />
+                </div>
+                <h3 className="font-serif font-semibold text-text">Delivery Address</h3>
               </div>
+              <p className="text-sm text-text/70 leading-relaxed">
+                All orders are delivered to the address you provide during checkout. Please ensure your address is complete and accurate to avoid delays.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-background">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center flex-shrink-0">
+                  <Mail size={20} className="text-secondary" />
+                </div>
+                <h3 className="font-serif font-semibold text-text">Tracking Information</h3>
+              </div>
+              <p className="text-sm text-text/70 leading-relaxed">
+                You'll receive tracking information via email once your order is dispatched. Use this to monitor your package's journey.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Contact Support */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20 bg-gray-50">
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-2xl font-light tracking-wider text-black mb-8">SHIPPING SUPPORT</h2>
-          <p className="text-gray-700 font-light mb-8 max-w-2xl mx-auto">
-            For any issues with your shipment or delivery, our customer support team is ready to assist you.
-          </p>
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-background">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary mb-4">Need Shipping Support?</h2>
+            <p className="text-text/70 max-w-2xl mx-auto">
+              For any issues with your shipment or delivery, our customer support team is ready to assist you.
+            </p>
+          </div>
           
-          <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-            <div className="bg-white p-6 shadow-sm border-l-4 border-black">
-              <h4 className="font-medium text-black mb-2">Helpdesk Phone</h4>
-              <p className="text-lg text-gray-700 mb-1">+91 9063284008</p>
-              <p className="text-lg text-gray-700 mb-1">+91 9121157804</p>
-              <p className="text-sm text-gray-500">Mon-Sat: 9 AM - 6 PM</p>
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-12">
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
+              <Phone className="w-10 h-10 text-secondary mx-auto mb-4" />
+              <h4 className="font-serif font-semibold text-text mb-3">Phone Support</h4>
+              <p className="text-xl text-text mb-2">+91 9399336666</p>
+              <p className="text-sm text-text/60">Mon-Sat: 9 AM - 6 PM</p>
             </div>
             
-            <div className="bg-white p-6 shadow-sm border-l-4 border-black">
-              <h4 className="font-medium text-black mb-2">Email Support</h4>
-              <p className="text-lg text-gray-700 mb-1">aharyasofficial@gmail.com</p>
-              <p className="text-sm text-gray-500">Response within 24 hours</p>
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
+              <Mail className="w-10 h-10 text-secondary mx-auto mb-4" />
+              <h4 className="font-serif font-semibold text-text mb-3">Email Support</h4>
+              <p className="text-xl text-text mb-2">aasviofficial@gmail.com</p>
+              <p className="text-sm text-text/60">Response within 24 hours</p>
             </div>
           </div>
 
-          <div className="mt-12 bg-black text-white p-8 rounded-lg max-w-3xl mx-auto">
-            <h3 className="font-light text-xl mb-4">Tracking Your Order</h3>
-            <p className="font-light leading-relaxed">
+          <div className="max-w-3xl mx-auto bg-gradient-to-r from-background to-primary p-10 rounded-lg text-center shadow-lg">
+            <Package className="w-12 h-12 text-secondary mx-auto mb-4" />
+            <h3 className="font-serif text-2xl font-semibold text-text mb-4">Track Your Order</h3>
+            <p className="text-text/90 leading-relaxed">
               Once your order is shipped, you'll receive a tracking number via email. 
               Use this number to track your package's journey from our facility to your doorstep.
             </p>

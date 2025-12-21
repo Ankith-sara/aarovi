@@ -3,7 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import {
   ChevronRight, Heart, Clock, User, ShoppingBag, Settings, LogOut, Edit2, Trash2,
-  MapPinHouse, X, Camera, Mail, Calendar, Plus, ArrowRight, AlertCircle,
+  MapPinHouse, X, Camera, Mail, Calendar, Plus, ArrowRight, AlertCircle, Package,
 } from "lucide-react";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
@@ -55,7 +55,7 @@ const MyProfile = () => {
         }
       })
       .catch(() => navigate("/login"));
-  }, [navigate]);
+  }, [navigate, backendUrl]);
 
   // Fetch recently viewed products
   useEffect(() => {
@@ -130,7 +130,7 @@ const MyProfile = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.put(
-        `${import.meta.env.VITE_BACKEND_URL}/api/user/address/${userData._id}`,
+        `${backendUrl}/api/user/address/${userData._id}`,
         { addressObj, index },
         { headers: { token } }
       );
@@ -152,7 +152,7 @@ const MyProfile = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.delete(
-        `${import.meta.env.VITE_BACKEND_URL}/api/user/address/${userData._id}`,
+        `${backendUrl}/api/user/address/${userData._id}`,
         { data: { index }, headers: { token } }
       );
       if (res.data.success) {
@@ -176,18 +176,18 @@ const MyProfile = () => {
 
   if (!userData) {
     return (
-      <div className="min-h-screen bg-white text-black mt-20">
-        <section className="py-12 px-4 sm:px-8 md:px-10 lg:px-20">
+      <div className="min-h-screen bg-white mt-20">
+        <section className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-8">
-              <div className="text-3xl mb-6">
-                <Title text1="MY" text2="PROFILE" />
-              </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-text mb-4">
+                My Profile
+              </h1>
             </div>
             <div className="flex items-center justify-center py-20">
               <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
-                <span className="text-gray-600 font-light">Loading profile...</span>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto mb-4"></div>
+                <span className="text-text/60 font-light">Loading profile...</span>
               </div>
             </div>
           </div>
@@ -197,16 +197,16 @@ const MyProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black mt-20">
+    <div className="min-h-screen bg-white">
       {/* Logout Confirmation Modal */}
       {logoutModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-fadeIn">
-          <div className="bg-white rounded-sm shadow-2xl max-w-md w-full animate-slideUp">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="text-xl font-medium tracking-wide">Confirm Logout</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full animate-slideUp border border-background">
+            <div className="p-6 border-b border-background flex items-center justify-between">
+              <h3 className="text-xl font-serif font-semibold text-text">Confirm Logout</h3>
               <button
                 onClick={() => setLogoutModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-text/40 hover:text-text transition-colors p-1 hover:bg-background/30 rounded-full"
                 aria-label="Close"
               >
                 <X size={20} />
@@ -214,21 +214,21 @@ const MyProfile = () => {
             </div>
 
             <div className="p-6">
-              <p className="text-gray-600 font-light leading-relaxed">
+              <p className="text-text/70 font-light leading-relaxed">
                 Are you sure you want to log out of your account?
               </p>
             </div>
 
-            <div className="p-6 border-t border-gray-200 flex gap-3">
+            <div className="p-6 border-t border-background flex gap-3">
               <button
                 onClick={() => setLogoutModal(false)}
-                className="flex-1 py-3 border border-gray-300 text-black font-light tracking-wide hover:bg-gray-50 transition-all duration-300 uppercase"
+                className="flex-1 py-3 border-2 border-background text-text font-semibold rounded-lg hover:bg-background/20 transition-all duration-300"
               >
                 Cancel
               </button>
               <button
                 onClick={() => { setLogoutModal(false); logout(); }}
-                className="flex-1 py-3 bg-white text-black border border-gray-300 font-light tracking-wide hover:bg-red-100 hover:text-red-600 transition-all duration-300 uppercase"
+                className="flex-1 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-all duration-300"
               >
                 Logout
               </button>
@@ -239,13 +239,13 @@ const MyProfile = () => {
 
       {/* Delete Address Confirmation Modal */}
       {deleteAddressModal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-fadeIn">
-          <div className="bg-white rounded-sm shadow-2xl max-w-md w-full animate-slideUp">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="text-xl font-medium tracking-wide">Delete Address</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full animate-slideUp border border-background">
+            <div className="p-6 border-b border-background flex items-center justify-between">
+              <h3 className="text-xl font-serif font-semibold text-text">Delete Address</h3>
               <button
                 onClick={() => setDeleteAddressModal({ open: false, index: -1 })}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-text/40 hover:text-text transition-colors p-1 hover:bg-background/30 rounded-full"
                 aria-label="Close"
               >
                 <X size={20} />
@@ -253,22 +253,22 @@ const MyProfile = () => {
             </div>
 
             <div className="p-6">
-              <p className="text-gray-600 font-light leading-relaxed">
+              <p className="text-text/70 font-light leading-relaxed">
                 Are you sure you want to delete this delivery address? This action cannot be undone.
               </p>
             </div>
 
-            <div className="p-6 border-t border-gray-200 flex gap-3">
+            <div className="p-6 border-t border-background flex gap-3">
               <button
                 onClick={() => setDeleteAddressModal({ open: false, index: -1 })}
-                className="flex-1 py-3 border border-gray-300 text-black font-light tracking-wide hover:bg-gray-50 transition-all duration-300 uppercase"
+                className="flex-1 py-3 border-2 border-background text-text font-semibold rounded-lg hover:bg-background/20 transition-all duration-300"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeleteAddress}
                 disabled={loading}
-                className="flex-1 py-3 bg-red-500 text-white font-light tracking-wide hover:bg-red-600 transition-all duration-300 uppercase disabled:opacity-50"
+                className="flex-1 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-all duration-300 disabled:opacity-50"
               >
                 {loading ? "Deleting..." : "Delete"}
               </button>
@@ -279,16 +279,16 @@ const MyProfile = () => {
 
       {/* Error Modal */}
       {errorModal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-fadeIn">
-          <div className="bg-white rounded-sm shadow-2xl max-w-md w-full animate-slideUp">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full animate-slideUp border border-background">
+            <div className="p-6 border-b border-background flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <AlertCircle size={20} className="text-red-500" />
-                <h3 className="text-xl font-medium tracking-wide">Error</h3>
+                <h3 className="text-xl font-serif font-semibold text-text">Error</h3>
               </div>
               <button
                 onClick={() => setErrorModal({ open: false, message: "" })}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-text/40 hover:text-text transition-colors p-1 hover:bg-background/30 rounded-full"
                 aria-label="Close"
               >
                 <X size={20} />
@@ -296,15 +296,15 @@ const MyProfile = () => {
             </div>
 
             <div className="p-6">
-              <p className="text-gray-600 font-light leading-relaxed">
+              <p className="text-text/70 font-light leading-relaxed">
                 {errorModal.message}
               </p>
             </div>
 
-            <div className="p-6 border-t border-gray-200">
+            <div className="p-6 border-t border-background">
               <button
                 onClick={() => setErrorModal({ open: false, message: "" })}
-                className="w-full py-3 bg-black text-white font-light tracking-wide hover:bg-gray-800 transition-all duration-300 uppercase"
+                className="w-full py-3 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-all duration-300"
               >
                 OK
               </button>
@@ -313,30 +313,29 @@ const MyProfile = () => {
         </div>
       )}
 
-      <section className="py-12 px-4 sm:px-8 md:px-10 lg:px-20">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <div className="text-3xl mb-3">
-              <Title text1="MY" text2="PROFILE" />
-            </div>
-            <p className="text-gray-500 font-light">
-              Manage your account and personal preferences
-            </p>
-          </div>
+      {/* Hero Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-text mb-4">
+            My Profile
+          </h1>
+          <p className="text-text/60 font-light text-lg">
+            Manage your account and personal preferences
+          </p>
         </div>
       </section>
 
       {/* Profile Content */}
-      <section className="px-4 sm:px-8 md:px-10 lg:px-20 pb-20">
+      <section className="px-4 sm:px-6 lg:px-8 pb-20">
         <div className="max-w-7xl mx-auto">
           <div className="grid xl:grid-cols-[1fr_2fr] gap-8">
             {/* Profile Information Card */}
             <div className="space-y-6">
-              <div className="bg-white border border-gray-200 shadow-sm">
-                <div className="p-6 border-b border-gray-100 bg-gray-50">
+              <div className="bg-white rounded-lg border border-background shadow-lg">
+                <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
                   <div className="flex items-center gap-2">
-                    <User size={16} className="text-gray-400" />
-                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <User size={18} className="text-secondary" />
+                    <span className="text-sm font-semibold text-text uppercase tracking-wider">
                       Profile Information
                     </span>
                   </div>
@@ -345,45 +344,45 @@ const MyProfile = () => {
                 <div className="p-6">
                   <div className="flex flex-col items-center mb-6">
                     <div className="relative group">
-                      <div className="w-32 h-32 overflow-hidden">
+                      <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-background shadow-lg">
                         <img
                           src={userData.image}
                           alt="Profile"
-                          className="w-full h-full object-cover rounded-full"
+                          className="w-full h-full object-cover"
                         />
                       </div>
                       <button
-                        className="absolute inset-0 flex items-center justify-center opacity-0 rounded-full group-hover:opacity-100 bg-black bg-opacity-20 transition-all duration-200"
+                        className="absolute bottom-2 right-2 w-10 h-10 bg-secondary text-white rounded-full flex items-center justify-center shadow-lg hover:bg-secondary/90 transition-all duration-300"
                         onClick={() => setActiveSection("Edit Profile")}
                         title="Edit Photo"
                       >
-                        <Camera className="text-white" size={16} />
+                        <Camera size={16} />
                       </button>
                     </div>
 
-                    <h3 className="text-xl font-medium text-black mt-4 mb-2 tracking-wide">{userData.name}</h3>
+                    <h3 className="text-2xl font-serif font-bold text-text mt-4 mb-2">{userData.name}</h3>
 
                     <div className="flex items-center gap-2 mb-4">
-                      <div className="w-2 h-2 rounded bg-green-500"></div>
-                      <span className="text-sm text-gray-500 font-light uppercase tracking-wider">Active Member</span>
+                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                      <span className="text-sm text-text/60 font-semibold uppercase tracking-wider">Active Member</span>
                     </div>
                   </div>
 
                   <div className="space-y-4 mb-6">
-                    <div className="border border-gray-200 p-4">
+                    <div className="bg-gradient-to-br from-background/20 to-primary rounded-lg p-4 border border-background">
                       <div className="flex items-center gap-2 mb-2">
-                        <Mail size={14} className="text-gray-400" />
-                        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Email</span>
+                        <Mail size={14} className="text-secondary" />
+                        <span className="text-xs font-semibold text-text/60 uppercase tracking-wider">Email</span>
                       </div>
-                      <p className="text-sm text-black font-light">{userData.email}</p>
+                      <p className="text-sm text-text font-medium">{userData.email}</p>
                     </div>
 
-                    <div className="border border-gray-200 p-4">
+                    <div className="bg-gradient-to-br from-background/20 to-primary rounded-lg p-4 border border-background">
                       <div className="flex items-center gap-2 mb-2">
-                        <Calendar size={14} className="text-gray-400" />
-                        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Member Since</span>
+                        <Calendar size={14} className="text-secondary" />
+                        <span className="text-xs font-semibold text-text/60 uppercase tracking-wider">Member Since</span>
                       </div>
-                      <p className="text-sm text-black font-light">
+                      <p className="text-sm text-text font-medium">
                         {new Date(userData.createdAt).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'long',
@@ -393,54 +392,58 @@ const MyProfile = () => {
                     </div>
                   </div>
 
-                  <button className="w-full py-3 bg-black text-white font-light tracking-wide hover:bg-gray-800 transition-all duration-300 uppercase" onClick={() => setActiveSection("Edit Profile")}>
-                    Edit Profile
+                  <button
+                    className="w-full py-4 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-all duration-300 shadow-lg flex items-center justify-center gap-2"
+                    onClick={() => setActiveSection("Edit Profile")}
+                  >
+                    <Edit2 size={16} />
+                    <span>Edit Profile</span>
                   </button>
                 </div>
               </div>
 
               {/* Sign Out Card */}
-              <div className="bg-white border border-gray-200 shadow-sm">
+              <div className="bg-white rounded-lg border border-background shadow-lg overflow-hidden">
                 <button
-                  className="w-full flex items-center justify-center gap-3 p-6 text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300 font-light tracking-wide"
+                  className="w-full flex items-center justify-center gap-3 p-6 text-text/60 hover:text-red-600 hover:bg-red-50 transition-all duration-300 font-semibold"
                   onClick={() => setLogoutModal(true)}
                 >
                   <LogOut size={18} />
-                  <span className="uppercase">Sign Out</span>
+                  <span>Sign Out</span>
                 </button>
               </div>
             </div>
 
             {/* Account Management */}
             <div className="space-y-8">
-              <div className="bg-white border border-gray-200 shadow-sm">
-                <div className="p-6 border-b border-gray-100 bg-gray-50">
+              <div className="bg-white rounded-lg border border-background shadow-lg">
+                <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
                   <div className="flex items-center gap-2">
-                    <Settings size={16} className="text-gray-400" />
-                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <Settings size={18} className="text-secondary" />
+                    <span className="text-sm font-semibold text-text uppercase tracking-wider">
                       Account Management
                     </span>
                   </div>
                 </div>
 
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-background/50">
                   {menuItems.map((item, index) => {
                     const content = (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-6 hover:bg-gray-50 transition-colors duration-300 cursor-pointer"
+                        className="flex items-center justify-between p-6 hover:bg-background/10 transition-colors duration-300 cursor-pointer"
                         onClick={() => !item.link && setActiveSection(item.text)}
                       >
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 flex items-center justify-center border border-gray-200 text-gray-600">
+                          <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-gradient-to-br from-background/30 to-primary text-secondary border border-background">
                             {item.icon}
                           </div>
                           <div>
-                            <p className="font-medium text-black tracking-wide">{item.text}</p>
-                            <p className="text-sm text-gray-500 font-light">{item.description}</p>
+                            <p className="font-serif font-semibold text-text">{item.text}</p>
+                            <p className="text-sm text-text/60 font-light">{item.description}</p>
                           </div>
                         </div>
-                        <ChevronRight size={18} className="text-gray-400" />
+                        <ChevronRight size={18} className="text-text/40" />
                       </div>
                     );
 
@@ -456,12 +459,12 @@ const MyProfile = () => {
               </div>
 
               {/* Recently Viewed Section */}
-              <div className="bg-white border border-gray-200 shadow-sm">
-                <div className="p-6 border-b border-gray-100 bg-gray-50">
+              <div className="bg-white rounded-lg border border-background shadow-lg">
+                <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Clock size={16} className="text-gray-400" />
-                      <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <Clock size={18} className="text-secondary" />
+                      <span className="text-sm font-semibold text-text uppercase tracking-wider">
                         Recently Viewed
                       </span>
                     </div>
@@ -470,20 +473,20 @@ const MyProfile = () => {
 
                 {recentlyViewed.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-16 px-6">
-                    <div className="w-16 h-16 border-2 border-gray-300 flex items-center justify-center mb-6">
-                      <Clock size={24} className="text-gray-400" />
+                    <div className="w-20 h-20 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mb-6">
+                      <Clock size={32} className="text-secondary" />
                     </div>
                     <div className="text-center max-w-md mb-8">
-                      <h3 className="text-xl font-medium mb-3 tracking-wide uppercase">No Recent Activity</h3>
-                      <p className="text-gray-600 font-light leading-relaxed">
+                      <h3 className="text-2xl font-serif font-semibold mb-3 text-text">No Recent Activity</h3>
+                      <p className="text-text/70 font-light leading-relaxed">
                         Start browsing our amazing collection to see your recently viewed items here
                       </p>
                     </div>
                     <button
                       onClick={() => navigate('/collection')}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-black text-white font-light tracking-wide hover:bg-gray-800 transition-all duration-300"
+                      className="px-8 py-4 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-all duration-300 flex items-center gap-2 shadow-lg"
                     >
-                      <span>DISCOVER PRODUCTS</span>
+                      <span>Discover Products</span>
                       <ArrowRight size={16} />
                     </button>
                   </div>
@@ -502,7 +505,7 @@ const MyProfile = () => {
                     </div>
                     {recentlyViewed.length > 8 && (
                       <div className="text-center mt-6">
-                        <button className="px-6 py-3 border border-gray-300 text-black font-light tracking-wide hover:border-black hover:bg-gray-50 transition-all duration-300 uppercase">
+                        <button className="px-6 py-3 border-2 border-background text-text font-semibold rounded-lg hover:bg-background/20 transition-all duration-300">
                           View More
                         </button>
                       </div>
@@ -517,24 +520,24 @@ const MyProfile = () => {
 
       {/* Edit Profile Modal */}
       {activeSection === "Edit Profile" && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-sm shadow-xl overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-              <h2 className="text-sm font-medium tracking-wide uppercase">Edit Profile</h2>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
+          <div className="bg-white w-full max-w-md rounded-lg shadow-2xl overflow-hidden border border-background animate-slideUp">
+            <div className="px-6 py-4 border-b border-background bg-gradient-to-r from-background/20 to-primary">
+              <h2 className="text-xl font-serif font-semibold text-text">Edit Profile</h2>
             </div>
-            <form className="p-4 space-y-4" onSubmit={handleEditProfileSubmit}>
+            <form className="p-6 space-y-6" onSubmit={handleEditProfileSubmit}>
               {/* Profile Image */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <div className="relative">
-                  <div className="w-16 h-16 bg-gray-100 border border-gray-200 overflow-hidden flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-background/30 to-primary border-2 border-background overflow-hidden flex items-center justify-center">
                     {editProfile.image ? (
                       <img src={editProfile.image} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
-                      <User size={20} className="text-gray-400" />
+                      <User size={24} className="text-text/40" />
                     )}
                   </div>
-                  <label className="absolute -bottom-1 -right-1 bg-black text-white p-1 cursor-pointer hover:bg-gray-800 transition-colors">
-                    <Camera size={10} />
+                  <label className="absolute -bottom-1 -right-1 bg-secondary text-white p-2 rounded-full cursor-pointer hover:bg-secondary/90 transition-colors shadow-lg">
+                    <Camera size={14} />
                     <input
                       type="file"
                       accept="image/*"
@@ -543,17 +546,17 @@ const MyProfile = () => {
                     />
                   </label>
                 </div>
-                <p className="text-xs text-gray-500 font-light">Click camera to change photo</p>
+                <p className="text-sm text-text/60 font-light">Click camera icon to change photo</p>
               </div>
 
               {/* Form Fields */}
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-xs text-gray-500 uppercase tracking-wider mb-1">
+                  <label className="block text-xs text-text/60 font-semibold uppercase tracking-wider mb-2">
                     Full Name
                   </label>
                   <input
-                    className="w-full px-3 py-2 border border-gray-300 bg-white focus:outline-none focus:border-black transition-colors font-light text-sm"
+                    className="w-full px-4 py-3 border-2 border-background rounded-lg bg-white focus:outline-none focus:border-secondary transition-colors font-light"
                     value={editProfile.name}
                     onChange={e => setEditProfile({ ...editProfile, name: e.target.value })}
                     placeholder="Enter your name"
@@ -562,11 +565,11 @@ const MyProfile = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs text-gray-500 uppercase tracking-wider mb-1">
+                  <label className="block text-xs text-text/60 font-semibold uppercase tracking-wider mb-2">
                     Email Address
                   </label>
                   <input
-                    className="w-full px-3 py-2 border border-gray-300 bg-white focus:outline-none focus:border-black transition-colors font-light text-sm"
+                    className="w-full px-4 py-3 border-2 border-background rounded-lg bg-white focus:outline-none focus:border-secondary transition-colors font-light"
                     value={editProfile.email}
                     onChange={e => setEditProfile({ ...editProfile, email: e.target.value })}
                     placeholder="Enter your email"
@@ -576,17 +579,17 @@ const MyProfile = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-black text-white px-4 py-2 hover:bg-gray-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-light tracking-wide uppercase"
+                  className="flex-1 bg-secondary text-white px-6 py-4 rounded-lg hover:bg-secondary/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg"
                   disabled={loading}
                 >
-                  {loading ? "Saving..." : "Save"}
+                  {loading ? "Saving..." : "Save Changes"}
                 </button>
                 <button
                   type="button"
-                  className="px-4 py-2 border border-gray-300 text-black hover:border-black hover:bg-gray-50 transition-all duration-300 text-xs font-light tracking-wide uppercase"
+                  className="px-6 py-4 border-2 border-background text-text rounded-lg hover:bg-background/20 transition-all duration-300 font-semibold"
                   onClick={() => setActiveSection(null)}
                 >
                   Cancel
@@ -599,87 +602,92 @@ const MyProfile = () => {
 
       {/* Address Management Modal */}
       {activeSection === "Delivery Address" && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-2xl shadow-xl overflow-hidden max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-100 bg-gray-50">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
+          <div className="bg-white w-full max-w-3xl rounded-lg shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto border border-background animate-slideUp">
+            <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary sticky top-0 z-10">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <MapPinHouse size={16} className="text-gray-400" />
+                <div className="flex items-center gap-3">
+                  <MapPinHouse size={20} className="text-secondary" />
                   <div>
-                    <h2 className="text-lg font-medium tracking-wide uppercase">Delivery Addresses</h2>
-                    <p className="text-gray-500 text-sm font-light">Manage your delivery locations</p>
+                    <h2 className="text-2xl font-serif font-bold text-text">Delivery Addresses</h2>
+                    <p className="text-text/60 text-sm font-light">Manage your delivery locations</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setAddressModal({ open: true, address: {}, index: -1 })}
-                  className="flex items-center gap-2 bg-black text-white px-4 py-2 font-light hover:bg-gray-800 transition-colors uppercase tracking-wide"
+                  className="flex items-center gap-2 bg-secondary text-white px-4 py-3 rounded-lg font-semibold hover:bg-secondary/90 transition-colors shadow-lg"
                 >
-                  <Plus size={14} />
+                  <Plus size={16} />
                   Add New
                 </button>
               </div>
+            </div>
 
-              <div className="p-6">
-                {(!userData.addresses || userData.addresses.length === 0) ? (
-                  <div className="text-center py-12">
-                    <div className="w-16 h-16 border-2 border-gray-300 flex items-center justify-center mx-auto mb-6">
-                      <MapPinHouse size={24} className="text-gray-400" />
-                    </div>
-                    <div className="text-center max-w-md mb-8 mx-auto">
-                      <h3 className="text-xl font-medium text-black mb-3 tracking-wide uppercase">No Addresses Found</h3>
-                      <p className="text-gray-600 font-light leading-relaxed">Add your first delivery address to get started</p>
-                    </div>
-                    <button
-                      onClick={() => setAddressModal({ open: true, address: {}, index: -1 })}
-                      className="px-6 py-3 bg-black text-white font-light tracking-wide hover:bg-gray-800 transition-colors uppercase"
-                    >
-                      Add Address
-                    </button>
+            <div className="p-6">
+              {(!userData.addresses || userData.addresses.length === 0) ? (
+                <div className="text-center py-16">
+                  <div className="w-20 h-20 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                    <MapPinHouse size={32} className="text-secondary" />
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    {userData.addresses.map((addr, idx) => (
-                      <div key={idx} className="border border-gray-200 p-4 hover:shadow-sm transition-shadow">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <div className="font-medium text-black mb-1 tracking-wide">
-                              {addr.label || `Address ${idx + 1}`}
-                            </div>
-                            <div className="text-sm text-gray-600 font-light">
-                              {addr.address}, {addr.city}, {addr.state} {addr.zip}, {addr.country}
-                              {addr.phone && (
-                                <><br />Phone: {addr.phone}</>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex gap-2 ml-4">
-                            <button
-                              onClick={() => setAddressModal({ open: true, address: addr, index: idx })}
-                              className="p-2 text-gray-400 hover:text-black hover:bg-gray-100 transition-colors"
-                            >
-                              <Edit2 size={14} />
-                            </button>
-                            <button
-                              onClick={() => setDeleteAddressModal({ open: true, index: idx })}
-                              className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                  <div className="text-center max-w-md mb-8 mx-auto">
+                    <h3 className="text-2xl font-serif font-semibold text-text mb-3">No Addresses Found</h3>
+                    <p className="text-text/70 font-light leading-relaxed">Add your first delivery address to get started</p>
                   </div>
-                )}
-
-                <div className="flex justify-end mt-6 pt-6 border-t border-gray-200">
                   <button
-                    onClick={() => setActiveSection(null)}
-                    className="px-6 py-3 border border-gray-300 text-black font-light hover:border-black hover:bg-gray-50 transition-all duration-300 uppercase tracking-wide"
+                    onClick={() => setAddressModal({ open: true, address: {}, index: -1 })}
+                    className="px-8 py-4 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-colors shadow-lg"
                   >
-                    Close
+                    Add Address
                   </button>
                 </div>
+              ) : (
+                <div className="space-y-4">
+                  {userData.addresses.map((addr, idx) => (
+                    <div key={idx} className="border-2 border-background rounded-lg p-6 hover:shadow-lg transition-shadow bg-gradient-to-br from-background/10 to-primary">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="font-serif font-bold text-text mb-2 text-lg flex items-center gap-2">
+                            <MapPinHouse size={16} className="text-secondary" />
+                            {addr.label || `Address ${idx + 1}`}
+                          </div>
+                          <div className="text-sm text-text/70 font-light space-y-1">
+                            <p>{addr.address}</p>
+                            <p>{addr.city}, {addr.state} {addr.zip}</p>
+                            <p>{addr.country}</p>
+                            {addr.phone && (
+                              <p className="flex items-center gap-2 mt-2 text-text/60">
+                                <span className="font-semibold">Phone:</span> {addr.phone}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex gap-2 ml-4">
+                          <button
+                            onClick={() => setAddressModal({ open: true, address: addr, index: idx })}
+                            className="p-3 text-text/40 hover:text-secondary hover:bg-background/30 rounded-lg transition-colors border-2 border-transparent hover:border-background"
+                          >
+                            <Edit2 size={16} />
+                          </button>
+                          <button
+                            onClick={() => setDeleteAddressModal({ open: true, index: idx })}
+                            className="p-3 text-text/40 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors border-2 border-transparent hover:border-red-200"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex justify-end mt-6 pt-6 border-t border-background">
+                <button
+                  onClick={() => setActiveSection(null)}
+                  className="px-6 py-3 border-2 border-background text-text font-semibold rounded-lg hover:bg-background/20 transition-all duration-300"
+                >
+                  Close
+                </button>
               </div>
             </div>
           </div>
@@ -688,10 +696,10 @@ const MyProfile = () => {
 
       {/* Address Form Modal */}
       {addressModal.open && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[60] p-4">
-          <div className="bg-white w-full max-w-md shadow-xl overflow-hidden">
-            <div className="p-6 border-b border-gray-100 bg-gray-50">
-              <h2 className="text-lg font-medium tracking-wide uppercase">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-fadeIn">
+          <div className="bg-white w-full max-w-lg rounded-lg shadow-2xl overflow-hidden border border-background animate-slideUp">
+            <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
+              <h2 className="text-xl font-serif font-bold text-text">
                 {addressModal.index >= 0 ? "Edit Address" : "Add New Address"}
               </h2>
             </div>
@@ -745,12 +753,14 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
         e.preventDefault();
         onSave(form);
       }}
-      className="space-y-4"
+      className="space-y-5"
     >
       <div>
-        <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Address Label (Optional)</label>
+        <label className="block text-xs font-semibold text-text/60 uppercase tracking-wider mb-2">
+          Address Label (Optional)
+        </label>
         <input
-          className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:border-black transition-colors font-light"
+          className="w-full px-4 py-3 border-2 border-background rounded-lg focus:outline-none focus:border-secondary transition-colors font-light"
           value={form.label}
           onChange={e => setForm(f => ({ ...f, label: e.target.value }))}
           placeholder="e.g., Home, Office"
@@ -758,9 +768,11 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Street Address</label>
+        <label className="block text-xs font-semibold text-text/60 uppercase tracking-wider mb-2">
+          Street Address
+        </label>
         <input
-          className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:border-black transition-colors font-light"
+          className="w-full px-4 py-3 border-2 border-background rounded-lg focus:outline-none focus:border-secondary transition-colors font-light"
           value={form.address}
           onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
           placeholder="Enter your street address"
@@ -770,9 +782,11 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">City</label>
+          <label className="block text-xs font-semibold text-text/60 uppercase tracking-wider mb-2">
+            City
+          </label>
           <input
-            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:border-black transition-colors font-light"
+            className="w-full px-4 py-3 border-2 border-background rounded-lg focus:outline-none focus:border-secondary transition-colors font-light"
             value={form.city}
             onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
             placeholder="City"
@@ -780,9 +794,11 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">State</label>
+          <label className="block text-xs font-semibold text-text/60 uppercase tracking-wider mb-2">
+            State
+          </label>
           <input
-            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:border-black transition-colors font-light"
+            className="w-full px-4 py-3 border-2 border-background rounded-lg focus:outline-none focus:border-secondary transition-colors font-light"
             value={form.state}
             onChange={e => setForm(f => ({ ...f, state: e.target.value }))}
             placeholder="State"
@@ -793,9 +809,11 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">ZIP Code</label>
+          <label className="block text-xs font-semibold text-text/60 uppercase tracking-wider mb-2">
+            ZIP Code
+          </label>
           <input
-            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:border-black transition-colors font-light"
+            className="w-full px-4 py-3 border-2 border-background rounded-lg focus:outline-none focus:border-secondary transition-colors font-light"
             value={form.zip}
             onChange={e => setForm(f => ({ ...f, zip: e.target.value }))}
             placeholder="ZIP"
@@ -803,9 +821,11 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Country</label>
+          <label className="block text-xs font-semibold text-text/60 uppercase tracking-wider mb-2">
+            Country
+          </label>
           <input
-            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:border-black transition-colors font-light"
+            className="w-full px-4 py-3 border-2 border-background rounded-lg focus:outline-none focus:border-secondary transition-colors font-light"
             value={form.country}
             onChange={e => setForm(f => ({ ...f, country: e.target.value }))}
             placeholder="Country"
@@ -815,10 +835,12 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Phone Number</label>
+        <label className="block text-xs font-semibold text-text/60 uppercase tracking-wider mb-2">
+          Phone Number
+        </label>
         <input
           type="tel"
-          className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:border-black transition-colors font-light"
+          className="w-full px-4 py-3 border-2 border-background rounded-lg focus:outline-none focus:border-secondary transition-colors font-light"
           value={form.phone}
           onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
           placeholder="Enter phone number for this address"
@@ -828,14 +850,14 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
       <div className="flex gap-3 pt-4">
         <button
           type="submit"
-          className="flex-1 bg-black text-white px-6 py-3 font-light hover:bg-gray-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
+          className="flex-1 bg-secondary text-white px-6 py-4 rounded-lg font-semibold hover:bg-secondary/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           disabled={loading}
         >
           {loading ? "Saving..." : "Save Address"}
         </button>
         <button
           type="button"
-          className="px-6 py-3 border border-gray-300 text-black font-light hover:border-black hover:bg-gray-50 transition-all duration-300 uppercase tracking-wide"
+          className="px-6 py-4 border-2 border-background text-text font-semibold rounded-lg hover:bg-background/20 transition-all duration-300"
           onClick={onCancel}
         >
           Cancel

@@ -1,9 +1,7 @@
 import express from 'express';
 import upload from '../middlewares/multer.js';
 import authUser from '../middlewares/Auth.js';
-import {
-    loginUser, registerUser, adminLogin, getUserDetails, getUserProfile, updateUserProfile, changePassword, addOrUpdateAddress, deleteAddress, sendOtp, verifyOtp, sendAdminOtp, verifyAdminOtp, subscribeNewsletter
-} from '../controllers/UserController.js';
+import { loginUser, registerUser, adminLogin, getUserDetails, getUserProfile, updateUserProfile, changePassword, addOrUpdateAddress, deleteAddress, sendOtp, verifyOtp, sendAdminOtp, verifyAdminOtp, subscribeNewsletter } from '../controllers/UserController.js';
 
 const userRouter = express.Router();
 

@@ -3,7 +3,7 @@ import { ShopContext } from '../context/ShopContext';
 import Title from './Title';
 import ProductItem from './ProductItem';
 import { NavLink } from 'react-router-dom';
-import { ChevronRight, ArrowRight } from 'lucide-react';
+import { ChevronRight, ArrowRight, Sparkles, ShoppingBag } from 'lucide-react';
 
 function LatestCollection() {
   const { products } = useContext(ShopContext);
@@ -102,23 +102,39 @@ function LatestCollection() {
   }, [products, selectedCategory]);
 
   return (
-    <section className="bg-white py-10 px-4 sm:px-6 md:px-10 lg:px-20">
+    <section className="bg-gradient-to-b from-white to-background/20 py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col mb-10 items-center text-center gap-2">
+        {/* Header Section */}
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-12 gap-6">
           <div>
-            <Title text1="LATEST" text2="COLLECTION" />
+            <h2 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-3">
+              Latest Collection
+            </h2>
+            <p className="text-text/60 font-light text-lg max-w-2xl">
+              Discover our newest handcrafted pieces, carefully curated to celebrate heritage and style
+            </p>
           </div>
-          <NavLink to="/shop/collection" className="mt-4 md:mt-0 group flex items-center text-xs font-medium hover:text-gray-700 transition-colors">
-            View all collections
-            <ChevronRight size={16} className="ml-1 transition-transform group-hover:translate-x-1" />
+          
+          <NavLink 
+            to="/shop/collection" 
+            className="group inline-flex items-center gap-2 bg-secondary text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary/90 transition-all duration-300 shadow-md hover:shadow-lg self-start lg:self-auto"
+          >
+            <span>View All Collection</span>
+            <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
           </NavLink>
         </div>
 
         {latestProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-4 gap-y-8 md:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
             {latestProducts.map((item, index) => (
-              <div key={index} className="group">
-                <div className="relative overflow-hidden">
+              <div 
+                key={index} 
+                className="group relative"
+                style={{ 
+                  animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both` 
+                }}
+              >
+                <div className="relative overflow-hidden rounded-xl bg-white shadow-md hover:shadow-2xl transition-all duration-500 border border-background">
                   <ProductItem
                     id={item._id}
                     image={item.images}
@@ -126,27 +142,72 @@ function LatestCollection() {
                     price={item.price}
                     company={item.company}
                   />
+                  
+                  {/* New Badge */}
                   {index < 1 && (
-                    <div className="absolute top-3 right-3 bg-black text-white text-xs px-3 py-1 font-medium">
-                      NEW
+                    <div className="absolute top-3 right-3 z-10">
+                      <div className="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wide shadow-lg flex items-center gap-1">
+                        <Sparkles size={12} />
+                        <span>New</span>
+                      </div>
                     </div>
                   )}
+                  
+                  {/* Hover Overlay */}
                 </div>
+                
+                {/* Decorative Corner - appears on hover */}
+                <div className="absolute -bottom-2 -right-2 w-12 h-12 border-2 border-secondary/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 -z-10"></div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-gray-400">
-            <div className="w-16 h-16 border-2 border-gray-200 rounded-full flex items-center justify-center mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
+          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-background shadow-sm">
+            <div className="w-20 h-20 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mb-6">
+              <ShoppingBag size={32} className="text-secondary" />
             </div>
-            <p className="text-lg font-medium">No products available</p>
-            <p className="mt-2 text-sm text-gray-500">New arrivals coming soon</p>
+            <h3 className="text-2xl font-serif font-semibold text-text mb-3">
+              No Products Available
+            </h3>
+            <p className="text-text/60 font-light text-lg mb-6">
+              New arrivals coming soon
+            </p>
+            <NavLink 
+              to="/shop/collection"
+              className="inline-flex items-center gap-2 border-2 border-secondary text-secondary px-6 py-3 rounded-lg font-semibold hover:bg-secondary hover:text-white transition-all duration-300"
+            >
+              <span>Explore Other Collections</span>
+              <ArrowRight size={18} />
+            </NavLink>
+          </div>
+        )}
+
+        {/* View More Link (Mobile) */}
+        {latestProducts.length > 0 && (
+          <div className="mt-12 text-center lg:hidden">
+            <NavLink 
+              to="/shop/collection" 
+              className="inline-flex items-center gap-2 text-secondary font-semibold hover:text-secondary/80 transition-colors group"
+            >
+              <span>View All Products</span>
+              <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+            </NavLink>
           </div>
         )}
       </div>
+
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </section>
   );
 }

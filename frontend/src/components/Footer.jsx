@@ -1,147 +1,175 @@
 import React from 'react';
-import { assets } from '../assets/frontend_assets/assets';
-import { NavLink } from 'react-router-dom';
 import {
-  Instagram, Linkedin, Twitter, Mail, Phone, Shield, Truck, Heart
+  Instagram, Linkedin, Twitter, Mail, Phone, MapPin, Shield, Truck, Heart, ArrowRight
 } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-black text-white">
-      {/* Main Footer Content */}
+    <footer className="bg-text">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Brand Section */}
-          <div className="lg:col-span-5 space-y-4 lg:space-y-6">
+          <div className="lg:col-span-4 space-y-6">
             <div>
-              <img className="h-10 sm:h-12 mb-4 lg:mb-6" src={assets.logo_white} alt="Aharya Logo" />
-              <p className="text-gray-400 leading-relaxed font-light text-sm sm:text-base pr-0 lg:pr-4">
-                Bringing you the finest curated handcrafted products with a commitment to quality,
+              <h2 className="text-3xl font-serif font-bold text-white mb-4">Aasvi</h2>
+              <p className="text-white/60 leading-relaxed font-light text-sm">
+                Bringing you the finest curated handcrafted fashion with a commitment to quality,
                 authenticity, and exceptional service. Each piece tells a story of artisan craftsmanship
                 and cultural heritage.
               </p>
             </div>
 
             {/* Social Links */}
-            <div className="flex space-x-3">
-              <NavLink
-                to="https://www.instagram.com/aharyass/"
-                target='_blank'
-                rel="noopener noreferrer"
-                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-700 hover:border-white hover:bg-gray-800 transition-all duration-300 rounded-lg group"
-              >
-                <Instagram size={16} className="group-hover:text-white transition-colors" />
-              </NavLink>
-              <NavLink
-                to="https://in.linkedin.com/in/aharya-in-3a265633a"
-                target='_blank'
-                rel="noopener noreferrer"
-                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-700 hover:border-white hover:bg-gray-800 transition-all duration-300 rounded-lg group"
-              >
-                <Linkedin size={16} className="group-hover:text-white transition-colors" />
-              </NavLink>
-              <NavLink
-                to="https://www.pinterest.com/"
-                target='_blank'
-                rel="noopener noreferrer"
-                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-700 hover:border-white hover:bg-gray-800 transition-all duration-300 rounded-lg group"
-              >
-                <Twitter size={16} className="group-hover:text-white transition-colors" />
-              </NavLink>
+            <div>
+              <h4 className="text-white text-sm font-semibold mb-3 uppercase tracking-wider">Connect With Us</h4>
+              <div className="flex space-x-3">
+                <a
+                  href="https://www.instagram.com/aasviofficial/"
+                  target='_blank'
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 flex items-center justify-center bg-white/10 border border-white/20 hover:bg-secondary hover:border-secondary transition-all duration-300 rounded-lg group backdrop-blur-sm"
+                >
+                  <Instagram size={18} className="text-white" />
+                </a>
+                <a
+                  href="https://in.linkedin.com/company/aasvi"
+                  target='_blank'
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 flex items-center justify-center bg-white/10 border border-white/20 hover:bg-secondary hover:border-secondary transition-all duration-300 rounded-lg group backdrop-blur-sm"
+                >
+                  <Linkedin size={18} className="text-white" />
+                </a>
+                <a
+                  href="https://twitter.com/aasviofficial"
+                  target='_blank'
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 flex items-center justify-center bg-white/10 border border-white/20 hover:bg-secondary hover:border-secondary transition-all duration-300 rounded-lg group backdrop-blur-sm"
+                >
+                  <Twitter size={18} className="text-white" />
+                </a>
+              </div>
             </div>
           </div>
 
           {/* Navigation Sections */}
-          <div className="lg:col-span-7 lg:pl-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="lg:col-span-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {/* Quick Links */}
-              <div className="space-y-3 lg:space-y-4">
-                <div className="flex items-center">
-                  <h4 className="text-xs sm:text-sm font-medium tracking-widest uppercase">Quick Links</h4>
-                </div>
-                <ul className="space-y-2 lg:space-y-3">
+              <div className="space-y-4">
+                <h4 className="text-white text-sm font-semibold tracking-wider uppercase border-b border-secondary/90 pb-2">
+                  Quick Links
+                </h4>
+                <ul className="space-y-3">
                   <li>
-                    <NavLink to='/about' className="text-gray-400 hover:text-white transition-colors font-light flex items-center group text-sm">
-                      About Us
-                    </NavLink>
+                    <a href='/about' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">About Us</span>
+                    </a>
                   </li>
                   <li>
-                    <NavLink to='/contact' className="text-gray-400 hover:text-white transition-colors font-light flex items-center group text-sm">
-                      Contact Us
-                    </NavLink>
+                    <a href='/contact' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">Contact Us</span>
+                    </a>
                   </li>
                   <li>
-                    <NavLink to='/shop/collection' className="text-gray-400 hover:text-white transition-colors font-light flex items-center group text-sm">
-                      Shop Collection
-                    </NavLink>
+                    <a href='/shop/collection' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">Collection</span>
+                    </a>
                   </li>
                   <li>
-                    <NavLink to='/sell' className="text-gray-400 hover:text-white transition-colors font-light flex items-center group text-sm">
-                      Sell With Us
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink to='/blog' className="text-gray-400 hover:text-white transition-colors font-light flex items-center group text-sm">
-                      Blog
-                    </NavLink>
+                    <a href='/shop/new-arrivals' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">New Arrivals</span>
+                    </a>
                   </li>
                 </ul>
               </div>
 
-              {/* Policies & Legal */}
-              <div className="space-y-3 lg:space-y-4">
-                <div className="flex items-center">
-                  <h4 className="text-xs sm:text-sm font-medium tracking-widest uppercase">Policies</h4>
-                </div>
-                <ul className="space-y-2 lg:space-y-3">
+              {/* Policies */}
+              <div className="space-y-4">
+                <h4 className="text-white text-sm font-semibold tracking-wider uppercase border-b border-secondary/90 pb-2">
+                  Policies
+                </h4>
+                <ul className="space-y-3">
                   <li>
-                    <NavLink to='/shippingpolicy' className="text-gray-400 hover:text-white transition-colors font-light flex items-center group text-sm">
-                      Shipping Policy
-                    </NavLink>
+                    <a href='/shippingpolicy' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">Shipping Policy</span>
+                    </a>
                   </li>
                   <li>
-                    <NavLink to='/refundpolicy' className="text-gray-400 hover:text-white transition-colors font-light flex items-center group text-sm">
-                      Return Policy
-                    </NavLink>
+                    <a href='/refundpolicy' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">Return Policy</span>
+                    </a>
                   </li>
                   <li>
-                    <NavLink to='/privacypolicy' className="text-gray-400 hover:text-white transition-colors font-light flex items-center group text-sm">
-                      Privacy Policy
-                    </NavLink>
+                    <a href='/privacypolicy' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">Privacy Policy</span>
+                    </a>
                   </li>
                   <li>
-                    <NavLink to='/termsconditions' className="text-gray-400 hover:text-white transition-colors font-light flex items-center group text-sm">
-                      Terms & Conditions
-                    </NavLink>
+                    <a href='/termsconditions' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">Terms & Conditions</span>
+                    </a>
                   </li>
                 </ul>
               </div>
 
-              {/* Support & Help */}
-              <div className="space-y-3 lg:space-y-4 sm:col-span-2 lg:col-span-1">
-                <div className="flex items-center">
-                  <h4 className="text-xs sm:text-sm font-medium tracking-widest uppercase">Support</h4>
-                </div>
-                <ul className="space-y-2 lg:space-y-3">
+              {/* Support */}
+              <div className="space-y-4">
+                <h4 className="text-white text-sm font-semibold tracking-wider uppercase border-b border-secondary/90 pb-2">
+                  Support
+                </h4>
+                <ul className="space-y-3">
                   <li>
-                    <NavLink to='/support' className="text-gray-400 hover:text-white transition-colors font-light flex items-center group text-sm">
-                      Get Help
-                    </NavLink>
+                    <a href='/support' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">Get Help</span>
+                    </a>
                   </li>
                   <li>
-                    <NavLink to='/faqs' className="text-gray-400 hover:text-white transition-colors font-light flex items-center group text-sm">
-                      FAQs
-                    </NavLink>
+                    <a href='/faqs' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">FAQs</span>
+                    </a>
                   </li>
-                  <li className="text-gray-400 hover:text-white transition-colors font-light flex items-center group text-sm">
-                    <Phone size={12} className="mr-2 opacity-50 group-hover:opacity-100 flex-shrink-0" />
-                    +91 9063284008
+                  <li>
+                    <a href='/track-order' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">Track Order</span>
+                    </a>
                   </li>
-                  <li className="text-gray-400 hover:text-white transition-colors font-light flex items-center group text-sm">
-                    <Mail size={12} className="mr-2 opacity-50 group-hover:opacity-100 flex-shrink-0" />
-                    aharyasofficial@gmail.com
+                  <li>
+                    <a href='/size-guide' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">Size Guide</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Contact Info */}
+              <div className="space-y-4">
+                <h4 className="text-white text-sm font-semibold tracking-wider uppercase border-b border-secondary/90 pb-2">
+                  Contact
+                </h4>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-2 text-white/60 font-light text-sm">
+                    <Phone size={16} className="text-white/60 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <a href="tel:+919399336666" className="hover:text-white transition-colors block">
+                        +91 9399336666
+                      </a>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-2 text-white/60 font-light text-sm">
+                    <Mail size={16} className="text-white/60 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <a href="mailto:aasviofficial@gmail.com" className="hover:text-white transition-colors break-all">
+                        aasviofficial@gmail.com
+                      </a>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-2 text-white/60 font-light text-sm">
+                    <MapPin size={16} className="text-white/60 flex-shrink-0 mt-0.5" />
+                    <span>
+                      Hyderabad, Telangana<br />502345, India
+                    </span>
                   </li>
                 </ul>
               </div>
@@ -151,51 +179,30 @@ const Footer = () => {
       </div>
 
       {/* Bottom Footer */}
-      <div className="border-t border-gray-800">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-6">
-
+      <div className="border-t border-white/20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Copyright */}
-            <div className="text-center lg:text-left order-2 lg:order-1">
-              <p className="text-gray-400 text-xs sm:text-sm font-light mb-1">
-                &copy; {currentYear} Aharya. All rights reserved.
-              </p>
-              <p className="text-gray-500 text-xs font-light">
-                Handcrafted with care, delivered with precision.
+            <div className="text-center md:text-left">
+              <p className="text-white/60 text-sm font-light">
+                &copy; {currentYear} <span className="text-secondary font-semibold">Aasvi Fashions</span>. All rights reserved.
               </p>
             </div>
 
-            {/* Quick Links */}
-            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs order-3 lg:order-2">
-              <NavLink to="/faqs" className="text-gray-500 hover:text-white transition-colors duration-300 font-light">
+            {/* Quick Footer Links */}
+            <div className="flex flex-wrap items-center justify-center gap-4 text-xs">
+              <a href="/faqs" className="text-white/60 hover:text-white transition-colors duration-300 font-light">
                 FAQs
-              </NavLink>
-              <span className="text-gray-700 hidden sm:inline">|</span>
-              <NavLink to="/support" className="text-gray-500 hover:text-white transition-colors duration-300 font-light">
+              </a>
+              <span className="text-white/20">•</span>
+              <a href="/support" className="text-white/60 hover:text-white transition-colors duration-300 font-light">
                 Support
-              </NavLink>
-              <span className="text-gray-700 hidden sm:inline">|</span>
-              <NavLink to="/sitemap" className="text-gray-500 hover:text-white transition-colors duration-300 font-light">
+              </a>
+              <span className="text-white/20">•</span>
+              <a href="/sitemap" className="text-white/60 hover:text-white transition-colors duration-300 font-light">
                 Sitemap
-              </NavLink>
+              </a>
             </div>
-
-            {/* Trust Indicators */}
-            <div className="flex items-center gap-3 sm:gap-4 order-1 lg:order-3">
-              <div className="flex items-center text-xs text-gray-500">
-                <Shield size={10} className="mr-1 text-green-400 flex-shrink-0" />
-                <span className="font-light">Secure</span>
-              </div>
-              <div className="flex items-center text-xs text-gray-500">
-                <Truck size={10} className="mr-1 text-blue-400 flex-shrink-0" />
-                <span className="font-light">Fast Shipping</span>
-              </div>
-              <div className="flex items-center text-xs text-gray-500">
-                <Heart size={10} className="mr-1 text-red-400 flex-shrink-0" />
-                <span className="font-light">Ethical</span>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>

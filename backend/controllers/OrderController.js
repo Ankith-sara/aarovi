@@ -24,6 +24,46 @@ const sendOrderNotifications = async (order, user) => {
   }
 };
 
+// Helper function to process order items
+const processOrderItems = (items) => {
+  return items.map(item => {
+    if (item.type === 'customization') {
+      // Custom order item
+      return {
+        type: 'CUSTOM',
+        name: item.name || 'Custom Dress',
+        quantity: item.quantity || 1,
+        basePrice: item.price || 0,
+        finalPrice: item.price || 0,
+        customization: {
+          gender: item.gender,
+          dressType: item.dressType,
+          fabric: item.fabric,
+          color: item.color,
+          measurements: item.measurements || {},
+          designNotes: item.designNotes || "",
+          referenceImages: item.referenceImages || [],
+          aiPrompt: item.aiPrompt || ""
+        },
+        productionStatus: 'DESIGNING',
+        image: item.images?.[0] || item.image || ""
+      };
+    } else {
+      // Regular product item
+      return {
+        productId: item._id,
+        type: 'READY_MADE',
+        name: item.name,
+        quantity: item.quantity || 1,
+        basePrice: item.price,
+        finalPrice: item.price,
+        size: item.size,
+        image: item.images?.[0] || item.image || ""
+      };
+    }
+  });
+};
+
 // Placing orders using COD Method
 const placeOrder = async (req, res) => {
   try {
@@ -36,9 +76,12 @@ const placeOrder = async (req, res) => {
       });
     }
 
+    // Process items (handle both regular and custom items)
+    const processedItems = processOrderItems(items);
+
     const orderData = {
       userId,
-      items,
+      items: processedItems,
       amount,
       address,
       paymentMethod: "COD",
@@ -49,6 +92,7 @@ const placeOrder = async (req, res) => {
     const newOrder = new orderModel(orderData);
     await newOrder.save();
 
+    // Clear cart after order
     await userModel.findByIdAndUpdate(userId, { cartData: {} });
 
     const user = await userModel.findById(userId);
@@ -84,7 +128,7 @@ const verifyCOD = async (req, res) => {
     }
 
     const order = await orderModel.findById(orderId);
-    
+
     if (!order) {
       return res.status(404).json({
         success: false,
@@ -117,15 +161,18 @@ const placeOrderRazorpay = async (req, res) => {
     const { userId, items, amount, address } = req.body;
 
     if (!amount || !userId || !items || !address) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "All fields required" 
+      return res.status(400).json({
+        success: false,
+        message: "All fields required"
       });
     }
 
+    // Process items (handle both regular and custom items)
+    const processedItems = processOrderItems(items);
+
     const orderData = {
       userId,
-      items,
+      items: processedItems,
       amount,
       address,
       paymentMethod: "Razorpay",
@@ -146,9 +193,9 @@ const placeOrderRazorpay = async (req, res) => {
     };
 
     const razorpayOrder = await razorpayInstance.orders.create(options);
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       order: razorpayOrder,
       orderId: newOrder._id
     });
@@ -171,7 +218,7 @@ const verifyRazorpay = async (req, res) => {
 
     if (orderId && !razorpay_payment_id) {
       const order = await orderModel.findById(orderId);
-      
+
       if (!order) {
         return res.status(404).json({
           success: false,
@@ -239,13 +286,21 @@ const verifyRazorpay = async (req, res) => {
   }
 };
 
-// All orders
+// All orders for admin
 const allOrders = async (req, res) => {
   try {
     const adminId = req.user.id;
     const adminProducts = await productModel.find({ adminId: adminId }).select('_id');
     const adminProductIds = adminProducts.map(p => p._id);
-    const orders = await orderModel.find({ 'items.productId': { $in: adminProductIds } })
+
+    // Find orders containing admin's products OR custom orders
+    const orders = await orderModel.find({
+      $or: [
+        { 'items.productId': { $in: adminProductIds } },
+        { 'items.type': 'CUSTOM' }
+      ]
+    }).populate('userId', 'name email').sort({ date: -1 });
+
     res.json({ success: true, orders })
   } catch (error) {
     console.log(error)
@@ -257,7 +312,7 @@ const allOrders = async (req, res) => {
 const userOrders = async (req, res) => {
   try {
     const { userId } = req.body;
-    const orders = await orderModel.find({ userId })
+    const orders = await orderModel.find({ userId }).sort({ date: -1 });
     res.json({ success: true, orders })
   } catch (error) {
     console.log(error)
@@ -265,12 +320,11 @@ const userOrders = async (req, res) => {
   }
 }
 
-// Update orders status - NOW WITH EMAIL NOTIFICATIONS
+// Update order status
 const updateStatus = async (req, res) => {
   try {
     const { orderId, status } = req.body;
 
-    // Get current order to check previous status
     const order = await orderModel.findById(orderId);
     if (!order) {
       return res.status(404).json({ success: false, message: "Order not found" });
@@ -278,19 +332,14 @@ const updateStatus = async (req, res) => {
 
     const previousStatus = order.status;
 
-    // Update the status
     await orderModel.findByIdAndUpdate(orderId, { status });
 
-    // Get user for email notifications
     const user = await userModel.findById(order.userId);
 
-    // Send email notifications based on status change
     if (user && user.email) {
-      // Refresh order data with updated status
       const updatedOrder = await orderModel.findById(orderId);
 
       if (status === "Shipping" && previousStatus !== "Shipping") {
-        // Send shipping notification
         try {
           await sendShippingEmail(updatedOrder, user);
           console.log(`Shipping email sent for order ${orderId}`);
@@ -300,7 +349,6 @@ const updateStatus = async (req, res) => {
       }
 
       if (status === "Delivered" && previousStatus !== "Delivered") {
-        // Send delivered notification
         try {
           await sendDeliveredEmail(updatedOrder, user);
           console.log(`Delivered email sent for order ${orderId}`);
@@ -318,6 +366,49 @@ const updateStatus = async (req, res) => {
   }
 }
 
+// Update production status for custom items
+const updateProductionStatus = async (req, res) => {
+  try {
+    const { orderId, itemIndex, productionStatus } = req.body;
+
+    if (!orderId || itemIndex === undefined || !productionStatus) {
+      return res.status(400).json({
+        success: false,
+        message: "orderId, itemIndex, and productionStatus are required"
+      });
+    }
+
+    const order = await orderModel.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    if (!order.items[itemIndex]) {
+      return res.status(404).json({ success: false, message: "Item not found in order" });
+    }
+
+    if (order.items[itemIndex].type !== 'CUSTOM') {
+      return res.status(400).json({
+        success: false,
+        message: "Production status only applicable to custom items"
+      });
+    }
+
+    order.items[itemIndex].productionStatus = productionStatus;
+    await order.save();
+
+    res.json({
+      success: true,
+      message: "Production status updated",
+      order
+    });
+
+  } catch (error) {
+    console.error("Update production status error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Get order status
 const orderStatus = async (req, res) => {
   try {
@@ -333,4 +424,4 @@ const orderStatus = async (req, res) => {
   }
 };
 
-export { verifyRazorpay, verifyCOD, placeOrder, placeOrderRazorpay, allOrders, userOrders, updateStatus, orderStatus };
+export { verifyRazorpay, verifyCOD, placeOrder, placeOrderRazorpay, allOrders, userOrders, updateStatus, updateProductionStatus, orderStatus };

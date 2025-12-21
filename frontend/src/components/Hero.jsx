@@ -1,96 +1,60 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
+import { Sparkles, ShoppingBag, Users, ArrowRight } from 'lucide-react';
 
 const Hero = () => {
-  const lettersRef = useRef([]);
-  const videoRef = useRef(null);
-  const [videoLoaded, setVideoLoaded] = useState(false);
-
-  const brandName = "AHARYAS";
-
-  useEffect(() => {
-    lettersRef.current.forEach((letter, index) => {
-      setTimeout(() => letter?.classList.add("letter-active"), 180 * index);
-    });
-
-    if (videoRef.current && videoLoaded) {
-      videoRef.current.playbackRate = 1.15;
-    }
-  }, [videoLoaded]);
-
   return (
-    <div className="relative w-full h-screen overflow-hidden m-0 p-0 bg-black">
-      <img
-        src="https://res.cloudinary.com/dfzhqsfp7/video/upload/so_1,f_auto,q_auto,w_1600/v1751705180/hero_nrnwhy.jpg"
-        alt="Hero Poster"
-        className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-700
-        ${videoLoaded ? "opacity-0" : "opacity-100"}`}
-      />
-
-      <video
-        ref={videoRef}
-        onLoadedData={() => setVideoLoaded(true)}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="none"
-        className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-700
-        ${videoLoaded ? "opacity-100" : "opacity-0"}`}
-      >
-        <source
-          src="https://res.cloudinary.com/dfzhqsfp7/video/upload/f_auto,q_auto:good,vc_auto,w_1600/hero_nrnwhy.mp4"
-          type="video/mp4"
-        />
-      </video>
-
-      <div className="absolute inset-0 flex flex-col justify-center items-center text-gray-200 z-10">
-        <div className="relative overflow-hidden">
-          <div className="flex overflow-hidden">
-            {brandName.split("").map((letter, index) => (
-              <span
-                key={index}
-                ref={(el) => (lettersRef.current[index] = el)}
-                className="text-[4rem] md:text-[7rem] lg:text-[9rem] noto-serif-thai relative inline-block transform translate-y-full opacity-0 letter-animation"
-              >
-                {letter}
-              </span>
-            ))}
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-Bodoni font-bold text-text mb-6">
+              Style Your Soul with<br />Custom Ethnic Wear
+            </h1>
+            <p className="text-lg sm:text-xl text-text/70 mb-8 max-w-2xl mx-auto">
+              Discover the perfect blend of heritage and contemporary style. Design your own kurti, lehenga, kurta, or sherwani with AI-powered suggestions tailored to your unique taste.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button className="inline-flex items-center justify-center gap-2 bg-secondary text-white px-6 py-3 rounded-md font-medium hover:bg-secondary/90 transition-all w-full sm:w-auto">
+                Start Designing
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button className="inline-flex items-center justify-center gap-2 border-2 border-secondary bg-white text-secondary px-6 py-3 rounded-md font-medium hover:bg-secondary/5 transition-all w-full sm:w-auto">
+                Browse Collection
+              </button>
+            </div>
           </div>
-          <div className="h-1 bg-white w-0 mx-auto line-animation"></div>
+
+          {/* Features Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
+            <div className="text-center">
+              <Sparkles className="w-12 h-12 mx-auto mb-4 text-secondary" />
+              <h3 className="font-Bodoni text-lg font-semibold mb-2 text-text">AI Design Suggestions</h3>
+              <p className="text-text/70">
+                Get intelligent design recommendations based on traditional ethnic wear principles.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <ShoppingBag className="w-12 h-12 mx-auto mb-4 text-secondary" />
+              <h3 className="font-Bodoni text-lg font-semibold mb-2 text-text">Curated Collection</h3>
+              <p className="text-text/70">
+                Browse exquisite kurtis, lehengas, kurtas, and sherwanis ready for immediate purchase.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <Users className="w-12 h-12 mx-auto mb-4 text-secondary" />
+              <h3 className="font-Bodoni text-lg font-semibold mb-2 text-text">Expert Consultation</h3>
+              <p className="text-text/70">
+                Work with our design experts to create your perfect traditional ensemble.
+              </p>
+            </div>
+          </div>
         </div>
-
-        <p className="text-[1rem] md:[1.3rem] lg:text-[1.5rem] mt-6 opacity-0 tagline-animation noto-serif-thai">
-          "A Global Market Place for Artisans"
-        </p>
-
-        <p className="absolute bottom-10 text-sm text-gray-200 animate-bounce">
-          Scroll down to discover more ▼
-        </p>
       </div>
-
-      <style>{`
-        .letter-animation {
-          transition: transform .8s cubic-bezier(0.77, 0, 0.175, 1),
-                      opacity .6s ease;
-        }
-        .letter-active {
-          transform: translateY(0);
-          opacity: 1;
-          animation: shimmer 2s infinite linear;
-          background: linear-gradient(90deg, #fff 0%, #fff8 50%, #fff 100%);
-          background-size: 200% 100%;
-          -webkit-background-clip: text;
-          background-clip: text;
-        }
-        .line-animation { animation: lineExpand 1.5s cubic-bezier(0.19,1,0.22,1) forwards; animation-delay: 1.2s; }
-        .tagline-animation { animation: fadeIn 1.2s ease forwards; animation-delay: 1.8s; }
-
-        @keyframes lineExpand { 0% { width:0 } 100% { width:100% } }
-        @keyframes fadeIn { 0% { opacity:0 } 100% { opacity:1 } }
-        @keyframes shimmer { 0%{background-position:-100% 0} 100%{background-position:100% 0}}
-      `}</style>
     </div>
   );
-};
+}
 
 export default Hero;

@@ -1,137 +1,125 @@
 import React, { useEffect } from 'react';
-import { Shield, Eye, Lock, Cookie, Users, Mail, Phone, MapPin, Database, Settings, AlertCircle } from 'lucide-react';
-import Title from '../components/Title';
+import { Shield, Eye, Lock, Cookie, Database, Settings, AlertCircle, Mail, Phone, MapPin, Bell, UserCheck, FileText } from 'lucide-react';
 
 const PrivacyPolicy = () => {
   useEffect(() => {
-    document.title = 'Privacy Policy | Aharyas'
+    document.title = 'Privacy Policy | Aasvi'
   });
 
   return (
-    <div className="min-h-screen text-black mt-20">
-      <section className="py-20 px-4 sm:px-8 md:px-10 lg:px-20">
-        <div className="max-w-5xl mx-auto text-center">
-          <div className="text-3xl text-center mb-8">
-            <Title text1="PRIVACY" text2="POLICY" />
-          </div>
-          <p className="text-xl text-gray-600 font-light leading-relaxed max-w-3xl mx-auto">
-            Your privacy is important to us. This policy explains how we collect, use, and protect your personal information when you visit our website or purchase our products.
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6">
+            Privacy Policy
+          </h1>
+          <p className="text-lg sm:text-xl text-text/70 mb-8 max-w-3xl mx-auto font-light">
+            Your privacy matters to us. This policy explains how Aasvi collects, uses, and protects your personal information when you visit our website or purchase our handcrafted fashion products.
           </p>
         </div>
-      </section>
+      </div>
 
       {/* Privacy Commitment */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20">
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-white shadow-lg p-12 border-l-4 border-black">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                <Shield size={24} />
-              </div>
-              <h2 className="text-2xl font-light tracking-wider text-black">OUR COMMITMENT TO PRIVACY</h2>
-            </div>
-            
-            <div className="grid lg:grid-cols-2 gap-12">
-              <div className="space-y-4 text-gray-700 font-light">
-                <p> TATHASTA WEAVES LLP is committed to ensuring that your privacy is protected. When you provide information that identifies you on our website, you can be assured it will only be used in accordance with this privacy statement. </p>
-                <div className="bg-gray-100 p-6 rounded-lg">
-                  <h4 className="font-medium text-black mb-3">About This Policy</h4>
-                  <p className="text-sm">
-                    This privacy policy sets out how TATHASTA WEAVES LLP uses and protects any information 
-                    you provide when you visit our website and/or agree to purchase from us.
-                  </p>
-                </div>
-              </div>
+          <div className="text-center mb-12">
+            <Shield className="w-12 h-12 mx-auto mb-4 text-secondary" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Our Commitment to Privacy</h2>
+          </div>
 
-              <div className="bg-gray-100 p-6 rounded-lg">
-                <h3 className="font-medium text-black mb-4 flex items-center gap-2">
-                  <AlertCircle size={16} />
-                  Policy Updates
-                </h3>
-                <p className="text-sm text-gray-700 leading-relaxed">
-                  We may change this policy from time to time by updating this page. 
-                  You should check this page periodically to ensure that you adhere to these changes. 
-                  Your continued use of our services after any modifications constitutes acceptance of the updated policy.
+          <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-[#E8DCC4]">
+              <p className="text-text/80 leading-relaxed mb-6">
+                Aasvi Fashions is committed to ensuring that your privacy is protected. When you provide information that identifies you on our website, you can be assured it will only be used in accordance with this privacy statement.
+              </p>
+              <div className="bg-gradient-to-br from-background/30 to-primary p-6 rounded-lg">
+                <h4 className="font-serif font-semibold text-text mb-3">About This Policy</h4>
+                <p className="text-sm text-text/80">
+                  This privacy policy sets out how Aasvi Fashions uses and protects any information 
+                  you provide when you visit our website and/or agree to purchase from us.
                 </p>
               </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-background/20 to-primary p-8 rounded-lg shadow-sm border border-[#E8DCC4]">
+              <AlertCircle className="w-10 h-10 text-secondary mb-4" />
+              <h3 className="font-serif font-semibold text-text mb-4 text-xl">Policy Updates</h3>
+              <p className="text-text/70 leading-relaxed">
+                We may change this policy from time to time by updating this page. 
+                You should check this page periodically to ensure that you adhere to these changes. 
+                Your continued use of our services after any modifications constitutes acceptance of the updated policy.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Information We Collect */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-primary">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                <Database size={24} />
-              </div>
-              <h2 className="text-2xl font-light tracking-wider text-black">INFORMATION WE COLLECT</h2>
-            </div>
+            <Database className="w-12 h-12 mx-auto mb-4 text-secondary" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Information We Collect</h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <div className="bg-white shadow-lg p-6 border-l-4 border-black hover:shadow-xl transition-shadow">
-                <h3 className="font-medium text-black mb-4 flex items-center gap-2">
-                  <Users size={16} />
-                  Personal Information
-                </h3>
-                <div className="space-y-2 text-gray-700 text-sm">
-                  <p>We may collect the following information:</p>
-                  <ul className="space-y-1 ml-4">
-                    <li>• <strong>Name</strong> - For order processing and communication</li>
-                    <li>• <strong>Contact Information</strong> - Including email address</li>
-                    <li>• <strong>Demographic Information</strong> - Such as postcode, preferences, and interests</li>
-                    <li>• <strong>Survey Information</strong> - Relevant to customer surveys and/or offers</li>
-                  </ul>
+          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-background">
+              <UserCheck className="w-10 h-10 text-secondary mb-4" />
+              <h3 className="font-serif font-semibold text-text mb-5 text-xl">Personal Information</h3>
+              <p className="text-text/70 text-sm mb-4">We may collect the following information:</p>
+              <div className="space-y-3">
+                <div className="bg-gradient-to-br from-background/30 to-primary p-4 rounded-lg">
+                  <p className="font-semibold text-text text-sm mb-1">Name & Contact Details</p>
+                  <p className="text-xs text-text/70">For order processing and communication</p>
                 </div>
-              </div>
-
-              <div className="bg-white shadow-lg p-6 border-l-4 border-black hover:shadow-xl transition-shadow">
-                <h3 className="font-medium text-black mb-4 flex items-center gap-2">
-                  <Eye size={16} />
-                  When We Collect Information
-                </h3>
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <ul className="space-y-2 text-sm text-gray-700">
-                    <li>• When you create an account on our website</li>
-                    <li>• During the purchase process</li>
-                    <li>• When you subscribe to our newsletter</li>
-                    <li>• When you participate in surveys or feedback</li>
-                    <li>• When you contact our customer support</li>
-                  </ul>
+                <div className="bg-gradient-to-br from-background/30 to-primary p-4 rounded-lg">
+                  <p className="font-semibold text-text text-sm mb-1">Email Address</p>
+                  <p className="text-xs text-text/70">For order updates and customer support</p>
+                </div>
+                <div className="bg-gradient-to-br from-background/30 to-primary p-4 rounded-lg">
+                  <p className="font-semibold text-text text-sm mb-1">Shipping Information</p>
+                  <p className="text-xs text-text/70">Including address, postcode, and delivery preferences</p>
+                </div>
+                <div className="bg-gradient-to-br from-background/30 to-primary p-4 rounded-lg">
+                  <p className="font-semibold text-text text-sm mb-1">Payment Details</p>
+                  <p className="text-xs text-text/70">Securely encrypted for transaction processing</p>
                 </div>
               </div>
             </div>
 
             <div className="space-y-6">
-              <div className="bg-white shadow-lg p-6 border-l-4 border-black hover:shadow-xl transition-shadow">
-                <h3 className="font-medium text-black mb-4 flex items-center gap-2">
-                  <Settings size={16} />
-                  How We Use Your Information
-                </h3>
-                <p className="text-gray-700 text-sm leading-relaxed mb-3">
-                  We require this information to understand your needs and provide you with better service, particularly for:
-                </p>
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <ul className="space-y-1 text-sm text-gray-700">
-                    <li>• Internal record keeping</li>
-                    <li>• Improving our products and services</li>
-                    <li>• Sending promotional emails about new products and offers</li>
-                    <li>• Market research purposes</li>
-                    <li>• Customizing the website according to your interests</li>
-                  </ul>
+              <div className="bg-white p-8 rounded-lg shadow-sm border border-background">
+                <Eye className="w-10 h-10 text-secondary mb-4" />
+                <h3 className="font-serif font-semibold text-text mb-5 text-xl">When We Collect Information</h3>
+                <div className="space-y-3 text-sm text-text/80">
+                  <div className="flex items-start gap-3">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                    <p>When you create an account on our website</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                    <p>During the purchase and checkout process</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                    <p>When you subscribe to our newsletter or updates</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                    <p>When you participate in surveys or provide feedback</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                    <p>When you contact our customer support team</p>
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-white shadow-lg p-6 border-l-4 border-black hover:shadow-xl transition-shadow">
-                <h3 className="font-medium text-black mb-4 flex items-center gap-2">
-                  <Lock size={16} />
-                  Information Security
-                </h3>
-                <p className="text-gray-700 text-sm leading-relaxed">
+              <div className="bg-gradient-to-br from-background/20 to-primary p-8 rounded-lg shadow-sm border border-background">
+                <Lock className="w-10 h-10 text-secondary mb-4" />
+                <h3 className="font-serif font-semibold text-text mb-4 text-xl">Information Security</h3>
+                <p className="text-text/70 text-sm leading-relaxed">
                   We are committed to ensuring that your information is secure. To prevent unauthorized access 
                   or disclosure, we have implemented suitable physical, electronic, and managerial procedures 
                   to safeguard and secure the information we collect online.
@@ -142,53 +130,187 @@ const PrivacyPolicy = () => {
         </div>
       </section>
 
-      {/* Cookie Policy */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20">
+      {/* How We Use Your Information */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                <Cookie size={24} />
-              </div>
-              <h2 className="text-2xl font-light tracking-wider text-black">HOW WE USE COOKIES</h2>
-            </div>
+            <Settings className="w-12 h-12 mx-auto mb-4 text-secondary" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">How We Use Your Information</h2>
           </div>
 
-          <div className="bg-white shadow-lg p-12 border-l-4 border-black">
-            <div className="space-y-6">
-              <p className="text-gray-700 font-light leading-relaxed first-letter:text-4xl first-letter:font-light first-letter:text-black first-letter:mr-2 first-letter:float-left first-letter:leading-none">
+          <div className="max-w-5xl mx-auto">
+            <p className="text-center text-text/80 text-lg mb-10 leading-relaxed">
+              We require this information to understand your needs and provide you with better service, particularly for the following reasons:
+            </p>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                {
+                  icon: FileText,
+                  title: "Internal Record Keeping",
+                  description: "Maintaining accurate customer records and order history"
+                },
+                {
+                  icon: Settings,
+                  title: "Service Improvement",
+                  description: "Enhancing our products, website, and customer experience"
+                },
+                {
+                  icon: Bell,
+                  title: "Promotional Communications",
+                  description: "Sending emails about new collections, special offers, and updates"
+                },
+                {
+                  icon: Eye,
+                  title: "Market Research",
+                  description: "Understanding customer preferences and fashion trends"
+                },
+                {
+                  icon: UserCheck,
+                  title: "Personalization",
+                  description: "Customizing the website according to your interests and style"
+                },
+                {
+                  icon: Shield,
+                  title: "Order Processing",
+                  description: "Fulfilling your custom-made and handcrafted orders efficiently"
+                }
+              ].map((item, index) => (
+                <div key={index} className="bg-white p-6 rounded-lg shadow-sm border border-background">
+                  <item.icon className="w-8 h-8 text-secondary mb-4" />
+                  <h3 className="font-serif font-semibold text-text mb-3">{item.title}</h3>
+                  <p className="text-text/70 text-sm leading-relaxed">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Cookie Policy */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-primary">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <Cookie className="w-12 h-12 mx-auto mb-4 text-secondary" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">How We Use Cookies</h2>
+          </div>
+
+          <div className="max-w-5xl mx-auto">
+            <div className="bg-white p-10 rounded-lg shadow-sm border border-background mb-8">
+              <p className="text-text/80 leading-relaxed text-lg mb-6">
                 A cookie is a small file which asks permission to be placed on your computer's hard drive. 
                 Once you agree, the file is added and the cookie helps analyze web traffic or lets you know when you visit a particular site.
               </p>
 
-              <div className="grid lg:grid-cols-2 gap-8">
-                <div className="bg-gray-100 p-6 rounded-lg">
-                  <h4 className="font-medium text-black mb-3">What Cookies Do</h4>
-                  <ul className="space-y-2 text-sm text-gray-700">
-                    <li>• Allow web applications to respond to you as an individual</li>
-                    <li>• Tailor operations to your needs, likes, and dislikes</li>
-                    <li>• Gather and remember information about your preferences</li>
-                    <li>• Help us analyze webpage traffic and improve our website</li>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-gradient-to-br from-background/30 to-primary p-6 rounded-lg">
+                  <h4 className="font-serif font-semibold text-text mb-4">What Cookies Do</h4>
+                  <ul className="space-y-2 text-sm text-text/80">
+                    <li className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Allow web applications to respond to you as an individual</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Tailor operations to your needs, likes, and dislikes</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Gather and remember information about your preferences</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Help us analyze webpage traffic and improve our website</span>
+                    </li>
                   </ul>
                 </div>
 
-                <div className="bg-gray-100 p-6 rounded-lg">
-                  <h4 className="font-medium text-black mb-3">Traffic Log Cookies</h4>
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                <div className="bg-gradient-to-br from-background/30 to-primary p-6 rounded-lg">
+                  <h4 className="font-serif font-semibold text-text mb-4">Traffic Log Cookies</h4>
+                  <p className="text-sm text-text/80 leading-relaxed">
                     We use traffic log cookies to identify which pages are being used. This helps us analyze 
                     data about webpage traffic and improve our website to tailor it to customer needs. 
                     We only use this information for statistical analysis purposes and then the data is removed from the system.
                   </p>
                 </div>
               </div>
+            </div>
 
-              <div className="p-6 rounded-lg border border-gray-200">
-                <h4 className="font-medium text-black mb-3">Your Cookie Choices</h4>
-                <p className="text-sm leading-relaxed">
-                  You can choose to accept or decline cookies. Most web browsers automatically accept cookies, 
-                  but you can usually modify your browser setting to decline cookies if you prefer. 
-                  This may prevent you from taking full advantage of the website. A cookie in no way gives us 
-                  access to your computer or any information about you, other than the data you choose to share with us.
+            <div className="bg-gradient-to-r from-background to-primary p-8 rounded-lg shadow-sm border border-background">
+              <h4 className="font-serif font-semibold text-text mb-4 text-lg">Your Cookie Choices</h4>
+              <p className="text-sm text-text/80 leading-relaxed">
+                You can choose to accept or decline cookies. Most web browsers automatically accept cookies, 
+                but you can usually modify your browser setting to decline cookies if you prefer. 
+                This may prevent you from taking full advantage of the website. A cookie in no way gives us 
+                access to your computer or any information about you, other than the data you choose to share with us.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Controlling Your Information */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <Settings className="w-12 h-12 mx-auto mb-4 text-secondary" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Controlling Your Personal Information</h2>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-background">
+              <h3 className="font-serif font-semibold text-text mb-6 text-xl">Your Rights & Choices</h3>
+              
+              <p className="text-text/80 mb-6 leading-relaxed">
+                You may choose to restrict the collection or use of your personal information in the following ways:
+              </p>
+              
+              <div className="space-y-4">
+                <div className="bg-gradient-to-br from-background/30 to-primary p-5 rounded-lg">
+                  <h4 className="font-semibold text-text mb-3">Restricting Data Collection</h4>
+                  <ul className="space-y-2 text-sm text-text/80">
+                    <li className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Look for opt-out boxes when filling forms on our website</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Indicate if you don't want information used for direct marketing</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Change your mind at any time by contacting us</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Update your preferences through your account settings</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="bg-white p-8 rounded-lg shadow-sm border border-background">
+                <Shield className="w-10 h-10 text-secondary mb-4" />
+                <h3 className="font-serif font-semibold text-text mb-4 text-xl">Third-Party Information Sharing</h3>
+                
+                <div className="bg-gradient-to-br from-background/20 to-primary p-6 rounded-lg mb-4">
+                  <h4 className="font-semibold text-text mb-3">Our Promise</h4>
+                  <p className="text-sm text-text/80 leading-relaxed">
+                    <strong>We will not sell, distribute, or lease your personal information to third parties</strong> 
+                    unless we have your permission or are required by law to do so. We may use your personal 
+                    information to send you promotional information about third parties which we think you may 
+                    find interesting if you tell us that you wish this to happen.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-background/20 to-primary p-8 rounded-lg shadow-sm border border-background">
+                <h3 className="font-serif font-semibold text-text mb-4 text-xl">Data Accuracy</h3>
+                <p className="text-sm text-text/80 leading-relaxed">
+                  If you believe that any information we are holding about you is incorrect or incomplete, 
+                  please contact us as soon as possible. We will promptly correct any information found to be incorrect.
                 </p>
               </div>
             </div>
@@ -196,98 +318,47 @@ const PrivacyPolicy = () => {
         </div>
       </section>
 
-      {/* Controlling Your Information */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20">
+      {/* Marketing Communications */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-primary">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                <Settings size={24} />
-              </div>
-              <h2 className="text-2xl font-light tracking-wider text-black">CONTROLLING YOUR PERSONAL INFORMATION</h2>
-            </div>
+            <Bell className="w-12 h-12 mx-auto mb-4 text-secondary" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Marketing Communications</h2>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12">
-            <div className="bg-white shadow-lg p-8 border-l-4 border-black hover:shadow-xl transition-shadow">
-              <h3 className="font-medium text-black mb-6">Your Rights & Choices</h3>
-              
-              <div className="space-y-4 text-gray-700 font-light">
-                <p> You may choose to restrict the collection or use of your personal information in the following ways: </p>
-                
-                <div className="bg-gray-100 p-6 rounded-lg">
-                  <h4 className="font-medium text-black mb-3">Restricting Data Collection</h4>
-                  <ul className="space-y-2 text-sm">
-                    <li>• Look for opt-out boxes when filling forms on our website</li>
-                    <li>• Indicate if you don't want information used for direct marketing</li>
-                    <li>• Change your mind at any time by contacting us</li>
-                    <li>• Update your preferences through your account settings</li>
-                  </ul>
+          <div className="max-w-5xl mx-auto">
+            <p className="text-center text-text/80 text-lg mb-10 leading-relaxed">
+              We may periodically send promotional emails about new collections, special offers, or other information 
+              which we think you may find interesting using the email address you have provided.
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-white p-8 rounded-lg shadow-sm border border-background">
+                <h3 className="font-serif font-semibold text-text mb-5 text-lg">Communication Methods</h3>
+                <p className="text-sm text-text/80 mb-4">
+                  From time to time, we may also use your information to contact you for market research purposes. 
+                  We may contact you by:
+                </p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 bg-gradient-to-br from-background/30 to-primary p-4 rounded-lg">
+                    <Mail className="w-5 h-5 text-secondary flex-shrink-0" />
+                    <span className="text-sm text-text">Email</span>
+                  </div>
+                  <div className="flex items-center gap-3 bg-gradient-to-br from-background/30 to-primary p-4 rounded-lg">
+                    <Phone className="w-5 h-5 text-secondary flex-shrink-0" />
+                    <span className="text-sm text-text">Phone</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-white shadow-lg p-8 border-l-4 border-black hover:shadow-xl transition-shadow">
-              <h3 className="font-medium text-black mb-6">Third-Party Information Sharing</h3>
-              
-              <div className="space-y-4 text-gray-700 font-light">
-                <div className="p-6 rounded-lg border border-gray-200">
-                  <h4 className="font-medium text-black mb-3">Our Promise</h4>
-                  <p className="text-sm leading-relaxed">
-                    <strong>We will not sell, distribute, or lease your personal information to third parties</strong> 
-                    unless we have your permission or are required by law to do so. We may use your personal 
-                    information to send you promotional information about third parties which we think you may 
-                    find interesting if you tell us that you wish this to happen.
-                  </p>
-                </div>
-
-                <div className="p-6 rounded-lg border border-gray-200">
-                  <h4 className="font-medium text-black mb-3">Data Accuracy</h4>
-                  <p className="text-sm leading-relaxed">
-                    If you believe that any information we are holding about you is incorrect or incomplete, 
-                    please contact us as soon as possible. We will promptly correct any information found to be incorrect.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Marketing Communications */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20 bg-gradient-to-r from-gray-100 to-white">
-        <div className="max-w-5xl mx-auto">
-          <div className="bg-white/90 backdrop-blur-sm p-12 shadow-xl border-l-4 border-black">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-light tracking-wider text-black">MARKETING COMMUNICATIONS</h2>
-            </div>
-            
-            <div className="space-y-6 text-gray-700 font-light leading-relaxed">
-              <p className="text-center">
-                We may periodically send promotional emails about new products, special offers, or other information 
-                which we think you may find interesting using the email address you have provided.
-              </p>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
-                  <h3 className="font-medium mb-3">Communication Methods</h3>
-                  <p className="text-sm mb-3">
-                    From time to time, we may also use your information to contact you for market research purposes. 
-                    We may contact you by:
-                  </p>
-                  <ul className="text-sm space-y-1">
-                    <li>• Email</li>
-                    <li>• Phone</li>
-                  </ul>
-                </div>
-
-                <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
-                  <h3 className="font-medium mb-3">Opt-Out Options</h3>
-                  <p className="text-sm">
-                    If you have previously agreed to us using your personal information for direct marketing purposes, 
-                    you may change your mind at any time by writing to or emailing us at 
-                    <strong> aharyasofficial@gmail.com</strong>
-                  </p>
+              <div className="bg-gradient-to-br from-background/20 to-primary p-8 rounded-lg shadow-sm border border-background">
+                <h3 className="font-serif font-semibold text-text mb-5 text-lg">Opt-Out Options</h3>
+                <p className="text-sm text-text/80 leading-relaxed">
+                  If you have previously agreed to us using your personal information for direct marketing purposes, 
+                  you may change your mind at any time by writing to or emailing us at:
+                </p>
+                <div className="mt-4 p-4 bg-white/60 rounded-lg">
+                  <p className="text-text font-semibold">aasviofficial@gmail.com</p>
                 </div>
               </div>
             </div>
@@ -296,45 +367,47 @@ const PrivacyPolicy = () => {
       </section>
 
       {/* Contact Information */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20 bg-gray-50">
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-2xl font-light tracking-wider text-black mb-8">CONTACT US ABOUT PRIVACY</h2>
-          <p className="text-gray-700 font-light mb-8 max-w-2xl mx-auto">
-            If you believe that any information we are holding about you is incorrect or incomplete, 
-            or if you have questions about our privacy practices, please contact us immediately.
-          </p>
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary mb-4">Contact Us About Privacy</h2>
+            <p className="text-text/70 text-lg max-w-2xl mx-auto">
+              If you believe that any information we are holding about you is incorrect or incomplete, 
+              or if you have questions about our privacy practices, please contact us immediately.
+            </p>
+          </div>
           
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <div className="bg-white p-6 shadow-sm border-l-4 border-black">
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <Phone size={16} />
-                <h4 className="font-medium text-black">Phone</h4>
-              </div>
-              <p className="text-lg text-gray-700 mb-1">+91 9063284008</p>
-              <p className="text-lg text-gray-700 mb-1">+91 9121157804</p>
-              <p className="text-sm text-gray-500">Mon-Sat: 9 AM - 6 PM</p>
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
+              <Phone className="w-10 h-10 text-secondary mx-auto mb-4" />
+              <h4 className="font-serif font-semibold text-text mb-3">Phone</h4>
+              <p className="text-lg text-text mb-2">+91 9399336666</p>
+              <p className="text-sm text-text/60">Mon-Sat: 9 AM - 6 PM</p>
             </div>
             
-            <div className="bg-white p-6 shadow-sm border-l-4 border-black">
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <Mail size={16} />
-                <h4 className="font-medium text-black">Email</h4>
-              </div>
-              <p className="text-lg text-gray-700 mb-1">aharyasofficial@gmail.com</p>
-              <p className="text-sm text-gray-500">Response within 24 hours</p>
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
+              <Mail className="w-10 h-10 text-secondary mx-auto mb-4" />
+              <h4 className="font-serif font-semibold text-text mb-3">Email</h4>
+              <p className="text-lg text-text mb-2">aasviofficial@gmail.com</p>
+              <p className="text-sm text-text/60">Response within 24 hours</p>
             </div>
 
-            <div className="bg-white p-6 shadow-sm border-l-4 border-black">
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <MapPin size={16} />
-                <h4 className="font-medium text-black">Address</h4>
-              </div>
-              <p className="text-sm text-gray-700 leading-relaxed">
-                J J Nagar, Near Ganesh Temple,<br />
-                Sainikpuri, Malkajgiri,<br />
-                Hyderabad, Telangana 500094
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
+              <MapPin className="w-10 h-10 text-secondary mx-auto mb-4" />
+              <h4 className="font-serif font-semibold text-text mb-3">Address</h4>
+              <p className="text-sm text-text/80 leading-relaxed">
+                Hyderabad, Telangana<br />
+                502345, India
               </p>
             </div>
+          </div>
+
+          <div className="mt-12 max-w-3xl mx-auto bg-gradient-to-r from-background to-primary p-10 rounded-lg text-center shadow-lg">
+            <h3 className="font-serif text-2xl font-semibold text-text mb-4">Your Privacy Matters</h3>
+            <p className="text-text/90 leading-relaxed">
+              At Aasvi, we are committed to protecting your privacy and handling your data with care and transparency. 
+              Your trust is important to us, and we continuously work to ensure your information remains secure.
+            </p>
           </div>
         </div>
       </section>

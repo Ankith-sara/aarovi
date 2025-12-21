@@ -52,59 +52,22 @@ const Add = ({ token }) => {
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('Women');
   const [subCategory, setSubCategory] = useState('');
-  const [company, setCompany] = useState('Aharyas');
-  const [newCompanyName, setNewCompanyName] = useState('');
-  const [showAddCompany, setShowAddCompany] = useState(false);
   const [bestseller, setBestseller] = useState(false);
   const [sizes, setSizes] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const [companies, setCompanies] = useState([
-    'Biba',
-    'Fabindia',
-    'Vasudhaa Vastrram Vishram',
-    'Anemone Vinkel'
-  ]);
-
   const categoryData = {
     Women: {
-      subCategories: ["", "Kurtis", "Kurta Sets", "Tops", "Blazers", "Dresses", "Women Co-ord Sets", "Corset tops", "Short-tops", "Women Shirts"],
+      subCategories: ["", "Kurtis", "Kurti Sets", "Lehangas", "Anarkalis", "Sheraras"],
       sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
     },
     Men: {
-      subCategories: ["", "Men Shirts", "Sleeve Shirts", "Kurtas", "Men Co-ord Sets", "Vests", "Trousers"],
+      subCategories: ["","Kurtas", "Kurta Sets", "Sherwanis"],
       sizes: ['28', '30', '32', '34', '36', '38', '40', '42', '44', '46']
-    },
-    "Handmade Toys": {
-      subCategories: ["", "Home Décor", "Bonthapally Toys", "Baskets", "Bags and Pouches", "Wall Decor"],
-      sizes: []
-    },
-    Kitchenware: {
-      subCategories: ["", "Brass Bowls", "Wooden Spoons"],
-      sizes: []
-    },
-    "Special Product": {
-      subCategories: ["", "Bags"],
-      sizes: []
     }
   };
 
   const currentCategoryData = categoryData[category] || { subCategories: [], sizes: [] };
-
-  const handleAddNewCompany = () => {
-    if (newCompanyName.trim() && !companies.includes(newCompanyName.trim())) {
-      const updatedCompanies = [...companies, newCompanyName.trim()].sort();
-      setCompanies(updatedCompanies);
-      setCompany(newCompanyName.trim());
-      setNewCompanyName('');
-      setShowAddCompany(false);
-      toast.success(`Company "${newCompanyName.trim()}" added successfully!`);
-    } else if (companies.includes(newCompanyName.trim())) {
-      toast.error('This company already exists!');
-    } else {
-      toast.error('Please enter a valid company name.');
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -128,7 +91,6 @@ const Add = ({ token }) => {
       formData.append('price', price);
       formData.append('category', category);
       formData.append('subCategory', subCategory);
-      formData.append('company', company || 'Aharyas');
       formData.append('bestseller', bestseller);
       formData.append('sizes', JSON.stringify(sizes));
 
@@ -154,8 +116,7 @@ const Add = ({ token }) => {
       if (error.response) {
         if (error.response.status === 401) {
           toast.error('Session expired. Please login again.');
-          // Optionally redirect to login
-          // window.location.href = '/login';
+          window.location.href = '/login';
         } else {
           toast.error(`Server Error: ${error.response.data?.message || 'Unable to process your request.'}`);
         }
@@ -175,12 +136,9 @@ const Add = ({ token }) => {
     setPrice('');
     setCategory('Women');
     setSubCategory('');
-    setCompany('Aharyas');
     setBestseller(false);
     setSizes([]);
     setImages([null, null, null, null, null, null]);
-    setShowAddCompany(false);
-    setNewCompanyName('');
   };
 
   const toggleSize = (size) => {
@@ -273,83 +231,6 @@ const Add = ({ token }) => {
                   placeholder="Describe your product in detail, including features, materials, and benefits"
                   required
                 />
-              </div>
-            </div>
-          </div>
-
-          {/* Company/Brand Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="bg-black text-white p-6">
-              <div className="flex items-center gap-3">
-                <Building2 size={24} className="text-gray-300" />
-                <h2 className="text-xl font-semibold">Brand/Company</h2>
-              </div>
-            </div>
-
-            <div className="p-6 space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Company/Brand</label>
-                <div className="flex gap-3">
-                  <select
-                    onChange={(e) => setCompany(e.target.value)}
-                    value={company}
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
-                  >
-                    <option value="Aharyas">Aharyas</option>
-                    {companies.map((comp) => (
-                      <option key={comp} value={comp}>{comp}</option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    onClick={() => setShowAddCompany(true)}
-                    className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors flex items-center gap-2 font-medium"
-                  >
-                    <Plus size={16} />
-                    Add New
-                  </button>
-                </div>
-              </div>
-
-              {/* Add New Company Form */}
-              {showAddCompany && (
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <h4 className="font-medium text-gray-900 mb-3">Add New Company</h4>
-                  <div className="flex gap-3">
-                    <input
-                      type="text"
-                      value={newCompanyName}
-                      onChange={(e) => setNewCompanyName(e.target.value)}
-                      placeholder="Enter company/brand name"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
-                      onKeyPress={(e) => e.key === 'Enter' && handleAddNewCompany()}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddNewCompany}
-                      className="px-4 py-2 bg-black hover:bg-gray-800 text-white rounded-lg transition-colors font-medium"
-                    >
-                      Add
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setShowAddCompany(false); setNewCompanyName(''); }}
-                      className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg transition-colors font-medium"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Company Selection Status */}
-              <div className="bg-gray-50 rounded-lg p-3">
-                <div className="flex items-center gap-2 text-gray-700">
-                  <Building2 size={16} />
-                  <span className="text-sm font-medium">
-                    {company ? `Selected: ${company}` : 'Product will be listed as Aharyas by default'}
-                  </span>
-                </div>
               </div>
             </div>
           </div>

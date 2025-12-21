@@ -1,174 +1,173 @@
 import React, { useEffect } from 'react';
-import Title from '../components/Title';
-import { assets } from '../assets/frontend_assets/assets';
+import { assets } from '../assets/assets';
 import NewsletterBox from '../components/NewsletterBox';
-import { MapPin, Phone, Mail, Briefcase } from 'lucide-react';
+import { MapPin, Phone, Mail, Briefcase, Clock, Send, Users, MessageCircle } from 'lucide-react';
 
 const Contact = () => {
   useEffect(() => {
-    document.title = 'Contact Customer Service | Aharyas'
+    document.title = 'Contact Customer Service | Aasvi'
   });
 
   return (
-    <div className="min-h-screen text-black mt-20">
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="relative order-2 lg:order-1">
-              <div className="relative overflow-hidden rounded-none shadow-2xl">
-                <img
-                  className="w-full h-[600px] object-cover filter transition-all duration-700"
-                  src={assets.contact_img}
-                  alt="Aharyas Contact"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-              </div>
-              <div className="absolute -top-8 -left-8 w-16 h-16 border border-black/20"></div>
-              <div className="absolute -bottom-8 -right-8 w-16 h-16 border border-black/20"></div>
-            </div>
-
-            <div className="order-1 lg:order-2">
-              <div className="text-3xl text-center mb-6">
-                <Title text1="CONTACT" text2="US" />
-              </div>
-
-              <div className="space-y-4 text-gray-700 text-lg leading-loose font-light">
-                <p>We believe in the power of connection — between artisan and buyer, tradition and modernity, story and style. At Aharyas, every conversation matters.</p>
-                <p>Whether you have questions about our handcrafted pieces, need assistance with your order, or want to learn more about the artisans behind your favorite garments, we're here to help.</p>
-                <p>Our customer service team understands that each Aharyas piece carries a story, and we're committed to ensuring your experience with us is as meaningful as the craftsmanship we celebrate.</p>
-                <blockquote className="border-l-2 border-black pl-6 py-4 italic text-xl text-black font-light">
-                  "Every question is an opportunity to share our passion for heritage craft and conscious fashion."
-                </blockquote>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen">
+      {/* Hero Section with Background */}
+      <div className="relative bg-gradient-to-b from-background to-white px-4 sm:px-6 lg:px-8 py-32 sm:py-40 overflow-hidden">
+        {/* Content */}
+        <div className="max-w-7xl mx-auto text-center relative z-10">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6">
+            Get in Touch
+          </h1>
+          <div className="w-24 h-1 bg-secondary mx-auto mb-8"></div>
+          <p className="text-xl sm:text-2xl text-text/90 max-w-4xl mx-auto font-light leading-relaxed">
+            We believe in the power of connection — between artisan and buyer, tradition and modernity, story and style. At Aasvi, every conversation matters.
+          </p>
         </div>
-      </section>
+      </div>
 
-      {/* Contact Information */}
-      <section className="relative py-16">
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-50"></div>
-        <div className="relative px-4 sm:px-8 md:px-10 lg:px-20">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-3xl text-center mb-6">
-              <Title text1="GET IN" text2="TOUCH" />
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="group">
-                <div className="bg-white/90 backdrop-blur-sm p-8 shadow-xl hover:shadow-2xl transition-all duration-500 border-l-4 border-black h-full">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 bg-black/10 rounded-xl flex items-center justify-center">
-                      <MapPin className="text-black" size={24} />
-                    </div>
-                    <h3 className="text-xl font-light tracking-wider text-black">VISIT US</h3>
-                  </div>
-                  <div className="w-12 h-0.5 bg-black mb-4"></div>
-                  <div className="space-y-2 text-gray-700 font-light">
-                    <p>Sanikipuri, Malkajgiri</p>
-                    <p>Hyderabad, Telangana</p>
-                    <p className="font-medium">PIN: 500064</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="group">
-                <div className="bg-white/90 backdrop-blur-sm p-8 shadow-xl hover:shadow-2xl transition-all duration-500 border-l-4 border-black h-full">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 bg-black/10 rounded-xl flex items-center justify-center">
-                      <Phone className="text-black" size={24} />
-                    </div>
-                    <h3 className="text-xl font-light tracking-wider text-black">CALL US</h3>
-                  </div>
-                  <div className="w-12 h-0.5 bg-black mb-4"></div>
-                  <div className="space-y-2 text-gray-700 font-light">
-                    <p>Customer Service</p>
-                    <p className="text-xl font-medium text-black">+91 9063284008</p>
-                    <p className='text-xl font-medium text-black'>+91 91211 57804</p>
-                    <p className="text-sm text-gray-500">Mon - Sat: 9 AM - 6 PM</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="group">
-                <div className="bg-white/90 backdrop-blur-sm p-8 shadow-xl hover:shadow-2xl transition-all duration-500 border-l-4 border-black h-full">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 bg-black/10 rounded-xl flex items-center justify-center">
-                      <Mail className="text-black" size={24} />
-                    </div>
-                    <h3 className="text-xl font-light tracking-wider text-black">EMAIL US</h3>
-                  </div>
-                  <div className="w-12 h-0.5 bg-black mb-4"></div>
-                  <div className="space-y-2 text-gray-700 font-light">
-                    <p>General Inquiries</p>
-                    <p className="text-lg font-medium text-black">aharyasofficial@gmail.com</p>
-                    <p className="text-sm text-gray-500">We respond within 24 hours</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Careers Section */}
-      <section className="py-12 px-4 sm:px-8 md:px-10 lg:px-20 bg-gradient-to-b from-white to-stone-50">
+      {/* Main Content Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div>
-              <div className="text-3xl text-left mb-8">
-                <Title text1="JOIN OUR" text2="MISSION" />
-              </div>
-
-              <div className="space-y-6 text-gray-700 text-lg leading-loose font-light">
-                <p>At Aharyas, we're building more than a brand — we're nurturing a movement that celebrates heritage, empowers artisans, and creates conscious fashion for the world.</p>
-                <p>We're looking for passionate individuals who believe in the power of tradition, the beauty of handcraft, and the importance of sustainable fashion. Join our team and help us bridge the gap between India's rich craft heritage and global conscious consumers.</p>
-                <p>Whether you're interested in design, technology, marketing, or operations, there's a place for you in our growing family.</p>
-              </div>
-
-              <div className="mt-8 space-y-4">
-                <button className="bg-black text-white px-8 py-4 font-light tracking-wider hover:bg-gray-900 transition-all duration-300 shadow-lg hover:shadow-xl">
-                  EXPLORE OPPORTUNITIES
-                </button>
-                <p className="text-sm text-gray-500 font-light">
-                  Send your resume to: careers@aharyas.com
-                </p>
-              </div>
-            </div>
-
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Image Side */}
             <div className="relative">
-              <div className="bg-white shadow-lg p-12 border-l-4 border-black hover:shadow-xl transition-all duration-500">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 bg-black/10 rounded-xl flex items-center justify-center">
-                    <Briefcase className="text-black" size={24} />
-                  </div>
-                  <h3 className="text-2xl font-light tracking-wider text-black">
-                    Why Work With Us?
-                  </h3>
-                </div>
+              <div className="relative overflow-hidden rounded-lg shadow-xl">
+                <img
+                  className="w-full h-[500px] object-cover"
+                  src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&q=80"
+                  alt="Aasvi Contact"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#2C1810]/30 to-transparent"></div>
+              </div>
+              {/* Decorative Elements */}
+              <div className="absolute -top-6 -left-6 w-24 h-24 border-2 border-secondary rounded-lg"></div>
+              <div className="absolute -bottom-6 -right-6 w-24 h-24 border-2 border-secondary rounded-lg"></div>
+            </div>
 
-                <div className="space-y-6 text-gray-700 font-light leading-relaxed">
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-black rounded-full mt-3 flex-shrink-0"></div>
-                    <p><strong className="font-medium">Meaningful Impact:</strong> Every day, you'll contribute to preserving India's craft heritage and empowering artisan communities.</p>
+            {/* Content Side */}
+            <div>
+              <div className="mb-8">
+                <MessageCircle className="w-12 h-12 text-secondary mb-4" />
+                <h2 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-6">
+                  We're Here to Help
+                </h2>
+              </div>
+
+              <div className="space-y-5 text-text/80 text-lg leading-relaxed font-light">
+                <p>
+                  Whether you have questions about our handcrafted pieces, need assistance with your order, or want to learn more about the artisans behind your favorite garments, we're here to help.
+                </p>
+                <p>
+                  Our customer service team understands that each Aasvi piece carries a story, and we're committed to ensuring your experience with us is as meaningful as the craftsmanship we celebrate.
+                </p>
+                <p>
+                  From styling advice to order tracking, size consultations to custom requests, our dedicated team is ready to assist you with all your needs.
+                </p>
+                <div className="bg-gradient-to-br from-background/30 to-primary p-6 rounded-lg border-l-4 border-secondary mt-8">
+                  <p className="text-xl italic text-text font-light">
+                    "Every question is an opportunity to share our passion for heritage craft and conscious fashion."
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Information Cards */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-4">
+              How to Reach Us
+            </h2>
+            <div className="w-24 h-1 bg-secondary mx-auto mb-6"></div>
+            <p className="text-xl text-text/70 font-light max-w-2xl mx-auto">
+              Choose your preferred way to connect with our team
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Visit Us Card */}
+            <div className="group relative">
+              <div className="bg-white rounded-lg p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-background h-full">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 bg-gradient-to-br from-background/30 to-primary rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <MapPin className="text-secondary" size={24} />
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-black rounded-full mt-3 flex-shrink-0"></div>
-                    <p><strong className="font-medium">Growth & Learning:</strong> Work with cutting-edge technology, traditional crafts, and passionate team members.</p>
+                  <h3 className="text-xl font-serif font-semibold text-text">Visit Us</h3>
+                </div>
+                
+                <div className="w-16 h-1 bg-secondary mb-6"></div>
+                
+                <div className="space-y-3 text-text/70 font-light">
+                  <p className="font-medium text-text">Our Studio</p>
+                  <p>Hyderabad, Telangana</p>
+                  <p className="font-semibold text-secondary text-lg">PIN: 502345</p>
+                </div>
+              </div>
+              {/* Decorative corner */}
+              <div className="absolute -bottom-2 -right-2 w-16 h-16 border-2 border-secondary/20 rounded-lg -z-10"></div>
+            </div>
+
+            {/* Call Us Card */}
+            <div className="group relative">
+              <div className="bg-white rounded-lg p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-background h-full">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 bg-gradient-to-br from-background/30 to-primary rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <Phone className="text-secondary" size={24} />
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-black rounded-full mt-3 flex-shrink-0"></div>
-                    <p><strong className="font-medium">Creative Freedom:</strong> Bring your ideas to life in an environment that values innovation and authenticity.</p>
+                  <h3 className="text-xl font-serif font-semibold text-text">Call Us</h3>
+                </div>
+                
+                <div className="w-16 h-1 bg-secondary mb-6"></div>
+                
+                <div className="space-y-3 text-text/70 font-light">
+                  <p className="font-medium text-text">Customer Service</p>
+                  <a href="tel:+91939933666" className="block text-lg font-semibold text-secondary hover:text-[#8B6F47] transition-colors">
+                    +91 9399336666
+                  </a>
+                  <div className="flex items-center gap-2 text-sm text-text/50 pt-2">
+                    <Clock size={14} />
+                    <span>Mon - Sat: 9 AM - 6 PM</span>
                   </div>
                 </div>
               </div>
+              {/* Decorative corner */}
+              <div className="absolute -bottom-2 -right-2 w-16 h-16 border-2 border-secondary/20 rounded-lg -z-10"></div>
+            </div>
+
+            {/* Email Us Card */}
+            <div className="group relative md:col-span-2 lg:col-span-1">
+              <div className="bg-white rounded-lg p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-background h-full">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 bg-gradient-to-br from-background/30 to-primary rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <Mail className="text-secondary" size={24} />
+                  </div>
+                  <h3 className="text-xl font-serif font-semibold text-text">Email Us</h3>
+                </div>
+                
+                <div className="w-16 h-1 bg-secondary mb-6"></div>
+                
+                <div className="space-y-3 text-text/70 font-light">
+                  <p className="font-medium text-text">General Inquiries</p>
+                  <a href="mailto:aharyasofficial@gmail.com" className="block text-lg font-semibold text-secondary hover:text-[#8B6F47] transition-colors break-all">
+                    aasviofficial@gmail.com
+                  </a>
+                  <div className="flex items-center gap-2 text-sm text-text/50 pt-2">
+                    <Send size={14} />
+                    <span>We respond within 24 hours</span>
+                  </div>
+                </div>
+              </div>
+              {/* Decorative corner */}
+              <div className="absolute -bottom-2 -right-2 w-16 h-16 border-2 border-secondary/20 rounded-lg -z-10"></div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Newsletter */}
-      <section className="py-10 px-4 sm:px-8 md:px-16 bg-gradient-to-b from-white to-stone-50">
+      <section className="px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-background">
         <NewsletterBox />
       </section>
     </div>

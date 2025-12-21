@@ -4,10 +4,7 @@ import { toast } from 'react-toastify';
 import {
   ShoppingBag, User, MapPin, CreditCard, Package2, Filter, Search, CheckCircle, Clock, Truck, Package, PackageCheck, AlertCircle, Phone, IndianRupee, Grid, List as ListIcon, RefreshCw, TrendingUp, BarChart3
 } from 'lucide-react';
-
-// Mock data for demonstration
-const backendUrl = 'http://localhost:4000';
-const currency = '₹';
+import { backendUrl, currency } from '../App';
 
 const StatusBadge = ({ status }) => {
   const statusConfig = {

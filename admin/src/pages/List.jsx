@@ -135,55 +135,18 @@ const List = ({ token }) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [viewMode, setViewMode] = useState('grid');
 
-  // Company-related states
-  const [companies, setCompanies] = useState([
-    'Biba',
-    'Fabindia',
-    'Vasudhaa Vastrram Vishram',
-    'Anemone Vinkel'
-  ]);
-  const [newCompanyName, setNewCompanyName] = useState('');
-  const [showAddCompany, setShowAddCompany] = useState(false);
-
   const categoryData = {
     Women: {
-      subCategories: ["", "Kurtis", "Kurta Sets", "Tops", "Blazers", "Dresses", "Women Co-ord Sets", "Corset tops", "Short-tops", "Women Shirts"],
+      subCategories: ["", "Kurtis", "Kurti Sets", "Lehangas", "Anarkalis", "Sheraras"],
       sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
     },
     Men: {
-      subCategories: ["", "Men Shirts", "Sleeve Shirts", "Kurtas", "Men Co-ord Sets", "Vests", "Trousers"],
+      subCategories: ["","Kurtas", "Kurta Sets", "Sherwanis"],
       sizes: ['28', '30', '32', '34', '36', '38', '40', '42', '44', '46']
-    },
-    "Handmade Toys": {
-      subCategories: ["", "Home Décor", "Bonthapally Toys", "Baskets", "Bags and Pouches", "Wall Decor"],
-      sizes: []
-    },
-    Kitchenware: {
-      subCategories: ["", "Brass Bowls", "Wooden Spoons"],
-      sizes: []
-    },
-    "Special Product": {
-      subCategories: ["", "Bags"],
-      sizes: []
     }
   };
 
   const currentCategoryData = editedProduct ? (categoryData[editedProduct.category] || { subCategories: [], sizes: [] }) : { subCategories: [], sizes: [] };
-
-  const handleAddNewCompany = () => {
-    if (newCompanyName.trim() && !companies.includes(newCompanyName.trim())) {
-      const updatedCompanies = [...companies, newCompanyName.trim()].sort();
-      setCompanies(updatedCompanies);
-      setEditedProduct(prev => ({ ...prev, company: newCompanyName.trim() }));
-      setNewCompanyName('');
-      setShowAddCompany(false);
-      toast.success(`Company "${newCompanyName.trim()}" added successfully!`);
-    } else if (companies.includes(newCompanyName.trim())) {
-      toast.error('This company already exists!');
-    } else {
-      toast.error('Please enter a valid company name.');
-    }
-  };
 
   const fetchList = async () => {
     setLoading(true);
@@ -248,7 +211,6 @@ const List = ({ token }) => {
       formData.append('price', editedProduct.price);
       formData.append('category', editedProduct.category);
       formData.append('subCategory', editedProduct.subCategory);
-      formData.append('company', editedProduct.company || 'Aharyas');
       formData.append('bestseller', editedProduct.bestseller);
       formData.append('sizes', JSON.stringify(editedProduct.sizes || []));
 
@@ -300,8 +262,6 @@ const List = ({ token }) => {
     setIsEditing(false);
     setEditedProduct(null);
     setImages([null, null, null, null, null, null]);
-    setShowAddCompany(false);
-    setNewCompanyName('');
   };
 
   const openEditModal = (product) => {
@@ -326,7 +286,6 @@ const List = ({ token }) => {
         product.name?.toLowerCase().includes(searchLower) ||
         product.category?.toLowerCase().includes(searchLower) ||
         product.subCategory?.toLowerCase().includes(searchLower) ||
-        product.company?.toLowerCase().includes(searchLower) ||
         product.description?.toLowerCase().includes(searchLower)
       );
     }
@@ -497,7 +456,6 @@ const List = ({ token }) => {
                             <th className="px-6 py-4 text-left text-sm font-semibold">Image</th>
                             <th className="px-6 py-4 text-left text-sm font-semibold">Product Details</th>
                             <th className="px-6 py-4 text-left text-sm font-semibold">Category</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold">Company</th>
                             <th className="px-6 py-4 text-left text-sm font-semibold">Price</th>
                             <th className="px-6 py-4 text-center text-sm font-semibold">Actions</th>
                           </tr>
@@ -646,84 +604,6 @@ const List = ({ token }) => {
                           placeholder="Enter product description"
                           required
                         />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Company/Brand Section */}
-                  <div className="bg-gray-50 rounded-xl p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <Building2 size={20} className="text-gray-600" />
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">Brand/Company</h3>
-                        <p className="text-sm text-gray-600">Select or add the brand for this product</p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Company/Brand</label>
-                        <div className="flex gap-3">
-                          <select
-                            onChange={(e) => setEditedProduct(prev => ({ ...prev, company: e.target.value }))}
-                            value={editedProduct.company}
-                            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
-                          >
-                            <option value="">Aharyas</option>
-                            {companies.map((comp) => (
-                              <option key={comp} value={comp}>{comp}</option>
-                            ))}
-                          </select>
-                          <button
-                            type="button"
-                            onClick={() => setShowAddCompany(true)}
-                            className="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors flex items-center gap-2 font-medium"
-                          >
-                            <Plus size={16} />
-                            Add New
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Add New Company Form */}
-                      {showAddCompany && (
-                        <div className="bg-white border border-gray-200 rounded-lg p-4">
-                          <h4 className="font-medium text-gray-900 mb-3">Add New Company</h4>
-                          <div className="flex gap-3">
-                            <input
-                              type="text"
-                              value={newCompanyName}
-                              onChange={(e) => setNewCompanyName(e.target.value)}
-                              placeholder="Enter company/brand name"
-                              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
-                              onKeyPress={(e) => e.key === 'Enter' && handleAddNewCompany()}
-                            />
-                            <button
-                              type="button"
-                              onClick={handleAddNewCompany}
-                              className="px-4 py-2 bg-black hover:bg-gray-800 text-white rounded-lg transition-colors font-medium"
-                            >
-                              Add
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => { setShowAddCompany(false); setNewCompanyName(''); }}
-                              className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg transition-colors font-medium"
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Company Selection Status */}
-                      <div className="bg-gray-100 rounded-lg p-3">
-                        <div className="flex items-center gap-2 text-gray-700">
-                          <Building2 size={16} />
-                          <span className="text-sm font-medium">
-                            {editedProduct.company ? `Selected: ${editedProduct.company}` : 'Product will be listed as Aharyas by default'}
-                          </span>
-                        </div>
                       </div>
                     </div>
                   </div>

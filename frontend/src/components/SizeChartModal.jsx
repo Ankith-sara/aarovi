@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Ruler } from 'lucide-react';
+import { X, Ruler, Info, TrendingUp } from 'lucide-react';
 
 // Size chart data organized by product type
 const sizeCharts = {
@@ -262,86 +262,150 @@ const SizeChartModal = ({ isOpen, onClose, productName, category, subCategory })
   const chart = sizeCharts[chartKey];
   
   return (
-    <div 
-      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
+    <>
       <div 
-        className="bg-white shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-auto"
-        onClick={(e) => e.stopPropagation()}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn"
+        onClick={onClose}
       >
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
-          <div className="flex items-center gap-3">
-            <Ruler size={20} className="text-black" />
-            <div>
-              <h3 className="text-xl font-medium text-black tracking-wide">
-                {chart.title}
-              </h3>
+        <div 
+          className="bg-white rounded-lg shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-auto border border-background animate-slideUp"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="sticky top-0 bg-gradient-to-r from-background/20 to-primary border-b border-background px-6 py-5 flex items-center justify-between z-10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center border border-background">
+                <Ruler size={20} className="text-secondary" />
+              </div>
+              <div>
+                <h3 className="text-xl font-serif font-bold text-text">
+                  {chart.title}
+                </h3>
+              </div>
             </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 hover:bg-gray-100 flex items-center justify-center transition-colors"
-            aria-label="Close"
-          >
-            <X size={20} className="text-gray-600" />
-          </button>
-        </div>
-        
-        <div className="p-6">
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-black text-white">
-                  {chart.headers.map((header, index) => (
-                    <th key={index} className="px-4 py-3 text-left text-sm font-medium uppercase tracking-wider">
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {chart.rows.map((row, rowIndex) => (
-                  <tr 
-                    key={rowIndex} 
-                    className={`${rowIndex % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100 transition-colors`}
-                  >
-                    {row.map((cell, cellIndex) => (
-                      <td 
-                        key={cellIndex} 
-                        className={`px-4 py-3 text-sm ${cellIndex === 0 ? 'font-medium' : ''} border-b border-gray-200`}
-                      >
-                        {cell}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <button
+              onClick={onClose}
+              className="w-10 h-10 hover:bg-background/20 rounded-full flex items-center justify-center transition-colors"
+              aria-label="Close"
+            >
+              <X size={20} className="text-text/60" />
+            </button>
           </div>
           
-          <div className="mt-6 space-y-4">
-            <div className="p-4 bg-blue-50 border-l-4 border-blue-500">
-              <p className="text-sm text-gray-700 font-medium mb-1">📏 How to Measure</p>
-              <ul className="text-sm text-gray-600 space-y-1 ml-4">
-                <li>• <strong>Chest:</strong> Measure around the fullest part of your chest</li>
-                <li>• <strong>Waist:</strong> Measure around your natural waistline</li>
-                <li>• <strong>Hip:</strong> Measure around the fullest part of your hips</li>
-                <li>• <strong>Shoulder:</strong> Measure from one shoulder point to the other across your back</li>
-                <li>• <strong>Sleeve:</strong> Measure from shoulder to wrist with arm slightly bent</li>
-              </ul>
+          {/* Content */}
+          <div className="p-6">
+            {/* Size Table */}
+            <div className="overflow-x-auto rounded-lg border-2 border-background shadow-sm">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-secondary text-white">
+                    {chart.headers.map((header, index) => (
+                      <th key={index} className="px-4 py-4 text-left text-sm font-semibold uppercase tracking-wider">
+                        {header}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {chart.rows.map((row, rowIndex) => (
+                    <tr 
+                      key={rowIndex} 
+                      className={`${rowIndex % 2 === 0 ? 'bg-gradient-to-r from-background/10 to-primary' : 'bg-white'} hover:bg-background/20 transition-colors`}
+                    >
+                      {row.map((cell, cellIndex) => (
+                        <td 
+                          key={cellIndex} 
+                          className={`px-4 py-3 text-sm ${cellIndex === 0 ? 'font-semibold text-text' : 'text-text/70'} border-b border-background/30`}
+                        >
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
             
-            <div className="p-4 bg-amber-50 border-l-4 border-amber-500">
-              <p className="text-sm text-gray-700">
-                <span className="font-medium">💡 Sizing Tip:</span> If you're between sizes, we recommend sizing up for a more comfortable fit. 
-                All measurements are in inches and may vary slightly due to the handcrafted nature of our products.
-              </p>
+            {/* Measurement Guide */}
+            <div className="mt-6 space-y-4">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-lg p-5 border-l-4 border-blue-500">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Info size={16} className="text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-serif font-semibold text-text mb-3">📏 How to Measure</p>
+                    <ul className="text-sm text-text/70 space-y-2 font-light">
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500 font-bold">•</span>
+                        <span><strong className="text-text">Chest:</strong> Measure around the fullest part of your chest</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500 font-bold">•</span>
+                        <span><strong className="text-text">Waist:</strong> Measure around your natural waistline</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500 font-bold">•</span>
+                        <span><strong className="text-text">Hip:</strong> Measure around the fullest part of your hips</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500 font-bold">•</span>
+                        <span><strong className="text-text">Shoulder:</strong> Measure from one shoulder point to the other across your back</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-500 font-bold">•</span>
+                        <span><strong className="text-text">Sleeve:</strong> Measure from shoulder to wrist with arm slightly bent</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 rounded-lg p-5 border-l-4 border-amber-500">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <TrendingUp size={16} className="text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-text/70 font-light leading-relaxed">
+                      <span className="font-serif font-semibold text-text">💡 Sizing Tip:</span> If you're between sizes, we recommend sizing up for a more comfortable fit. 
+                      All measurements are in inches and may vary slightly due to the handcrafted nature of our products.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Footer Button */}
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={onClose}
+                className="px-8 py-3 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-all duration-300 shadow-lg"
+              >
+                Got It
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </div>
+      
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.2s ease-out;
+        }
+        .animate-slideUp {
+          animation: slideUp 0.3s ease-out;
+        }
+      `}</style>
+    </>
   );
 };
 

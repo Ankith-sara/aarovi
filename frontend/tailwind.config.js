@@ -17,10 +17,10 @@ export default {
         dm: ['DM Sans', 'sans-serif'],
       },
       colors: {
-        primary: "#fcf8f0",
-        secondary: "#6b5b4d",
+        primary: "#FCFAFA",
+        secondary: "#4F200D",
         text: "#131010",
-        background: "#b6a593",
+        background: "#EBD9D1",
       },
     },
   },

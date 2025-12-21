@@ -21,11 +21,7 @@ const authUser = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
-        // IMPORTANT: Set userId in req.body for controllers that expect it there
         req.body.userId = decoded.id;
-        
-        // Also set req.user for cleaner access in some controllers
         req.user = { 
             id: decoded.id, 
             role: decoded.role 

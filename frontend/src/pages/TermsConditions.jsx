@@ -1,69 +1,62 @@
 import React, { useEffect } from 'react';
-import { Scale, FileText, AlertTriangle, Shield, Link, CreditCard, User, ShoppingCart, Gavel, Mail, Phone } from 'lucide-react';
-import Title from '../components/Title';
+import { Scale, FileText, AlertTriangle, Shield, Link, CreditCard, User, ShoppingCart, Gavel, Mail, Phone, ArrowRight } from 'lucide-react';
 
 const TermsConditions = () => {
   useEffect(() => {
-    document.title = 'Terms & Conditions | Aharyas'
+    document.title = 'Terms & Conditions | Aasvi'
   });
 
   return (
-    <div className="min-h-screen text-black mt-20">
-      <section className="py-20 px-4 sm:px-8 md:px-10 lg:px-20">
-        <div className="max-w-5xl mx-auto text-center">
-          <div className="text-3xl text-center mb-8">
-            <Title text1="TERMS &" text2="CONDITIONS" />
-          </div>
-          <p className="text-xl text-gray-600 font-light leading-relaxed max-w-3xl mx-auto">
-            These terms and conditions govern your use of our website and purchase of our handcrafted products. Please read them carefully.
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6">
+            Terms & Conditions
+          </h1>
+          <p className="text-lg sm:text-xl text-text/70 mb-8 max-w-3xl mx-auto font-light">
+            These terms outline the rules and guidelines for using Aasvi's website, services, and purchasing our handcrafted and custom-made fashion products.
           </p>
         </div>
-      </section>
+      </div>
 
       {/* Company Information */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20">
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-white shadow-lg p-12 border-l-4 border-black">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                <FileText size={24} />
-              </div>
-              <h2 className="text-2xl font-light tracking-wider text-black">COMPANY INFORMATION</h2>
-            </div>
-            
-            <div className="grid lg:grid-cols-2 gap-12">
-              <div className="space-y-4 text-gray-700 font-light">
-                <p className="first-letter:text-4xl first-letter:font-light first-letter:text-black first-letter:mr-2 first-letter:float-left first-letter:leading-none">
-                  These terms and conditions apply to TATHASTA WEAVES LLP and all users of our website and services.
-                </p>
-                
-                <div className="bg-gray-100 p-6 rounded-lg">
-                  <h4 className="font-medium text-black mb-3">Legal Entity</h4>
-                  <p><strong>TATHASTA WEAVES LLP</strong></p>
-                  <p className="text-sm mt-2">
-                    Registered/Operational Office:<br />
-                    J J Nagar, Near Ganesh Temple,<br />
-                    Sainikpuri, Malkajgiri,<br />
-                    Hyderabad, Telangana 500094
-                  </p>
-                </div>
-              </div>
+          <div className="text-center mb-12">
+            <FileText className="w-12 h-12 mx-auto mb-4 text-secondary" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Company Information</h2>
+          </div>
 
-              <div className="bg-gray-50 p-6 rounded-lg">
-                <h3 className="font-medium text-black mb-4">Definitions</h3>
-                <div className="space-y-3 text-sm">
-                  <div>
-                    <p><strong>"We", "Us", "Our"</strong></p>
-                    <p className="text-gray-600">Refers to TATHASTA WEAVES LLP</p>
-                  </div>
-                  <div>
-                    <p><strong>"You", "Your", "User", "Visitor"</strong></p>
-                    <p className="text-gray-600">Any natural or legal person visiting our website and/or purchasing from us</p>
-                  </div>
-                  <div>
-                    <p><strong>"Services"</strong></p>
-                    <p className="text-gray-600">Our website, products, and customer support</p>
-                  </div>
+          <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-[#E8DCC4]">
+              <p className="text-text/80 leading-relaxed mb-6">
+                These terms and conditions apply to AASVI and all users interacting with our platform, products, or services.
+              </p>
+              <div className="bg-gradient-to-br from-background/30 to-primary p-6 rounded-lg">
+                <h4 className="font-serif font-semibold text-text mb-3">Legal Entity</h4>
+                <p className="font-medium text-text">AASVI FASHIONS</p>
+                <p className="text-sm text-text/70 mt-3">
+                  Registered / Operational Address:<br />
+                  Hyderabad, Telangana - 502345, India
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-background/20 to-primary p-8 rounded-lg shadow-sm border border-[#E8DCC4]">
+              <h3 className="font-serif font-semibold text-text mb-6 text-xl">Definitions</h3>
+              <div className="space-y-4">
+                <div>
+                  <p className="font-semibold text-text">"We", "Us", "Our"</p>
+                  <p className="text-text/70 text-sm">Refers to Aasvi / Aasvi Fashions</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-text">"You", "User", "Customer"</p>
+                  <p className="text-text/70 text-sm">Any individual accessing our website or purchasing our products</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-text">"Services"</p>
+                  <p className="text-text/70 text-sm">Website features, product catalog, customization tools, consultation services, and customer support</p>
                 </div>
               </div>
             </div>
@@ -72,147 +65,118 @@ const TermsConditions = () => {
       </section>
 
       {/* Website Usage Terms */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-primary">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                <Scale size={24} />
-              </div>
-              <h2 className="text-2xl font-light tracking-wider text-black">WEBSITE USAGE TERMS</h2>
-            </div>
+            <Scale className="w-12 h-12 mx-auto mb-4 text-secondary" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Website Usage Terms</h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <div className="bg-white shadow-lg p-6 border-l-4 border-gr hover:shadow-xl transition-shadow">
-                <h3 className="font-medium text-black mb-4 flex items-center gap-2">
-                  <FileText size={16} />
-                  Content Changes
-                </h3>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  The content of our website pages is subject to change without notice. 
-                  We reserve the right to modify information, prices, and product availability at any time.
-                </p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {[
+              {
+                icon: FileText,
+                title: "Content Updates",
+                description: "Aasvi reserves the right to update or modify website content, pricing, or product availability at any time without prior notice."
+              },
+              {
+                icon: AlertTriangle,
+                title: "Accuracy of Information",
+                description: "While we ensure all details are accurate, Aasvi does not guarantee completeness, reliability, or error-free information on the website."
+              },
+              {
+                icon: User,
+                title: "User Responsibilities",
+                description: "You are responsible for maintaining the confidentiality of your account details and for all actions performed under your account."
+              },
+              {
+                icon: Shield,
+                title: "Prohibited Activities",
+                description: "Illegal or fraudulent activity, uploading malicious code, or attempting to misuse website features or data."
+              },
+              {
+                icon: Link,
+                title: "Third-Party Links",
+                description: "Aasvi is not responsible for the content, safety, or policies of external websites linked on our platform."
+              },
+              {
+                icon: Gavel,
+                title: "Governing Law",
+                description: "All disputes fall under the jurisdiction of Hyderabad, Telangana (India)."
+              }
+            ].map((item, index) => (
+              <div key={index} className="p-6 rounded-lg shadow-sm border border-background hover:shadow-md transition-shadow">
+                <item.icon className="w-8 h-8 text-secondary mb-4" />
+                <h3 className="font-serif font-semibold text-text mb-3">{item.title}</h3>
+                <p className="text-text/70 text-sm leading-relaxed">{item.description}</p>
               </div>
-
-              <div className="bg-white shadow-lg p-6 border-l-4 border-black hover:shadow-xl transition-shadow">
-                <h3 className="font-medium text-black mb-4 flex items-center gap-2">
-                  <AlertTriangle size={16} />
-                  Information Accuracy
-                </h3>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  While we strive for accuracy, neither we nor third parties provide any warranty regarding 
-                  the accuracy, timeliness, or completeness of information on our website. 
-                  Use of any information is entirely at your own risk.
-                </p>
-              </div>
-
-              <div className="bg-white shadow-lg p-6 border-l-4 border-black hover:shadow-xl transition-shadow">
-                <h3 className="font-medium text-black mb-4 flex items-center gap-2">
-                  <User size={16} />
-                  User Responsibilities
-                </h3>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  You are responsible for ensuring the confidentiality of your account information and 
-                  for all activities under your account. Please notify us immediately of any unauthorized use.
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div className="bg-white shadow-lg p-6 border-l-4 border-black hover:shadow-xl transition-shadow">
-                <h3 className="font-medium text-black mb-4 flex items-center gap-2">
-                  <Shield size={16} />
-                  Prohibited Uses
-                </h3>
-                <p className="text-gray-700 text-sm leading-relaxed mb-3">
-                  You may not use our site for any unlawful purpose or to solicit others to perform unlawful acts.
-                </p>
-                <ul className="text-xs text-gray-600 space-y-1">
-                  <li>• Harassment or abuse of other users</li>
-                  <li>• Transmission of viruses or malicious code</li>
-                  <li>• Unauthorized data collection</li>
-                </ul>
-              </div>
-
-              <div className="bg-white shadow-lg p-6 border-l-4 border-black hover:shadow-xl transition-shadow">
-                <h3 className="font-medium text-black mb-4 flex items-center gap-2">
-                  <Link size={16} />
-                  Third-Party Links
-                </h3>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  Our website may contain links to third-party sites. We are not responsible for 
-                  the content or privacy practices of these external sites.
-                </p>
-              </div>
-
-              <div className="bg-white shadow-lg p-6 border-l-4 border-black hover:shadow-xl transition-shadow">
-                <h3 className="font-medium text-black mb-4 flex items-center gap-2">
-                  <Gavel size={16} />
-                  Governing Law
-                </h3>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  These terms are governed by and construed in accordance with the laws of India, 
-                  and you submit to the jurisdiction of the courts in Hyderabad, Telangana.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Purchase Terms */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20">
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                <ShoppingCart size={24} />
-              </div>
-              <h2 className="text-2xl font-light tracking-wider text-black">PURCHASE TERMS</h2>
-            </div>
+            <ShoppingCart className="w-12 h-12 mx-auto mb-4 text-secondary" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Purchase Terms</h2>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-16">
-            <div className="bg-white shadow-lg p-8 border-l-4 border-black hover:shadow-xl transition-shadow">
-              <div className="space-y-4 text-gray-700 font-light">
-                <p> By placing an order with us, you agree to provide current, complete, and accurate purchase information. </p>
-                
-                <div className="bg-gray-100 p-6 rounded-lg">
-                  <h4 className="font-medium text-black mb-3">Order Process</h4>
-                  <ul className="space-y-2 text-sm">
-                    <li>• Order confirmation sent within 24 hours</li>
-                    <li>• Payment processing and verification</li>
-                    <li>• Product preparation (0-7 days)</li>
-                    <li>• Shipping and delivery tracking</li>
-                  </ul>
-                </div>
+          <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div className="p-8 rounded-lg shadow-sm border border-background">
+              <p className="text-text/80 leading-relaxed mb-6">
+                By placing an order with Aasvi, you agree to provide accurate and complete purchase details.
+              </p>
+              <div className="bg-gradient-to-br from-background/30 to-primary p-6 rounded-lg">
+                <h4 className="font-serif font-semibold text-[#2C1810] mb-4">Order Process</h4>
+                <ul className="space-y-2 text-sm text-[#2C1810]/80">
+                  <li className="flex items-start gap-2">
+                    <ArrowRight className="w-4 h-4 mt-0.5 text-secondary flex-shrink-0" />
+                    Order confirmation within 24 hours
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <ArrowRight className="w-4 h-4 mt-0.5 text-secondary flex-shrink-0" />
+                    Payment verification
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <ArrowRight className="w-4 h-4 mt-0.5 text-secondary flex-shrink-0" />
+                    Product preparation (0–7 days depending on design)
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <ArrowRight className="w-4 h-4 mt-0.5 text-secondary flex-shrink-0" />
+                    Shipping with tracking information
+                  </li>
+                </ul>
               </div>
             </div>
 
-            <div className="bg-white shadow-lg p-8 border-l-4 border-black hover:shadow-xl transition-shadow">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                  <CreditCard size={24} />
-                </div>
-                <h3 className="text-xl font-medium text-black">Payment Terms</h3>
-              </div>
-
-              <div className="space-y-4 text-gray-700 font-light">
-                <p className="text-sm leading-relaxed">
-                  We reserve the right to refuse or cancel your order if fraud or unauthorized purchase is suspected.
-                </p>
-                
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <h4 className="font-medium text-black mb-2">Accepted Payment Methods:</h4>
-                  <ul className="space-y-1 text-sm">
-                    <li>• Credit/Debit Cards</li>
-                    <li>• Digital Wallets</li>
-                    <li>• Bank Transfers</li>
-                    <li>• UPI Payments</li>
-                  </ul>
-                </div>
+            <div className="bg-gradient-to-br from-background/20 to-primary p-8 rounded-lg shadow-sm border border-[#E8DCC4]">
+              <CreditCard className="w-10 h-10 text-secondary mb-4" />
+              <h3 className="font-serif font-semibold text-[#2C1810] mb-4 text-xl">Payment Terms</h3>
+              <p className="text-[#2C1810]/80 text-sm leading-relaxed mb-6">
+                Orders may be cancelled if fraudulent activity or unauthorized payment is detected.
+              </p>
+              <div className="bg-white/60 p-5 rounded-lg">
+                <h4 className="font-semibold text-[#2C1810] mb-3">Accepted Payment Methods:</h4>
+                <ul className="space-y-2 text-sm text-[#2C1810]/80">
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
+                    UPI
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
+                    Debit/Credit Cards
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
+                    Digital Wallets
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
+                    Bank Transfers
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -220,90 +184,97 @@ const TermsConditions = () => {
       </section>
 
       {/* Liability & Disclaimer */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-primary">
         <div className="max-w-5xl mx-auto">
-          <div className="bg-white/90 backdrop-blur-sm p-12 shadow-xl border-l-4 border-black">
-            <h2 className="text-2xl font-light tracking-wider text-black mb-8 text-center">LIABILITY & DISCLAIMER</h2>
-            
-            <div className="space-y-6 text-gray-700 font-light leading-relaxed">
-              <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <AlertTriangle size={16} />
-                  Limitation of Liability
-                </h3>
-                <p className="text-sm">
-                  <strong>In no case shall TATHASTA WEAVES LLP be liable for any direct, indirect, punitive, 
-                  incidental, special, consequential damages</strong> that result from the use of, or inability to use, 
-                  this website or the purchase of products from us. This includes, without limitation, 
-                  reliance by a user on any information obtained via the website.
-                </p>
-              </div>
+          <div className="text-center mb-12">
+            <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-secondary" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Liability & Disclaimer</h2>
+          </div>
 
-              <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <Shield size={16} />
-                  Product Quality
-                </h3>
-                <p className="text-sm">
-                  While we take great care in crafting our products, we acknowledge that handmade items may have 
-                  natural variations. We provide detailed product descriptions and images to help you make informed decisions.
-                </p>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: AlertTriangle,
+                title: "Limitation of Liability",
+                description: "Aasvi shall not be held responsible for any direct or indirect damages arising from website usage, order processing, or product handling."
+              },
+              {
+                icon: Shield,
+                title: "Product Disclaimer",
+                description: "Handmade and custom-designed pieces may have natural variations. We ensure accurate product images and descriptions to help you make informed decisions."
+              },
+              {
+                icon: Scale,
+                title: "Force Majeure",
+                description: "Aasvi is not liable for delays or failures caused by events outside our control, such as natural disasters, transportation issues, or unexpected disruptions."
+              }
+            ].map((item, index) => (
+              <div key={index} className="bg-white p-6 rounded-lg shadow-sm border border-background">
+                <item.icon className="w-8 h-8 text-secondary mb-4" />
+                <h3 className="font-serif font-semibold text-text mb-3">{item.title}</h3>
+                <p className="text-text/70 text-sm leading-relaxed">{item.description}</p>
               </div>
-
-              <div className="bg-gray-100 p-6 rounded-lg border border-gray-200">
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <Scale size={16} />
-                  Force Majeure
-                </h3>
-                <p className="text-sm">
-                  We shall not be liable for any failure to perform our obligations where such failure results 
-                  from acts of nature, war, terrorism, labor disputes, or other causes beyond our reasonable control.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Privacy & Data Protection */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20">
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                <Shield size={24} />
-              </div>
-              <h2 className="text-2xl font-light tracking-wider text-black">PRIVACY & DATA PROTECTION</h2>
-            </div>
+            <Shield className="w-12 h-12 mx-auto mb-4 text-secondary" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Privacy & Data Protection</h2>
           </div>
 
-          <div className="bg-gradient-to-r from-gray-100 to-white p-12 border-l-4 border-black">
-            <div className="max-w-4xl mx-auto">
-              <p className="text-gray-700 font-light leading-relaxed mb-8 text-center">
-                Your privacy is important to us. We are committed to protecting your personal information 
-                and being transparent about how we collect, use, and share your data.
-              </p>
+          <div className="max-w-5xl mx-auto">
+            <p className="text-center text-text/80 text-lg mb-10 leading-relaxed">
+              Aasvi values your privacy and follows strict measures to protect your personal information.
+            </p>
 
-              <div className="grid md:grid-cols-2 gap-8">
-                <div className="bg-white p-6 shadow-sm rounded-lg border-l-2 border-gray-500">
-                  <h4 className="font-medium text-black mb-3">Information We Collect</h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Contact information (name, email, phone)</li>
-                    <li>• Billing and shipping addresses</li>
-                    <li>• Payment information (processed securely)</li>
-                    <li>• Order history and preferences</li>
-                  </ul>
-                </div>
-                
-                <div className="bg-white p-6 shadow-sm rounded-lg border-l-2 border-gray-500">
-                  <h4 className="font-medium text-black mb-3">How We Use Your Data</h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Processing and fulfilling orders</li>
-                    <li>• Customer support and communication</li>
-                    <li>• Improving our products and services</li>
-                    <li>• Marketing (with your consent)</li>
-                  </ul>
-                </div>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-white p-8 rounded-lg shadow-sm border border-background">
+                <h4 className="font-serif font-semibold text-text mb-5 text-lg">Information We Collect</h4>
+                <ul className="space-y-3 text-sm text-text/80">
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                    Name, email, and phone number
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                    Shipping & billing addresses
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                    Payment details (encrypted)
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                    Browsing and order history
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-gradient-to-br from-background/20 to-primary p-8 rounded-lg shadow-sm border border-background">
+                <h4 className="font-serif font-semibold text-text mb-5 text-lg">How We Use Your Data</h4>
+                <ul className="space-y-3 text-sm text-text/80">
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                    To process orders
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                    To provide customer support
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                    To improve our services
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                    Marketing (only with consent)
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -311,40 +282,35 @@ const TermsConditions = () => {
       </section>
 
       {/* Contact & Support */}
-      <section className="py-16 px-4 sm:px-8 md:px-10 lg:px-20 bg-gray-50">
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-2xl font-light tracking-wider text-black mb-8">QUESTIONS ABOUT THESE TERMS?</h2>
-          <p className="text-gray-700 font-light mb-8 max-w-2xl mx-auto">
-            If you have any questions about these Terms & Conditions, please don't hesitate to contact us.
-          </p>
-          
-          <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-            <div className="bg-white p-6 shadow-sm border-l-4 border-black">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <Phone size={16} />
-                <h4 className="font-medium text-black">Phone Support</h4>
-              </div>
-              <p className="text-lg text-gray-700 mb-1">+91 9063284008</p>
-              <p className="text-lg text-gray-700 mb-1">+91 9121157804</p>
-              <p className="text-sm text-gray-500">Mon-Sat: 9 AM - 6 PM</p>
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-background">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary mb-4">Questions About These Terms?</h2>
+            <p className="text-text/70 text-lg max-w-2xl mx-auto">
+              We're here to help. Contact Aasvi support anytime for clarity regarding these terms.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-12">
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
+              <Phone className="w-10 h-10 text-secondary mx-auto mb-4" />
+              <h4 className="font-serif font-semibold text-text mb-2">Phone Support</h4>
+              <p className="text-xl text-text mb-1">+91 9399336666</p>
+              <p className="text-sm text-text/60">Mon–Sat: 9 AM – 6 PM</p>
             </div>
-            
-            <div className="bg-white p-6 shadow-sm border-l-4 border-black">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <Mail size={16} />
-                <h4 className="font-medium text-black">Email Support</h4>
-              </div>
-              <p className="text-lg text-gray-700 mb-1">aharyasofficial@gmail.com</p>
-              <p className="text-sm text-gray-500">Response within 24 hours</p>
+
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
+              <Mail className="w-10 h-10 text-secondary mx-auto mb-4" />
+              <h4 className="font-serif font-semibold text-text mb-2">Email Support</h4>
+              <p className="text-xl text-text mb-1">aasviofficial@gmail.com</p>
+              <p className="text-sm text-text/60">Reply within 24 hours</p>
             </div>
           </div>
 
-          <div className="mt-12 bg-black text-white p-8 rounded-lg max-w-3xl mx-auto">
-            <h3 className="font-light text-xl mb-4">Agreement to Terms</h3>
-            <p className="font-light leading-relaxed">
-              By using our website and services, you acknowledge that you have read, understood, 
-              and agree to be bound by these Terms & Conditions. These terms may be updated 
-              periodically, and your continued use constitutes acceptance of any changes.
+          <div className="bg-gradient-to-r from-background to-primary text-text p-10 rounded-lg max-w-3xl mx-auto text-center shadow-lg">
+            <h3 className="font-serif text-2xl font-semibold mb-4">Agreement to Terms</h3>
+            <p className="leading-relaxed text-text/90">
+              By using our website and services, you acknowledge that you have read and agreed to these Terms & Conditions. Continued use after updates constitutes acceptance of all changes.
             </p>
           </div>
         </div>

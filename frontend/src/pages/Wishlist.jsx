@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
-import { Heart, ShoppingCart, Trash2, X, Package } from 'lucide-react';
-import Title from '../components/Title';
+import { Heart, ShoppingCart, Trash2, X, Package, ArrowRight, Plus, Minus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Wishlist = () => {
@@ -24,7 +23,6 @@ const Wishlist = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
-  // Filter products that are in wishlist
   useEffect(() => {
     if (products && wishlistItems) {
       const filteredProducts = products.filter(product => 
@@ -35,14 +33,12 @@ const Wishlist = () => {
     }
   }, [products, wishlistItems]);
 
-  // Redirect to login if not authenticated
   useEffect(() => {
     if (!token) {
       navigate('/login');
     }
   }, [token, navigate]);
 
-  // Close modal on Escape key
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape') {
@@ -60,7 +56,7 @@ const Wishlist = () => {
   }, [showSizeModal, showDeleteModal]);
 
   useEffect(() => {
-    document.title = 'Wishlist | Aharyas';
+    document.title = 'Wishlist | Aasvi';
   }, []);
 
   const handleDeleteClick = (productId) => {
@@ -108,7 +104,6 @@ const Wishlist = () => {
     closeSizeModal();
   };
 
-  // Check if size is available
   const isSizeAvailable = (size) => {
     const sizeString = String(size).trim();
     return sizeString !== 'N/A' && 
@@ -116,7 +111,6 @@ const Wishlist = () => {
            sizeString !== '';
   };
 
-  // Sort sizes function
   const sortSizes = (sizes) => {
     return [...sizes].sort((a, b) => {
       const sizeOrder = { 'XS': 1, 'S': 2, 'M': 3, 'L': 4, 'XL': 5, 'XXL': 6, 'XXXL': 7 };
@@ -137,24 +131,24 @@ const Wishlist = () => {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
-          <span className="text-gray-600">Loading wishlist...</span>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto mb-4"></div>
+          <span className="text-text/60 font-light">Loading wishlist...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white text-black mt-20">
+    <div className="mt-20 min-h-screen">
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-fadeIn">
-          <div className="bg-white rounded-sm shadow-2xl max-w-md w-full animate-slideUp">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="text-xl font-medium tracking-wide">Remove from Wishlist</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full animate-slideUp border border-background">
+            <div className="p-6 border-b border-background flex items-center justify-between">
+              <h3 className="text-xl font-serif font-semibold text-text">Remove from Wishlist</h3>
               <button
                 onClick={cancelDelete}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-text/40 hover:text-text transition-colors p-1 hover:bg-background/30 rounded-full"
                 aria-label="Close"
               >
                 <X size={20} />
@@ -162,21 +156,21 @@ const Wishlist = () => {
             </div>
             
             <div className="p-6">
-              <p className="text-gray-600 font-light leading-relaxed">
+              <p className="text-text/70 font-light leading-relaxed">
                 Are you sure you want to remove this item from your wishlist?
               </p>
             </div>
             
-            <div className="p-6 border-t border-gray-200 flex gap-3">
+            <div className="p-6 border-t border-background flex gap-3">
               <button
                 onClick={cancelDelete}
-                className="flex-1 py-3 border border-gray-300 text-black font-light tracking-wide hover:bg-gray-50 transition-all duration-300 uppercase"
+                className="flex-1 py-3 border-2 border-background text-text font-medium rounded-lg hover:bg-background/20 transition-all duration-300"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
-                className="flex-1 py-3 bg-white text-black border border-gray-300 font-light tracking-wide hover:bg-red-100 hover:text-red-600 transition-all duration-300 uppercase"
+                className="flex-1 py-3 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-all duration-300"
               >
                 Remove
               </button>
@@ -185,65 +179,61 @@ const Wishlist = () => {
         </div>
       )}
 
-      {/* Page Header */}
-      <section className="py-12 px-4 sm:px-8 md:px-10 lg:px-20">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <div className="text-3xl mb-3">
-              <Title text1="MY" text2="WISHLIST" />
-            </div>
-            {wishlistProducts.length > 0 && (
-              <p className="text-gray-500 font-light">
-                {wishlistProducts.length} item{wishlistProducts.length !== 1 ? 's' : ''} saved for later
-              </p>
-            )}
-          </div>
+      {/* Hero Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-text mb-4">
+            My Wishlist
+          </h1>
+          {wishlistProducts.length > 0 && (
+            <p className="text-text/60 font-light text-lg">
+              {wishlistProducts.length} item{wishlistProducts.length !== 1 ? 's' : ''} saved for later
+            </p>
+          )}
         </div>
       </section>
 
-      {/* Wishlist Content */}
-      <section className="px-4 sm:px-8 md:px-10 lg:px-20 pb-20">
+      <section className="px-4 sm:px-6 lg:px-8 pb-20">
         <div className="max-w-7xl mx-auto">
           {wishlistProducts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 bg-white border border-gray-200 shadow-sm">
-              <div className="w-16 h-16 border-2 border-gray-300 rounded-full flex items-center justify-center mb-6">
-                <Heart size={32} className="text-gray-400" />
+            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-lg border border-background shadow-sm">
+              <div className="w-20 h-20 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mb-6">
+                <Heart size={40} className="text-secondary" />
               </div>
               <div className="text-center max-w-md mb-8">
-                <h3 className="text-2xl font-medium mb-3 tracking-wide">YOUR WISHLIST IS EMPTY</h3>
-                <p className="text-gray-600 font-light leading-relaxed">
+                <h3 className="text-2xl font-serif font-semibold mb-3 text-text">Your Wishlist is Empty</h3>
+                <p className="text-text/70 font-light leading-relaxed">
                   Save items you love to your wishlist and never lose track of them
                 </p>
               </div>
               <button
                 onClick={() => navigate('/shop/collection')}
-                className="px-8 py-3 bg-black text-white font-light tracking-wide hover:bg-gray-800 transition-all duration-300"
+                className="px-8 py-4 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-all duration-300 flex items-center gap-2 shadow-lg"
               >
-                BROWSE PRODUCTS
+                <span>Browse Collection</span>
+                <ArrowRight size={18} />
               </button>
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="bg-white border border-gray-200 shadow-sm">
-                <div className="p-6 border-b border-gray-100 bg-gray-50">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <Package size={16} className="text-gray-400" />
-                      <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Items in Wishlist:
-                      </span>
-                      <span className="font-medium text-black tracking-wide">{wishlistProducts.length}</span>
-                    </div>
+              <div className="bg-white rounded-lg border border-background shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
+                  <div className="flex items-center gap-3">
+                    <Package size={20} className="text-secondary" />
+                    <span className="text-sm font-semibold text-text uppercase tracking-wider">
+                      Items in Wishlist: <span className="text-secondary">{wishlistProducts.length}</span>
+                    </span>
                   </div>
                 </div>
 
-                <div className="divide-y divide-gray-100">
-                  {wishlistProducts.map((product) => (
-                    <div key={product._id} className="p-6 hover:bg-gray-50 transition-colors duration-300">
+                <div className="divide-y divide-background/50">
+                  {wishlistProducts.map((product, index) => (
+                    <div key={product._id} className="p-6 hover:bg-background/10 transition-colors duration-300">
                       <div className="flex flex-col lg:flex-row gap-6">
+                        {/* Product Image */}
                         <div className="flex-shrink-0">
                           <Link to={`/product/${product._id}`}>
-                            <div className="w-full h-48 sm:w-32 sm:h-32 lg:w-40 lg:h-40 cursor-pointer">
+                            <div className="w-full h-48 sm:w-32 sm:h-32 lg:w-40 lg:h-40 rounded-lg overflow-hidden bg-gradient-to-br from-background/20 to-primary cursor-pointer">
                               <img
                                 className="w-full h-full object-contain hover:scale-105 transition-transform duration-300"
                                 src={product.images?.[0]}
@@ -253,6 +243,7 @@ const Wishlist = () => {
                           </Link>
                         </div>
 
+                        {/* Product Details */}
                         <div className="flex-grow flex flex-col lg:flex-row justify-between gap-6">
                           <div className="flex-grow space-y-4">
                             <div>
@@ -260,7 +251,7 @@ const Wishlist = () => {
                                 to={`/product/${product._id}`}
                                 className="group"
                               >
-                                <h3 className="font-medium text-xl text-black mb-2 tracking-wide group-hover:text-gray-700 transition-colors line-clamp-2">
+                                <h3 className="font-serif font-semibold text-xl text-text mb-1 group-hover:text-secondary transition-colors line-clamp-2">
                                   {product.name}
                                 </h3>
                               </Link>
@@ -268,30 +259,30 @@ const Wishlist = () => {
 
                             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                               <div className="space-y-1">
-                                <span className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                  PRICE
+                                <span className="block text-xs font-semibold text-text/50 uppercase tracking-wider">
+                                  Price
                                 </span>
-                                <span className="font-medium text-black text-lg">
+                                <span className="font-semibold text-text text-lg">
                                   {currency}{product.price}
                                 </span>
                               </div>
 
                               {product.sizes && product.sizes.length > 0 && (
                                 <div className="space-y-1 col-span-2">
-                                  <span className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    AVAILABLE SIZES
+                                  <span className="block text-xs font-semibold text-text/50 uppercase tracking-wider">
+                                    Available Sizes
                                   </span>
                                   <div className="flex flex-wrap gap-1">
-                                    {product.sizes.filter(size => isSizeAvailable(size)).slice(0, 6).map((size, index) => (
+                                    {product.sizes.filter(size => isSizeAvailable(size)).slice(0, 6).map((size, idx) => (
                                       <span 
-                                        key={index} 
-                                        className="text-xs bg-gray-100 px-2 py-1 text-gray-600 border border-gray-200"
+                                        key={idx} 
+                                        className="text-xs bg-gradient-to-br from-background/30 to-primary px-2 py-1 text-text rounded font-semibold border border-background"
                                       >
                                         {size}
                                       </span>
                                     ))}
                                     {product.sizes.filter(size => isSizeAvailable(size)).length > 6 && (
-                                      <span className="text-xs text-gray-500 px-2 py-1">
+                                      <span className="text-xs text-text/50 px-2 py-1 font-semibold">
                                         +{product.sizes.filter(size => isSizeAvailable(size)).length - 6} more
                                       </span>
                                     )}
@@ -303,27 +294,28 @@ const Wishlist = () => {
                             <div className="flex flex-col sm:flex-row gap-3 pt-2">
                               <button
                                 onClick={() => openSizeModal(product)}
-                                className="flex items-center justify-center gap-2 px-6 py-3 bg-black text-white font-light tracking-wide hover:bg-gray-800 transition-all duration-300 uppercase"
+                                className="flex items-center justify-center gap-2 px-6 py-3 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-all duration-300 uppercase tracking-wider"
                               >
                                 <ShoppingCart size={16} />
-                                ADD TO CART
+                                Add to Cart
                               </button>
                               <button
                                 onClick={() => navigate(`/product/${product._id}`)}
-                                className="flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-black font-light tracking-wide hover:border-black hover:bg-gray-50 transition-all duration-300 uppercase"
+                                className="flex items-center justify-center gap-2 px-6 py-3 border-2 border-background text-text font-semibold rounded-lg hover:bg-background/20 transition-all duration-300 uppercase tracking-wider"
                               >
-                                VIEW DETAILS
+                                View Details
                               </button>
                             </div>
                           </div>
 
+                          {/* Delete Button */}
                           <div className="flex lg:flex-col items-center lg:items-end justify-end lg:justify-start">
                             <button
                               onClick={() => handleDeleteClick(product._id)}
-                              className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 border border-transparent hover:border-red-200 transition-all duration-300"
+                              className="p-3 text-text/40 hover:text-red-500 hover:bg-red-50 rounded-lg border-2 border-transparent hover:border-red-200 transition-all duration-300"
                               aria-label="Remove from wishlist"
                             >
-                              <Trash2 size={18} />
+                              <Trash2 size={20} />
                             </button>
                           </div>
                         </div>
@@ -337,9 +329,9 @@ const Wishlist = () => {
               <div className="text-center">
                 <button
                   onClick={() => navigate('/shop/collection')}
-                  className="px-8 py-4 border border-gray-300 text-black font-light tracking-wide hover:border-black hover:bg-gray-50 transition-all duration-300 uppercase"
+                  className="px-8 py-4 border-2 border-background text-text font-semibold rounded-lg hover:bg-background/20 transition-all duration-300 uppercase tracking-wider"
                 >
-                  CONTINUE SHOPPING
+                  Continue Shopping
                 </button>
               </div>
             </div>
@@ -350,19 +342,19 @@ const Wishlist = () => {
       {/* Size Selection Modal */}
       {showSizeModal && selectedProduct && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={closeSizeModal}
         >
           <div 
-            className="bg-white max-w-md w-full rounded-sm shadow-2xl overflow-hidden animate-slideUp"
+            className="bg-white max-w-md w-full rounded-lg shadow-2xl overflow-hidden animate-slideUp border border-background"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h3 className="text-xl font-medium text-gray-900 tracking-wide">Select Size</h3>
+            <div className="flex items-center justify-between p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
+              <h3 className="text-xl font-serif font-semibold text-text">Select Size & Quantity</h3>
               <button
                 onClick={closeSizeModal}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-text/40 hover:text-text transition-colors"
               >
                 <X size={24} />
               </button>
@@ -372,20 +364,22 @@ const Wishlist = () => {
             <div className="p-6">
               {/* Product Info */}
               <div className="flex gap-4 mb-6">
-                <img
-                  src={selectedProduct.images?.[0]}
-                  alt={selectedProduct.name}
-                  className="w-20 h-20 object-cover"
-                />
+                <div className="w-20 h-20 rounded-lg overflow-hidden border border-background">
+                  <img
+                    src={selectedProduct.images?.[0]}
+                    alt={selectedProduct.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 <div className="flex-1">
-                  <h4 className="font-medium text-gray-900 mb-1 line-clamp-2">{selectedProduct.name}</h4>
-                  <p className="text-lg font-medium text-black">{currency}{selectedProduct.price}</p>
+                  <h4 className="font-serif font-semibold text-text mb-1 line-clamp-2">{selectedProduct.name}</h4>
+                  <p className="text-lg font-semibold text-secondary">{currency}{selectedProduct.price}</p>
                 </div>
               </div>
 
               {/* Size Selection */}
               <div className="mb-6">
-                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">
+                <label className="block text-xs font-semibold text-text/50 uppercase tracking-wider mb-3">
                   Choose Size *
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -396,20 +390,15 @@ const Wishlist = () => {
                         key={index}
                         onClick={() => isAvailable && setSelectedSize(size)}
                         disabled={!isAvailable}
-                        className={`py-2.5 px-4 transition-all duration-300 font-light relative ${
+                        className={`py-2.5 px-4 transition-all duration-300 font-semibold rounded-lg ${
                           selectedSize === size
-                            ? 'bg-black text-white shadow-md'
+                            ? 'bg-secondary text-white shadow-md'
                             : isAvailable
-                            ? 'bg-white text-gray-700 border border-gray-300 hover:border-black'
-                            : 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
+                            ? 'bg-white text-text border-2 border-background hover:border-secondary'
+                            : 'bg-background/50 text-text/30 border-2 border-background/50 cursor-not-allowed line-through'
                         }`}
                       >
                         {size}
-                        {!isAvailable && (
-                          <span className="absolute inset-0 flex items-center justify-center">
-                            <span className="w-full h-px bg-gray-400 rotate-[-25deg] transform origin-center"></span>
-                          </span>
-                        )}
                       </button>
                     );
                   })}
@@ -418,20 +407,20 @@ const Wishlist = () => {
 
               {/* Quantity Selection */}
               <div className="mb-6">
-                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">
+                <label className="block text-xs font-semibold text-text/50 uppercase tracking-wider mb-3">
                   Quantity
                 </label>
-                <div className="flex items-center border border-gray-300 w-fit">
+                <div className="flex items-center border-2 border-background rounded-lg overflow-hidden w-fit">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors border-r border-gray-300"
+                    className="w-10 h-10 flex items-center justify-center hover:bg-background/20 transition-colors"
                     disabled={quantity <= 1}
                   >
-                    -
+                    <Minus size={16} className={quantity <= 1 ? 'text-text/30' : 'text-text'} />
                   </button>
                   <input
                     type="number"
-                    className="w-16 h-10 text-center focus:outline-none bg-white font-medium"
+                    className="w-16 h-10 text-center focus:outline-none bg-white font-semibold text-text"
                     value={quantity}
                     min="1"
                     onChange={(e) => {
@@ -441,9 +430,9 @@ const Wishlist = () => {
                   />
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors border-l border-gray-300"
+                    className="w-10 h-10 flex items-center justify-center hover:bg-background/20 transition-colors"
                   >
-                    +
+                    <Plus size={16} />
                   </button>
                 </div>
               </div>
@@ -452,20 +441,21 @@ const Wishlist = () => {
               <div className="flex gap-3">
                 <button
                   onClick={closeSizeModal}
-                  className="flex-1 py-3 border border-gray-300 text-gray-700 font-light tracking-wide hover:border-gray-400 transition-colors uppercase"
+                  className="flex-1 py-3 border-2 border-background text-text font-semibold rounded-lg hover:bg-background/20 transition-colors uppercase tracking-wider"
                 >
-                  CANCEL
+                  Cancel
                 </button>
                 <button
                   onClick={handleAddToCartWithSize}
                   disabled={!selectedSize}
-                  className={`flex-1 py-3 font-light tracking-wide transition-colors uppercase ${
+                  className={`flex-1 py-3 font-semibold rounded-lg transition-colors uppercase tracking-wider flex items-center justify-center gap-2 ${
                     selectedSize
-                      ? 'bg-black text-white hover:bg-gray-800'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      ? 'bg-secondary text-white hover:bg-secondary/90'
+                      : 'bg-background/50 text-text/30 cursor-not-allowed'
                   }`}
                 >
-                  ADD TO CART
+                  <ShoppingCart size={16} />
+                  <span>Add to Cart</span>
                 </button>
               </div>
             </div>
@@ -487,6 +477,16 @@ const Wishlist = () => {
         }
         .animate-slideUp {
           animation: slideUp 0.3s ease-out;
+        }
+        
+        /* Hide number input arrows */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        input[type=number] {
+          -moz-appearance: textfield;
         }
       `}</style>
     </div>
