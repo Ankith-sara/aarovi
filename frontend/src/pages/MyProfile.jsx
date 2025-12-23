@@ -3,7 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import {
   ChevronRight, Heart, Clock, User, ShoppingBag, Settings, LogOut, Edit2, Trash2,
-  MapPinHouse, X, Camera, Mail, Calendar, Plus, ArrowRight, AlertCircle
+  MapPinHouse, X, Camera, Mail, Calendar, Plus, ArrowRight, AlertCircle, Package
 } from "lucide-react";
 import ProductItem from "../components/ProductItem";
 import { ShopContext } from "../context/ShopContext";
@@ -167,10 +167,10 @@ const MyProfile = () => {
   };
 
   const menuItems = [
-    { icon: <MapPinHouse size={18} />, text: "Delivery Address", description: "Manage your delivery locations" },
-    { icon: <ShoppingBag size={18} />, text: "Order History", link: "/orders", description: "View your past orders" },
-    { icon: <Heart size={18} />, text: "Wishlist", link: "/wishlist", description: "Items you've saved for later" },
-    { icon: <Settings size={18} />, text: "Account Settings", description: "Notifications, password, privacy" },
+    { icon: <MapPinHouse size={20} />, text: "Delivery Address", description: "Manage your delivery locations" },
+    { icon: <Package size={20} />, text: "Order History", link: "/orders", description: "View your past orders" },
+    { icon: <Heart size={20} />, text: "Wishlist", link: "/wishlist", description: "Items you've saved for later" },
+    { icon: <Settings size={20} />, text: "Account Settings", description: "Notifications, password, privacy" },
   ];
 
   if (!userData) {
@@ -178,15 +178,10 @@ const MyProfile = () => {
       <div className="min-h-screen bg-white mt-20">
         <section className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-text mb-4">
-                My Profile
-              </h1>
-            </div>
             <div className="flex items-center justify-center py-20">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto mb-4"></div>
-                <span className="text-text/60 font-light">Loading profile...</span>
+                <span className="text-text/60 font-light">Loading your profile...</span>
               </div>
             </div>
           </div>
@@ -196,38 +191,31 @@ const MyProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white mt-20">
       {/* Logout Confirmation Modal */}
       {logoutModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full animate-slideUp border border-background">
-            <div className="p-6 border-b border-background flex items-center justify-between">
-              <h3 className="text-xl font-serif font-semibold text-text">Confirm Logout</h3>
-              <button
-                onClick={() => setLogoutModal(false)}
-                className="text-text/40 hover:text-text transition-colors p-1 hover:bg-background/30 rounded-full"
-                aria-label="Close"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="p-6">
-              <p className="text-text/70 font-light leading-relaxed">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-slideUp overflow-hidden">
+            <div className="p-8 text-center">
+              <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <LogOut size={28} className="text-red-500" />
+              </div>
+              <h3 className="text-2xl font-serif font-bold text-text mb-3">Leaving Already?</h3>
+              <p className="text-text/60 font-light leading-relaxed text-sm">
                 Are you sure you want to log out of your account?
               </p>
             </div>
 
-            <div className="p-6 border-t border-background flex gap-3">
+            <div className="px-8 pb-8 flex gap-3">
               <button
                 onClick={() => setLogoutModal(false)}
-                className="flex-1 py-3 border-2 border-background text-text font-semibold rounded-lg hover:bg-background/20 transition-all duration-300"
+                className="flex-1 py-3.5 bg-gray-100 text-text font-semibold rounded-xl hover:bg-gray-200 transition-all duration-300"
               >
-                Cancel
+                Stay
               </button>
               <button
                 onClick={() => { setLogoutModal(false); logout(); }}
-                className="flex-1 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-all duration-300"
+                className="flex-1 py-3.5 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition-all duration-300 shadow-lg shadow-red-500/30"
               >
                 Logout
               </button>
@@ -238,36 +226,29 @@ const MyProfile = () => {
 
       {/* Delete Address Confirmation Modal */}
       {deleteAddressModal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full animate-slideUp border border-background">
-            <div className="p-6 border-b border-background flex items-center justify-between">
-              <h3 className="text-xl font-serif font-semibold text-text">Delete Address</h3>
-              <button
-                onClick={() => setDeleteAddressModal({ open: false, index: -1 })}
-                className="text-text/40 hover:text-text transition-colors p-1 hover:bg-background/30 rounded-full"
-                aria-label="Close"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="p-6">
-              <p className="text-text/70 font-light leading-relaxed">
-                Are you sure you want to delete this delivery address? This action cannot be undone.
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-slideUp overflow-hidden">
+            <div className="p-8 text-center">
+              <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Trash2 size={28} className="text-red-500" />
+              </div>
+              <h3 className="text-2xl font-serif font-bold text-text mb-3">Delete Address</h3>
+              <p className="text-text/60 font-light leading-relaxed text-sm">
+                This action cannot be undone. Are you sure you want to delete this delivery address?
               </p>
             </div>
 
-            <div className="p-6 border-t border-background flex gap-3">
+            <div className="px-8 pb-8 flex gap-3">
               <button
                 onClick={() => setDeleteAddressModal({ open: false, index: -1 })}
-                className="flex-1 py-3 border-2 border-background text-text font-semibold rounded-lg hover:bg-background/20 transition-all duration-300"
+                className="flex-1 py-3.5 bg-gray-100 text-text font-semibold rounded-xl hover:bg-gray-200 transition-all duration-300"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeleteAddress}
                 disabled={loading}
-                className="flex-1 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-all duration-300 disabled:opacity-50"
+                className="flex-1 py-3.5 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition-all duration-300 shadow-lg shadow-red-500/30 disabled:opacity-50"
               >
                 {loading ? "Deleting..." : "Delete"}
               </button>
@@ -278,34 +259,24 @@ const MyProfile = () => {
 
       {/* Error Modal */}
       {errorModal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full animate-slideUp border border-background">
-            <div className="p-6 border-b border-background flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <AlertCircle size={20} className="text-red-500" />
-                <h3 className="text-xl font-serif font-semibold text-text">Error</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-slideUp overflow-hidden">
+            <div className="p-8 text-center">
+              <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <AlertCircle size={28} className="text-red-500" />
               </div>
-              <button
-                onClick={() => setErrorModal({ open: false, message: "" })}
-                className="text-text/40 hover:text-text transition-colors p-1 hover:bg-background/30 rounded-full"
-                aria-label="Close"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="p-6">
-              <p className="text-text/70 font-light leading-relaxed">
+              <h3 className="text-2xl font-serif font-bold text-text mb-3">Oops!</h3>
+              <p className="text-text/60 font-light leading-relaxed text-sm">
                 {errorModal.message}
               </p>
             </div>
 
-            <div className="p-6 border-t border-background">
+            <div className="px-8 pb-8">
               <button
                 onClick={() => setErrorModal({ open: false, message: "" })}
-                className="w-full py-3 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-all duration-300"
+                className="w-full py-3.5 bg-secondary text-white font-semibold rounded-xl hover:bg-secondary/90 transition-all duration-300"
               >
-                OK
+                Got it
               </button>
             </div>
           </div>
@@ -313,128 +284,102 @@ const MyProfile = () => {
       )}
 
       {/* Hero Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-text mb-4">
-            My Profile
-          </h1>
-          <p className="text-text/60 font-light text-lg">
-            Manage your account and personal preferences
-          </p>
+      <section className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-2">
+              My Profile
+            </h1>
+            <p className="text-text/50 font-light flex items-center gap-2">
+              <User size={16} />
+              Manage your personal information and preferences
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Profile Content */}
       <section className="px-4 sm:px-6 lg:px-8 pb-20">
         <div className="max-w-7xl mx-auto">
-          <div className="grid xl:grid-cols-[1fr_2fr] gap-8">
-            {/* Profile Information Card */}
-            <div className="space-y-6">
-              <div className="bg-white rounded-lg border border-background shadow-lg">
-                <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
-                  <div className="flex items-center gap-2">
-                    <User size={18} className="text-secondary" />
-                    <span className="text-sm font-semibold text-text uppercase tracking-wider">
-                      Profile Information
-                    </span>
+          <div className="grid xl:grid-cols-[1fr_2fr] gap-10">
+            {/* Profile Card */}
+            <div className="space-y-4">
+              <div className="bg-white rounded-2xl p-6 border border-background/50 shadow-lg">
+                <div className="flex flex-col items-center mb-6">
+                  <div className="relative group">
+                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-background/30">
+                      <img
+                        src={userData.image}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <button
+                      className="absolute bottom-0 right-0 w-10 h-10 bg-secondary text-white rounded-full flex items-center justify-center shadow-lg hover:bg-secondary/90 transition-all duration-300"
+                      onClick={() => setActiveSection("Edit Profile")}
+                      title="Edit Photo"
+                    >
+                      <Camera size={16} />
+                    </button>
+                  </div>
+
+                  <h3 className="text-2xl font-serif font-bold text-text mt-4 mb-1">{userData.name}</h3>
+                  <p className="text-text/60 text-sm font-light">{userData.email}</p>
+                </div>
+
+                <div className="space-y-3 mb-6">
+                  <div className="bg-background/20 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Calendar size={14} className="text-secondary" />
+                      <span className="text-xs font-semibold text-text/50 uppercase tracking-wider">Member Since</span>
+                    </div>
+                    <p className="text-sm text-text font-medium">
+                      {new Date(userData.createdAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </p>
                   </div>
                 </div>
 
-                <div className="p-6">
-                  <div className="flex flex-col items-center mb-6">
-                    <div className="relative group">
-                      <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-background shadow-lg">
-                        <img
-                          src={userData.image}
-                          alt="Profile"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <button
-                        className="absolute bottom-2 right-2 w-10 h-10 bg-secondary text-white rounded-full flex items-center justify-center shadow-lg hover:bg-secondary/90 transition-all duration-300"
-                        onClick={() => setActiveSection("Edit Profile")}
-                        title="Edit Photo"
-                      >
-                        <Camera size={16} />
-                      </button>
-                    </div>
-
-                    <h3 className="text-2xl font-serif font-bold text-text mt-4 mb-2">{userData.name}</h3>
-
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                      <span className="text-sm text-text/60 font-semibold uppercase tracking-wider">Active Member</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 mb-6">
-                    <div className="bg-gradient-to-br from-background/20 to-primary rounded-lg p-4 border border-background">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Mail size={14} className="text-secondary" />
-                        <span className="text-xs font-semibold text-text/60 uppercase tracking-wider">Email</span>
-                      </div>
-                      <p className="text-sm text-text font-medium">{userData.email}</p>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-background/20 to-primary rounded-lg p-4 border border-background">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Calendar size={14} className="text-secondary" />
-                        <span className="text-xs font-semibold text-text/60 uppercase tracking-wider">Member Since</span>
-                      </div>
-                      <p className="text-sm text-text font-medium">
-                        {new Date(userData.createdAt).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                      </p>
-                    </div>
-                  </div>
-
+                <div className="space-y-3">
                   <button
-                    className="w-full py-4 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-all duration-300 shadow-lg flex items-center justify-center gap-2"
+                    className="w-full py-4 bg-secondary text-white font-semibold rounded-full hover:bg-secondary/90 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-secondary/30"
                     onClick={() => setActiveSection("Edit Profile")}
                   >
                     <Edit2 size={16} />
                     <span>Edit Profile</span>
                   </button>
-                </div>
-              </div>
 
-              {/* Sign Out Card */}
-              <div className="bg-white rounded-lg border border-background shadow-lg overflow-hidden">
-                <button
-                  className="w-full flex items-center justify-center gap-3 p-6 text-text/60 hover:text-red-600 hover:bg-red-50 transition-all duration-300 font-semibold"
-                  onClick={() => setLogoutModal(true)}
-                >
-                  <LogOut size={18} />
-                  <span>Sign Out</span>
-                </button>
+                  <button
+                    className="w-full py-4 bg-background/40 text-text font-semibold rounded-full hover:bg-background/60 transition-all duration-300 flex items-center justify-center gap-2"
+                    onClick={() => setLogoutModal(true)}
+                  >
+                    <LogOut size={16} />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Account Management */}
-            <div className="space-y-8">
-              <div className="bg-white rounded-lg border border-background shadow-lg">
-                <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
-                  <div className="flex items-center gap-2">
-                    <Settings size={18} className="text-secondary" />
-                    <span className="text-sm font-semibold text-text uppercase tracking-wider">
-                      Account Management
-                    </span>
-                  </div>
+            {/* Main Content */}
+            <div className="space-y-6">
+              {/* Quick Actions */}
+              <div className="bg-white rounded-2xl border border-background/50 shadow-lg overflow-hidden">
+                <div className="p-6 border-b border-background/30">
+                  <h3 className="text-xl font-serif font-bold text-text">Quick Actions</h3>
                 </div>
-
-                <div className="divide-y divide-background/50">
+                <div className="divide-y divide-background/30">
                   {menuItems.map((item, index) => {
                     const content = (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-6 hover:bg-background/10 transition-colors duration-300 cursor-pointer"
+                        className="flex items-center justify-between p-6 hover:bg-background/10 transition-colors duration-300 cursor-pointer group"
                         onClick={() => !item.link && setActiveSection(item.text)}
                       >
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-gradient-to-br from-background/30 to-primary text-secondary border border-background">
+                          <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-background/30 text-secondary">
                             {item.icon}
                           </div>
                           <div>
@@ -442,7 +387,7 @@ const MyProfile = () => {
                             <p className="text-sm text-text/60 font-light">{item.description}</p>
                           </div>
                         </div>
-                        <ChevronRight size={18} className="text-text/40" />
+                        <ChevronRight size={18} className="text-text/40 group-hover:text-secondary transition-colors" />
                       </div>
                     );
 
@@ -457,36 +402,34 @@ const MyProfile = () => {
                 </div>
               </div>
 
-              {/* Recently Viewed Section */}
-              <div className="bg-white rounded-lg border border-background shadow-lg">
-                <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Clock size={18} className="text-secondary" />
-                      <span className="text-sm font-semibold text-text uppercase tracking-wider">
-                        Recently Viewed
-                      </span>
-                    </div>
+              {/* Recently Viewed */}
+              <div className="bg-white rounded-2xl border border-background/50 shadow-lg overflow-hidden">
+                <div className="p-6 border-b border-background/30">
+                  <div className="flex items-center gap-3">
+                    <Clock size={20} className="text-secondary" />
+                    <h3 className="text-xl font-serif font-bold text-text">Recently Viewed</h3>
                   </div>
                 </div>
 
                 {recentlyViewed.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-16 px-6">
-                    <div className="w-20 h-20 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mb-6">
-                      <Clock size={32} className="text-secondary" />
+                  <div className="flex flex-col items-center justify-center py-20 px-6">
+                    <div className="relative mb-8">
+                      <div className="w-24 h-24 bg-background/20 rounded-full flex items-center justify-center">
+                        <Clock size={40} className="text-text/30" strokeWidth={1.5} />
+                      </div>
                     </div>
-                    <div className="text-center max-w-md mb-8">
-                      <h3 className="text-2xl font-serif font-semibold mb-3 text-text">No Recent Activity</h3>
-                      <p className="text-text/70 font-light leading-relaxed">
-                        Start browsing our amazing collection to see your recently viewed items here
+                    <div className="text-center max-w-md mb-10">
+                      <h4 className="text-2xl font-serif font-bold mb-3 text-text">No Recent Activity</h4>
+                      <p className="text-text/60 font-light leading-relaxed">
+                        Start browsing our collection to see your recently viewed items here
                       </p>
                     </div>
                     <button
                       onClick={() => navigate('/collection')}
-                      className="px-8 py-4 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-all duration-300 flex items-center gap-2 shadow-lg"
+                      className="group px-10 py-4 bg-secondary text-white font-semibold rounded-full hover:bg-secondary/90 transition-all duration-300 flex items-center gap-3 shadow-xl shadow-secondary/30"
                     >
-                      <span>Discover Products</span>
-                      <ArrowRight size={16} />
+                      <span>Explore Collection</span>
+                      <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                     </button>
                   </div>
                 ) : (
@@ -502,13 +445,6 @@ const MyProfile = () => {
                         />
                       ))}
                     </div>
-                    {recentlyViewed.length > 8 && (
-                      <div className="text-center mt-6">
-                        <button className="px-6 py-3 border-2 border-background text-text font-semibold rounded-lg hover:bg-background/20 transition-all duration-300">
-                          View More
-                        </button>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
@@ -519,24 +455,23 @@ const MyProfile = () => {
 
       {/* Edit Profile Modal */}
       {activeSection === "Edit Profile" && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
-          <div className="bg-white w-full max-w-md rounded-lg shadow-2xl overflow-hidden border border-background animate-slideUp">
-            <div className="px-6 py-4 border-b border-background bg-gradient-to-r from-background/20 to-primary">
-              <h2 className="text-xl font-serif font-semibold text-text">Edit Profile</h2>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fadeIn">
+          <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-slideUp">
+            <div className="p-6 border-b border-background/30">
+              <h2 className="text-2xl font-serif font-bold text-text">Edit Profile</h2>
             </div>
             <form className="p-6 space-y-6" onSubmit={handleEditProfileSubmit}>
-              {/* Profile Image */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-6">
                 <div className="relative">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-background/30 to-primary border-2 border-background overflow-hidden flex items-center justify-center">
+                  <div className="w-24 h-24 rounded-full bg-background/30 overflow-hidden flex items-center justify-center">
                     {editProfile.image ? (
                       <img src={editProfile.image} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
-                      <User size={24} className="text-text/40" />
+                      <User size={32} className="text-text/40" />
                     )}
                   </div>
                   <label className="absolute -bottom-1 -right-1 bg-secondary text-white p-2 rounded-full cursor-pointer hover:bg-secondary/90 transition-colors shadow-lg">
-                    <Camera size={14} />
+                    <Camera size={16} />
                     <input
                       type="file"
                       accept="image/*"
@@ -545,17 +480,19 @@ const MyProfile = () => {
                     />
                   </label>
                 </div>
-                <p className="text-sm text-text/60 font-light">Click camera icon to change photo</p>
+                <div>
+                  <p className="text-sm font-semibold text-text mb-1">Profile Photo</p>
+                  <p className="text-xs text-text/60 font-light">Click camera to change</p>
+                </div>
               </div>
 
-              {/* Form Fields */}
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs text-text/60 font-semibold uppercase tracking-wider mb-2">
                     Full Name
                   </label>
                   <input
-                    className="w-full px-4 py-3 border-2 border-background rounded-lg bg-white focus:outline-none focus:border-secondary transition-colors font-light"
+                    className="w-full px-4 py-3 border border-background/50 rounded-xl bg-white focus:outline-none focus:border-secondary transition-colors font-light"
                     value={editProfile.name}
                     onChange={e => setEditProfile({ ...editProfile, name: e.target.value })}
                     placeholder="Enter your name"
@@ -568,7 +505,7 @@ const MyProfile = () => {
                     Email Address
                   </label>
                   <input
-                    className="w-full px-4 py-3 border-2 border-background rounded-lg bg-white focus:outline-none focus:border-secondary transition-colors font-light"
+                    className="w-full px-4 py-3 border border-background/50 rounded-xl bg-white focus:outline-none focus:border-secondary transition-colors font-light"
                     value={editProfile.email}
                     onChange={e => setEditProfile({ ...editProfile, email: e.target.value })}
                     placeholder="Enter your email"
@@ -577,18 +514,17 @@ const MyProfile = () => {
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-secondary text-white px-6 py-4 rounded-lg hover:bg-secondary/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg"
+                  className="flex-1 bg-secondary text-white px-6 py-4 rounded-full hover:bg-secondary/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg shadow-secondary/30"
                   disabled={loading}
                 >
                   {loading ? "Saving..." : "Save Changes"}
                 </button>
                 <button
                   type="button"
-                  className="px-6 py-4 border-2 border-background text-text rounded-lg hover:bg-background/20 transition-all duration-300 font-semibold"
+                  className="px-6 py-4 bg-background/40 text-text rounded-full hover:bg-background/60 transition-all duration-300 font-semibold"
                   onClick={() => setActiveSection(null)}
                 >
                   Cancel
@@ -601,12 +537,12 @@ const MyProfile = () => {
 
       {/* Address Management Modal */}
       {activeSection === "Delivery Address" && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
-          <div className="bg-white w-full max-w-3xl rounded-lg shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto border border-background animate-slideUp">
-            <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary sticky top-0 z-10">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fadeIn">
+          <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto animate-slideUp">
+            <div className="p-6 border-b border-background/30 sticky top-0 z-10 bg-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <MapPinHouse size={20} className="text-secondary" />
+                  <MapPinHouse size={24} className="text-secondary" />
                   <div>
                     <h2 className="text-2xl font-serif font-bold text-text">Delivery Addresses</h2>
                     <p className="text-text/60 text-sm font-light">Manage your delivery locations</p>
@@ -614,9 +550,9 @@ const MyProfile = () => {
                 </div>
                 <button
                   onClick={() => setAddressModal({ open: true, address: {}, index: -1 })}
-                  className="flex items-center gap-2 bg-secondary text-white px-4 py-3 rounded-lg font-semibold hover:bg-secondary/90 transition-colors shadow-lg"
+                  className="flex items-center gap-2 bg-secondary text-white px-5 py-3 rounded-full font-semibold hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/30"
                 >
-                  <Plus size={16} />
+                  <Plus size={18} />
                   Add New
                 </button>
               </div>
@@ -624,37 +560,42 @@ const MyProfile = () => {
 
             <div className="p-6">
               {(!userData.addresses || userData.addresses.length === 0) ? (
-                <div className="text-center py-16">
-                  <div className="w-20 h-20 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mx-auto mb-6">
-                    <MapPinHouse size={32} className="text-secondary" />
+                <div className="flex flex-col items-center justify-center py-20">
+                  <div className="relative mb-8">
+                    <div className="w-24 h-24 bg-background/20 rounded-full flex items-center justify-center">
+                      <MapPinHouse size={40} className="text-text/30" strokeWidth={1.5} />
+                    </div>
                   </div>
-                  <div className="text-center max-w-md mb-8 mx-auto">
-                    <h3 className="text-2xl font-serif font-semibold text-text mb-3">No Addresses Found</h3>
-                    <p className="text-text/70 font-light leading-relaxed">Add your first delivery address to get started</p>
+                  <div className="text-center max-w-md mb-10">
+                    <h3 className="text-2xl font-serif font-bold text-text mb-3">No Addresses Found</h3>
+                    <p className="text-text/60 font-light leading-relaxed">Add your first delivery address to get started</p>
                   </div>
                   <button
                     onClick={() => setAddressModal({ open: true, address: {}, index: -1 })}
-                    className="px-8 py-4 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-colors shadow-lg"
+                    className="group px-10 py-4 bg-secondary text-white font-semibold rounded-full hover:bg-secondary/90 transition-all duration-300 flex items-center gap-3 shadow-xl shadow-secondary/30"
                   >
-                    Add Address
+                    <span>Add Address</span>
+                    <Plus size={20} className="group-hover:scale-110 transition-transform" />
                   </button>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {userData.addresses.map((addr, idx) => (
-                    <div key={idx} className="border-2 border-background rounded-lg p-6 hover:shadow-lg transition-shadow bg-gradient-to-br from-background/10 to-primary">
+                    <div key={idx} className="group bg-white rounded-2xl p-6 border border-background/50 transition-all duration-300">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
-                          <div className="font-serif font-bold text-text mb-2 text-lg flex items-center gap-2">
-                            <MapPinHouse size={16} className="text-secondary" />
-                            {addr.label || `Address ${idx + 1}`}
+                          <div className="flex items-center gap-2 mb-3">
+                            <MapPinHouse size={18} className="text-secondary" />
+                            <h4 className="font-serif font-bold text-text text-lg">
+                              {addr.label || `Address ${idx + 1}`}
+                            </h4>
                           </div>
                           <div className="text-sm text-text/70 font-light space-y-1">
                             <p>{addr.address}</p>
                             <p>{addr.city}, {addr.state} {addr.zip}</p>
                             <p>{addr.country}</p>
                             {addr.phone && (
-                              <p className="flex items-center gap-2 mt-2 text-text/60">
+                              <p className="flex items-center gap-2 mt-2">
                                 <span className="font-semibold">Phone:</span> {addr.phone}
                               </p>
                             )}
@@ -663,15 +604,15 @@ const MyProfile = () => {
                         <div className="flex gap-2 ml-4">
                           <button
                             onClick={() => setAddressModal({ open: true, address: addr, index: idx })}
-                            className="p-3 text-text/40 hover:text-secondary hover:bg-background/30 rounded-lg transition-colors border-2 border-transparent hover:border-background"
+                            className="p-2.5 text-text/40 hover:text-secondary hover:bg-background/30 rounded-xl transition-all duration-300"
                           >
-                            <Edit2 size={16} />
+                            <Edit2 size={18} />
                           </button>
                           <button
                             onClick={() => setDeleteAddressModal({ open: true, index: idx })}
-                            className="p-3 text-text/40 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors border-2 border-transparent hover:border-red-200"
+                            className="p-2.5 text-text/40 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-300"
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={18} />
                           </button>
                         </div>
                       </div>
@@ -680,10 +621,10 @@ const MyProfile = () => {
                 </div>
               )}
 
-              <div className="flex justify-end mt-6 pt-6 border-t border-background">
+              <div className="flex justify-end mt-6 pt-6 border-t border-background/30">
                 <button
                   onClick={() => setActiveSection(null)}
-                  className="px-6 py-3 border-2 border-background text-text font-semibold rounded-lg hover:bg-background/20 transition-all duration-300"
+                  className="px-6 py-3 bg-background/40 text-text font-semibold rounded-full hover:bg-background/60 transition-all duration-300"
                 >
                   Close
                 </button>
@@ -695,10 +636,10 @@ const MyProfile = () => {
 
       {/* Address Form Modal */}
       {addressModal.open && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-fadeIn">
-          <div className="bg-white w-full max-w-lg rounded-lg shadow-2xl overflow-hidden border border-background animate-slideUp">
-            <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
-              <h2 className="text-xl font-serif font-bold text-text">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[60] p-4 animate-fadeIn">
+          <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-slideUp">
+            <div className="p-6 border-b border-background/30">
+              <h2 className="text-2xl font-serif font-bold text-text">
                 {addressModal.index >= 0 ? "Edit Address" : "Add New Address"}
               </h2>
             </div>
@@ -759,7 +700,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
           Address Label (Optional)
         </label>
         <input
-          className="w-full px-4 py-3 border-2 border-background rounded-lg focus:outline-none focus:border-secondary transition-colors font-light"
+          className="w-full px-4 py-3 border border-background/50 rounded-xl focus:outline-none focus:border-secondary transition-colors font-light"
           value={form.label}
           onChange={e => setForm(f => ({ ...f, label: e.target.value }))}
           placeholder="e.g., Home, Office"
@@ -771,7 +712,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
           Street Address
         </label>
         <input
-          className="w-full px-4 py-3 border-2 border-background rounded-lg focus:outline-none focus:border-secondary transition-colors font-light"
+          className="w-full px-4 py-3 border border-background/50 rounded-xl focus:outline-none focus:border-secondary transition-colors font-light"
           value={form.address}
           onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
           placeholder="Enter your street address"
@@ -785,7 +726,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
             City
           </label>
           <input
-            className="w-full px-4 py-3 border-2 border-background rounded-lg focus:outline-none focus:border-secondary transition-colors font-light"
+            className="w-full px-4 py-3 border border-background/50 rounded-xl focus:outline-none focus:border-secondary transition-colors font-light"
             value={form.city}
             onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
             placeholder="City"
@@ -797,7 +738,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
             State
           </label>
           <input
-            className="w-full px-4 py-3 border-2 border-background rounded-lg focus:outline-none focus:border-secondary transition-colors font-light"
+            className="w-full px-4 py-3 border border-background/50 rounded-xl focus:outline-none focus:border-secondary transition-colors font-light"
             value={form.state}
             onChange={e => setForm(f => ({ ...f, state: e.target.value }))}
             placeholder="State"
@@ -812,7 +753,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
             ZIP Code
           </label>
           <input
-            className="w-full px-4 py-3 border-2 border-background rounded-lg focus:outline-none focus:border-secondary transition-colors font-light"
+            className="w-full px-4 py-3 border border-background/50 rounded-xl focus:outline-none focus:border-secondary transition-colors font-light"
             value={form.zip}
             onChange={e => setForm(f => ({ ...f, zip: e.target.value }))}
             placeholder="ZIP"
@@ -824,7 +765,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
             Country
           </label>
           <input
-            className="w-full px-4 py-3 border-2 border-background rounded-lg focus:outline-none focus:border-secondary transition-colors font-light"
+            className="w-full px-4 py-3 border border-background/50 rounded-xl focus:outline-none focus:border-secondary transition-colors font-light"
             value={form.country}
             onChange={e => setForm(f => ({ ...f, country: e.target.value }))}
             placeholder="Country"
@@ -839,7 +780,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
         </label>
         <input
           type="tel"
-          className="w-full px-4 py-3 border-2 border-background rounded-lg focus:outline-none focus:border-secondary transition-colors font-light"
+          className="w-full px-4 py-3 border border-background/50 rounded-xl focus:outline-none focus:border-secondary transition-colors font-light"
           value={form.phone}
           onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
           placeholder="Enter phone number for this address"
@@ -849,14 +790,14 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
       <div className="flex gap-3 pt-4">
         <button
           type="submit"
-          className="flex-1 bg-secondary text-white px-6 py-4 rounded-lg font-semibold hover:bg-secondary/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+          className="flex-1 bg-secondary text-white px-6 py-4 rounded-full font-semibold hover:bg-secondary/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-secondary/30"
           disabled={loading}
         >
           {loading ? "Saving..." : "Save Address"}
         </button>
         <button
           type="button"
-          className="px-6 py-4 border-2 border-background text-text font-semibold rounded-lg hover:bg-background/20 transition-all duration-300"
+          className="px-6 py-4 bg-background/40 text-text font-semibold rounded-full hover:bg-background/60 transition-all duration-300"
           onClick={onCancel}
         >
           Cancel

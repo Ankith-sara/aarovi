@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import NewsletterBox from '../components/NewsletterBox';
-import { MapPin, Phone, Mail, Clock, Send, MessageCircle } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, MessageCircle, ArrowRight, Sparkles } from 'lucide-react';
 
 const Contact = () => {
   useEffect(() => {
@@ -9,164 +9,121 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section with Background */}
-      <div className="relative bg-gradient-to-b from-background to-white px-4 sm:px-6 lg:px-8 py-32 sm:py-40 overflow-hidden">
-        {/* Content */}
-        <div className="max-w-7xl mx-auto text-center relative z-10">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6">
-            Get in Touch
-          </h1>
-          <div className="w-24 h-1 bg-secondary mx-auto mb-8"></div>
-          <p className="text-xl sm:text-2xl text-text/90 max-w-4xl mx-auto font-light leading-relaxed">
-            We believe in the power of connection — between artisan and buyer, tradition and modernity, story and style. At Aarovi, every conversation matters.
-          </p>
-        </div>
-      </div>
-
-      {/* Main Content Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Image Side */}
-            <div className="relative">
-              <div className="relative overflow-hidden rounded-lg shadow-xl">
-                <img
-                  className="w-full h-[500px] object-cover"
-                  src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&q=80"
-                  alt="Aarovi Contact"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#2C1810]/30 to-transparent"></div>
-              </div>
-              {/* Decorative Elements */}
-              <div className="absolute -top-6 -left-6 w-24 h-24 border-2 border-secondary rounded-lg"></div>
-              <div className="absolute -bottom-6 -right-6 w-24 h-24 border-2 border-secondary rounded-lg"></div>
-            </div>
-
-            {/* Content Side */}
-            <div>
-              <div className="mb-8">
-                <MessageCircle className="w-12 h-12 text-secondary mb-4" />
-                <h2 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-6">
-                  We're Here to Help
-                </h2>
-              </div>
-
-              <div className="space-y-5 text-text/80 text-lg leading-relaxed font-light">
-                <p>
-                  Whether you have questions about our handcrafted pieces, need assistance with your order, or want to learn more about the artisans behind your favorite garments, we're here to help.
-                </p>
-                <p>
-                  Our customer service team understands that each Aarovi piece carries a story, and we're committed to ensuring your experience with us is as meaningful as the craftsmanship we celebrate.
-                </p>
-                <p>
-                  From styling advice to order tracking, size consultations to custom requests, our dedicated team is ready to assist you with all your needs.
-                </p>
-                <div className="bg-gradient-to-br from-background/30 to-primary p-6 rounded-lg border-l-4 border-secondary mt-8">
-                  <p className="text-xl italic text-text font-light">
-                    "Every question is an opportunity to share our passion for heritage craft and conscious fashion."
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Information Cards */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-4">
-              How to Reach Us
-            </h2>
-            <div className="w-24 h-1 bg-secondary mx-auto mb-6"></div>
-            <p className="text-xl text-text/70 font-light max-w-2xl mx-auto">
-              Choose your preferred way to connect with our team
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-text mb-6">
+              Let's Connect
+            </h1>
+            <p className="text-lg text-text/60 font-light leading-relaxed">
+              Have questions about our handcrafted pieces? Need assistance with your order? We're here to help you every step of the way.
             </p>
           </div>
+        </div>
+      </section>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Visit Us Card */}
-            <div className="group relative">
-              <div className="bg-white rounded-lg p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-background h-full">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 bg-gradient-to-br from-background/30 to-primary rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <MapPin className="text-secondary" size={24} />
-                  </div>
-                  <h3 className="text-xl font-serif font-semibold text-text">Visit Us</h3>
-                </div>
-                
-                <div className="w-16 h-1 bg-secondary mb-6"></div>
-                
-                <div className="space-y-3 text-text/70 font-light">
-                  <p className="font-medium text-text">Our Studio</p>
-                  <p>Hyderabad, Telangana</p>
-                  <p className="font-semibold text-secondary text-lg">PIN: 502345</p>
-                </div>
+      {/* Contact Cards */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Phone Card */}
+            <div className="group bg-white rounded-2xl p-8 border border-background/50 hover:shadow-xl hover:border-secondary/30 transition-all duration-300">
+              <div className="w-14 h-14 bg-secondary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Phone size={24} className="text-secondary" />
               </div>
-              {/* Decorative corner */}
-              <div className="absolute -bottom-2 -right-2 w-16 h-16 border-2 border-secondary/20 rounded-lg -z-10"></div>
+              <h3 className="text-xl font-serif font-bold text-text mb-1">Call Us</h3>
+              <p className="text-sm text-text/50 font-light mb-4">Mon - Sat: 9 AM - 6 PM</p>
+              <a href="tel:+919399336666" className="text-lg font-semibold text-secondary hover:text-secondary/80 transition-colors flex items-center gap-2 group">
+                +91 9399336666
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              </a>
             </div>
 
-            {/* Call Us Card */}
-            <div className="group relative">
-              <div className="bg-white rounded-lg p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-background h-full">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 bg-gradient-to-br from-background/30 to-primary rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <Phone className="text-secondary" size={24} />
-                  </div>
-                  <h3 className="text-xl font-serif font-semibold text-text">Call Us</h3>
-                </div>
-                
-                <div className="w-16 h-1 bg-secondary mb-6"></div>
-                
-                <div className="space-y-3 text-text/70 font-light">
-                  <p className="font-medium text-text">Customer Service</p>
-                  <a href="tel:+91939933666" className="block text-lg font-semibold text-secondary hover:text-[#8B6F47] transition-colors">
-                    +91 9399336666
-                  </a>
-                  <div className="flex items-center gap-2 text-sm text-text/50 pt-2">
-                    <Clock size={14} />
-                    <span>Mon - Sat: 9 AM - 6 PM</span>
-                  </div>
-                </div>
+            {/* Email Card */}
+            <div className="group bg-white rounded-2xl p-8 border border-background/50 hover:shadow-xl hover:border-secondary/30 transition-all duration-300">
+              <div className="w-14 h-14 bg-secondary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Mail size={24} className="text-secondary" />
               </div>
-              {/* Decorative corner */}
-              <div className="absolute -bottom-2 -right-2 w-16 h-16 border-2 border-secondary/20 rounded-lg -z-10"></div>
+              <h3 className="text-xl font-serif font-bold text-text mb-1">Email Us</h3>
+              <p className="text-sm text-text/50 font-light mb-4">Response within 24 hours</p>
+              <a href="mailto:aaroviofficial@gmail.com" className="text-lg font-semibold text-secondary hover:text-secondary/80 transition-colors flex items-center gap-2 group break-all">
+                aaroviofficial@gmail.com
+                <Send size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform flex-shrink-0" />
+              </a>
             </div>
 
-            {/* Email Us Card */}
-            <div className="group relative md:col-span-2 lg:col-span-1">
-              <div className="bg-white rounded-lg p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-background h-full">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 bg-gradient-to-br from-background/30 to-primary rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <Mail className="text-secondary" size={24} />
-                  </div>
-                  <h3 className="text-xl font-serif font-semibold text-text">Email Us</h3>
-                </div>
-                
-                <div className="w-16 h-1 bg-secondary mb-6"></div>
-                
-                <div className="space-y-3 text-text/70 font-light">
-                  <p className="font-medium text-text">General Inquiries</p>
-                  <a href="mailto:aaroviofficial@gmail.com" className="block text-lg font-semibold text-secondary hover:text-[#8B6F47] transition-colors break-all">
-                    aaroviofficial@gmail.com
-                  </a>
-                  <div className="flex items-center gap-2 text-sm text-text/50 pt-2">
-                    <Send size={14} />
-                    <span>We respond within 24 hours</span>
-                  </div>
-                </div>
+            {/* Location Card */}
+            <div className="group bg-white rounded-2xl p-8 border border-background/50 hover:shadow-xl hover:border-secondary/30 transition-all duration-300">
+              <div className="w-14 h-14 bg-secondary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <MapPin size={24} className="text-secondary" />
               </div>
-              {/* Decorative corner */}
-              <div className="absolute -bottom-2 -right-2 w-16 h-16 border-2 border-secondary/20 rounded-lg -z-10"></div>
+              <h3 className="text-xl font-serif font-bold text-text mb-1">Visit Us</h3>
+              <p className="text-sm text-text/50 font-light mb-4">Our Studio</p>
+              <p className="text-text/70 font-light">
+                Hyderabad, Telangana<br />
+                <span className="text-secondary font-semibold">PIN: 502345</span>
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Newsletter */}
-      <section className="px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-background">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-background/20 to-background/5">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="order-2 lg:order-1">
+              <h2 className="text-3xl sm:text-4xl font-serif font-bold text-text mb-6">
+                More Than Just Customer Service
+              </h2>
+              <div className="space-y-4 text-text/70 text-base leading-relaxed font-light">
+                <p> At Aarovi, we believe every conversation is an opportunity to share our passion for heritage craft and conscious fashion. Our team doesn't just handle inquiries — we connect stories, traditions, and dreams.</p>
+                <p> Whether you need styling advice, order assistance, or want to learn about the artisans behind your favorite pieces, we're here to help make your experience as meaningful as the craftsmanship we celebrate.</p>
+                <p> From size consultations to custom requests, tracking updates to care instructions, our dedicated team ensures your journey with Aarovi is seamless and memorable.</p>
+              </div>
+              <div className="mt-8 p-6 bg-white rounded-2xl border-l-4 border-secondary shadow-lg">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <MessageCircle size={20} className="text-secondary" />
+                  </div>
+                  <div>
+                    <p className="text-lg font-serif font-semibold text-text mb-2"> We're Always Here for You</p>
+                    <p className="text-sm text-text/60 font-light leading-relaxed"> Every question matters. Every concern is heard. Every customer is valued. That's the Aarovi way.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="order-1 lg:order-2">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 to-primary/20 rounded-3xl transform rotate-3"></div>
+                <div className="relative overflow-hidden rounded-3xl shadow-2xl transform -rotate-1 hover:rotate-0 transition-transform duration-500">
+                  <img
+                    className="w-full h-[500px] object-cover"
+                    src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&q=80"
+                    alt="Aarovi Customer Service"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-text/40 via-transparent to-transparent"></div>
+
+                  <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-sm rounded-2xl p-5 shadow-xl">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center">
+                        <Clock size={20} className="text-white" />
+                      </div>
+                      <div>
+                        <p className="font-serif font-bold text-text text-lg">Quick Response Time</p>
+                        <p className="text-sm text-text/60 font-light">We typically reply within 24 hours</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 sm:px-6 lg:px-8">
         <NewsletterBox />
       </section>
     </div>

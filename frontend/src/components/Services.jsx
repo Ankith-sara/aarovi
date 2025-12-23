@@ -14,11 +14,6 @@ const Services = () => {
       description: 'Enjoy free shipping on all orders above ₹2000 across India.'
     },
     {
-      icon: RefreshCw,
-      title: 'Easy Returns',
-      description: '7-day hassle-free returns and exchanges for your convenience.'
-    },
-    {
       icon: MessageCircle,
       title: 'Style Consultation',
       description: 'Get personalized styling advice from our fashion experts.'
@@ -39,7 +34,7 @@ const Services = () => {
         </div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, index) => {
             const Icon = service.icon;
             return (

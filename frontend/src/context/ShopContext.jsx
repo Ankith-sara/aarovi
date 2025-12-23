@@ -132,7 +132,7 @@ const ShopContextProvider = (props) => {
 
     const getCartCount = useCallback(() => {
         let totalCount = 0;
-        
+
         for (const items in cartItems) {
             if (items === 'customizations') {
                 for (const customId in cartItems.customizations) {
@@ -199,7 +199,7 @@ const ShopContextProvider = (props) => {
 
     const getCartItems = useCallback(() => {
         const items = [];
-        
+
         // Get regular products
         for (const itemId in cartItems) {
             if (itemId === 'customizations') continue;
@@ -434,6 +434,7 @@ const ShopContextProvider = (props) => {
     const getUserCustomizations = useCallback(async (userToken) => {
         try {
             setCustomizationLoading(true);
+            // FIXED: Changed from POST to GET
             const res = await axios.get(
                 `${backendUrl}/api/customization/my`,
                 { headers: { Authorization: `Bearer ${userToken}` } }
@@ -460,6 +461,7 @@ const ShopContextProvider = (props) => {
         try {
             setCustomizationLoading(true);
 
+            // FIXED: Removed userId from body, it comes from auth middleware
             const res = await axios.post(
                 `${backendUrl}/api/customization/save`,
                 data,
@@ -469,7 +471,7 @@ const ShopContextProvider = (props) => {
             if (res.data.success) {
                 const savedCustomization = res.data.customization;
                 setActiveCustomization(savedCustomization);
-                
+
                 // Update customizations array
                 setCustomizations(prev => {
                     const index = prev.findIndex(c => c._id === savedCustomization._id);
@@ -481,6 +483,7 @@ const ShopContextProvider = (props) => {
                     return [savedCustomization, ...prev];
                 });
 
+                toast.success("Customization saved successfully");
                 return savedCustomization;
             }
         } catch (err) {
@@ -501,6 +504,7 @@ const ShopContextProvider = (props) => {
         try {
             setCustomizationLoading(true);
 
+            // FIXED: userId removed from body
             const res = await axios.put(
                 `${backendUrl}/api/customization/update/${customizationId}`,
                 data,
@@ -509,9 +513,9 @@ const ShopContextProvider = (props) => {
 
             if (res.data.success) {
                 const updatedCustomization = res.data.customization;
-                
+
                 // Update in array
-                setCustomizations(prev => 
+                setCustomizations(prev =>
                     prev.map(c => c._id === customizationId ? updatedCustomization : c)
                 );
 
@@ -544,14 +548,15 @@ const ShopContextProvider = (props) => {
 
             if (res.data.success) {
                 // Update customizations array with new status
-                setCustomizations(prev => 
-                    prev.map(c => 
-                        c._id === customizationId 
-                            ? { ...c, status: 'Submitted' } 
+                setCustomizations(prev =>
+                    prev.map(c =>
+                        c._id === customizationId
+                            ? { ...c, status: 'Submitted' }
                             : c
                     )
                 );
 
+                toast.success("Customization submitted successfully");
                 return true;
             }
             return false;
@@ -565,6 +570,10 @@ const ShopContextProvider = (props) => {
     }, [token, backendUrl]);
 
     const getCustomizationById = useCallback(async (customizationId) => {
+        if (!token) {
+            return null;
+        }
+
         try {
             const res = await axios.get(
                 `${backendUrl}/api/customization/${customizationId}`,
@@ -577,6 +586,7 @@ const ShopContextProvider = (props) => {
             return null;
         } catch (err) {
             console.error('Get customization error:', err);
+            toast.error(err.response?.data?.message || "Failed to fetch customization");
             return null;
         }
     }, [backendUrl, token]);
@@ -695,7 +705,7 @@ const ShopContextProvider = (props) => {
 
             if (updatedCart.customizations && updatedCart.customizations[customizationId]) {
                 delete updatedCart.customizations[customizationId];
-                
+
                 if (Object.keys(updatedCart.customizations).length === 0) {
                     delete updatedCart.customizations;
                 }
@@ -928,10 +938,10 @@ const ShopContextProvider = (props) => {
         addToCart, updateQuantity, removeFromCart, clearCart, getCartCount,
         getCartAmount, getCartItems, addToWishlist, removeFromWishlist,
         toggleWishlist, isInWishlist, getWishlistCount, getWishlistProducts,
-        getProductById, searchProducts, filterProducts, 
+        getProductById, searchProducts, filterProducts,
         saveCustomization, updateCustomization, submitCustomization,
         getCustomizationById, deleteCustomization,
-        addCustomizationToCart, updateCustomizationQuantity, 
+        addCustomizationToCart, updateCustomizationQuantity,
         removeCustomizationFromCart,
         addProductToRecentlyViewed, getRecentlyViewed, clearRecentlyViewed,
         logout, navigate, backendUrl, setCategory

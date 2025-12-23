@@ -61,7 +61,7 @@ const Cart = () => {
   };
 
   useEffect(() => {
-    document.title = 'Cart | Aasvi'
+    document.title = 'Cart | Aarovi'
   })
 
   return (
@@ -91,9 +91,8 @@ const Cart = () => {
         </div>
       )}
 
-      <section className="py-12 px-4 sm:px-6 lg:px-8 border-b border-background/30">
+      <section className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-2">
                 Your Cart
@@ -104,15 +103,6 @@ const Cart = () => {
                   {cartData.length} {cartData.length === 1 ? 'item' : 'items'} in your cart
                 </p>
               )}
-            </div>
-            {cartData.length > 0 && (
-              <button
-                onClick={() => navigate('/shop/collection')}
-                className="hidden sm:flex items-center gap-2 px-6 py-3 text-secondary hover:text-secondary/80 font-medium transition-colors"
-              >
-                <span>Continue Shopping</span>
-              </button>
-            )}
           </div>
         </div>
       </section>

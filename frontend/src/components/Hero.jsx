@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 
 const Hero = () => {
   return (
-    <div className="min-h-screen">
-      <div className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
+    <div className="mt-16 min-h-screen">
+      <div className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20">
         <div className="max-w-5xl mx-auto">
           <div className="headers-description box shadow-lg rounded-lg bg-white/90 backdrop-blur-sm border border-gray-200 p-8 sm:p-12 mb-20">
             <div>

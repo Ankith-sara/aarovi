@@ -1,7 +1,6 @@
 import React from 'react';
 import Hero from '../components/Hero';
 import LastestCollection from '../components/LastestCollection';
-import ExclusiveOffers from '../components/ExclusiveOffers';
 import Collections from '../components/Collections';
 import Services from '../components/Services';
 
@@ -11,7 +10,6 @@ const Index = () => {
             <Hero />
             <Collections />
             <LastestCollection />
-            <ExclusiveOffers />
             <Services />
         </div>
     )

@@ -173,7 +173,7 @@ const Wishlist = () => {
       )}
 
       {/* Hero Section */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 border-b border-background/30">
+      <section className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
             <div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-2">
@@ -349,11 +349,11 @@ const Wishlist = () => {
             <div className="p-6 space-y-6">
               {/* Product Info */}
               <div className="flex gap-4">
-                <div className="w-20 h-20 rounded-xl overflow-hidden bg-background/20">
+                <div className="w-20 h-20">
                   <img
                     src={selectedProduct.images?.[0]}
                     alt={selectedProduct.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </div>
                 <div className="flex-1">
