@@ -434,10 +434,10 @@ const ShopContextProvider = (props) => {
     const getUserCustomizations = useCallback(async (userToken) => {
         try {
             setCustomizationLoading(true);
-            // FIXED: Changed from POST to GET
-            const res = await axios.get(
-                `${backendUrl}/api/customization/my`,
-                { headers: { Authorization: `Bearer ${userToken}` } }
+
+            // Send as POST with userId in body to match your auth pattern
+            const res = await axios.post(
+                `${backendUrl}/api/customization/my`, {}, { headers: { Authorization: `Bearer ${userToken}` } }
             );
 
             if (res.data.success) {
@@ -445,7 +445,10 @@ const ShopContextProvider = (props) => {
             }
         } catch (err) {
             console.error('Get customizations error:', err);
-            toast.error('Failed to load customizations');
+
+            if (err.response?.status !== 401) {
+                toast.error('Failed to load customizations');
+            }
         } finally {
             setCustomizationLoading(false);
         }

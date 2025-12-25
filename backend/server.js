@@ -8,7 +8,7 @@ import productRouter from './routes/ProductRoute.js';
 import cartRouter from './routes/CartRoute.js';
 import orderRouter from './routes/OrderRoute.js';
 import wishlistRouter from './routes/WishlistRoute.js';
-import CustomizationRouter from './routes/CustomizationRoutes.js';
+import CustomizationRouter from './routes/CustomizationRoute.js';
 
 // App Config
 const app = express();

@@ -51,15 +51,79 @@ const Customize = () => {
     ]
   };
 
-  // Fabric options
-  const fabricOptions = [
-    { value: "Cotton", label: "Cotton", desc: "Breathable & Soft" },
-    { value: "Silk", label: "Silk", desc: "Luxurious Shine" },
-    { value: "Linen", label: "Linen", desc: "Light & Airy" },
-    { value: "Velvet", label: "Velvet", desc: "Rich Texture" },
-    { value: "Chanderi", label: "Chanderi", desc: "Traditional Elegance" },
-    { value: "Banarasi", label: "Banarasi", desc: "Royal Heritage" },
-  ];
+  // Fabric options based on dress type
+  const fabricOptions = {
+    "Kurti": [
+      { value: "Cotton", label: "Cotton" },
+      { value: "Silk", label: "Silk" },
+      { value: "Georgette", label: "Georgette" },
+      { value: "Kota", label: "Kota" },
+      { value: "Chiffon", label: "Chiffon" },
+      { value: "Crape", label: "Crape" },
+      { value: "Lenin", label: "Lenin" },
+      { value: "Chanderi", label: "Chanderi" },
+      { value: "Banarasi", label: "Banarasi" }
+    ],
+    "Kurti Sets": [
+      { value: "Cotton", label: "Cotton" },
+      { value: "Silk", label: "Silk" },
+      { value: "Georgette", label: "Georgette" },
+      { value: "Kota", label: "Kota" },
+      { value: "Chiffon", label: "Chiffon" },
+      { value: "Crape", label: "Crape" },
+      { value: "Lenin", label: "Lenin" },
+      { value: "Chanderi", label: "Chanderi" },
+      { value: "Banarasi", label: "Banarasi" }
+    ],
+    "Sheraras": [
+      { value: "Georgette", label: "Georgette" },
+      { value: "Banarasi", label: "Banarasi" },
+      { value: "Silk", label: "Silk" },
+      { value: "Chiffon", label: "Chiffon" },
+      { value: "Crape", label: "Crape" }
+    ],
+    "Lehenga": [
+      { value: "Banarasi", label: "Banarasi" },
+      { value: "Georgette", label: "Georgette" },
+      { value: "Chiffon", label: "Chiffon" },
+      { value: "Crape", label: "Crape" },
+      { value: "Tissue", label: "Tissue" },
+      { value: "Pattu", label: "Pattu" }
+    ],
+    "Anarkali": [
+      { value: "Georgette", label: "Georgette" },
+      { value: "Chiffon", label: "Chiffon" },
+      { value: "Crape", label: "Crape" },
+      { value: "Tissue", label: "Tissue" },
+      { value: "Pattu", label: "Pattu" },
+      { value: "Banarasi", label: "Banarasi" },
+      { value: "Cotton", label: "Cotton" }
+    ],
+    "Kurta": [
+      { value: "Cotton", label: "Cotton" },
+      { value: "Raw Silk", label: "Raw Silk" },
+      { value: "Lenin", label: "Lenin" },
+      { value: "Velvet", label: "Velvet" },
+      { value: "Banarasi", label: "Banarasi" }
+    ],
+    "Kurta Sets": [
+      { value: "Cotton", label: "Cotton" },
+      { value: "Raw Silk", label: "Raw Silk" },
+      { value: "Lenin", label: "Lenin" },
+      { value: "Velvet", label: "Velvet" },
+      { value: "Banarasi", label: "Banarasi" }
+    ],
+    "Sherwani": [
+      { value: "Raw Silk", label: "Raw Silk" },
+      { value: "Velvet", label: "Velvet" },
+      { value: "Banarasi", label: "Banarasi" }
+    ]
+  };
+
+  // Get available fabrics for selected dress type
+  const getAvailableFabrics = () => {
+    return fabricOptions[form.dressType] || [];
+  };
 
   const handleDesignChange = (designData) => {
     setForm({ ...form, canvasDesign: designData });
@@ -69,7 +133,16 @@ const Customize = () => {
     setForm({
       ...form,
       gender,
-      dressType: ""
+      dressType: "",
+      fabric: "" // Reset fabric when gender changes
+    });
+  };
+
+  const handleDressTypeChange = (dressType) => {
+    setForm({
+      ...form,
+      dressType,
+      fabric: "" // Reset fabric when dress type changes
     });
   };
 
@@ -313,7 +386,7 @@ const Customize = () => {
                     {dressTypes[form.gender].map((dress) => (
                       <button
                         key={dress.value}
-                        onClick={() => setForm({ ...form, dressType: dress.value })}
+                        onClick={() => handleDressTypeChange(dress.value)}
                         className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 ${
                           form.dressType === dress.value
                             ? "border-secondary bg-secondary/5 shadow-xl shadow-secondary/20 scale-105"
@@ -332,34 +405,35 @@ const Customize = () => {
                 </div>
               )}
 
-              {/* Fabric Selection */}
-              <div className="animate-slideDown">
-                <label className="flex items-center gap-2 font-semibold text-lg mb-4 text-text">
-                  <Sparkles size={20} className="text-secondary" />
-                  Select Fabric <span className="text-red-500">*</span>
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {fabricOptions.map((fabric) => (
-                    <button
-                      key={fabric.value}
-                      onClick={() => setForm({ ...form, fabric: fabric.value })}
-                      className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 text-left ${
-                        form.fabric === fabric.value
-                          ? "border-secondary bg-secondary/5 shadow-xl shadow-secondary/20"
-                          : "border-background/50 hover:border-secondary/50 hover:shadow-lg"
-                      }`}
-                    >
-                      <div className="font-semibold text-text mb-1">{fabric.label}</div>
-                      <div className="text-xs text-text/60">{fabric.desc}</div>
-                      {form.fabric === fabric.value && (
-                        <div className="absolute top-4 right-4">
-                          <CheckCircle2 size={20} className="text-secondary" />
-                        </div>
-                      )}
-                    </button>
-                  ))}
+              {/* Fabric Selection - Only show when dress type is selected */}
+              {form.dressType && (
+                <div className="animate-slideDown">
+                  <label className="flex items-center gap-2 font-semibold text-lg mb-4 text-text">
+                    <Sparkles size={20} className="text-secondary" />
+                    Select Fabric <span className="text-red-500">*</span>
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {getAvailableFabrics().map((fabric) => (
+                      <button
+                        key={fabric.value}
+                        onClick={() => setForm({ ...form, fabric: fabric.value })}
+                        className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 text-left ${
+                          form.fabric === fabric.value
+                            ? "border-secondary bg-secondary/5 shadow-xl shadow-secondary/20 scale-105"
+                            : "border-background/50 hover:border-secondary/50 hover:shadow-lg"
+                        }`}
+                      >
+                        <div className="font-semibold text-text mb-1">{fabric.label}</div>
+                        {form.fabric === fabric.value && (
+                          <div className="absolute top-4 right-4">
+                            <CheckCircle2 size={20} className="text-secondary" />
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="flex justify-end pt-6 border-t border-background/30">
                 <button
@@ -421,6 +495,7 @@ const Customize = () => {
                 initialDesign={form.canvasDesign}
                 dressType={form.dressType}
                 selectedColor={form.color || "#e11d48"}
+                gender={form.gender}
               />
 
               <div className="flex justify-between mt-8 pt-6 border-t border-background/30">
