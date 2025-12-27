@@ -1,51 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import { backendUrl, currency } from '../App';
 import { toast } from 'react-toastify';
-import { Upload, Package, Tag, Star, Image as ImageIcon, AlertCircle, CheckCircle2, Trash2, IndianRupee, Building2, Plus } from 'lucide-react';
-import Title from '../components/Title';
-
-const ImageUpload = ({ id, image, setImage, onRemove, index }) => (
-  <div className="relative group">
-    <label
-      htmlFor={id}
-      className="w-28 h-28 bg-white border border-gray-200 hover:border-gray-400 flex items-center justify-center rounded-xl cursor-pointer overflow-hidden transition-all duration-200 hover:shadow-md"
-    >
-      {image ? (
-        <>
-          <img src={URL.createObjectURL(image)} alt={`Upload ${id}`} className="object-cover w-full h-full rounded-xl" />
-          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center rounded-xl">
-            <ImageIcon className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" size={20} />
-          </div>
-        </>
-      ) : (
-        <div className="flex flex-col items-center justify-center text-gray-400">
-          <Upload size={20} className="mb-1" />
-          <span className="text-xs font-medium">Add Image</span>
-        </div>
-      )}
-    </label>
-    {image && (
-      <button
-        type="button"
-        onClick={() => onRemove(index)}
-        className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-lg"
-      >
-        <Trash2 size={12} />
-      </button>
-    )}
-    <input
-      type="file"
-      id={id}
-      hidden
-      onChange={(e) => setImage(e.target.files[0])}
-      accept="image/*"
-    />
-  </div>
-);
+import { 
+  Upload, Package, Tag, Star, AlertCircle, 
+  CheckCircle2, X, Plus, Sparkles, Image, ArrowRight
+} from 'lucide-react';
 
 const Add = ({ token }) => {
-  const [images, setImages] = useState([null, null, null, null, null, null]);
+  const [images, setImages] = useState([]);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -54,6 +17,8 @@ const Add = ({ token }) => {
   const [bestseller, setBestseller] = useState(false);
   const [sizes, setSizes] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef(null);
 
   const categoryData = {
     Women: {
@@ -61,24 +26,70 @@ const Add = ({ token }) => {
       sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
     },
     Men: {
-      subCategories: ["","Kurtas", "Kurta Sets", "Sherwanis"],
+      subCategories: ["", "Kurtas", "Kurta Sets", "Sherwanis"],
       sizes: ['28', '30', '32', '34', '36', '38', '40', '42', '44', '46']
     }
   };
 
   const currentCategoryData = categoryData[category] || { subCategories: [], sizes: [] };
 
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const newFiles = Array.from(e.dataTransfer.files).filter(file => 
+        file.type.startsWith('image/')
+      );
+      
+      if (images.length + newFiles.length > 6) {
+        toast.error('Maximum 6 images allowed');
+        return;
+      }
+      
+      setImages(prev => [...prev, ...newFiles].slice(0, 6));
+      e.dataTransfer.clearData();
+    }
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const newFiles = Array.from(e.target.files);
+      
+      if (images.length + newFiles.length > 6) {
+        toast.error('Maximum 6 images allowed');
+        return;
+      }
+      
+      setImages(prev => [...prev, ...newFiles].slice(0, 6));
+    }
+  };
+
+  const removeImage = (index) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!name || !description || !price || !subCategory) {
-      toast.error("Please fill in all required fields.");
+      toast.error("Please fill in all required fields");
       return;
     }
 
-    const hasImages = images.some(img => img !== null);
-    if (!hasImages) {
-      toast.error("Please upload at least one product image.");
+    if (images.length === 0) {
+      toast.error("Please upload at least one product image");
       return;
     }
 
@@ -94,7 +105,7 @@ const Add = ({ token }) => {
       formData.append('sizes', JSON.stringify(sizes));
 
       images.forEach((image, index) => {
-        if (image) formData.append(`image${index + 1}`, image);
+        formData.append(`image${index + 1}`, image);
       });
 
       const response = await axios.post(`${backendUrl}/api/product/add`, formData, {
@@ -105,24 +116,18 @@ const Add = ({ token }) => {
       });
 
       if (response.data.success) {
-        toast.success(`Success: ${response.data.message}`);
+        toast.success(response.data.message);
         resetForm();
       } else {
-        toast.error(`Error: ${response.data.message || 'Something went wrong. Please try again.'}`);
+        toast.error(response.data.message || 'Something went wrong');
       }
     } catch (error) {
       console.error("Error while submitting the product:", error);
-      if (error.response) {
-        if (error.response.status === 401) {
-          toast.error('Session expired. Please login again.');
-          window.location.href = '/login';
-        } else {
-          toast.error(`Server Error: ${error.response.data?.message || 'Unable to process your request.'}`);
-        }
-      } else if (error.request) {
-        toast.error('Network Error: Could not connect to the server. Please check your internet connection.');
+      if (error.response?.status === 401) {
+        toast.error('Session expired. Please login again');
+        window.location.href = '/login';
       } else {
-        toast.error(`Unexpected Error: ${error.message}`);
+        toast.error(error.response?.data?.message || 'Failed to add product');
       }
     } finally {
       setLoading(false);
@@ -137,7 +142,7 @@ const Add = ({ token }) => {
     setSubCategory('');
     setBestseller(false);
     setSizes([]);
-    setImages([null, null, null, null, null, null]);
+    setImages([]);
   };
 
   const toggleSize = (size) => {
@@ -146,244 +151,339 @@ const Add = ({ token }) => {
     );
   };
 
-  const removeImage = (index) => {
-    setImages(prev => prev.map((img, i) => i === index ? null : img));
-  };
-
-  const uploadedImagesCount = images.filter(img => img !== null).length;
-
   return (
-    <div className="min-h-screen bg-gray-50 px-4 sm:px-6 md:px-10 lg:px-20 py-10">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <Title text1="ADD NEW" text2="PRODUCT" />
-          <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
-            Fill in the details below to add a new product to your inventory
-          </p>
-        </div>
+    <div className="min-h-screen bg-white">
+      <section className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="mb-12">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-2">
+              Add New Product
+            </h1>
+            <p className="text-text/50 font-light leading-relaxed">
+              Create a new product listing with images, details, and pricing
+            </p>
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Product Images */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="bg-black text-white p-6">
-              <div className="flex items-center gap-3">
-                <ImageIcon size={24} className="text-gray-300" />
-                <h2 className="text-xl font-semibold">Product Images ({uploadedImagesCount}/6)</h2>
-              </div>
-            </div>
-
-            <div className="p-6">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-4 mb-4">
-                {images.map((image, index) => (
-                  <ImageUpload
-                    key={index}
-                    id={`image${index + 1}`}
-                    image={image}
-                    setImage={(img) => setImages(prev => prev.map((val, i) => (i === index ? img : val)))}
-                    onRemove={removeImage}
-                    index={index}
-                  />
-                ))}
-              </div>
-
-              {uploadedImagesCount === 0 && (
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 text-amber-700">
-                    <AlertCircle size={16} />
-                    <span className="text-sm font-medium">Please upload at least one product image</span>
+          <div className="space-y-6">
+            {/* Image Upload Section */}
+            <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
+              <div className="p-6 border-b border-background/30">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                      <Image size={20} className="text-secondary" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-serif font-bold text-text">Product Images</h2>
+                      <p className="text-sm text-text/50 font-light">{images.length}/6 images uploaded</p>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Product Information */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="bg-black text-white p-6">
-              <div className="flex items-center gap-3">
-                <Package size={24} className="text-gray-300" />
-                <h2 className="text-xl font-semibold">Product Information</h2>
-              </div>
-            </div>
-
-            <div className="p-6 space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
-                <input
-                  onChange={(e) => setName(e.target.value)}
-                  value={name}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
-                  type="text"
-                  placeholder="Enter a descriptive product name"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Product Description *</label>
-                <textarea
-                  onChange={(e) => setDescription(e.target.value)}
-                  value={description}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors resize-none"
-                  rows="4"
-                  placeholder="Describe your product in detail, including features, materials, and benefits"
-                  required
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Category & Pricing */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="bg-black text-white p-6">
-              <div className="flex items-center gap-3">
-                <Tag size={24} className="text-gray-300" />
-                <h2 className="text-xl font-semibold">Category & Pricing</h2>
-              </div>
-            </div>
-
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
-                  <select
-                    onChange={(e) => { setCategory(e.target.value); setSubCategory(""); setSizes([]); }}
-                    value={category}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
-                  >
-                    {Object.keys(categoryData).map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Sub-Category *</label>
-                  <select
-                    onChange={(e) => setSubCategory(e.target.value)}
-                    value={subCategory}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
-                    required
-                  >
-                    {currentCategoryData.subCategories.map((subCat, index) => (
-                      <option key={index} value={subCat}>{subCat || "Select Sub-Category"}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Price ({currency}) *</label>
-                  <div className="relative">
-                    <IndianRupee className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                    <input
-                      onChange={(e) => setPrice(e.target.value)}
-                      value={price}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
-                      type="number"
-                      placeholder="0.00"
-                      min="0"
-                      step="0.01"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Sizes (if applicable) */}
-          {currentCategoryData.sizes.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <div className="bg-black text-white p-6">
-                <div className="flex items-center gap-3">
-                  <Package size={24} className="text-gray-300" />
-                  <h2 className="text-xl font-semibold">Available Sizes</h2>
                 </div>
               </div>
 
               <div className="p-6">
-                <div className="flex flex-wrap gap-3 mb-4">
-                  {currentCategoryData.sizes.map((size) => (
-                    <button
-                      key={size}
-                      type="button"
-                      onClick={() => toggleSize(size)}
-                      className={`px-4 py-2 rounded-lg border-2 font-medium transition-all duration-200 ${sizes.includes(size)
-                        ? 'bg-black text-white border-black'
-                        : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
-                        }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                {/* Drag & Drop Zone */}
+                <div
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`relative border-2 border-dashed rounded-2xl p-12 transition-all duration-300 cursor-pointer ${
+                    dragActive
+                      ? 'border-secondary bg-secondary/5 scale-[1.01]'
+                      : 'border-background/40 hover:border-secondary/50 hover:bg-background/20'
+                  }`}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                  
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Upload size={36} className="text-secondary" />
+                    </div>
+                    <h3 className="text-xl font-serif font-bold text-text mb-3">
+                      {dragActive ? 'Drop images here' : 'Upload Product Images'}
+                    </h3>
+                    <p className="text-text/50 font-light mb-6">
+                      Drag & drop images here, or click to browse
+                    </p>
+                    <div className="flex items-center justify-center gap-3 text-sm text-text/40">
+                      <span className="px-3 py-1 bg-background/30 rounded-full">JPG, PNG, GIF</span>
+                      <span>•</span>
+                      <span className="px-3 py-1 bg-background/30 rounded-full">Max 6 images</span>
+                    </div>
+                  </div>
                 </div>
 
-                {sizes.length > 0 && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <div className="flex items-center gap-2 text-green-700">
-                      <CheckCircle2 size={16} />
-                      <span className="text-sm font-medium">{sizes.length} size{sizes.length !== 1 ? 's' : ''} selected</span>
+                {/* Image Preview Grid */}
+                {images.length > 0 && (
+                  <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+                    {images.map((image, index) => (
+                      <div key={index} className="relative group">
+                        <div className="aspect-square rounded-xl overflow-hidden border-2 border-background/30 bg-white">
+                          <img
+                            src={URL.createObjectURL(image)}
+                            alt={`Product ${index + 1}`}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-lg"
+                        >
+                          <X size={14} />
+                        </button>
+                        {index === 0 && (
+                          <div className="absolute bottom-2 left-2 bg-secondary text-white px-2 py-1 rounded-lg text-xs font-semibold">
+                            Primary
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {images.length === 0 && (
+                  <div className="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle size={18} className="text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-semibold text-amber-800 mb-1">No images uploaded</p>
+                        <p className="text-xs text-amber-700 font-light">Please upload at least one product image to continue</p>
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
             </div>
-          )}
 
-          {/* Bestseller */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="p-6">
-              <div className="flex items-center gap-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <input
-                  type="checkbox"
-                  id="bestseller"
-                  checked={bestseller}
-                  onChange={() => setBestseller(prev => !prev)}
-                  className="w-5 h-5 text-yellow-600 border-yellow-300 rounded focus:ring-yellow-500"
-                />
-                <label htmlFor="bestseller" className="cursor-pointer flex items-center gap-2 text-gray-700 font-medium">
-                  <Star className="text-yellow-500" size={18} />
-                  Mark as Bestseller
+            {/* Two Column Layout */}
+            <div className="grid lg:grid-cols-2 gap-6">
+              {/* Product Information */}
+              <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
+                <div className="p-6 border-b border-background/30">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                      <Package size={20} className="text-secondary" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-serif font-bold text-text">Product Details</h2>
+                      <p className="text-sm text-text/50 font-light">Basic information</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-text/70 mb-2">
+                      Product Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      onChange={(e) => setName(e.target.value)}
+                      value={name}
+                      className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-colors bg-white font-light"
+                      type="text"
+                      placeholder="e.g., Elegant Cotton Kurti Set"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-text/70 mb-2">
+                      Product Description <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      onChange={(e) => setDescription(e.target.value)}
+                      value={description}
+                      className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-colors resize-none bg-white font-light"
+                      rows={5}
+                      placeholder="Describe your product in detail..."
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Category & Pricing */}
+              <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
+                <div className="p-6 border-b border-background/30">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                      <Tag size={20} className="text-secondary" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-serif font-bold text-text">Category & Pricing</h2>
+                      <p className="text-sm text-text/50 font-light">Classification details</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-text/70 mb-2">
+                        Category <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        onChange={(e) => { setCategory(e.target.value); setSubCategory(""); setSizes([]); }}
+                        value={category}
+                        className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-colors bg-white font-light"
+                      >
+                        {Object.keys(categoryData).map(cat => (
+                          <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-text/70 mb-2">
+                        Sub-Category <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        onChange={(e) => setSubCategory(e.target.value)}
+                        value={subCategory}
+                        className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-colors bg-white font-light"
+                        required
+                      >
+                        {currentCategoryData.subCategories.map((subCat, index) => (
+                          <option key={index} value={subCat}>{subCat || "Select..."}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-text/70 mb-2">
+                      Price ({currency}) <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text/40 font-semibold">₹</span>
+                      <input
+                        onChange={(e) => setPrice(e.target.value)}
+                        value={price}
+                        className="w-full pl-9 pr-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-colors bg-white font-light"
+                        type="number"
+                        placeholder="0.00"
+                        min="0"
+                        step="0.01"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Sizes */}
+            {currentCategoryData.sizes.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
+                <div className="p-6 border-b border-background/30">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                      <Package size={20} className="text-secondary" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-serif font-bold text-text">Available Sizes</h2>
+                      <p className="text-sm text-text/50 font-light">Select all applicable sizes</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6">
+                  <div className="flex flex-wrap gap-3">
+                    {currentCategoryData.sizes.map((size) => (
+                      <button
+                        key={size}
+                        type="button"
+                        onClick={() => toggleSize(size)}
+                        className={`px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 ${
+                          sizes.includes(size)
+                            ? 'bg-secondary text-white shadow-lg shadow-secondary/30'
+                            : 'bg-background/30 text-text hover:bg-background/50'
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+
+                  {sizes.length > 0 && (
+                    <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-4">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 size={16} className="text-green-600" />
+                        <span className="text-sm font-semibold text-green-700">
+                          {sizes.length} size{sizes.length !== 1 ? 's' : ''} selected
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Bestseller */}
+            <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
+              <div className="p-6">
+                <label className="flex items-center gap-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl cursor-pointer hover:bg-yellow-100 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={bestseller}
+                    onChange={() => setBestseller(prev => !prev)}
+                    className="w-5 h-5 text-yellow-600 border-yellow-300 rounded focus:ring-yellow-500"
+                  />
+                  <div className="flex items-center gap-2">
+                    <Star className="text-yellow-500" size={20} fill="currentColor" />
+                    <span className="font-serif font-bold text-text">Mark as Bestseller</span>
+                  </div>
                 </label>
               </div>
             </div>
-          </div>
 
-          {/* Submit Buttons */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="p-6">
-              <div className="flex flex-col sm:flex-row gap-4 justify-end">
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="px-6 py-3 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:border-gray-400 hover:text-gray-800 transition-all duration-200"
-                  disabled={loading}
-                >
-                  Reset Form
-                </button>
-                <button
-                  className="px-8 py-3 bg-black text-white font-medium rounded-lg transition-all duration-200 hover:bg-gray-800 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2 min-w-[140px]"
-                  type="submit"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Adding...
-                    </>
-                  ) : (
-                    <>
-                      <Package size={18} />
-                      Add to Collection
-                    </>
-                  )}
-                </button>
+            {/* Submit Buttons */}
+            <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden sticky bottom-4 z-10">
+              <div className="p-6">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button
+                    type="button"
+                    onClick={resetForm}
+                    className="flex-1 px-6 py-4 bg-background/40 text-text font-semibold rounded-xl hover:bg-background/60 transition-all duration-300"
+                    disabled={loading}
+                  >
+                    Reset Form
+                  </button>
+                  <button
+                    onClick={handleSubmit}
+                    className="flex-1 px-8 py-4 bg-secondary text-white font-semibold rounded-xl transition-all duration-300 hover:bg-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-secondary/30"
+                    type="button"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Adding Product...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Plus size={20} />
+                        <span>Add Product</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </form>
-      </div>
+        </div>
+      </section>
     </div>
   );
 };

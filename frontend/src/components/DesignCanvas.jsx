@@ -10,38 +10,16 @@ import { assets } from '../assets/assets';
 // HELPER FUNCTIONS
 // ============================================================================
 
-// Helper function to adjust color brightness
-const adjustBrightness = (color, percent) => {
-  const num = parseInt(color.replace("#",""), 16);
-  const amt = Math.round(2.55 * percent);
-  const R = (num >> 16) + amt;
-  const G = (num >> 8 & 0x00FF) + amt;
-  const B = (num & 0x0000FF) + amt;
-  return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 +
-    (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255))
-    .toString(16).slice(1);
-};
-
-// ============================================================================
-// DRESS TEMPLATE IMAGES
-// You'll need to provide actual PNG images for these templates
-// Place them in your public/assets/dress-templates/ folder
-// ============================================================================
-
 const DRESS_TEMPLATES = {
-  'Kurti': assets.kurti_img,
-  'Kurti Sets': assets.kurti_img,
-  'Kurta': assets.kurti_img,
-  'Kurta Sets': assets.kurti_img,
-  'Lehenga': assets.kurti_img,
-  'Anarkali': assets.kurti_img,
-  'Sherwani': assets.kurti_img,
-  'Sheraras': assets.kurti_img
+  'Kurti': assets.kurta_img,
+  'Kurti Sets': assets.kurta_img,
+  'Kurta': assets.kurta_img,
+  'Kurta Sets': assets.kurta_img,
+  'Lehenga': assets.kurta_img,
+  'Anarkali': assets.kurta_img,
+  'Sherwani': assets.kurta_img,
+  'Sheraras': assets.kurta_img
 };
-
-// ============================================================================
-// ZONE DEFINITIONS - Coordinates for clickable areas on templates
-// ============================================================================
 
 const ZONES = {
   Kurti: [
@@ -355,13 +333,14 @@ const DesignCanvas = ({
   onDesignChange, 
   initialDesign = null, 
   dressType = 'Kurti', 
-  selectedColor = '#e11d48',
+  selectedColor = '#ffffff',
   gender = 'Women'
 }) => {
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef(null);
   const historyRef = useRef({ stack: [], pointer: -1 });
   const baseImageRef = useRef(null);
+  const colorOverlayRef = useRef(null);
   const mountedRef = useRef(false);
   
   const [neckStyle, setNeckStyle] = useState('round');
@@ -372,6 +351,7 @@ const DesignCanvas = ({
   const [canRedo, setCanRedo] = useState(false);
   const [templateLoaded, setTemplateLoaded] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const [currentColor, setCurrentColor] = useState(selectedColor);
 
   const CANVAS_WIDTH = 600;
   const CANVAS_HEIGHT = 700;
@@ -447,6 +427,14 @@ const DesignCanvas = ({
     };
   }, [dressType]);
 
+  // Update color when selectedColor prop changes
+  useEffect(() => {
+    setCurrentColor(selectedColor);
+    if (colorOverlayRef.current && fabricCanvasRef.current && mountedRef.current) {
+      updateGarmentColor(selectedColor);
+    }
+  }, [selectedColor]);
+
   // ============================================================================
   // LOAD GARMENT TEMPLATE (PNG IMAGE)
   // ============================================================================
@@ -471,7 +459,7 @@ const DesignCanvas = ({
           setImageLoading(false);
           
           // Show placeholder if image fails to load
-          const placeholder = new fabric.Text('Template Image Not Found\n\nPlease add PNG images to:\n/public/assets/dress-templates/', {
+          const placeholder = new fabric.Text('Template Image Not Found\n\nPlease add PNG images', {
             left: CANVAS_WIDTH / 2,
             top: CANVAS_HEIGHT / 2,
             fontSize: 16,
@@ -504,24 +492,31 @@ const DesignCanvas = ({
           objectType: 'baseTemplate'
         });
 
-        // Apply color tint to the image
-        try {
-          img.filters = [];
-          img.filters.push(
-            new fabric.Image.filters.BlendColor({
-              color: selectedColor,
-              mode: 'tint',
-              alpha: 0.4
-            })
-          );
-          img.applyFilters();
-        } catch (e) {
-          console.warn('Filter application warning:', e);
-        }
-
         canvas.add(img);
         canvas.sendToBack(img);
         baseImageRef.current = img;
+
+        // Create a colored overlay that will blend with the garment
+        // This should be positioned and sized to match the garment area only
+        const colorOverlay = new fabric.Rect({
+          left: img.left,
+          top: img.top,
+          width: img.width * scale,
+          height: img.height * scale,
+          originX: 'center',
+          originY: 'center',
+          fill: selectedColor,
+          opacity: 0.4, // Adjust this for color intensity
+          selectable: false,
+          evented: false,
+          objectType: 'colorOverlay',
+          globalCompositeOperation: 'multiply' // This blends the color with the image
+        });
+
+        canvas.add(colorOverlay);
+        // Keep overlay just above the base image but below other elements
+        canvas.moveTo(colorOverlay, 1);
+        colorOverlayRef.current = colorOverlay;
 
         // Add zone overlays (invisible by default)
         zones.forEach(zone => {
@@ -555,28 +550,21 @@ const DesignCanvas = ({
     );
   }, [dressType, selectedColor, zones]);
 
-  // Update base image color when color changes
-  useEffect(() => {
-    if (!baseImageRef.current || !fabricCanvasRef.current || !mountedRef.current) return;
+  // Update garment color
+  const updateGarmentColor = useCallback((newColor) => {
+    if (!colorOverlayRef.current || !fabricCanvasRef.current || !mountedRef.current) return;
     
-    const img = baseImageRef.current;
     const canvas = fabricCanvasRef.current;
+    const overlay = colorOverlayRef.current;
     
-    try {
-      img.filters = [];
-      img.filters.push(
-        new fabric.Image.filters.BlendColor({
-          color: selectedColor,
-          mode: 'tint',
-          alpha: 0.4
-        })
-      );
-      img.applyFilters();
-      canvas.renderAll();
-    } catch (e) {
-      console.warn('Color update warning:', e);
+    overlay.set({ fill: newColor });
+    canvas.renderAll();
+    
+    // Notify parent component
+    if (onDesignChange) {
+      exportDesign(canvas);
     }
-  }, [selectedColor]);
+  }, [onDesignChange]);
 
   // ============================================================================
   // APPLY EMBROIDERY
@@ -653,7 +641,7 @@ const DesignCanvas = ({
     if (!print) return;
 
     try {
-      const printCanvas = print.createPattern(selectedColor);
+      const printCanvas = print.createPattern(currentColor);
       const fabricPattern = new fabric.Pattern({
         source: printCanvas,
         repeat: 'repeat'
@@ -674,6 +662,9 @@ const DesignCanvas = ({
       canvas.add(rect);
       if (baseImageRef.current) {
         canvas.sendToBack(baseImageRef.current);
+      }
+      if (colorOverlayRef.current) {
+        canvas.moveTo(colorOverlayRef.current, 1);
       }
       canvas.renderAll();
       saveToHistory(canvas);
@@ -803,210 +794,279 @@ const DesignCanvas = ({
       const png = canvas.toDataURL({ format: 'png', quality: 1 });
       const svg = canvas.toSVG();
 
-      onDesignChange({ json, png, svg, neckStyle, sleeveStyle });
+      onDesignChange({ json, png, svg, neckStyle, sleeveStyle, color: currentColor });
     } catch (e) {
       console.error('Export error:', e);
     }
-  }, [onDesignChange, neckStyle, sleeveStyle]);
+  }, [onDesignChange, neckStyle, sleeveStyle, currentColor]);
 
   // ============================================================================
   // RENDER UI
   // ============================================================================
 
   return (
-    <div className="grid lg:grid-cols-[1fr_380px] gap-6">
-      {/* Canvas */}
-      <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-8">
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-              <Sparkles size={24} className="text-white" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">Design Canvas</h3>
-              <p className="text-sm text-gray-500">{dressType} Customization</p>
-            </div>
-          </div>
-          
-          <div className="flex gap-2">
-            <button onClick={undo} disabled={!canUndo} className="p-3 bg-gray-50 hover:bg-gray-100 rounded-xl disabled:opacity-30 transition-all">
-              <Undo size={18} />
-            </button>
-            <button onClick={redo} disabled={!canRedo} className="p-3 bg-gray-50 hover:bg-gray-100 rounded-xl disabled:opacity-30 transition-all">
-              <Redo size={18} />
-            </button>
-          </div>
-        </div>
-
-        <div className="flex justify-center bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 relative">
-          {imageLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-2xl z-10">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-                <p className="text-sm text-gray-500">Loading template...</p>
+    <div className="space-y-6">
+      <div className="grid lg:grid-cols-[1fr_380px] gap-6">
+        {/* Canvas */}
+        <div className="bg-white rounded-2xl shadow-lg border border-background/50 p-8">
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-secondary rounded-2xl flex items-center justify-center shadow-lg">
+                <Sparkles size={24} className="text-white" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-serif font-bold text-text">Design Canvas</h3>
+                <p className="text-sm text-text/60 font-light">{dressType} Customization</p>
               </div>
             </div>
+            
+            <div className="flex gap-2">
+              <button onClick={undo} disabled={!canUndo} className="p-3 bg-background/30 hover:bg-background/50 rounded-xl disabled:opacity-30 transition-all">
+                <Undo size={18} />
+              </button>
+              <button onClick={redo} disabled={!canRedo} className="p-3 bg-background/30 hover:bg-background/50 rounded-xl disabled:opacity-30 transition-all">
+                <Redo size={18} />
+              </button>
+            </div>
+          </div>
+
+          <div className="flex justify-center bg-gradient-to-br from-background/10 to-white rounded-2xl p-8 relative">
+            {imageLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-2xl z-10">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto mb-4"></div>
+                  <p className="text-sm text-text/50 font-light">Loading template...</p>
+                </div>
+              </div>
+            )}
+            <canvas ref={canvasRef} className="border-4 border-white rounded-2xl shadow-2xl" />
+          </div>
+
+          {/* Zone Selector */}
+          <div className="mt-6">
+            <h4 className="text-sm font-bold text-text/70 mb-3 uppercase tracking-wide">Select Area to Customize</h4>
+            <div className="grid grid-cols-3 gap-2">
+              {zones.map(zone => (
+                <button
+                  key={zone.id}
+                  onClick={() => handleZoneSelect(zone.id)}
+                  className={`p-3 rounded-xl border-2 transition-all text-xs font-semibold ${
+                    selectedZone === zone.id
+                      ? 'border-secondary bg-secondary/10 shadow-lg'
+                      : 'border-background/50 hover:border-secondary/50'
+                  }`}
+                >
+                  {zone.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {selectedZone && (
+            <div className="mt-4 p-4 bg-gradient-to-r from-background/20 to-background/5 rounded-2xl border-2 border-secondary/30 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 size={20} className="text-secondary" />
+                <span className="text-sm font-semibold text-text">
+                  Editing: {zones.find(z => z.id === selectedZone)?.label}
+                </span>
+              </div>
+              <button onClick={clearZone} className="px-4 py-2 bg-white text-red-600 rounded-lg hover:bg-red-50 transition-all text-xs font-semibold">
+                <Trash2 size={14} className="inline mr-1" />
+                Clear
+              </button>
+            </div>
           )}
-          <canvas ref={canvasRef} className="border-4 border-white rounded-2xl shadow-2xl" />
         </div>
 
-        {/* Zone Selector */}
-        <div className="mt-6">
-          <h4 className="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Select Area to Customize</h4>
-          <div className="grid grid-cols-3 gap-2">
-            {zones.map(zone => (
+        {/* Tools Sidebar */}
+        <div className="bg-white rounded-2xl shadow-lg border border-background/50 p-6 space-y-6 max-h-[800px] overflow-y-auto">
+          <div className="flex items-center gap-3 pb-5 border-b border-background/30">
+            <Settings className="text-secondary" size={24} />
+            <h3 className="text-xl font-serif font-bold text-text">Design Tools</h3>
+          </div>
+
+          {/* Tabs */}
+          <div className="flex gap-2 p-1.5 bg-background/30 rounded-2xl text-xs">
+            {['styles', 'embroidery', 'prints'].map(tab => (
               <button
-                key={zone.id}
-                onClick={() => handleZoneSelect(zone.id)}
-                className={`p-3 rounded-xl border-2 transition-all text-xs font-semibold ${
-                  selectedZone === zone.id
-                    ? 'border-purple-500 bg-purple-50 shadow-lg'
-                    : 'border-gray-200 hover:border-purple-300'
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`flex-1 px-3 py-2.5 rounded-xl font-bold transition-all capitalize ${
+                  activeTab === tab ? 'bg-secondary text-white' : 'text-text/60'
                 }`}
               >
-                {zone.label}
+                {tab}
               </button>
             ))}
           </div>
-        </div>
 
-        {selectedZone && (
-          <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border-2 border-purple-200 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <CheckCircle2 size={20} className="text-purple-600" />
-              <span className="text-sm font-semibold text-gray-700">
-                Editing: {zones.find(z => z.id === selectedZone)?.label}
-              </span>
-            </div>
-            <button onClick={clearZone} className="px-4 py-2 bg-white text-red-600 rounded-lg hover:bg-red-50 transition-all text-xs font-semibold">
-              <Trash2 size={14} className="inline mr-1" />
-              Clear
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Tools Sidebar */}
-      <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 space-y-6 max-h-[800px] overflow-y-auto">
-        <div className="flex items-center gap-3 pb-5 border-b">
-          <Settings className="text-purple-500" size={24} />
-          <h3 className="text-xl font-bold">Design Tools</h3>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex gap-2 p-1.5 bg-gray-100 rounded-2xl text-xs">
-          {['styles', 'embroidery', 'prints'].map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex-1 px-3 py-2.5 rounded-xl font-bold transition-all capitalize ${
-                activeTab === tab ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' : 'text-gray-600'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {/* Styles Tab */}
-        {activeTab === 'styles' && (
-          <div className="space-y-6">
-            <div>
-              <h4 className="font-bold text-sm uppercase tracking-wider mb-3">Neckline</h4>
-              <div className="grid grid-cols-2 gap-2">
-                {getAvailableNecklines().map(style => (
-                  <button
-                    key={style.value}
-                    onClick={() => setNeckStyle(style.value)}
-                    className={`p-3 rounded-xl border-2 transition-all text-xs font-semibold ${
-                      neckStyle === style.value ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
-                    }`}
-                  >
-                    {style.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h4 className="font-bold text-sm uppercase tracking-wider mb-3">Sleeves</h4>
-              <div className="grid grid-cols-2 gap-2">
-                {sleeveOptions.map(style => (
-                  <button
-                    key={style.value}
-                    onClick={() => setSleeveStyle(style.value)}
-                    className={`p-3 rounded-xl border-2 transition-all text-xs font-semibold ${
-                      sleeveStyle === style.value ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
-                    }`}
-                  >
-                    {style.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Embroidery Tab */}
-        {activeTab === 'embroidery' && (
-          <div className="space-y-4">
-            {selectedZone ? (
-              <>
-                <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 mb-4">
-                  <p className="text-xs text-amber-800 font-semibold flex items-center gap-2">
-                    <Info size={16} />
-                    Reference images required for accurate embroidery work
-                  </p>
+          {/* Styles Tab */}
+          {activeTab === 'styles' && (
+            <div className="space-y-6">
+              {/* Color Picker */}
+              <div>
+                <h4 className="font-bold text-sm uppercase tracking-wider text-text/70 mb-3 flex items-center gap-2">
+                  <Palette size={16} className="text-secondary" />
+                  Garment Color
+                </h4>
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 border-2 border-purple-200">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <input
+                        type="color"
+                        value={currentColor}
+                        onChange={(e) => handleColorChange(e.target.value)}
+                        className="w-20 h-20 rounded-xl cursor-pointer border-3 border-white shadow-lg hover:scale-105 transition-transform"
+                      />
+                      <div className="absolute -bottom-1 -right-1 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full p-1.5 shadow-md">
+                        <Palette size={12} className="text-white" />
+                      </div>
+                    </div>
+                    
+                    <div className="flex-1">
+                      <label className="block text-xs font-semibold text-text/70 mb-1.5">
+                        Hex Code
+                      </label>
+                      <input
+                        type="text"
+                        value={currentColor}
+                        onChange={(e) => handleColorChange(e.target.value)}
+                        placeholder="#ffffff"
+                        className="w-full px-3 py-2 border-2 border-background/50 rounded-lg focus:border-purple-500 focus:outline-none transition-colors font-mono text-sm"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <h4 className="font-bold text-sm uppercase tracking-wider">Embroidery Patterns</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  {Object.entries(EMBROIDERY_PATTERNS).map(([key, config]) => (
+              </div>
+
+              <div>
+                <h4 className="font-bold text-sm uppercase tracking-wider text-text/70 mb-3">Neckline</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {getAvailableNecklines().map(style => (
                     <button
-                      key={key}
-                      onClick={() => applyEmbroidery(key)}
-                      className="p-4 rounded-xl border-2 border-gray-200 hover:border-purple-500 transition-all"
+                      key={style.value}
+                      onClick={() => setNeckStyle(style.value)}
+                      className={`p-3 rounded-xl border-2 transition-all text-xs font-semibold ${
+                        neckStyle === style.value ? 'border-secondary bg-secondary/10' : 'border-background/50'
+                      }`}
                     >
-                      <div className="text-xs font-semibold text-gray-700 mb-1">{config.name}</div>
-                      <div className="text-[10px] text-gray-500 italic">{config.note}</div>
+                      {style.label}
                     </button>
                   ))}
                 </div>
-              </>
-            ) : (
-              <div className="text-center py-12">
-                <Move size={48} className="mx-auto mb-4 text-gray-300" />
-                <p className="text-sm text-gray-500">Select a zone first</p>
               </div>
-            )}
-          </div>
-        )}
 
-        {/* Prints Tab */}
-        {activeTab === 'prints' && (
-          <div className="space-y-4">
-            {selectedZone ? (
-              <>
-                <h4 className="font-bold text-sm uppercase tracking-wider">Fabric Prints</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  {Object.entries(FABRIC_PRINTS).map(([key, config]) => (
+              <div>
+                <h4 className="font-bold text-sm uppercase tracking-wider text-text/70 mb-3">Sleeves</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {sleeveOptions.map(style => (
                     <button
-                      key={key}
-                      onClick={() => applyFabricPrint(key)}
-                      className="p-4 rounded-xl border-2 border-gray-200 hover:border-purple-500 transition-all"
+                      key={style.value}
+                      onClick={() => setSleeveStyle(style.value)}
+                      className={`p-3 rounded-xl border-2 transition-all text-xs font-semibold ${
+                        sleeveStyle === style.value ? 'border-secondary bg-secondary/10' : 'border-background/50'
+                      }`}
                     >
-                      <div className="text-xs font-semibold text-gray-700">{config.name}</div>
+                      {style.label}
                     </button>
                   ))}
                 </div>
-              </>
-            ) : (
-              <div className="text-center py-12">
-                <Move size={48} className="mx-auto mb-4 text-gray-300" />
-                <p className="text-sm text-gray-500">Select a zone first</p>
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+
+          {/* Embroidery Tab */}
+          {activeTab === 'embroidery' && (
+            <div className="space-y-4">
+              {selectedZone ? (
+                <>
+                  <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 mb-4">
+                    <p className="text-xs text-amber-800 font-semibold flex items-center gap-2">
+                      <Info size={16} />
+                      Reference images required for accurate embroidery work
+                    </p>
+                  </div>
+                  <h4 className="font-bold text-sm uppercase tracking-wider text-text/70">Embroidery Patterns</h4>
+                  <div className="grid grid-cols-1 gap-4">
+                    {Object.entries(EMBROIDERY_PATTERNS).map(([key, config]) => {
+                      const patternCanvas = config.createPattern();
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => applyEmbroidery(key)}
+                          className="group p-4 rounded-xl border-2 border-background/50 hover:border-secondary hover:shadow-lg transition-all flex items-center gap-4"
+                        >
+                          <div className="w-16 h-16 rounded-lg border-2 border-background/30 overflow-hidden flex-shrink-0 bg-white shadow-inner">
+                            <img 
+                              src={patternCanvas.toDataURL()} 
+                              alt={config.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="text-left flex-1">
+                            <div className="text-sm font-semibold text-text mb-1">{config.name}</div>
+                            <div className="text-xs text-text/50 font-light">{config.note}</div>
+                          </div>
+                          <div className="text-secondary opacity-0 group-hover:opacity-100 transition-opacity">
+                            <CheckCircle2 size={20} />
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-12">
+                  <Move size={48} className="mx-auto mb-4 text-background/50" />
+                  <p className="text-sm text-text/50 font-light">Select a zone first</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Prints Tab */}
+          {activeTab === 'prints' && (
+            <div className="space-y-4">
+              {selectedZone ? (
+                <>
+                  <h4 className="font-bold text-sm uppercase tracking-wider text-text/70">Fabric Prints</h4>
+                  <div className="grid grid-cols-1 gap-4">
+                    {Object.entries(FABRIC_PRINTS).map(([key, config]) => {
+                      const printCanvas = config.createPattern(selectedColor);
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => applyFabricPrint(key)}
+                          className="group p-4 rounded-xl border-2 border-background/50 hover:border-secondary hover:shadow-lg transition-all flex items-center gap-4"
+                        >
+                          <div className="w-16 h-16 rounded-lg border-2 border-background/30 overflow-hidden flex-shrink-0 bg-white shadow-inner">
+                            <img 
+                              src={printCanvas.toDataURL()} 
+                              alt={config.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="text-left flex-1">
+                            <div className="text-sm font-semibold text-text">{config.name}</div>
+                            <div className="text-xs text-text/50 font-light">Traditional print pattern</div>
+                          </div>
+                          <div className="text-secondary opacity-0 group-hover:opacity-100 transition-opacity">
+                            <CheckCircle2 size={20} />
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-12">
+                  <Move size={48} className="mx-auto mb-4 text-background/50" />
+                  <p className="text-sm text-text/50 font-light">Select a zone first</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

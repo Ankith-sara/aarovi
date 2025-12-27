@@ -2,17 +2,17 @@ import React, { useState, useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
 import DesignCanvas from "../components/DesignCanvas";
-import { Save, Sparkles, Upload, CheckCircle2, Ruler, Palette, Shirt, Package, ArrowRight, ChevronRight } from "lucide-react";
+import { Save, ShoppingCart, Upload, CheckCircle2, Ruler, Palette, Shirt, Package, ArrowRight, Sparkles } from "lucide-react";
 
 const Customize = () => {
-  const { saveCustomization, submitCustomization, token, navigate } = useContext(ShopContext);
+  const { saveCustomization, addCustomizationToCart, token, navigate } = useContext(ShopContext);
 
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     gender: "",
     dressType: "",
     fabric: "",
-    color: "",
+    color: "#ffffff",
     designNotes: "",
     measurements: {
       bust: "",
@@ -29,11 +29,88 @@ const Customize = () => {
       json: "",
       svg: "",
       png: "",
-      backgroundImage: ""
+      backgroundImage: "",
+      neckStyle: "",
+      sleeveStyle: ""
     }
   });
 
   const [loading, setLoading] = useState(false);
+
+  // PRICING MATRIX - Based on dress type and fabric
+  const PRICING_MATRIX = {
+    "Kurti": {
+      "Cotton": 1500,
+      "Silk": 2800,
+      "Georgette": 2200,
+      "Kota": 1800,
+      "Chiffon": 2400,
+      "Crape": 2000,
+      "Lenin": 2500,
+      "Chanderi": 3200,
+      "Banarasi": 4500
+    },
+    "Kurti Sets": {
+      "Cotton": 2500,
+      "Silk": 4200,
+      "Georgette": 3500,
+      "Kota": 2800,
+      "Chiffon": 3800,
+      "Crape": 3200,
+      "Lenin": 3800,
+      "Chanderi": 4800,
+      "Banarasi": 6500
+    },
+    "Kurta": {
+      "Cotton": 1800,
+      "Raw Silk": 3200,
+      "Lenin": 2500,
+      "Velvet": 3800,
+      "Banarasi": 4800
+    },
+    "Kurta Sets": {
+      "Cotton": 3000,
+      "Raw Silk": 4800,
+      "Lenin": 3800,
+      "Velvet": 5200,
+      "Banarasi": 6800
+    },
+    "Lehenga": {
+      "Banarasi": 8500,
+      "Georgette": 5500,
+      "Chiffon": 6200,
+      "Crape": 5800,
+      "Tissue": 7200,
+      "Pattu": 9500
+    },
+    "Anarkali": {
+      "Georgette": 4200,
+      "Chiffon": 4500,
+      "Crape": 3800,
+      "Tissue": 5200,
+      "Pattu": 6500,
+      "Banarasi": 7200,
+      "Cotton": 2800
+    },
+    "Sherwani": {
+      "Raw Silk": 6500,
+      "Velvet": 8200,
+      "Banarasi": 9500
+    },
+    "Sheraras": {
+      "Georgette": 5800,
+      "Banarasi": 8200,
+      "Silk": 6800,
+      "Chiffon": 6200,
+      "Crape": 5500
+    }
+  };
+
+  // Calculate estimated price
+  const calculatePrice = () => {
+    if (!form.dressType || !form.fabric) return 0;
+    return PRICING_MATRIX[form.dressType]?.[form.fabric] || 0;
+  };
 
   // Gender-specific dress types
   const dressTypes = {
@@ -120,13 +197,16 @@ const Customize = () => {
     ]
   };
 
-  // Get available fabrics for selected dress type
   const getAvailableFabrics = () => {
     return fabricOptions[form.dressType] || [];
   };
 
   const handleDesignChange = (designData) => {
-    setForm({ ...form, canvasDesign: designData });
+    setForm({ 
+      ...form, 
+      canvasDesign: designData,
+      color: designData.color // Update color when changed in DesignCanvas
+    });
   };
 
   const handleGenderChange = (gender) => {
@@ -134,7 +214,7 @@ const Customize = () => {
       ...form,
       gender,
       dressType: "",
-      fabric: "" // Reset fabric when gender changes
+      fabric: ""
     });
   };
 
@@ -142,7 +222,7 @@ const Customize = () => {
     setForm({
       ...form,
       dressType,
-      fabric: "" // Reset fabric when dress type changes
+      fabric: ""
     });
   };
 
@@ -223,9 +303,11 @@ const Customize = () => {
 
     try {
       setLoading(true);
+      const estimatedPrice = calculatePrice();
+      
       const customizationData = {
         ...form,
-        estimatedPrice: 0,
+        estimatedPrice,
       };
 
       const result = await saveCustomization(customizationData);
@@ -240,36 +322,43 @@ const Customize = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleAddToCart = async () => {
     if (!token) {
-      toast.error("Please login to submit customization");
+      toast.error("Please login to add to cart");
       navigate("/login");
       return;
     }
 
     try {
       setLoading(true);
+      const estimatedPrice = calculatePrice();
+      
       const customizationData = {
         ...form,
-        estimatedPrice: 0
+        estimatedPrice,
+        status: "Ready for Cart"
       };
 
+      // First save the customization
       const result = await saveCustomization(customizationData);
 
       if (result && result._id) {
-        const submitted = await submitCustomization(result._id);
-        if (submitted) {
-          toast.success("Customization submitted successfully! 🎉");
-          navigate("/my-customizations");
+        // Then add to cart
+        const added = await addCustomizationToCart(result);
+        if (added) {
+          toast.success("Custom design added to cart! 🎉");
+          navigate("/cart");
         }
       }
     } catch (err) {
-      console.error("Submit error:", err);
-      toast.error("Failed to submit customization");
+      console.error("Add to cart error:", err);
+      toast.error("Failed to add to cart");
     } finally {
       setLoading(false);
     }
   };
+
+  const estimatedPrice = calculatePrice();
 
   return (
     <div className="mt-16 min-h-screen">
@@ -332,9 +421,21 @@ const Customize = () => {
           </div>
         </div>
 
+        {/* Price Display */}
+        {estimatedPrice > 0 && (
+          <div className="mb-8 text-center">
+            <div className="inline-flex items-center gap-3 rounded-2xl px-8 py-4">
+              <div>
+                <p className="text-sm text-gray-600 font-medium">Estimated Price</p>
+                <p className="text-3xl font-bold text-text">₹{estimatedPrice.toLocaleString()}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Main Content */}
         <div className="bg-white rounded-3xl shadow-2xl border border-background/50 overflow-hidden">
-          {/* STEP 1: Basic Info - Gender, Dress Type, Fabric */}
+          {/* STEP 1: Basic Info */}
           {step === 1 && (
             <div className="p-8 sm:p-12 space-y-10">
               <div className="text-center mb-8">
@@ -349,7 +450,6 @@ const Customize = () => {
               {/* Gender Selection */}
               <div>
                 <label className="flex items-center gap-2 font-semibold text-lg mb-4 text-text">
-                  <Shirt size={20} className="text-secondary" />
                   Select Gender <span className="text-red-500">*</span>
                 </label>
                 <div className="grid grid-cols-2 gap-4">
@@ -379,7 +479,6 @@ const Customize = () => {
               {form.gender && (
                 <div className="animate-slideDown">
                   <label className="flex items-center gap-2 font-semibold text-lg mb-4 text-text">
-                    <Package size={20} className="text-secondary" />
                     Select Dress Type <span className="text-red-500">*</span>
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -405,32 +504,35 @@ const Customize = () => {
                 </div>
               )}
 
-              {/* Fabric Selection - Only show when dress type is selected */}
+              {/* Fabric Selection */}
               {form.dressType && (
                 <div className="animate-slideDown">
                   <label className="flex items-center gap-2 font-semibold text-lg mb-4 text-text">
-                    <Sparkles size={20} className="text-secondary" />
                     Select Fabric <span className="text-red-500">*</span>
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {getAvailableFabrics().map((fabric) => (
-                      <button
-                        key={fabric.value}
-                        onClick={() => setForm({ ...form, fabric: fabric.value })}
-                        className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 text-left ${
-                          form.fabric === fabric.value
-                            ? "border-secondary bg-secondary/5 shadow-xl shadow-secondary/20 scale-105"
-                            : "border-background/50 hover:border-secondary/50 hover:shadow-lg"
-                        }`}
-                      >
-                        <div className="font-semibold text-text mb-1">{fabric.label}</div>
-                        {form.fabric === fabric.value && (
-                          <div className="absolute top-4 right-4">
-                            <CheckCircle2 size={20} className="text-secondary" />
-                          </div>
-                        )}
-                      </button>
-                    ))}
+                    {getAvailableFabrics().map((fabric) => {
+                      const price = PRICING_MATRIX[form.dressType]?.[fabric.value] || 0;
+                      return (
+                        <button
+                          key={fabric.value}
+                          onClick={() => setForm({ ...form, fabric: fabric.value })}
+                          className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 text-left ${
+                            form.fabric === fabric.value
+                              ? "border-secondary bg-secondary/5 shadow-xl shadow-secondary/20 scale-105"
+                              : "border-background/50 hover:border-secondary/50 hover:shadow-lg"
+                          }`}
+                        >
+                          <div className="font-semibold text-text mb-1">{fabric.label}</div>
+                          <div className="text-sm text-text font-bold">₹{price.toLocaleString()}</div>
+                          {form.fabric === fabric.value && (
+                            <div className="absolute top-4 right-4">
+                              <CheckCircle2 size={20} className="text-secondary" />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -461,40 +563,12 @@ const Customize = () => {
                 </p>
               </div>
 
-              {/* Color Picker */}
-              <div className="mb-8 p-6 bg-gradient-to-br from-background/20 to-background/5 rounded-2xl border border-background/50">
-                <label className="flex items-center gap-2 font-semibold text-lg mb-4 text-text">
-                  <Palette size={20} className="text-secondary" />
-                  Select Base Color <span className="text-red-500">*</span>
-                </label>
-                <div className="flex flex-col sm:flex-row gap-4 items-center">
-                  <input
-                    type="color"
-                    value={form.color || "#e11d48"}
-                    onChange={(e) => setForm({ ...form, color: e.target.value })}
-                    className="w-32 h-32 rounded-2xl cursor-pointer border-4 border-white shadow-xl"
-                  />
-                  <div className="flex-1">
-                    <p className="text-sm text-text/60 font-light mb-2">
-                      Choose your preferred base color for the garment. You can also enter a hex code:
-                    </p>
-                    <input
-                      type="text"
-                      value={form.color || "#e11d48"}
-                      onChange={(e) => setForm({ ...form, color: e.target.value })}
-                      placeholder="#000000"
-                      className="w-full px-4 py-3 border-2 border-background/50 rounded-xl focus:border-secondary focus:outline-none transition-colors font-mono"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Design Canvas */}
+              {/* Design Canvas (color picker is now inside the Styles tab) */}
               <DesignCanvas
                 onDesignChange={handleDesignChange}
                 initialDesign={form.canvasDesign}
                 dressType={form.dressType}
-                selectedColor={form.color || "#e11d48"}
+                selectedColor={form.color}
                 gender={form.gender}
               />
 
@@ -638,11 +712,12 @@ const Customize = () => {
                   </button>
 
                   <button
-                    onClick={handleSubmit}
+                    onClick={handleAddToCart}
                     disabled={loading}
-                    className="group px-10 py-4 bg-secondary text-white rounded-full hover:bg-secondary/90 transition-all duration-300 flex items-center gap-3 shadow-xl shadow-secondary/30 hover:shadow-2xl hover:shadow-secondary/40 hover:-translate-y-0.5 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="group px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full hover:from-purple-700 hover:to-pink-700 transition-all duration-300 flex items-center gap-3 shadow-xl shadow-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/40 hover:-translate-y-0.5 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <span>{loading ? "Submitting..." : "Submit Design"}</span>
+                    <ShoppingCart size={20} className="group-hover:scale-110 transition-transform" />
+                    <span>{loading ? "Adding..." : "Add to Cart"}</span>
                     <Sparkles size={20} className="group-hover:rotate-12 transition-transform" />
                   </button>
                 </div>

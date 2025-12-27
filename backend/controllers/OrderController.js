@@ -1,6 +1,7 @@
 import orderModel from "../models/OrderModel.js";
 import userModel from "../models/UserModel.js";
 import productModel from "../models/ProductModal.js"
+import customizationModel from "../models/CustomizationModel.js";
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
@@ -24,29 +25,46 @@ const sendOrderNotifications = async (order, user) => {
   }
 };
 
-// Helper function to process order items
+// Helper function to process order items (UPDATED with canvas design)
 const processOrderItems = (items) => {
   return items.map(item => {
     if (item.type === 'customization') {
-      // Custom order item
+      // Custom order item - includes full canvas design
       return {
         type: 'CUSTOM',
-        name: item.name || 'Custom Dress',
+        name: `Custom ${item.gender}'s ${item.dressType}` || 'Custom Dress',
         quantity: item.quantity || 1,
         basePrice: item.price || 0,
         finalPrice: item.price || 0,
         customization: {
+          customizationId: item._id,
           gender: item.gender,
           dressType: item.dressType,
           fabric: item.fabric,
           color: item.color,
-          measurements: item.measurements || {},
+          neckStyle: item.neckStyle || "",
+          sleeveStyle: item.sleeveStyle || "",
+          canvasDesign: {
+            json: item.canvasDesign?.json || "",
+            svg: item.canvasDesign?.svg || "",
+            png: item.canvasDesign?.png || "",
+            backgroundImage: item.canvasDesign?.backgroundImage || ""
+          },
+          measurements: {
+            bust: item.measurements?.bust || "",
+            waist: item.measurements?.waist || "",
+            hips: item.measurements?.hips || "",
+            shoulder: item.measurements?.shoulder || "",
+            sleeveLength: item.measurements?.sleeveLength || "",
+            length: item.measurements?.length || "",
+            customNotes: item.measurements?.customNotes || ""
+          },
           designNotes: item.designNotes || "",
           referenceImages: item.referenceImages || [],
           aiPrompt: item.aiPrompt || ""
         },
         productionStatus: 'DESIGNING',
-        image: item.images?.[0] || item.image || ""
+        image: item.canvasDesign?.png || ""
       };
     } else {
       // Regular product item
@@ -76,7 +94,7 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    // Process items (handle both regular and custom items)
+    // Process items (handle both regular and custom items with canvas)
     const processedItems = processOrderItems(items);
 
     const orderData = {
@@ -91,6 +109,20 @@ const placeOrder = async (req, res) => {
 
     const newOrder = new orderModel(orderData);
     await newOrder.save();
+
+    // Update customization status to "In Production" for custom items
+    for (const item of items) {
+      if (item.type === 'customization' && item._id) {
+        try {
+          await customizationModel.findByIdAndUpdate(
+            item._id,
+            { status: 'In Production' }
+          );
+        } catch (err) {
+          console.error('Failed to update customization status:', err);
+        }
+      }
+    }
 
     // Clear cart after order
     await userModel.findByIdAndUpdate(userId, { cartData: {} });
@@ -167,7 +199,7 @@ const placeOrderRazorpay = async (req, res) => {
       });
     }
 
-    // Process items (handle both regular and custom items)
+    // Process items (handle both regular and custom items with canvas)
     const processedItems = processOrderItems(items);
 
     const orderData = {
@@ -271,6 +303,20 @@ const verifyRazorpay = async (req, res) => {
 
     await orderModel.findByIdAndUpdate(orderId, { payment: true });
     await userModel.findByIdAndUpdate(order.userId, { cartData: {} });
+
+    // Update customization status for custom items
+    for (const item of order.items) {
+      if (item.type === 'CUSTOM' && item.customization?.customizationId) {
+        try {
+          await customizationModel.findByIdAndUpdate(
+            item.customization.customizationId,
+            { status: 'In Production' }
+          );
+        } catch (err) {
+          console.error('Failed to update customization status:', err);
+        }
+      }
+    }
 
     await sendOrderNotifications(order, user);
 
@@ -396,6 +442,23 @@ const updateProductionStatus = async (req, res) => {
 
     order.items[itemIndex].productionStatus = productionStatus;
     await order.save();
+
+    // Update customization model status as well
+    if (order.items[itemIndex].customization?.customizationId) {
+      try {
+        let customStatus = 'In Production';
+        if (productionStatus === 'READY') {
+          customStatus = 'Ready';
+        }
+
+        await customizationModel.findByIdAndUpdate(
+          order.items[itemIndex].customization.customizationId,
+          { status: customStatus }
+        );
+      } catch (err) {
+        console.error('Failed to update customization model:', err);
+      }
+    }
 
     res.json({
       success: true,

@@ -1,40 +1,81 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
 import CartTotal from '../components/CartTotal';
-import { Trash2, ShoppingBag, Package, X, Plus, Minus, ArrowRight, Shield } from 'lucide-react';
-import RecentlyViewed from '../components/RecentlyViewed';
-import { Link } from 'react-router-dom';
+import { Trash2, Sparkles, Palette, ShoppingBag, Package, ArrowRight, Plus, Minus, X } from 'lucide-react';
 
 const Cart = () => {
-  const { products, currency, cartItems, updateQuantity, navigate, token } = useContext(ShopContext);
+  const { products, currency, cartItems, updateQuantity, navigate, updateCustomizationQuantity, removeCustomizationFromCart } = useContext(ShopContext);
   const [cartData, setCartData] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => {
-    const tempData = [];
-    for (const items in cartItems) {
-      for (const item in cartItems[items]) {
-        if (cartItems[items][item] > 0) {
-          tempData.push({
-            _id: items,
-            size: item,
-            quantity: cartItems[items][item],
-          });
+    if (products.length > 0 || cartItems.customizations) {
+      const tempData = [];
+
+      // Add regular products
+      for (const items in cartItems) {
+        if (items === 'customizations') continue;
+
+        for (const item in cartItems[items]) {
+          if (cartItems[items][item] > 0) {
+            tempData.push({
+              _id: items,
+              size: item,
+              quantity: cartItems[items][item],
+              type: 'product'
+            });
+          }
         }
       }
+
+      // Add customizations
+      if (cartItems.customizations) {
+        for (const customId in cartItems.customizations) {
+          const custom = cartItems.customizations[customId];
+          if (custom && custom.quantity > 0) {
+            tempData.push({
+              _id: customId,
+              quantity: custom.quantity,
+              price: custom.price,
+              snapshot: custom.snapshot,
+              type: 'customization'
+            });
+          }
+        }
+      }
+
+      setCartData(tempData);
     }
-    setCartData(tempData);
   }, [cartItems, products]);
 
-  const handleDeleteClick = (id, size) => {
-    setItemToDelete({ id, size });
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && showDeleteModal) {
+        cancelDelete();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [showDeleteModal]);
+
+  useEffect(() => {
+    document.title = 'Shopping Cart | Aarovi';
+  }, []);
+
+  const handleDeleteClick = (item) => {
+    setItemToDelete(item);
     setShowDeleteModal(true);
   };
 
   const confirmDelete = () => {
     if (itemToDelete) {
-      updateQuantity(itemToDelete.id, itemToDelete.size, 0);
+      if (itemToDelete.type === 'customization') {
+        removeCustomizationFromCart(itemToDelete._id);
+      } else {
+        updateQuantity(itemToDelete._id, itemToDelete.size, 0);
+      }
       setShowDeleteModal(false);
       setItemToDelete(null);
     }
@@ -45,27 +86,9 @@ const Cart = () => {
     setItemToDelete(null);
   };
 
-  const handleQuantityChange = (id, size, newQuantity) => {
-    if (newQuantity > 0) {
-      updateQuantity(id, size, newQuantity);
-    }
-  };
-
-  const handleCheckout = () => {
-    if (!token) {
-      sessionStorage.setItem('returnUrl', '/cart');
-      navigate('/login');
-      return;
-    }
-    navigate('/place-order');
-  };
-
-  useEffect(() => {
-    document.title = 'Cart | Aarovi'
-  })
-
   return (
-    <div className="mt-20 min-h-screen">
+    <div className="mt-20 min-h-screen bg-white">
+      {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-slideUp overflow-hidden">
@@ -73,17 +96,23 @@ const Cart = () => {
               <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Trash2 size={28} className="text-red-500" />
               </div>
-              <h3 className="text-2xl font-serif font-bold text-text mb-3">Remove Item?</h3>
+              <h3 className="text-2xl font-serif font-bold text-text mb-3">Remove from Cart?</h3>
               <p className="text-text/60 font-light leading-relaxed text-sm">
-                This item will be removed from your cart. You can always add it back later.
+                This item will be removed from your cart. You can add it back anytime.
               </p>
             </div>
 
             <div className="px-8 pb-8 flex gap-3">
-              <button onClick={cancelDelete} className="flex-1 py-3.5 bg-gray-100 text-text font-semibold rounded-xl hover:bg-gray-200 transition-all duration-300">
+              <button
+                onClick={cancelDelete}
+                className="flex-1 py-3.5 bg-gray-100 text-text font-semibold rounded-xl hover:bg-gray-200 transition-all duration-300"
+              >
                 Keep Item
               </button>
-              <button onClick={confirmDelete} className="flex-1 py-3.5 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition-all duration-300 shadow-lg shadow-red-500/30">
+              <button
+                onClick={confirmDelete}
+                className="flex-1 py-3.5 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition-all duration-300 shadow-lg shadow-red-500/30"
+              >
                 Remove
               </button>
             </div>
@@ -91,25 +120,26 @@ const Cart = () => {
         </div>
       )}
 
+      {/* Hero Section */}
       <section className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-            <div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-2">
-                Your Cart
-              </h1>
-              {cartData.length > 0 && (
-                <p className="text-text/50 font-light flex items-center gap-2">
-                  <ShoppingBag size={16} />
-                  {cartData.length} {cartData.length === 1 ? 'item' : 'items'} in your cart
-                </p>
-              )}
+          <div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-2">
+              Shopping Cart
+            </h1>
+            {cartData.length > 0 && (
+              <p className="text-text/50 font-light flex items-center gap-2">
+                <ShoppingBag size={16} />
+                {cartData.length} {cartData.length === 1 ? 'item' : 'items'} in cart
+              </p>
+            )}
           </div>
         </div>
       </section>
 
-      <section className="px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="max-w-7xl mx-auto">
-          {cartData.length === 0 ? (
+      {cartData.length === 0 ? (
+        <section className="px-4 sm:px-6 lg:px-8 pb-20">
+          <div className="max-w-7xl mx-auto">
             <div className="flex flex-col items-center justify-center py-32">
               <div className="relative mb-8">
                 <div className="w-32 h-32 bg-gradient-to-br from-background/20 to-background/40 rounded-full flex items-center justify-center">
@@ -122,170 +152,255 @@ const Cart = () => {
               <div className="text-center max-w-md mb-10">
                 <h3 className="text-3xl font-serif font-bold mb-3 text-text">Your cart is empty</h3>
                 <p className="text-text/60 font-light leading-relaxed">
-                  Start exploring our collection and discover unique pieces crafted just for you
+                  Add some amazing products to get started with your shopping
                 </p>
               </div>
               <button
-                onClick={() => navigate('/shop/collection')}
+                onClick={() => navigate('/collection')}
                 className="group px-10 py-4 bg-secondary text-white font-semibold rounded-full hover:bg-secondary/90 transition-all duration-300 flex items-center gap-3 shadow-xl shadow-secondary/30 hover:shadow-2xl hover:shadow-secondary/40 hover:-translate-y-0.5"
               >
-                <span>Explore Collection</span>
+                <span>Start Shopping</span>
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
-          ) : (
-            <div className="grid xl:grid-cols-[1.5fr_1fr] gap-10">
-              <div className="space-y-4">
+          </div>
+        </section>
+      ) : (
+        <section className="px-4 sm:px-6 lg:px-8 pb-20">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Cart Items */}
+              <div className="lg:col-span-2 space-y-4">
                 {cartData.map((item, index) => {
-                  const productData = products.find(
-                    (product) => product._id === item._id
-                  );
-
-                  if (!productData) {
+                  if (item.type === 'customization') {
+                    // CUSTOM PRODUCT CARD
+                    const customData = item.snapshot;
                     return (
-                      <div key={index} className="p-6 bg-red-50 rounded-2xl border-l-4 border-red-400">
-                        <p className="font-semibold text-red-800">Product unavailable</p>
-                        <p className="text-sm text-red-600 mt-1">This item is no longer in our catalog</p>
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <div key={index} className="group bg-white rounded-2xl p-6 hover:shadow-lg transition-all duration-300 border border-background/50">
-                      <div className="flex flex-col sm:flex-row gap-6">
-                        <div className="flex-shrink-0">
-                          <Link to={`/product/${item._id}`}>
-                            <div className="relative w-full sm:w-32 h-40 sm:h-32">
-                              <img
-                                className="w-full h-full object-contain"
-                                src={productData.images[0]}
-                                alt={productData.name}
+                      <div
+                        key={`custom-${item._id}`}
+                        className="group bg-white rounded-2xl p-6 hover:shadow-lg transition-all duration-300 border border-secondary/30"
+                      >
+                        <div className="flex flex-col sm:flex-row gap-6">
+                          {/* Custom Badge & Image */}
+                          <div className="flex-shrink-0 relative">
+                            <div className="absolute -top-2 -left-2 z-10">
+                              <div className="bg-gradient-to-r from-secondary to-secondary/80 text-white px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
+                                <Sparkles size={14} className="animate-pulse" />
+                                <span className="text-xs font-bold uppercase tracking-wider">Custom</span>
+                              </div>
+                            </div>
+                            <div className="w-full sm:w-40 h-48 sm:h-40 bg-gradient-to-br from-background/20 to-background/40 rounded-xl flex items-center justify-center border border-background/30 relative overflow-hidden">
+                              <Palette size={40} className="text-text/30" strokeWidth={1.5} />
+                              <div
+                                className="absolute inset-0"
+                                style={{
+                                  backgroundColor: customData.color || '#e11d48',
+                                  opacity: 0.2
+                                }}
                               />
                             </div>
-                          </Link>
-                        </div>
+                          </div>
 
-                        <div className="flex-grow flex flex-col justify-between">
-                          <div>
-                            <Link
-                              to={`/product/${item._id}`}
-                              className="block mb-3"
-                            >
-                              <h3 className="font-serif font-bold text-lg text-text group-hover:text-secondary transition-colors line-clamp-2">
-                                {productData.name}
+                          {/* Custom Details */}
+                          <div className="flex-1 min-w-0">
+                            <div className="mb-4">
+                              <h3 className="font-serif font-bold text-lg text-text mb-3">
+                                Custom {customData.dressType}
                               </h3>
-                            </Link>
 
-                            <div className="flex flex-wrap items-center gap-4 mb-4">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs text-text/50 font-medium">Size:</span>
-                                <span className="px-3 py-1 bg-background/50 rounded-lg font-semibold text-text text-sm">
-                                  {item.size}
-                                </span>
+                              <div className="space-y-2 text-sm mb-4">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-text/50 font-medium min-w-[60px]">Gender:</span>
+                                  <span className="text-text font-semibold">{customData.gender}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-text/50 font-medium min-w-[60px]">Fabric:</span>
+                                  <span className="text-text font-semibold">{customData.fabric}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-text/50 font-medium min-w-[60px]">Color:</span>
+                                  <div className="flex items-center gap-2">
+                                    <div
+                                      className="w-5 h-5 rounded-full border-2 border-background/50 shadow-sm"
+                                      style={{ backgroundColor: customData.color }}
+                                    />
+                                    <span className="text-text/70 text-xs font-semibold">{customData.color}</span>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-text/50 font-medium min-w-[60px]">Status:</span>
+                                  <span className="text-secondary font-semibold text-xs bg-secondary/10 px-3 py-1 rounded-full">
+                                    {customData.status}
+                                  </span>
+                                </div>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs text-text/50 font-medium">Price:</span>
-                                <span className="font-bold text-text">
-                                  {currency}{productData.price}
-                                </span>
-                              </div>
+
+                              {customData.designNotes && (
+                                <div className="p-3 bg-background/30 rounded-xl border border-background/40">
+                                  <p className="text-xs text-text/70 italic">
+                                    <span className="font-semibold text-text">Note:</span> {customData.designNotes}
+                                  </p>
+                                </div>
+                              )}
                             </div>
 
-                            <div className="flex items-center gap-4">
+                            {/* Quantity & Price */}
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                               <div className="flex items-center bg-background/30 rounded-xl overflow-hidden">
                                 <button
-                                  onClick={() => handleQuantityChange(item._id, item.size, item.quantity - 1)}
-                                  className="p-2.5 hover:bg-background/60 transition-colors disabled:opacity-30"
+                                  onClick={() => updateCustomizationQuantity(item._id, item.quantity - 1)}
+                                  className="p-3 hover:bg-background/60 transition-colors disabled:opacity-30"
                                   disabled={item.quantity <= 1}
                                 >
                                   <Minus size={16} className="text-text" />
                                 </button>
-                                <input
-                                  onChange={(e) => {
-                                    const value = parseInt(e.target.value) || 1;
-                                    handleQuantityChange(item._id, item.size, value);
-                                  }}
-                                  className="w-14 px-2 py-2 text-center focus:outline-none bg-transparent font-bold text-text"
-                                  type="number"
-                                  min={1}
-                                  value={item.quantity}
-                                />
+                                <span className="px-4 py-3 font-bold text-text">
+                                  {item.quantity}
+                                </span>
                                 <button
-                                  onClick={() => handleQuantityChange(item._id, item.size, item.quantity + 1)}
-                                  className="p-2.5 hover:bg-background/60 transition-colors"
+                                  onClick={() => updateCustomizationQuantity(item._id, item.quantity + 1)}
+                                  className="p-3 hover:bg-background/60 transition-colors"
                                 >
                                   <Plus size={16} className="text-text" />
                                 </button>
                               </div>
-                              <span className="font-bold text-secondary text-lg">
-                                {currency}{(productData.price * item.quantity).toFixed(2)}
-                              </span>
+
+                              <div className="flex items-center gap-4">
+                                <div className="text-right">
+                                  <p className="text-2xl font-bold text-secondary">
+                                    {currency}{(item.price * item.quantity).toLocaleString()}
+                                  </p>
+                                  <p className="text-xs text-text/50">
+                                    {currency}{item.price.toLocaleString()} each
+                                  </p>
+                                </div>
+                                <button
+                                  onClick={() => handleDeleteClick(item)}
+                                  className="p-2.5 text-text/40 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-300"
+                                >
+                                  <Trash2 size={20} />
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
+                      </div>
+                    );
+                  } else {
+                    // REGULAR PRODUCT CARD
+                    const productData = products.find((product) => product._id === item._id);
+                    if (!productData) return null;
 
-                        <div className="flex sm:flex-col items-center sm:items-end justify-end">
-                          <button
-                            onClick={() => handleDeleteClick(item._id, item.size)}
-                            className="p-2.5 text-text/40 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-300"
-                            aria-label="Remove item"
-                          >
-                            <Trash2 size={20} />
-                          </button>
+                    return (
+                      <div
+                        key={index}
+                        className="group bg-white rounded-2xl p-6 hover:shadow-lg transition-all duration-300 border border-background/50"
+                      >
+                        <div className="flex flex-col sm:flex-row gap-6">
+                          {/* Product Image */}
+                          <div className="flex-shrink-0">
+                            <div className="relative w-full sm:w-40 h-48 sm:h-40 rounded-xl overflow-hidden bg-white border border-background/30">
+                              <img
+                                className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                                src={productData.images[0]}
+                                alt={productData.name}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Product Details */}
+                          <div className="flex-1 min-w-0">
+                            <div className="mb-4">
+                              <h3 className="font-serif font-bold text-lg text-text mb-3 line-clamp-2">
+                                {productData.name}
+                              </h3>
+                              <div className="flex flex-wrap items-center gap-3 text-sm text-text/60 mb-3">
+                                <div className="flex items-center gap-2">
+                                  <Package size={16} />
+                                  <span className="font-medium">Size: <span className="text-text font-semibold">{item.size}</span></span>
+                                </div>
+                                <div className="px-3 py-1 bg-background/50 rounded-full">
+                                  <span className="font-semibold text-text">{productData.category}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Quantity & Price */}
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                              <div className="flex items-center bg-background/30 rounded-xl overflow-hidden">
+                                <button
+                                  onClick={() => updateQuantity(item._id, item.size, item.quantity - 1)}
+                                  className="p-3 hover:bg-background/60 transition-colors disabled:opacity-30"
+                                  disabled={item.quantity <= 1}
+                                >
+                                  <Minus size={16} className="text-text" />
+                                </button>
+                                <span className="px-4 py-3 font-bold text-text">
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  onClick={() => updateQuantity(item._id, item.size, item.quantity + 1)}
+                                  className="p-3 hover:bg-background/60 transition-colors"
+                                >
+                                  <Plus size={16} className="text-text" />
+                                </button>
+                              </div>
+
+                              <div className="flex items-center gap-4">
+                                <div className="text-right">
+                                  <p className="text-2xl font-bold text-secondary">
+                                    {currency}{(productData.price * item.quantity).toLocaleString()}
+                                  </p>
+                                  <p className="text-xs text-text/50">
+                                    {currency}{productData.price.toLocaleString()} each
+                                  </p>
+                                </div>
+                                <button
+                                  onClick={() => handleDeleteClick(item)}
+                                  className="p-2.5 text-text/40 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-300"
+                                >
+                                  <Trash2 size={20} />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
+                    );
+                  }
                 })}
               </div>
 
-              <div className="space-y-6">
-                <div className="bg-gradient-to-br from-white to-background/20 rounded-2xl p-8 border border-background/50 shadow-xl sticky top-6">
-                  <h3 className="text-2xl font-serif font-bold text-text mb-6">Order Summary</h3>
-
-                  <div className="space-y-6">
+              {/* Cart Summary */}
+              <div className="lg:col-span-1">
+                <div className="sticky top-24">
+                  <div className="bg-white rounded-2xl shadow-xl border border-background/50 p-8">
+                    <h3 className="text-2xl font-serif font-bold mb-6 text-text">Order Summary</h3>
                     <CartTotal />
-
-                    <div className="pt-6 border-t border-background/30 space-y-3">
+                    <div className="mt-8 space-y-3">
                       <button
-                        onClick={handleCheckout}
-                        className="group w-full py-4 bg-secondary text-white font-bold rounded-full hover:bg-secondary/90 transition-all duration-300 flex items-center justify-center gap-3 shadow-secondary/30 hover:shadow-secondary/40 hover:-translate-y-0.5"
+                        onClick={() => navigate('/place-order')}
+                        className="w-full py-4 bg-secondary text-white rounded-xl hover:bg-secondary/90 transition-all duration-300 shadow-lg shadow-secondary/30 hover:shadow-xl hover:shadow-secondary/40 font-bold text-lg flex items-center justify-center gap-2"
                       >
                         <span>Proceed to Checkout</span>
-                        <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                        <ArrowRight size={20} />
                       </button>
-
                       <button
-                        onClick={() => navigate('/shop/collection')}
-                        className="w-full py-4 bg-background/40 text-text font-semibold rounded-full hover:bg-background/60 transition-all duration-300"
+                        onClick={() => navigate('/collection')}
+                        className="w-full py-3 bg-background/40 text-text rounded-xl hover:bg-background/60 transition-all duration-300 font-semibold"
                       >
                         Continue Shopping
                       </button>
-                    </div>
-
-                    <div className="pt-4">
-                      <div className="flex items-center justify-center gap-2 text-xs text-text/50 font-medium bg-green-50 py-3 rounded-xl">
-                        <Shield size={16} className="text-green-600" />
-                        <span>Secure SSL Encrypted Checkout</span>
-                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          )}
-        </div>
-      </section>
-
-      {cartData.length > 0 && (
-        <section className="px-4 sm:px-6 lg:px-8 pb-20">
-          <div className="max-w-7xl mx-auto">
-            <RecentlyViewed />
           </div>
         </section>
       )}
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
@@ -299,16 +414,6 @@ const Cart = () => {
         }
         .animate-slideUp {
           animation: slideUp 0.3s ease-out;
-        }
-        
-        /* Hide number input arrows */
-        input[type=number]::-webkit-inner-spin-button,
-        input[type=number]::-webkit-outer-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
-        }
-        input[type=number] {
-          -moz-appearance: textfield;
         }
       `}</style>
     </div>

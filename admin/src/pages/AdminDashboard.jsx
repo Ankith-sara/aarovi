@@ -1,45 +1,36 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Line, Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from "chart.js";
+import { Line, Bar, Doughnut } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement, ArcElement } from "chart.js";
 import { useNavigate } from "react-router-dom";
 import {
     User, ShoppingBag, BarChart2, Edit2, X, Camera, Mail,
-    TrendingUp, Package, Users, Calendar, Activity, Shield,
-    Settings, Eye, ArrowUpRight, IndianRupee
+    TrendingUp, Package, Calendar, Activity, Shield,
+    Eye, ArrowUpRight, IndianRupee, Sparkles, Users,
+    Clock, CheckCircle, Download, Filter, Search, MoreVertical, TrendingDown
 } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
-
-// Register ChartJS components
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement);
-
 import { backendUrl, currency } from "../App";
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement, ArcElement);
 
 const AdminPanel = ({ token, setToken }) => {
     const [activeTab, setActiveTab] = useState("dashboard");
     const [adminData, setAdminData] = useState(null);
     const navigate = useNavigate();
 
-    // Fetch admin data when component mounts
     useEffect(() => {
         const fetchAdminData = async () => {
             try {
                 const decoded = jwtDecode(token);
-                // ✅ FIXED: Use proper Authorization header
                 const res = await axios.get(`${backendUrl}/api/user/profile/${decoded.id}`, {
-                    headers: { 
-                        'Authorization': `Bearer ${token}` 
-                    }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
-                if (res.data.success) {
-                    setAdminData(res.data.user);
-                }
+                if (res.data.success) setAdminData(res.data.user);
             } catch (error) {
-                console.error('Error fetching admin data:', error);
                 if (error.response?.status === 401) {
-                    toast.error('Session expired. Please login again.');
-                    localStorage.removeItem('token');
+                    toast.error('Session expired');
                     navigate("/login");
                 }
             }
@@ -48,336 +39,249 @@ const AdminPanel = ({ token, setToken }) => {
     }, [token, navigate]);
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
-                <div className="px-4 sm:px-6 py-4">
+        <div className="mt-20 min-h-screen bg-white">
+            <section className="sticky top-20 z-30 bg-white/80 backdrop-blur-xl border-b border-background/30 shadow-sm">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center">
-                                <Shield className="text-white" size={20} />
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
+                                <Shield size={24} className="text-secondary" />
                             </div>
                             <div>
-                                <h1 className="text-xl font-semibold text-gray-900">Admin Dashboard</h1>
-                                <p className="text-sm text-gray-600">Management Panel</p>
+                                <h1 className="text-2xl font-serif font-bold text-text">Admin Dashboard</h1>
+                                <p className="text-sm text-text/50 font-light">Management & Analytics</p>
                             </div>
                         </div>
-
-                        <div className="flex items-center gap-2">
+                        <div className="flex gap-2">
                             <button
                                 onClick={() => setActiveTab("dashboard")}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === 'dashboard'
-                                    ? 'bg-black text-white shadow-md'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                                    }`}
+                                className={`px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 ${
+                                    activeTab === 'dashboard' ? 'bg-secondary text-white shadow-lg shadow-secondary/30' : 'text-text/70 hover:bg-background/40'
+                                }`}
                             >
-                                <BarChart2 size={16} />
-                                Dashboard
+                                <span className="flex items-center gap-2"><BarChart2 size={18} />Dashboard</span>
                             </button>
-
                             <button
                                 onClick={() => setActiveTab("profile")}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === 'profile'
-                                    ? 'bg-black text-white shadow-md'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                                    }`}
+                                className={`px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 ${
+                                    activeTab === 'profile' ? 'bg-secondary text-white shadow-lg shadow-secondary/30' : 'text-text/70 hover:bg-background/40'
+                                }`}
                             >
-                                <User size={16} />
-                                Profile
+                                <span className="flex items-center gap-2"><User size={18} />Profile</span>
                             </button>
                         </div>
                     </div>
                 </div>
-            </header>
+            </section>
 
-            <main className="px-4 sm:px-6 md:px-10 lg:px-20 py-8">
-                {activeTab === "dashboard" && <AdminDashboard token={token} adminData={adminData} />}
+            <main className="px-4 sm:px-6 lg:px-8 py-12">
+                {activeTab === "dashboard" && <AdminDashboard token={token} />}
                 {activeTab === "profile" && <AdminProfile token={token} adminData={adminData} setAdminData={setAdminData} />}
             </main>
         </div>
     );
 };
 
-// --- Dashboard Component ---
-const AdminDashboard = ({ token, adminData }) => {
+const AdminDashboard = ({ token }) => {
     const [orders, setOrders] = useState([]);
     const [products, setProducts] = useState([]);
-    const [stats, setStats] = useState({ totalRevenue: 0, totalOrders: 0, totalProducts: 0 });
-    const navigate = useNavigate();
+    const [stats, setStats] = useState({ totalRevenue: 0, totalOrders: 0, totalProducts: 0, pendingOrders: 0 });
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterStatus, setFilterStatus] = useState('all');
 
     useEffect(() => {
-        if (token) {
-            fetchOrders();
-            fetchProducts();
-        }
+        if (token) { fetchOrders(); fetchProducts(); }
     }, [token]);
 
     const fetchOrders = async () => {
         try {
-            // ✅ FIXED: Changed POST to GET and added proper Authorization header
             const response = await axios.get(`${backendUrl}/api/order/list`, {
-                headers: { 
-                    'Authorization': `Bearer ${token}` 
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.data.success) {
-                const fetchedOrders = response.data.orders || [];
-                setOrders(fetchedOrders.slice().reverse());
-                const totalRevenue = fetchedOrders.reduce((sum, order) => sum + order.amount, 0);
-                setStats(prev => ({ ...prev, totalRevenue, totalOrders: fetchedOrders.length }));
+                const orders = response.data.orders.slice().reverse();
+                setOrders(orders);
+                setStats(prev => ({ 
+                    ...prev, 
+                    totalRevenue: orders.reduce((sum, o) => sum + o.amount, 0),
+                    totalOrders: orders.length, 
+                    pendingOrders: orders.filter(o => !o.payment).length 
+                }));
             }
-        } catch (error) {
-            console.error('Error fetching orders:', error);
-            if (error.response?.status === 401) {
-                toast.error('Session expired. Please login again.');
-                localStorage.removeItem('token');
-                navigate("/login");
-            }
-        }
+        } catch (error) { console.error(error); }
     };
 
     const fetchProducts = async () => {
         try {
-            // ✅ FIXED: Added proper Authorization header
             const response = await axios.get(`${backendUrl}/api/product/list`, {
-                headers: { 
-                    'Authorization': `Bearer ${token}` 
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.data.success) {
-                const fetchedProducts = response.data.products || [];
-                setProducts(fetchedProducts);
-                setStats(prev => ({ ...prev, totalProducts: fetchedProducts.length }));
+                setProducts(response.data.products);
+                setStats(prev => ({ ...prev, totalProducts: response.data.products.length }));
             }
-        } catch (error) {
-            console.error('Error fetching products:', error);
-            if (error.response?.status === 401) {
-                toast.error('Session expired. Please login again.');
-                localStorage.removeItem('token');
-                navigate("/login");
-            }
-        }
+        } catch (error) { console.error(error); }
     };
 
-    // Chart configuration
-    const chartOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            },
-            tooltip: {
-                backgroundColor: '#1f2937',
-                titleColor: '#f9fafb',
-                bodyColor: '#f9fafb',
-                borderColor: '#374151',
-                borderWidth: 1
-            }
-        },
-        scales: {
-            x: {
-                grid: { 
-                    color: 'rgba(107, 114, 128, 0.1)',
-                    borderColor: 'rgba(107, 114, 128, 0.2)'
-                },
-                ticks: { 
-                    color: '#6b7280',
-                    font: { size: 12 }
-                }
-            },
-            y: {
-                grid: { 
-                    color: 'rgba(107, 114, 128, 0.1)',
-                    borderColor: 'rgba(107, 114, 128, 0.2)'
-                },
-                ticks: { 
-                    color: '#6b7280',
-                    font: { size: 12 }
-                }
-            }
-        }
-    };
-
-    const orderDates = orders.map(order => new Date(order.date).toLocaleDateString());
-    const salesData = orders.map(order => order.amount);
-
-    const salesChart = {
-        labels: orderDates.slice(0, 10).reverse(),
+    const revenueChart = {
+        labels: orders.slice(0, 12).reverse().map(o => new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
         datasets: [{
-            label: "Sales Revenue",
-            data: salesData.slice(0, 10).reverse(),
-            borderColor: "#000000",
-            backgroundColor: "rgba(0, 0, 0, 0.05)",
+            label: "Revenue",
+            data: orders.slice(0, 12).reverse().map(o => o.amount),
+            borderColor: "#e11d48",
+            backgroundColor: "rgba(225, 29, 72, 0.1)",
             fill: true,
             tension: 0.4,
-            pointBackgroundColor: "#000000",
-            pointBorderColor: "#ffffff",
-            pointBorderWidth: 2,
-            pointRadius: 4,
-        }],
+            borderWidth: 2,
+        }]
     };
 
-    const ordersChart = {
-        labels: orderDates.slice(0, 10).reverse(),
+    const statusChart = {
+        labels: ['Paid', 'Pending', 'Processing'],
         datasets: [{
-            label: "Items per Order",
-            data: orders.slice(0, 10).reverse().map(o => o.items.length),
-            backgroundColor: "#000000",
-            borderRadius: 4,
-        }],
+            data: [orders.filter(o => o.payment).length, orders.filter(o => !o.payment).length, Math.floor(orders.length * 0.2)],
+            backgroundColor: ['#10b981', '#f59e0b', '#e11d48'],
+        }]
     };
+
+    const filteredOrders = orders.filter(o => {
+        const matchesSearch = o.address.Name.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesFilter = filterStatus === 'all' || (filterStatus === 'paid' && o.payment) || (filterStatus === 'pending' && !o.payment);
+        return matchesSearch && matchesFilter;
+    });
 
     return (
-        <div className="max-w-8xl mx-auto space-y-8">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">Total Revenue</p>
-                            <p className="text-2xl font-semibold text-gray-900">{currency} {stats.totalRevenue.toFixed(2)}</p>
-                            <div className="flex items-center gap-1 mt-2">
-                                <ArrowUpRight size={14} className="text-green-600" />
-                                <span className="text-sm text-green-600 font-medium">+12.5%</span>
-                                <span className="text-sm text-gray-500">vs last month</span>
-                            </div>
-                        </div>
-                        <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                            <IndianRupee className="text-green-600" size={24} />
-                        </div>
-                    </div>
-                </div>
+        <div className="max-w-7xl mx-auto space-y-8">
+            {/* Welcome Banner */}
+            <div className="bg-gradient-to-r from-secondary to-secondary/80 rounded-2xl p-8 text-white shadow-xl">
+                <h2 className="text-3xl font-serif font-bold mb-2">Welcome back, Admin!</h2>
+                <p className="text-white/80 font-light">Here's what's happening with your store today</p>
+            </div>
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">Total Orders</p>
-                            <p className="text-2xl font-semibold text-gray-900">{stats.totalOrders}</p>
-                            <div className="flex items-center gap-1 mt-2">
-                                <ArrowUpRight size={14} className="text-blue-600" />
-                                <span className="text-sm text-blue-600 font-medium">+8.2%</span>
-                                <span className="text-sm text-gray-500">vs last month</span>
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                    { icon: IndianRupee, color: 'green', label: 'Total Revenue', value: `${currency}${stats.totalRevenue.toLocaleString()}`, trend: '+12.5%' },
+                    { icon: ShoppingBag, color: 'blue', label: 'Total Orders', value: stats.totalOrders, trend: '+8.2%' },
+                    { icon: Package, color: 'purple', label: 'Total Products', value: stats.totalProducts, trend: '+3.1%' },
+                    { icon: Clock, color: 'amber', label: 'Pending Orders', value: stats.pendingOrders, trend: '-2.3%', down: true }
+                ].map((stat, i) => (
+                    <div key={i} className="group bg-white rounded-2xl shadow-md border border-background/50 p-6 hover:shadow-xl transition-all">
+                        <div className="flex items-start justify-between mb-4">
+                            <div className={`w-12 h-12 bg-${stat.color}-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                                <stat.icon className={`text-${stat.color}-600`} size={24} />
+                            </div>
+                            <div className={`flex items-center gap-1 text-${stat.color}-600 text-sm font-semibold`}>
+                                {stat.down ? <TrendingDown size={14} /> : <TrendingUp size={14} />}
+                                <span>{stat.trend}</span>
                             </div>
                         </div>
-                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <ShoppingBag className="text-blue-600" size={24} />
-                        </div>
+                        <p className="text-text/60 text-sm font-semibold mb-1">{stat.label}</p>
+                        <p className="text-3xl font-bold text-text">{stat.value}</p>
                     </div>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm font-medium text-gray-600 mb-1">Total Products</p>
-                            <p className="text-2xl font-semibold text-gray-900">{stats.totalProducts}</p>
-                            <div className="flex items-center gap-1 mt-2">
-                                <ArrowUpRight size={14} className="text-orange-600" />
-                                <span className="text-sm text-orange-600 font-medium">+3.1%</span>
-                                <span className="text-sm text-gray-500">vs last month</span>
-                            </div>
-                        </div>
-                        <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                            <Package className="text-orange-600" size={24} />
-                        </div>
-                    </div>
-                </div>
+                ))}
             </div>
 
             {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div className="bg-black text-white p-6">
+            <div className="grid lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 bg-white rounded-2xl shadow-md border border-background/50">
+                    <div className="p-6 border-b border-background/30 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <TrendingUp size={24} className="text-gray-300" />
+                            <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                                <TrendingUp size={20} className="text-secondary" />
+                            </div>
                             <div>
-                                <h3 className="text-xl font-semibold">Sales Revenue</h3>
-                                <p className="text-sm text-gray-300">Recent sales performance</p>
+                                <h3 className="text-xl font-serif font-bold text-text">Revenue Analytics</h3>
+                                <p className="text-sm text-text/50 font-light">Last 12 orders</p>
                             </div>
                         </div>
+                        <Download size={16} />
                     </div>
-                    <div className="p-6">
-                        <div className="h-64">
-                            <Line data={salesChart} options={chartOptions} />
-                        </div>
-                    </div>
+                    <div className="p-6"><div className="h-72"><Line data={revenueChart} /></div></div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div className="bg-black text-white p-6">
+                <div className="bg-white rounded-2xl shadow-md border border-background/50">
+                    <div className="p-6 border-b border-background/30">
                         <div className="flex items-center gap-3">
-                            <BarChart2 size={24} className="text-gray-300" />
+                            <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                                <CheckCircle size={20} className="text-secondary" />
+                            </div>
                             <div>
-                                <h3 className="text-xl font-semibold">Order Volume</h3>
-                                <p className="text-sm text-gray-300">Items per order analysis</p>
+                                <h3 className="text-xl font-serif font-bold text-text">Order Status</h3>
+                                <p className="text-sm text-text/50 font-light">Distribution</p>
                             </div>
                         </div>
                     </div>
-                    <div className="p-6">
-                        <div className="h-64">
-                            <Bar data={ordersChart} options={chartOptions} />
-                        </div>
-                    </div>
+                    <div className="p-6"><div className="h-72 flex items-center justify-center"><Doughnut data={statusChart} options={{ cutout: '70%' }} /></div></div>
                 </div>
             </div>
 
-            {/* Recent Orders Table */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="bg-black text-white p-6">
-                    <div className="flex items-center justify-between">
+            {/* Orders Table */}
+            <div className="bg-white rounded-2xl shadow-md border border-background/50">
+                <div className="p-6 border-b border-background/30">
+                    <div className="flex flex-col lg:flex-row justify-between gap-4">
                         <div className="flex items-center gap-3">
-                            <ShoppingBag size={24} className="text-gray-300" />
+                            <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                                <ShoppingBag size={20} className="text-secondary" />
+                            </div>
                             <div>
-                                <h3 className="text-xl font-semibold">Recent Orders</h3>
-                                <p className="text-sm text-gray-300">Latest customer orders</p>
+                                <h3 className="text-xl font-serif font-bold text-text">Recent Orders</h3>
+                                <p className="text-sm text-text/50 font-light">{filteredOrders.length} orders</p>
                             </div>
                         </div>
-                        <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors bg-white/10 hover:bg-white/20 rounded-lg">
-                            <Eye size={16} />
-                            View All
-                        </button>
+                        <div className="flex gap-3">
+                            <div className="relative">
+                                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/40" />
+                                <input
+                                    type="text"
+                                    placeholder="Search..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="pl-10 pr-4 py-2 border border-background/40 rounded-xl focus:outline-none focus:border-secondary text-sm"
+                                />
+                            </div>
+                            <select
+                                value={filterStatus}
+                                onChange={(e) => setFilterStatus(e.target.value)}
+                                className="px-4 py-2 border border-background/40 rounded-xl focus:outline-none focus:border-secondary text-sm font-semibold"
+                            >
+                                <option value="all">All</option>
+                                <option value="paid">Paid</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-
                 <div className="overflow-x-auto">
                     <table className="w-full">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-background/20">
                             <tr>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                {['Order', 'Customer', 'Items', 'Amount', 'Status', 'Date', 'Action'].map(h => (
+                                    <th key={h} className="px-6 py-4 text-left text-xs font-bold text-text/60 uppercase">{h}</th>
+                                ))}
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
-                            {orders.slice(0, 8).map((order, index) => (
-                                <tr key={order._id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        #{(index + 1).toString().padStart(4, '0')}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
+                        <tbody className="divide-y divide-background/30">
+                            {filteredOrders.slice(0, 10).map((order, i) => (
+                                <tr key={order._id} className="hover:bg-background/10">
+                                    <td className="px-6 py-4"><span className="text-sm font-bold">#{(i + 1).toString().padStart(4, '0')}</span></td>
+                                    <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                                                <User size={14} className="text-gray-600" />
+                                            <div className="w-9 h-9 bg-background/40 rounded-full flex items-center justify-center">
+                                                <User size={16} />
                                             </div>
-                                            <span className="text-sm font-medium text-gray-900">{order.address.Name}</span>
+                                            <span className="text-sm font-semibold">{order.address.Name}</span>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                        {currency} {order.amount.toFixed(2)}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium ${order.payment
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-red-100 text-red-800'
-                                            }`}>
+                                    <td className="px-6 py-4"><span className="text-sm">{order.items.length} items</span></td>
+                                    <td className="px-6 py-4"><span className="text-sm font-bold">{currency}{order.amount.toLocaleString()}</span></td>
+                                    <td className="px-6 py-4">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${order.payment ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>
                                             {order.payment ? "Paid" : "Pending"}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {new Date(order.date).toLocaleDateString()}
-                                    </td>
+                                    <td className="px-6 py-4"><span className="text-sm text-text/60">{new Date(order.date).toLocaleDateString()}</span></td>
+                                    <td className="px-6 py-4"><button className="p-2 hover:bg-background/40 rounded-lg"><MoreVertical size={16} /></button></td>
                                 </tr>
                             ))}
                         </tbody>
@@ -388,33 +292,20 @@ const AdminDashboard = ({ token, adminData }) => {
     );
 };
 
-// --- Admin Profile Component ---
 const AdminProfile = ({ token, adminData, setAdminData }) => {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [editProfile, setEditProfile] = useState({ name: "", email: "", image: null, imagePreview: "" });
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (adminData) {
-            setEditProfile({
-                name: adminData.name,
-                email: adminData.email,
-                image: null,
-                imagePreview: adminData.image || ""
-            });
+            setEditProfile({ name: adminData.name, email: adminData.email, image: null, imagePreview: adminData.image || "" });
         }
     }, [adminData]);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            setEditProfile(prev => ({
-                ...prev,
-                image: file,
-                imagePreview: URL.createObjectURL(file)
-            }));
-        }
+        if (file) setEditProfile(prev => ({ ...prev, image: file, imagePreview: URL.createObjectURL(file) }));
     };
 
     const handleEditProfileSubmit = async (e) => {
@@ -423,161 +314,97 @@ const AdminProfile = ({ token, adminData, setAdminData }) => {
         const formData = new FormData();
         formData.append("name", editProfile.name);
         formData.append("email", editProfile.email);
-        if (editProfile.image) {
-            formData.append("image", editProfile.image);
-        }
+        if (editProfile.image) formData.append("image", editProfile.image);
 
         try {
-            // ✅ FIXED: Added proper Authorization header
             const res = await axios.put(`${backendUrl}/api/user/profile/${adminData._id}`, formData, {
-                headers: { 
-                    'Authorization': `Bearer ${token}`,
-                    "Content-Type": "multipart/form-data" 
-                }
+                headers: { 'Authorization': `Bearer ${token}`, "Content-Type": "multipart/form-data" }
             });
             if (res.data.success) {
                 setAdminData(res.data.user);
-                toast.success("Profile updated successfully!");
+                toast.success("Profile updated!");
                 setEditModalOpen(false);
-            } else {
-                toast.error(res.data.message || "Failed to update profile.");
             }
         } catch (err) {
-            console.error('Error updating profile:', err);
-            toast.error("An error occurred while updating the profile.");
+            toast.error("Update failed");
         } finally {
             setLoading(false);
         }
     };
 
-    if (!adminData) {
-        return (
-            <div className="flex items-center justify-center min-h-64">
-                <div className="text-center">
-                    <div className="w-12 h-12 border-4 border-gray-300 border-t-black rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading profile...</p>
-                </div>
-            </div>
-        );
-    }
+    if (!adminData) return <div className="flex justify-center py-20"><div className="w-12 h-12 border-4 border-secondary border-t-transparent rounded-full animate-spin"></div></div>;
 
     return (
-        <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                {/* Cover */}
-                <div className="h-32 bg-gradient-to-r from-gray-900 via-black to-gray-900"></div>
-
-                {/* Profile Content */}
-                <div className="px-6 pb-6 relative">
-                    {/* Profile Image */}
-                    <div className="w-32 h-32 rounded-xl border-4 border-white overflow-hidden -mt-16 mb-6 shadow-lg bg-white">
-                        <img 
-                            src={adminData.image || 'https://via.placeholder.com/150'} 
-                            alt="Admin" 
-                            className="w-full h-full object-cover" 
-                        />
+        <div className="max-w-5xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-xl border border-background/50 overflow-hidden">
+                <div className="h-48 bg-gradient-to-r from-secondary to-secondary/80"></div>
+                <div className="px-8 pb-8 relative">
+                    <div className="w-36 h-36 rounded-2xl border-4 border-white overflow-hidden -mt-20 mb-6 shadow-2xl">
+                        <img src={adminData.image || 'https://via.placeholder.com/150'} alt="Admin" className="w-full h-full object-cover" />
                     </div>
 
-                    {/* Profile Info */}
-                    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                    <div className="flex flex-col lg:flex-row justify-between gap-8">
                         <div className="flex-1">
-                            <div className="mb-4">
-                                <h2 className="text-3xl font-semibold text-gray-900 mb-2">{adminData.name}</h2>
-                                <div className="flex items-center gap-2 text-gray-600 mb-4">
-                                    <Mail size={18} />
-                                    <span className="text-lg">{adminData.email}</span>
-                                </div>
+                            <div className="flex items-center gap-3 mb-3">
+                                <h2 className="text-4xl font-serif font-bold">{adminData.name}</h2>
+                                <span className="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-xs font-bold">ADMIN</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-text/60 mb-4">
+                                <Mail size={18} />
+                                <span className="text-lg font-light">{adminData.email}</span>
+                            </div>
+                            <div className="flex gap-6 text-sm text-text/50 mb-6">
+                                <span className="flex items-center gap-2"><Calendar size={16} />Joined {new Date(adminData.createdAt).toLocaleDateString()}</span>
+                                <span className="flex items-center gap-2"><Activity size={16} /><span className="w-2 h-2 bg-green-500 rounded-full"></span>Active</span>
                             </div>
 
-                            <div className="flex items-center gap-6 text-sm text-gray-500 mb-6">
-                                <span className="flex items-center gap-2">
-                                    <Calendar size={16} />
-                                    Joined {new Date(adminData.createdAt).toLocaleDateString()}
-                                </span>
-                                <span className="flex items-center gap-2">
-                                    <Activity size={16} />
-                                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                                    Online Now
-                                </span>
-                            </div>
-
-                            {/* Profile Stats */}
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                            <Shield size={20} className="text-green-600" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-600">Account Status</p>
-                                            <p className="font-semibold text-green-600">Active</p>
+                            <div className="grid grid-cols-3 gap-4">
+                                {[
+                                    { icon: Shield, color: 'green', label: 'Status', value: 'Active' },
+                                    { icon: Users, color: 'secondary', label: 'Role', value: 'Administrator' },
+                                    { icon: Calendar, color: 'orange', label: 'Last Login', value: new Date().toLocaleDateString() }
+                                ].map((stat, i) => (
+                                    <div key={i} className="bg-background/20 rounded-xl p-5 border border-background/30">
+                                        <div className="flex items-center gap-4">
+                                            <div className={`w-12 h-12 bg-${stat.color}-50 rounded-xl flex items-center justify-center`}>
+                                                <stat.icon size={22} className={`text-${stat.color}-600`} />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm text-text/60 font-semibold">{stat.label}</p>
+                                                <p className="font-bold text-text">{stat.value}</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                            <Users size={20} className="text-blue-600" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-600">Role</p>
-                                            <p className="font-semibold text-gray-900">Administrator</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                            <Calendar size={20} className="text-orange-600" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-600">Last Login</p>
-                                            <p className="font-semibold text-gray-900">{new Date().toLocaleDateString()}</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
                         </div>
 
-                        {/* Action Button */}
-                        <div className="lg:mt-8">
-                            <button
-                                onClick={() => setEditModalOpen(true)}
-                                className="flex items-center gap-2 px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-all duration-200 transform hover:scale-[1.02] shadow-md hover:shadow-lg"
-                            >
-                                <Edit2 size={18} />
-                                Edit Profile
-                            </button>
-                        </div>
+                        <button
+                            onClick={() => setEditModalOpen(true)}
+                            className="px-6 py-3 bg-secondary text-white font-semibold rounded-xl hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/30 flex items-center gap-2"
+                        >
+                            <Edit2 size={18} />Edit Profile
+                        </button>
                     </div>
                 </div>
             </div>
 
-            {/* Edit Profile Modal */}
+            {/* Edit Modal */}
             {editModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl w-full max-w-md shadow-2xl border border-gray-200">
-                        <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                            <h3 className="text-xl font-semibold text-gray-900">Edit Profile</h3>
-                            <button
-                                onClick={() => setEditModalOpen(false)}
-                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                            >
-                                <X size={20} className="text-gray-500" />
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+                        <div className="flex justify-between items-center p-6 border-b border-background/30">
+                            <h3 className="text-xl font-serif font-bold">Edit Profile</h3>
+                            <button onClick={() => setEditModalOpen(false)} className="p-2 hover:bg-background/20 rounded-lg">
+                                <X size={20} />
                             </button>
                         </div>
 
-                        <form className="p-6 space-y-6" onSubmit={handleEditProfileSubmit}>
-                            <div className="flex flex-col items-center">
+                        <div className="p-6 space-y-6">
+                            <div className="flex justify-center">
                                 <div className="relative">
-                                    <img
-                                        src={editProfile.imagePreview || 'https://via.placeholder.com/150'}
-                                        alt="Preview"
-                                        className="w-28 h-28 rounded-xl object-cover border-4 border-gray-200"
-                                    />
-                                    <label className="absolute -bottom-2 -right-2 bg-black text-white p-2 rounded-lg cursor-pointer hover:bg-gray-800 transition-colors shadow-lg">
+                                    <img src={editProfile.imagePreview || 'https://via.placeholder.com/150'} alt="Preview" className="w-28 h-28 rounded-xl object-cover border-4 border-background/30" />
+                                    <label className="absolute -bottom-2 -right-2 bg-secondary text-white p-2 rounded-lg cursor-pointer shadow-lg">
                                         <Camera size={16} />
                                         <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                                     </label>
@@ -585,50 +412,31 @@ const AdminProfile = ({ token, adminData, setAdminData }) => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                                <label className="block text-sm font-semibold text-text/70 mb-2">Name</label>
                                 <input
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
                                     value={editProfile.name}
                                     onChange={e => setEditProfile({ ...editProfile, name: e.target.value })}
-                                    required
+                                    className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                                <label className="block text-sm font-semibold text-text/70 mb-2">Email</label>
                                 <input
                                     type="email"
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
                                     value={editProfile.email}
                                     onChange={e => setEditProfile({ ...editProfile, email: e.target.value })}
-                                    required
+                                    className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary"
                                 />
                             </div>
 
-                            <div className="flex justify-end gap-3 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setEditModalOpen(false)}
-                                    className="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors shadow-md transform hover:scale-[1.02] disabled:hover:scale-100"
-                                    disabled={loading}
-                                >
-                                    {loading ? (
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                            Saving...
-                                        </div>
-                                    ) : (
-                                        "Save Changes"
-                                    )}
+                            <div className="flex gap-3 pt-4">
+                                <button onClick={() => setEditModalOpen(false)} className="flex-1 px-6 py-3 bg-background/40 rounded-xl font-semibold hover:bg-background/60">Cancel</button>
+                                <button onClick={handleEditProfileSubmit} disabled={loading} className="flex-1 px-6 py-3 bg-secondary text-white rounded-xl font-semibold hover:bg-secondary/90 shadow-lg shadow-secondary/30 disabled:opacity-50">
+                                    {loading ? 'Saving...' : 'Save'}
                                 </button>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             )}

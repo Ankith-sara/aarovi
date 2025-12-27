@@ -5,14 +5,14 @@ import about_img from './about_img.jpg'
 import contact_img from './contact_img.jpg'
 import razorpay_logo from './razorpay_logo.png'
 import cross_icon from './cross_icon.png'
-import kurti_img from './kurti.jpg'
+import kurta_img from './kurta_img.png'
 
 export const assets = {
     logo,
     logo_white,
     cart_icon,
     about_img,
-    kurti_img,
+    kurta_img,
     contact_img,
     razorpay_logo,
     cross_icon,

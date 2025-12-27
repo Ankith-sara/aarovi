@@ -291,7 +291,6 @@ const Wishlist = () => {
                               className="flex items-center gap-2 px-6 py-3 bg-background/40 text-text font-semibold rounded-xl hover:bg-background/60 transition-all duration-300"
                             >
                               <span>View Details</span>
-                              <ArrowRight size={16} />
                             </button>
                           </div>
                         </div>
@@ -448,7 +447,7 @@ const Wishlist = () => {
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
