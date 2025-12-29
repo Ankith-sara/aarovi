@@ -2,12 +2,12 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { fabric } from 'fabric';
 import { 
   Upload, Palette, Type, Trash2, Undo, Redo, Sparkles, 
-  Image as ImageIcon, Move, Info, Download, Settings, CheckCircle2
+  Image as ImageIcon, Move, Info, Download, Settings, CheckCircle2, Wand2
 } from 'lucide-react';
 import { assets } from '../assets/assets';
 
 // ============================================================================
-// HELPER FUNCTIONS
+// HELPER FUNCTIONS & DATA
 // ============================================================================
 
 const DRESS_TEMPLATES = {
@@ -80,10 +80,6 @@ const ZONES = {
   ]
 };
 
-// ============================================================================
-// EMBROIDERY PATTERNS
-// ============================================================================
-
 const EMBROIDERY_PATTERNS = {
   maggam: {
     name: 'Maggam Work',
@@ -150,179 +146,50 @@ const EMBROIDERY_PATTERNS = {
   }
 };
 
-// ============================================================================
-// FABRIC PRINTS
-// ============================================================================
-
+// Fabric Print Images - Replace these URLs with your actual print images
 const FABRIC_PRINTS = {
   blockPrint: {
     name: 'Block Prints',
-    createPattern: (baseColor) => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 100;
-      canvas.height = 100;
-      const ctx = canvas.getContext('2d');
-      
-      ctx.fillStyle = baseColor;
-      ctx.fillRect(0, 0, 100, 100);
-      
-      ctx.fillStyle = '#00000020';
-      for (let i = 0; i < 2; i++) {
-        for (let j = 0; j < 2; j++) {
-          const x = 25 + i * 50;
-          const y = 25 + j * 50;
-          ctx.beginPath();
-          ctx.arc(x, y, 15, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-      
-      return canvas;
-    }
+    imageUrl: assets.block_img,
+    thumbnail: assets.block_img,
+    description: 'Traditional hand block printed pattern'
   },
   floral: {
     name: 'Floral',
-    createPattern: (baseColor) => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 120;
-      canvas.height = 120;
-      const ctx = canvas.getContext('2d');
-      
-      ctx.fillStyle = baseColor;
-      ctx.fillRect(0, 0, 120, 120);
-      
-      ctx.fillStyle = '#00000015';
-      [30, 90].forEach(x => {
-        [30, 90].forEach(y => {
-          ctx.beginPath();
-          ctx.arc(x, y, 18, 0, Math.PI * 2);
-          ctx.fill();
-          
-          for (let i = 0; i < 6; i++) {
-            const angle = (i * Math.PI * 2) / 6;
-            const px = x + Math.cos(angle) * 12;
-            const py = y + Math.sin(angle) * 12;
-            ctx.beginPath();
-            ctx.arc(px, py, 6, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        });
-      });
-      
-      return canvas;
-    }
+    imageUrl: assets.floral_img,
+    thumbnail: assets.floral_img,
+    description: 'Beautiful floral print design'
   },
   shibori: {
     name: 'Shibori',
-    createPattern: (baseColor) => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 150;
-      canvas.height = 150;
-      const ctx = canvas.getContext('2d');
-      
-      const gradient = ctx.createRadialGradient(75, 75, 20, 75, 75, 75);
-      gradient.addColorStop(0, baseColor);
-      gradient.addColorStop(0.5, '#00000020');
-      gradient.addColorStop(1, baseColor);
-      
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, 150, 150);
-      
-      return canvas;
-    }
+    imageUrl: assets.shibori_img,
+    thumbnail: assets.shibori_img,
+    description: 'Japanese tie-dye technique'
   },
   painting: {
-    name: 'Painting',
-    createPattern: (baseColor) => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 130;
-      canvas.height = 130;
-      const ctx = canvas.getContext('2d');
-      
-      ctx.fillStyle = baseColor;
-      ctx.fillRect(0, 0, 130, 130);
-      
-      ctx.strokeStyle = '#00000018';
-      ctx.lineWidth = 8;
-      ctx.lineCap = 'round';
-      
-      for (let i = 0; i < 5; i++) {
-        ctx.beginPath();
-        ctx.moveTo(20 + i * 20, 20);
-        ctx.quadraticCurveTo(65, 65, 20 + i * 20, 110);
-        ctx.stroke();
-      }
-      
-      return canvas;
-    }
+    name: 'Hand Painting',
+    imageUrl: assets.painting_img,
+    thumbnail: assets.painting_img,
+    description: 'Artistic hand-painted design'
   },
   kalamkari: {
     name: 'Kalamkari',
-    createPattern: (baseColor) => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 140;
-      canvas.height = 140;
-      const ctx = canvas.getContext('2d');
-      
-      ctx.fillStyle = baseColor;
-      ctx.fillRect(0, 0, 140, 140);
-      
-      ctx.strokeStyle = '#00000022';
-      ctx.lineWidth = 2;
-      
-      for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-          const x = 30 + i * 40;
-          const y = 30 + j * 40;
-          
-          ctx.beginPath();
-          ctx.arc(x, y, 12, 0, Math.PI * 2);
-          ctx.stroke();
-          
-          ctx.beginPath();
-          ctx.arc(x, y, 6, 0, Math.PI * 2);
-          ctx.stroke();
-        }
-      }
-      
-      return canvas;
-    }
+    imageUrl: assets.kalamkari_img,
+    thumbnail: assets.kalamkari_img,
+    description: 'Ancient Indian art form'
+  },
+  painting: {
+    name: 'Hand Painting',
+    imageUrl: assets.painting_img,
+    thumbnail: assets.painting_img,
+    description: 'Artistic hand-painted design'
   },
   bagruPrint: {
     name: 'Bagru Prints',
-    createPattern: (baseColor) => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 110;
-      canvas.height = 110;
-      const ctx = canvas.getContext('2d');
-      
-      ctx.fillStyle = baseColor;
-      ctx.fillRect(0, 0, 110, 110);
-      
-      ctx.fillStyle = '#00000020';
-      
-      for (let i = 0; i < 2; i++) {
-        for (let j = 0; j < 2; j++) {
-          const x = 27.5 + i * 55;
-          const y = 27.5 + j * 55;
-          
-          ctx.beginPath();
-          ctx.moveTo(x, y - 15);
-          ctx.lineTo(x + 15, y);
-          ctx.lineTo(x, y + 15);
-          ctx.lineTo(x - 15, y);
-          ctx.closePath();
-          ctx.fill();
-          
-          ctx.beginPath();
-          ctx.arc(x, y, 4, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-      
-      return canvas;
-    }
-  }
+    imageUrl: assets.bagru_img,
+    thumbnail: assets.bagru_img,
+    description: 'Traditional Rajasthani print'
+  },
 };
 
 // ============================================================================
@@ -334,7 +201,11 @@ const DesignCanvas = ({
   initialDesign = null, 
   dressType = 'Kurti', 
   selectedColor = '#ffffff',
-  gender = 'Women'
+  gender = 'Women',
+  aiPrompt = '',
+  onAIPromptChange,
+  onAIGenerate,
+  aiGenerating = false
 }) => {
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef(null);
@@ -346,7 +217,7 @@ const DesignCanvas = ({
   const [neckStyle, setNeckStyle] = useState('round');
   const [sleeveStyle, setSleeveStyle] = useState('full');
   const [selectedZone, setSelectedZone] = useState(null);
-  const [activeTab, setActiveTab] = useState('styles');
+  const [activeTab, setActiveTab] = useState('ai');
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [templateLoaded, setTemplateLoaded] = useState(false);
@@ -358,7 +229,6 @@ const DesignCanvas = ({
   
   const zones = ZONES[dressType] || ZONES.Kurti;
 
-  // Get available necklines based on gender
   const getAvailableNecklines = () => {
     if (gender === 'Men') {
       return [
@@ -375,7 +245,6 @@ const DesignCanvas = ({
     ];
   };
 
-  // Sleeve options
   const sleeveOptions = [
     { value: 'full', label: 'Full' },
     { value: 'elbow', label: 'Elbow (3/4th)' },
@@ -383,16 +252,11 @@ const DesignCanvas = ({
     { value: 'sleeveless', label: 'Sleeveless' }
   ];
 
-  // ============================================================================
-  // INITIALIZE CANVAS
-  // ============================================================================
-
   useEffect(() => {
     mountedRef.current = true;
     
     if (!canvasRef.current) return;
 
-    // Dispose existing canvas if any
     if (fabricCanvasRef.current) {
       try {
         fabricCanvasRef.current.dispose();
@@ -402,7 +266,6 @@ const DesignCanvas = ({
       fabricCanvasRef.current = null;
     }
 
-    // Create new canvas
     const canvas = new fabric.Canvas(canvasRef.current, {
       width: CANVAS_WIDTH,
       height: CANVAS_HEIGHT,
@@ -427,17 +290,12 @@ const DesignCanvas = ({
     };
   }, [dressType]);
 
-  // Update color when selectedColor prop changes
   useEffect(() => {
     setCurrentColor(selectedColor);
     if (colorOverlayRef.current && fabricCanvasRef.current && mountedRef.current) {
       updateGarmentColor(selectedColor);
     }
   }, [selectedColor]);
-
-  // ============================================================================
-  // LOAD GARMENT TEMPLATE (PNG IMAGE)
-  // ============================================================================
 
   const loadGarmentTemplate = useCallback((canvas) => {
     if (!canvas || !mountedRef.current) return;
@@ -448,7 +306,6 @@ const DesignCanvas = ({
 
     const templateUrl = DRESS_TEMPLATES[dressType];
 
-    // Load the dress template image
     fabric.Image.fromURL(
       templateUrl, 
       (img) => {
@@ -458,7 +315,6 @@ const DesignCanvas = ({
           console.error('Failed to load template image:', templateUrl);
           setImageLoading(false);
           
-          // Show placeholder if image fails to load
           const placeholder = new fabric.Text('Template Image Not Found\n\nPlease add PNG images', {
             left: CANVAS_WIDTH / 2,
             top: CANVAS_HEIGHT / 2,
@@ -474,7 +330,6 @@ const DesignCanvas = ({
           return;
         }
 
-        // Scale image to fit canvas
         const scale = Math.min(
           (CANVAS_WIDTH - 40) / img.width,
           (CANVAS_HEIGHT - 40) / img.height
@@ -496,8 +351,6 @@ const DesignCanvas = ({
         canvas.sendToBack(img);
         baseImageRef.current = img;
 
-        // Create a colored overlay that will blend with the garment
-        // This should be positioned and sized to match the garment area only
         const colorOverlay = new fabric.Rect({
           left: img.left,
           top: img.top,
@@ -506,19 +359,17 @@ const DesignCanvas = ({
           originX: 'center',
           originY: 'center',
           fill: selectedColor,
-          opacity: 0.4, // Adjust this for color intensity
+          opacity: 0.4,
           selectable: false,
           evented: false,
           objectType: 'colorOverlay',
-          globalCompositeOperation: 'multiply' // This blends the color with the image
+          globalCompositeOperation: 'multiply'
         });
 
         canvas.add(colorOverlay);
-        // Keep overlay just above the base image but below other elements
         canvas.moveTo(colorOverlay, 1);
         colorOverlayRef.current = colorOverlay;
 
-        // Add zone overlays (invisible by default)
         zones.forEach(zone => {
           const zoneRect = new fabric.Rect({
             left: zone.x,
@@ -550,7 +401,11 @@ const DesignCanvas = ({
     );
   }, [dressType, selectedColor, zones]);
 
-  // Update garment color
+  const handleColorChange = useCallback((newColor) => {
+    setCurrentColor(newColor);
+    updateGarmentColor(newColor);
+  }, []);
+
   const updateGarmentColor = useCallback((newColor) => {
     if (!colorOverlayRef.current || !fabricCanvasRef.current || !mountedRef.current) return;
     
@@ -560,15 +415,10 @@ const DesignCanvas = ({
     overlay.set({ fill: newColor });
     canvas.renderAll();
     
-    // Notify parent component
     if (onDesignChange) {
       exportDesign(canvas);
     }
   }, [onDesignChange]);
-
-  // ============================================================================
-  // APPLY EMBROIDERY
-  // ============================================================================
 
   const applyEmbroidery = useCallback((patternKey) => {
     if (!selectedZone || !fabricCanvasRef.current || !mountedRef.current) return;
@@ -577,7 +427,6 @@ const DesignCanvas = ({
     const zone = zones.find(z => z.id === selectedZone);
     if (!zone) return;
 
-    // Remove existing embroidery in zone
     const objectsToRemove = [];
     canvas.getObjects().forEach(obj => {
       if (obj.customZone === selectedZone && obj.customType === 'embroidery') {
@@ -617,10 +466,6 @@ const DesignCanvas = ({
     }
   }, [selectedZone, zones]);
 
-  // ============================================================================
-  // APPLY FABRIC PRINT
-  // ============================================================================
-
   const applyFabricPrint = useCallback((printKey) => {
     if (!selectedZone || !fabricCanvasRef.current || !mountedRef.current) return;
     
@@ -641,42 +486,47 @@ const DesignCanvas = ({
     if (!print) return;
 
     try {
-      const printCanvas = print.createPattern(currentColor);
-      const fabricPattern = new fabric.Pattern({
-        source: printCanvas,
-        repeat: 'repeat'
-      });
+      // Load the actual image and create a pattern from it
+      fabric.Image.fromURL(
+        print.imageUrl,
+        (img) => {
+          if (!mountedRef.current) return;
 
-      const rect = new fabric.Rect({
-        left: zone.x,
-        top: zone.y,
-        width: zone.width,
-        height: zone.height,
-        fill: fabricPattern,
-        selectable: false,
-        customZone: selectedZone,
-        customType: 'print',
-        opacity: 0.7
-      });
+          // Create a pattern from the loaded image
+          const fabricPattern = new fabric.Pattern({
+            source: img.getElement(),
+            repeat: 'repeat'
+          });
 
-      canvas.add(rect);
-      if (baseImageRef.current) {
-        canvas.sendToBack(baseImageRef.current);
-      }
-      if (colorOverlayRef.current) {
-        canvas.moveTo(colorOverlayRef.current, 1);
-      }
-      canvas.renderAll();
-      saveToHistory(canvas);
-      exportDesign(canvas);
+          const rect = new fabric.Rect({
+            left: zone.x,
+            top: zone.y,
+            width: zone.width,
+            height: zone.height,
+            fill: fabricPattern,
+            selectable: false,
+            customZone: selectedZone,
+            customType: 'print',
+            opacity: 0.7
+          });
+
+          canvas.add(rect);
+          if (baseImageRef.current) {
+            canvas.sendToBack(baseImageRef.current);
+          }
+          if (colorOverlayRef.current) {
+            canvas.moveTo(colorOverlayRef.current, 1);
+          }
+          canvas.renderAll();
+          saveToHistory(canvas);
+          exportDesign(canvas);
+        },
+        { crossOrigin: 'anonymous' }
+      );
     } catch (e) {
       console.error('Print application error:', e);
     }
-  }, [selectedZone, zones, selectedColor]);
-
-  // ============================================================================
-  // ZONE SELECTION WITH HIGHLIGHT
-  // ============================================================================
+  }, [selectedZone, zones]);
 
   const handleZoneSelect = useCallback((zoneId) => {
     setSelectedZone(zoneId);
@@ -697,10 +547,6 @@ const DesignCanvas = ({
     canvas.renderAll();
   }, []);
 
-  // ============================================================================
-  // CLEAR ZONE
-  // ============================================================================
-
   const clearZone = useCallback(() => {
     if (!selectedZone || !fabricCanvasRef.current || !mountedRef.current) return;
     
@@ -718,10 +564,6 @@ const DesignCanvas = ({
     saveToHistory(canvas);
     exportDesign(canvas);
   }, [selectedZone]);
-
-  // ============================================================================
-  // HISTORY MANAGEMENT
-  // ============================================================================
 
   const saveToHistory = useCallback((canvas, isInitial = false) => {
     if (!canvas || !mountedRef.current) return;
@@ -799,10 +641,6 @@ const DesignCanvas = ({
       console.error('Export error:', e);
     }
   }, [onDesignChange, neckStyle, sleeveStyle, currentColor]);
-
-  // ============================================================================
-  // RENDER UI
-  // ============================================================================
 
   return (
     <div className="space-y-6">
@@ -887,7 +725,7 @@ const DesignCanvas = ({
 
           {/* Tabs */}
           <div className="flex gap-2 p-1.5 bg-background/30 rounded-2xl text-xs">
-            {['styles', 'embroidery', 'prints'].map(tab => (
+            {['ai', 'styles', 'embroidery', 'prints'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -900,6 +738,37 @@ const DesignCanvas = ({
             ))}
           </div>
 
+          {/* AI Tab */}
+          {activeTab === 'ai' && (
+            <div className="space-y-6">
+              <div className="bg-gradient-to-br from-secondary/5 to-white rounded-2xl p-6 border-2 border-secondary/20">
+                <label className="flex items-center gap-2 font-bold text-lg mb-3 text-text">
+                  <Wand2 size={22} className="text-secondary" />
+                  AI Design Generator
+                  <span className="ml-2 text-xs bg-secondary/20 text-secondary px-2 py-1 rounded-full font-bold">NEW</span>
+                </label>
+                <p className="text-sm text-text/60 mb-4 font-light">
+                  Describe your dream design and let AI create it for you!
+                </p>
+                <textarea
+                  value={aiPrompt}
+                  onChange={(e) => onAIPromptChange && onAIPromptChange(e.target.value)}
+                  placeholder="E.g., 'Floral patterns with golden embroidery on sleeves and border'"
+                  className="w-full border-2 border-background/50 rounded-xl px-4 py-3 h-32 focus:border-secondary focus:outline-none transition-colors resize-none font-light mb-4"
+                  rows="4"
+                />
+                <button
+                  onClick={onAIGenerate}
+                  disabled={aiGenerating || !aiPrompt.trim()}
+                  className="w-full px-6 py-3 bg-secondary text-white rounded-xl hover:bg-secondary/90 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-secondary/30 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                >
+                  <Wand2 size={20} className={aiGenerating ? "animate-spin" : ""} />
+                  <span>{aiGenerating ? "Generating..." : "Generate Design"}</span>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Styles Tab */}
           {activeTab === 'styles' && (
             <div className="space-y-6">
@@ -909,7 +778,7 @@ const DesignCanvas = ({
                   <Palette size={16} className="text-secondary" />
                   Garment Color
                 </h4>
-                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 border-2 border-purple-200">
+                <div className="bg-gradient-to-br from-secondary/5 to-white rounded-2xl p-4 border-2 border-secondary/20">
                   <div className="flex items-center gap-4">
                     <div className="relative">
                       <input
@@ -918,7 +787,7 @@ const DesignCanvas = ({
                         onChange={(e) => handleColorChange(e.target.value)}
                         className="w-20 h-20 rounded-xl cursor-pointer border-3 border-white shadow-lg hover:scale-105 transition-transform"
                       />
-                      <div className="absolute -bottom-1 -right-1 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full p-1.5 shadow-md">
+                      <div className="absolute -bottom-1 -right-1 bg-secondary rounded-full p-1.5 shadow-md">
                         <Palette size={12} className="text-white" />
                       </div>
                     </div>
@@ -932,7 +801,7 @@ const DesignCanvas = ({
                         value={currentColor}
                         onChange={(e) => handleColorChange(e.target.value)}
                         placeholder="#ffffff"
-                        className="w-full px-3 py-2 border-2 border-background/50 rounded-lg focus:border-purple-500 focus:outline-none transition-colors font-mono text-sm"
+                        className="w-full px-3 py-2 border-2 border-background/50 rounded-lg focus:border-secondary focus:outline-none transition-colors font-mono text-sm"
                       />
                     </div>
                   </div>
@@ -1032,7 +901,6 @@ const DesignCanvas = ({
                   <h4 className="font-bold text-sm uppercase tracking-wider text-text/70">Fabric Prints</h4>
                   <div className="grid grid-cols-1 gap-4">
                     {Object.entries(FABRIC_PRINTS).map(([key, config]) => {
-                      const printCanvas = config.createPattern(selectedColor);
                       return (
                         <button
                           key={key}
@@ -1041,14 +909,17 @@ const DesignCanvas = ({
                         >
                           <div className="w-16 h-16 rounded-lg border-2 border-background/30 overflow-hidden flex-shrink-0 bg-white shadow-inner">
                             <img 
-                              src={printCanvas.toDataURL()} 
+                              src={config.thumbnail}
                               alt={config.name}
                               className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80"%3E%3Crect fill="%23f0f0f0" width="80" height="80"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999" font-size="12"%3ENo Image%3C/text%3E%3C/svg%3E';
+                              }}
                             />
                           </div>
                           <div className="text-left flex-1">
                             <div className="text-sm font-semibold text-text">{config.name}</div>
-                            <div className="text-xs text-text/50 font-light">Traditional print pattern</div>
+                            <div className="text-xs text-text/50 font-light">{config.description}</div>
                           </div>
                           <div className="text-secondary opacity-0 group-hover:opacity-100 transition-opacity">
                             <CheckCircle2 size={20} />

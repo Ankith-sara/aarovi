@@ -1,19 +1,23 @@
-import logo from './logo.png'
-import logo_white from './logo_white.png'
 import cart_icon from './cart_icon.png'
-import about_img from './about_img.jpg'
-import contact_img from './contact_img.jpg'
 import razorpay_logo from './razorpay_logo.png'
 import cross_icon from './cross_icon.png'
 import kurta_img from './kurta_img.png'
+import block_img from './block_print.jpeg'
+import bagru_img from './bagru_print.jpeg'
+import floral_img from './floral_print.jpeg'
+import kalamkari_img from './kalamkari_print.jpeg'
+import painting_img from './painting_print.jpeg'
+import shibori_img from './shibori_print.jpeg'
 
 export const assets = {
-    logo,
-    logo_white,
     cart_icon,
-    about_img,
-    kurta_img,
-    contact_img,
     razorpay_logo,
     cross_icon,
+    kurta_img,
+    block_img,
+    bagru_img,
+    floral_img,
+    kalamkari_img,
+    painting_img,
+    shibori_img
 }
