@@ -30,11 +30,17 @@ const Orders = () => {
         let allOrdersItem = [];
         response.data.orders.forEach((order) => {
           order.items.forEach((item) => {
+            // FIX: Normalize price property for both regular and custom items
+            const itemPrice = item.finalPrice || item.price || item.basePrice || 0;
+            const itemQuantity = item.quantity || 1;
+            
             item['status'] = order.status;
             item['payment'] = order.payment;
             item['paymentMethod'] = order.paymentMethod;
             item['date'] = order.date;
             item['orderId'] = order._id || `ORD-${Math.floor(Math.random() * 10000)}`;
+            item['price'] = itemPrice; // Normalize to 'price' for consistency
+            item['quantity'] = itemQuantity;
             allOrdersItem.push(item);
           });
         });
@@ -70,6 +76,7 @@ const Orders = () => {
         return <CheckCircle size={16} className="text-green-600" />;
       case 'shipped':
       case 'out for delivery':
+      case 'shipping':
         return <Truck size={16} className="text-blue-600" />;
       case 'processing':
         return <RefreshCw size={16} className="text-amber-600" />;
@@ -84,6 +91,7 @@ const Orders = () => {
         return 'text-green-700 bg-green-50 border-green-200';
       case 'shipped':
       case 'out for delivery':
+      case 'shipping':
         return 'text-blue-700 bg-blue-50 border-blue-200';
       case 'processing':
         return 'text-amber-700 bg-amber-50 border-amber-200';
@@ -121,9 +129,16 @@ const Orders = () => {
     const processing = orderData.filter(item =>
       item.status?.toLowerCase() === 'processing' ||
       item.status?.toLowerCase() === 'shipped' ||
+      item.status?.toLowerCase() === 'shipping' ||
       item.status?.toLowerCase() === 'out for delivery'
     ).length;
-    const totalSpent = orderData.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    // FIX: Properly calculate total spent using normalized price
+    const totalSpent = orderData.reduce((sum, item) => {
+      const price = Number(item.price) || 0;
+      const quantity = Number(item.quantity) || 1;
+      return sum + (price * quantity);
+    }, 0);
 
     return { total, delivered, processing, totalSpent };
   };
@@ -340,7 +355,7 @@ const Orders = () => {
                                 Price
                               </span>
                               <span className="font-bold text-text text-lg">
-                                {currency}{item.price}
+                                {currency}{Number(item.price || 0).toFixed(2)}
                               </span>
                             </div>
 
@@ -356,7 +371,7 @@ const Orders = () => {
                                 Size
                               </span>
                               <span className="inline-block px-3 py-1 bg-gradient-to-br from-background/30 to-primary rounded-md font-semibold text-text text-sm">
-                                {item.size}
+                                {item.size || 'Custom'}
                               </span>
                             </div>
 
@@ -365,7 +380,7 @@ const Orders = () => {
                                 Total
                               </span>
                               <span className="font-bold text-secondary text-lg">
-                                {currency}{(item.price * item.quantity).toFixed(2)}
+                                {currency}{(Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2)}
                               </span>
                             </div>
                           </div>
@@ -374,8 +389,8 @@ const Orders = () => {
                         {/* Action Buttons */}
                         <div className="flex lg:flex-col items-center lg:items-end justify-start lg:justify-center gap-3">
                           <button
-                            className="flex items-center justify-center gap-2 px-6 py-3 bg-secondary text-white font-semibold tracking-wide rounded-lg hover:bg-[#8B6F47] transition-all duration-300 shadow-md hover:shadow-lg"
-                            onClick={() => navigate(`/trackorder/${item.orderId}`)}
+                            className="flex items-center justify-center gap-2 px-6 py-3 bg-secondary text-white font-semibold tracking-wide rounded-lg hover:bg-secondary/80 transition-all duration-300 shadow-md hover:shadow-lg"
+                            onClick={() => navigate(`/status/${item.orderId}`)}
                           >
                             <Truck size={16} />
                             <span>Track Order</span>

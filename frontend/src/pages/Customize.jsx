@@ -502,7 +502,6 @@ const Customize = () => {
                     className="group px-10 py-4 bg-secondary text-white rounded-full hover:bg-secondary/90 transition-all duration-300 flex items-center gap-3 shadow-xl shadow-secondary/30 hover:shadow-2xl hover:shadow-secondary/40 hover:-translate-y-0.5 font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
                     <ShoppingCart size={20} className="group-hover:scale-110 transition-transform" />
                     <span>{loading ? "Adding..." : "Add to Cart"}</span>
-                    <Sparkles size={20} className="group-hover:rotate-12 transition-transform" />
                   </button>
                 </div>
               </div>

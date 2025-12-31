@@ -5,10 +5,10 @@ import authUser from "../middlewares/Auth.js";
 const customizationRouter = express.Router();
 
 customizationRouter.post("/my", authUser, getUserCustomizations);
-customizationRouter.post("/:id", authUser, getCustomization);
 customizationRouter.post("/save", authUser, saveCustomization);
 customizationRouter.post("/submit", authUser, submitCustomization);
-customizationRouter.post("/update/:id", authUser, updateCustomization);
-customizationRouter.post("/delete/:id", authUser, deleteCustomization);
+customizationRouter.get("/:id", authUser, getCustomization);
+customizationRouter.put("/update/:id", authUser, updateCustomization);
+customizationRouter.delete("/:id", authUser, deleteCustomization);
 
 export default customizationRouter;

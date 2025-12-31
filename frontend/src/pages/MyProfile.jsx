@@ -345,7 +345,7 @@ const MyProfile = () => {
 
                 <div className="space-y-3">
                   <button
-                    className="w-full py-4 bg-secondary text-white font-semibold rounded-full hover:bg-secondary/90 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-secondary/30"
+                    className="w-full py-4 bg-secondary text-white font-semibold rounded-full hover:bg-secondary/90 transition-all duration-300 flex items-center justify-center gap-2"
                     onClick={() => setActiveSection("Edit Profile")}
                   >
                     <Edit2 size={16} />

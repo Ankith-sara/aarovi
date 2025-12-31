@@ -30,93 +30,104 @@ const sendWelcomeMail = async (email, name = 'Admin') => {
   }
 
   const mailOptions = {
-    from: `"Aharyas" <${process.env.EMAIL_USER}>`,
+    from: `"Aarovi" <${process.env.EMAIL_USER}>`,
     to: email,
-    subject: `Welcome to Aharyas, ${name}`,
+    subject: `Welcome to Aarovi, ${name}`,
     html: `
       <!DOCTYPE html>
       <html lang="en">
       <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Welcome to Aharyas</title>
+          <title>Welcome to Aarovi</title>
           <style>
-              @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+              @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
           </style>
       </head>
-      <body style="margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: linear-gradient(to bottom, #fafaf9 0%, #ffffff 100%); color: #1a1a1a;">
-          <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(to bottom, #fafaf9 0%, #ffffff 100%); min-height: 100vh;">
+      <body style="margin: 0; padding: 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: linear-gradient(to bottom, #FCFAFA 0%, #ffffff 100%); color: #131010;">
+          <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(to bottom, #FCFAFA 0%, #EBD9D1 100%); min-height: 100vh;">
               <tr>
                   <td align="center" style="padding: 60px 20px;">
-                      <table cellpadding="0" cellspacing="0" border="0" width="680" style="max-width: 680px; background-color: #ffffff; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);">
+                      <table cellpadding="0" cellspacing="0" border="0" width="680" style="max-width: 680px; background-color: #ffffff; box-shadow: 0 10px 40px rgba(79, 32, 13, 0.12); border-radius: 4px; overflow: hidden;">
                           
                           <!-- Decorative Top Border -->
                           <tr>
-                              <td style="height: 6px; background: linear-gradient(90deg, #1a1a1a 0%, #4a4a4a 50%, #1a1a1a 100%);"></td>
+                              <td style="height: 8px; background: linear-gradient(90deg, #4F200D 0%, #8B4513 50%, #4F200D 100%);"></td>
                           </tr>
 
-                          <!-- Header -->
+                          <!-- Header with Background Pattern -->
                           <tr>
-                              <td style="padding: 50px 60px 40px; text-align: center; background: #ffffff; border-bottom: 1px solid #e7e7e7;">
-                                  <h1 style="margin: 0 0 8px 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 48px; font-weight: 300; letter-spacing: 8px; color: #1a1a1a; text-transform: uppercase;">AHARYAS</h1>
-                                  <div style="width: 40px; height: 1px; background: #1a1a1a; margin: 0 auto 12px;"></div>
-                                  <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 11px; letter-spacing: 3px; color: #6b6b6b; text-transform: uppercase; font-weight: 400;">Conscious Luxury · Indian Heritage</p>
+                              <td style="padding: 60px 60px 50px; text-align: center; background: linear-gradient(135deg, #4F200D 0%, #6B2D10 100%); position: relative;">
+                                  <h1 style="margin: 0 0 12px 0; font-family: 'Bodoni Moda', Georgia, serif; font-size: 56px; font-weight: 600; letter-spacing: 4px; color: #ffffff; text-transform: uppercase; position: relative; z-index: 1;">AAROVI</h1>
+                                  <div style="width: 60px; height: 2px; background: #EBD9D1; margin: 0 auto 16px; position: relative; z-index: 1;"></div>
+                                  <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 12px; letter-spacing: 3px; color: rgba(252, 250, 250, 0.95); text-transform: uppercase; font-weight: 500; position: relative; z-index: 1;">Handcrafted & Custom-Made Fashion</p>
                               </td>
                           </tr>
 
-                          <!-- Hero Welcome Banner -->
+                          <!-- Hero Welcome Section -->
                           <tr>
-                              <td style="padding: 0; background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); position: relative;">
+                              <td style="padding: 0; background: #FCFAFA;">
                                   <table cellpadding="0" cellspacing="0" border="0" width="100%">
                                       <tr>
-                                          <td style="padding: 50px 60px; text-align: center;">
-                                              <h2 style="margin: 0 0 16px 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 36px; font-weight: 400; letter-spacing: 2px; color: #ffffff; line-height: 1.3;">Welcome to Our Family</h2>
-                                              <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 15px; color: rgba(255,255,255,0.85); font-weight: 300; line-height: 1.7; max-width: 480px; margin: 0 auto;">Your admin account has been successfully created. We're honored to have you join the Aharyas team.</p>
+                                          <td style="padding: 50px 60px 40px; text-align: center;">
+                                              <div style="display: inline-block; background: linear-gradient(135deg, #4F200D 0%, #6B2D10 100%); color: #ffffff; padding: 10px 24px; border-radius: 50px; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px;">✨ Admin Account Created</div>
+                                              <h2 style="margin: 0 0 20px 0; font-family: 'Bodoni Moda', Georgia, serif; font-size: 42px; font-weight: 600; letter-spacing: 1px; color: #4F200D; line-height: 1.2;">Welcome to Aarovi</h2>
+                                              <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 16px; color: #131010; font-weight: 400; line-height: 1.8; max-width: 500px; margin: 0 auto; opacity: 0.85;">Your admin account has been successfully created. We're thrilled to have you join the Aarovi management team.</p>
                                           </td>
                                       </tr>
                                   </table>
                               </td>
                           </tr>
 
-                          <!-- Personal Greeting -->
+                          <!-- Personal Greeting Card -->
                           <tr>
-                              <td style="padding: 50px 60px 40px; text-align: center; background: #ffffff;">
-                                  <h3 style="margin: 0 0 16px 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 28px; font-weight: 400; letter-spacing: 1px; color: #1a1a1a;">Hello, ${name}</h3>
-                                  <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 15px; color: #525252; font-weight: 300; line-height: 1.8; max-width: 500px; margin: 0 auto;">
-                                      Thank you for joining the <strong style="font-weight: 500; color: #1a1a1a;">Aharyas Admin Team</strong>. Together, we'll continue preserving India's handcrafted heritage and supporting artisans across the country.
-                                  </p>
+                              <td style="padding: 0 60px 40px;">
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(135deg, #EBD9D1 0%, #FCFAFA 100%); border-radius: 12px; border: 1px solid #E8DCC4;">
+                                      <tr>
+                                          <td style="padding: 40px; text-align: center;">
+                                              <h3 style="margin: 0 0 16px 0; font-family: 'Bodoni Moda', Georgia, serif; font-size: 32px; font-weight: 500; letter-spacing: 1px; color: #4F200D;">Hello, ${name}</h3>
+                                              <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 15px; color: #131010; font-weight: 400; line-height: 1.8; max-width: 480px; margin: 0 auto; opacity: 0.85;">
+                                                  Thank you for joining <strong style="font-weight: 600; color: #4F200D;">Aarovi Fashions</strong>. Together, we'll continue creating beautiful handcrafted and custom-made fashion that celebrates artisanal craftsmanship.
+                                              </p>
+                                          </td>
+                                      </tr>
+                                  </table>
                               </td>
                           </tr>
 
-                          <!-- Account Details Card -->
+                          <!-- Account Details Card -->}
                           <tr>
                               <td style="padding: 0 60px 40px;">
-                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border: 1px solid #e7e7e7; background: #ffffff;">
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border: 2px solid #EBD9D1; background: #ffffff; border-radius: 12px; overflow: hidden;">
                                       <tr>
-                                          <td style="padding: 24px 32px; background: #fafaf9; border-bottom: 1px solid #e7e7e7;">
-                                              <h3 style="margin: 0; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #1a1a1a;">📋 Account Details</h3>
+                                          <td style="padding: 28px 36px; background: linear-gradient(135deg, #4F200D 0%, #6B2D10 100%); border-bottom: 2px solid #EBD9D1;">
+                                              <h3 style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #ffffff;">📋 Your Account Information</h3>
                                           </td>
                                       </tr>
                                       <tr>
-                                          <td style="padding: 32px;">
+                                          <td style="padding: 36px;">
                                               <table cellpadding="0" cellspacing="0" border="0" width="100%">
                                                   <tr>
-                                                      <td style="padding: 12px 0; font-family: 'Inter', sans-serif; font-size: 13px; color: #737373; font-weight: 400; width: 35%;">Admin Name</td>
-                                                      <td style="padding: 12px 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #1a1a1a; font-weight: 500;">${name}</td>
+                                                      <td style="padding: 14px 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 500; width: 40%; opacity: 0.7;">Admin Name</td>
+                                                      <td style="padding: 14px 0; font-family: 'DM Sans', sans-serif; font-size: 15px; color: #4F200D; font-weight: 600;">${name}</td>
                                                   </tr>
-                                                  <tr style="border-top: 1px solid #f5f5f4;">
-                                                      <td style="padding: 12px 0; font-family: 'Inter', sans-serif; font-size: 13px; color: #737373; font-weight: 400;">Email Address</td>
-                                                      <td style="padding: 12px 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #1a1a1a; font-weight: 400;">${email}</td>
+                                                  <tr style="border-top: 1px solid #EBD9D1;">
+                                                      <td style="padding: 14px 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 500; opacity: 0.7;">Email Address</td>
+                                                      <td style="padding: 14px 0; font-family: 'DM Sans', sans-serif; font-size: 15px; color: #131010; font-weight: 500;">${email}</td>
                                                   </tr>
-                                                  <tr style="border-top: 1px solid #f5f5f4;">
-                                                      <td style="padding: 12px 0; font-family: 'Inter', sans-serif; font-size: 13px; color: #737373; font-weight: 400;">Account Type</td>
-                                                      <td style="padding: 12px 0;">
-                                                          <span style="display: inline-block; background: #1a1a1a; color: #ffffff; padding: 6px 16px; font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 2px;">Admin Access</span>
+                                                  <tr style="border-top: 1px solid #EBD9D1;">
+                                                      <td style="padding: 14px 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 500; opacity: 0.7;">Account Type</td>
+                                                      <td style="padding: 14px 0;">
+                                                          <span style="display: inline-block; background: linear-gradient(135deg, #4F200D 0%, #6B2D10 100%); color: #ffffff; padding: 8px 20px; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 6px; box-shadow: 0 2px 8px rgba(79, 32, 13, 0.2);">Administrator</span>
                                                       </td>
                                                   </tr>
-                                                  <tr style="border-top: 1px solid #f5f5f4;">
-                                                      <td style="padding: 12px 0; font-family: 'Inter', sans-serif; font-size: 13px; color: #737373; font-weight: 400;">Registration Date</td>
-                                                      <td style="padding: 12px 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #1a1a1a; font-weight: 400;">${formatDate()}</td>
+                                                  <tr style="border-top: 1px solid #EBD9D1;">
+                                                      <td style="padding: 14px 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 500; opacity: 0.7;">Registration Date</td>
+                                                      <td style="padding: 14px 0; font-family: 'DM Sans', sans-serif; font-size: 15px; color: #131010; font-weight: 500;">${formatDate()}</td>
+                                                  </tr>
+                                                  <tr style="border-top: 1px solid #EBD9D1;">
+                                                      <td style="padding: 14px 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 500; opacity: 0.7;">Location</td>
+                                                      <td style="padding: 14px 0; font-family: 'DM Sans', sans-serif; font-size: 15px; color: #131010; font-weight: 500;">Hyderabad, Telangana, India</td>
                                                   </tr>
                                               </table>
                                           </td>
@@ -125,40 +136,40 @@ const sendWelcomeMail = async (email, name = 'Admin') => {
                               </td>
                           </tr>
 
-                          <!-- Quick Start Guide -->
+                          <!-- Quick Start Guide -->}
                           <tr>
                               <td style="padding: 0 60px 40px;">
-                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(135deg, #fafaf9 0%, #f5f5f4 100%); border: 1px solid #e7e7e7;">
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #FCFAFA; border: 2px solid #EBD9D1; border-radius: 12px;">
                                       <tr>
-                                          <td style="padding: 32px 36px;">
-                                              <h3 style="margin: 0 0 24px 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 24px; font-weight: 400; letter-spacing: 1px; color: #1a1a1a;">🚀 Quick Start Guide</h3>
+                                          <td style="padding: 36px 40px;">
+                                              <h3 style="margin: 0 0 28px 0; font-family: 'Bodoni Moda', Georgia, serif; font-size: 28px; font-weight: 600; letter-spacing: 0.5px; color: #4F200D; text-align: center;">🚀 Getting Started Guide</h3>
                                               
                                               <!-- Step 1 -->
-                                              <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom: 20px;">
+                                              <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom: 24px;">
                                                   <tr>
-                                                      <td style="width: 40px; vertical-align: top;">
-                                                          <div style="width: 32px; height: 32px; background: #1a1a1a; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                              <span style="font-family: 'Inter', sans-serif; color: #ffffff; font-weight: 600; font-size: 14px;">1</span>
+                                                      <td style="width: 50px; vertical-align: top;">
+                                                          <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #4F200D 0%, #6B2D10 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(79, 32, 13, 0.25);">
+                                                              <span style="font-family: 'DM Sans', sans-serif; color: #ffffff; font-weight: 700; font-size: 16px; line-height: 40px; text-align: center; display: block;">1</span>
                                                           </div>
                                                       </td>
-                                                      <td style="padding-left: 16px;">
-                                                          <h4 style="margin: 0 0 6px 0; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: #1a1a1a;">Access Your Dashboard</h4>
-                                                          <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #525252; font-weight: 300; line-height: 1.7;">Log in to your admin panel to start managing products, orders, and customers.</p>
+                                                      <td style="padding-left: 20px;">
+                                                          <h4 style="margin: 0 0 8px 0; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700; color: #4F200D;">Access Your Dashboard</h4>
+                                                          <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 400; line-height: 1.7; opacity: 0.85;">Log in to your admin panel to start managing products, orders, and customers with our intuitive interface.</p>
                                                       </td>
                                                   </tr>
                                               </table>
 
                                               <!-- Step 2 -->
-                                              <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom: 20px;">
+                                              <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom: 24px;">
                                                   <tr>
-                                                      <td style="width: 40px; vertical-align: top;">
-                                                          <div style="width: 32px; height: 32px; background: #1a1a1a; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                              <span style="font-family: 'Inter', sans-serif; color: #ffffff; font-weight: 600; font-size: 14px;">2</span>
+                                                      <td style="width: 50px; vertical-align: top;">
+                                                          <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #4F200D 0%, #6B2D10 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(79, 32, 13, 0.25);">
+                                                              <span style="font-family: 'DM Sans', sans-serif; color: #ffffff; font-weight: 700; font-size: 16px; line-height: 40px; text-align: center; display: block;">2</span>
                                                           </div>
                                                       </td>
-                                                      <td style="padding-left: 16px;">
-                                                          <h4 style="margin: 0 0 6px 0; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: #1a1a1a;">Set Up Your Profile</h4>
-                                                          <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #525252; font-weight: 300; line-height: 1.7;">Complete your admin profile and configure your preferences for optimal workflow.</p>
+                                                      <td style="padding-left: 20px;">
+                                                          <h4 style="margin: 0 0 8px 0; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700; color: #4F200D;">Complete Your Profile</h4>
+                                                          <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 400; line-height: 1.7; opacity: 0.85;">Set up your admin profile and configure preferences to personalize your workflow and experience.</p>
                                                       </td>
                                                   </tr>
                                               </table>
@@ -166,14 +177,14 @@ const sendWelcomeMail = async (email, name = 'Admin') => {
                                               <!-- Step 3 -->
                                               <table cellpadding="0" cellspacing="0" border="0" width="100%">
                                                   <tr>
-                                                      <td style="width: 40px; vertical-align: top;">
-                                                          <div style="width: 32px; height: 32px; background: #1a1a1a; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                              <span style="font-family: 'Inter', sans-serif; color: #ffffff; font-weight: 600; font-size: 14px;">3</span>
+                                                      <td style="width: 50px; vertical-align: top;">
+                                                          <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #4F200D 0%, #6B2D10 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(79, 32, 13, 0.25);">
+                                                              <span style="font-family: 'DM Sans', sans-serif; color: #ffffff; font-weight: 700; font-size: 16px; line-height: 40px; text-align: center; display: block;">3</span>
                                                           </div>
                                                       </td>
-                                                      <td style="padding-left: 16px;">
-                                                          <h4 style="margin: 0 0 6px 0; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: #1a1a1a;">Start Managing</h4>
-                                                          <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #525252; font-weight: 300; line-height: 1.7;">Begin adding products, processing orders, and supporting our artisan community.</p>
+                                                      <td style="padding-left: 20px;">
+                                                          <h4 style="margin: 0 0 8px 0; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700; color: #4F200D;">Start Managing</h4>
+                                                          <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 400; line-height: 1.7; opacity: 0.85;">Begin adding products, processing orders, and delivering exceptional customer experiences.</p>
                                                       </td>
                                                   </tr>
                                               </table>
@@ -183,40 +194,48 @@ const sendWelcomeMail = async (email, name = 'Admin') => {
                               </td>
                           </tr>
 
-                          <!-- Admin Features -->
+                          <!-- Admin Features Grid -->}
                           <tr>
                               <td style="padding: 0 60px 40px;">
-                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border: 1px solid #e7e7e7; background: #ffffff;">
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border: 2px solid #EBD9D1; background: #ffffff; border-radius: 12px; overflow: hidden;">
                                       <tr>
-                                          <td style="padding: 24px 32px; background: #fafaf9; border-bottom: 1px solid #e7e7e7;">
-                                              <h3 style="margin: 0; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #1a1a1a;">⭐ Admin Features</h3>
+                                          <td style="padding: 28px 36px; background: linear-gradient(135deg, #EBD9D1 0%, #FCFAFA 100%); border-bottom: 2px solid #EBD9D1;">
+                                              <h3 style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #4F200D;">⭐ Your Admin Capabilities</h3>
                                           </td>
                                       </tr>
                                       <tr>
-                                          <td style="padding: 32px;">
+                                          <td style="padding: 36px;">
                                               <table cellpadding="0" cellspacing="0" border="0" width="100%">
                                                   <tr>
-                                                      <td style="width: 50%; padding: 10px 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #525252; font-weight: 400;">
-                                                          <span style="margin-right: 8px;">📦</span> Product Management
+                                                      <td style="width: 50%; padding: 12px 10px 12px 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 500; vertical-align: middle;">
+                                                          <span style="margin-right: 10px; font-size: 18px;">📦</span> Product Management
                                                       </td>
-                                                      <td style="width: 50%; padding: 10px 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #525252; font-weight: 400;">
-                                                          <span style="margin-right: 8px;">📊</span> Sales Analytics
-                                                      </td>
-                                                  </tr>
-                                                  <tr>
-                                                      <td style="width: 50%; padding: 10px 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #525252; font-weight: 400;">
-                                                          <span style="margin-right: 8px;">🛒</span> Order Processing
-                                                      </td>
-                                                      <td style="width: 50%; padding: 10px 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #525252; font-weight: 400;">
-                                                          <span style="margin-right: 8px;">👥</span> Customer Management
+                                                      <td style="width: 50%; padding: 12px 0 12px 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 500; vertical-align: middle;">
+                                                          <span style="margin-right: 10px; font-size: 18px;">📊</span> Sales Analytics
                                                       </td>
                                                   </tr>
                                                   <tr>
-                                                      <td style="width: 50%; padding: 10px 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #525252; font-weight: 400;">
-                                                          <span style="margin-right: 8px;">💰</span> Revenue Tracking
+                                                      <td style="width: 50%; padding: 12px 10px 12px 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 500; vertical-align: middle;">
+                                                          <span style="margin-right: 10px; font-size: 18px;">🛒</span> Order Processing
                                                       </td>
-                                                      <td style="width: 50%; padding: 10px 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #525252; font-weight: 400;">
-                                                          <span style="margin-right: 8px;">📈</span> Growth Insights
+                                                      <td style="width: 50%; padding: 12px 0 12px 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 500; vertical-align: middle;">
+                                                          <span style="margin-right: 10px; font-size: 18px;">👥</span> Customer Management
+                                                      </td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td style="width: 50%; padding: 12px 10px 12px 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 500; vertical-align: middle;">
+                                                          <span style="margin-right: 10px; font-size: 18px;">💰</span> Revenue Tracking
+                                                      </td>
+                                                      <td style="width: 50%; padding: 12px 0 12px 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 500; vertical-align: middle;">
+                                                          <span style="margin-right: 10px; font-size: 18px;">📈</span> Performance Insights
+                                                      </td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td style="width: 50%; padding: 12px 10px 12px 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 500; vertical-align: middle;">
+                                                          <span style="margin-right: 10px; font-size: 18px;">✨</span> Custom Design Tools
+                                                      </td>
+                                                      <td style="width: 50%; padding: 12px 0 12px 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 500; vertical-align: middle;">
+                                                          <span style="margin-right: 10px; font-size: 18px;">📧</span> Customer Support
                                                       </td>
                                                   </tr>
                                               </table>
@@ -226,26 +245,50 @@ const sendWelcomeMail = async (email, name = 'Admin') => {
                               </td>
                           </tr>
 
-                          <!-- Support Section -->
+                          <!-- Important Guidelines -->}
                           <tr>
                               <td style="padding: 0 60px 40px;">
-                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #fffbf5; border: 1px solid #fde68a; border-left: 4px solid #d97706;">
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border: 2px solid #F59E0B; border-left: 6px solid #D97706; border-radius: 12px;">
                                       <tr>
-                                          <td style="padding: 28px 32px;">
-                                              <h4 style="margin: 0 0 12px 0; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: #92400e;">💬 Need Help?</h4>
-                                              <p style="margin: 0 0 20px 0; font-family: 'Inter', sans-serif; font-size: 14px; color: #78350f; font-weight: 300; line-height: 1.7;">
-                                                  Our support team is here to help you get the most out of your admin experience.
+                                          <td style="padding: 32px 36px;">
+                                              <h4 style="margin: 0 0 16px 0; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700; color: #92400E;">⚠️ Important Guidelines</h4>
+                                              <ul style="margin: 0; padding-left: 20px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #78350F; font-weight: 400; line-height: 1.9;">
+                                                  <li style="margin-bottom: 10px;">Maintain confidentiality of your account credentials at all times</li>
+                                                  <li style="margin-bottom: 10px;">Ensure all product information and pricing are accurate before publishing</li>
+                                                  <li style="margin-bottom: 10px;">Process orders within 24 hours and update customers on their order status</li>
+                                                  <li style="margin-bottom: 10px;">Review our Terms & Conditions for complete operational guidelines</li>
+                                                  <li>Contact support immediately if you detect any suspicious activity</li>
+                                              </ul>
+                                          </td>
+                                      </tr>
+                                  </table>
+                              </td>
+                          </tr>
+
+                          <!-- Support Section -->}
+                          <tr>
+                              <td style="padding: 0 60px 40px;">
+                                  <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%); border: 2px solid #38BDF8; border-radius: 12px;">
+                                      <tr>
+                                          <td style="padding: 32px 36px;">
+                                              <h4 style="margin: 0 0 14px 0; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700; color: #075985;">💬 Need Assistance?</h4>
+                                              <p style="margin: 0 0 24px 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #0C4A6E; font-weight: 400; line-height: 1.7;">
+                                                  Our dedicated support team is available to help you with any questions or technical issues.
                                               </p>
                                               <table cellpadding="0" cellspacing="0" border="0">
                                                   <tr>
-                                                      <td style="padding-right: 20px;">
-                                                          <a href="mailto:aharyasofficial@gmail.com" style="font-family: 'Inter', sans-serif; font-size: 13px; color: #92400e; text-decoration: none; font-weight: 500; border-bottom: 1px solid #d97706;">📧 Email Support</a>
+                                                      <td style="padding: 0 24px 12px 0;">
+                                                          <div style="font-family: 'DM Sans', sans-serif; font-size: 12px; color: #0C4A6E; font-weight: 600; margin-bottom: 4px;">📧 Email</div>
+                                                          <a href="mailto:aaroiviofficial@gmail.com" style="font-family: 'DM Sans', sans-serif; font-size: 13px; color: #075985; text-decoration: none; font-weight: 600; border-bottom: 2px solid #38BDF8;">aaroiviofficial@gmail.com</a>
                                                       </td>
-                                                      <td style="padding-right: 20px;">
-                                                          <a href="#" style="font-family: 'Inter', sans-serif; font-size: 13px; color: #92400e; text-decoration: none; font-weight: 500; border-bottom: 1px solid #d97706;">📖 Admin Guide</a>
+                                                      <td style="padding: 0 0 12px 0;">
+                                                          <div style="font-family: 'DM Sans', sans-serif; font-size: 12px; color: #0C4A6E; font-weight: 600; margin-bottom: 4px;">📞 Phone</div>
+                                                          <a href="tel:+919399336666" style="font-family: 'DM Sans', sans-serif; font-size: 13px; color: #075985; text-decoration: none; font-weight: 600; border-bottom: 2px solid #38BDF8;">+91 9399336666</a>
                                                       </td>
-                                                      <td>
-                                                          <a href="#" style="font-family: 'Inter', sans-serif; font-size: 13px; color: #92400e; text-decoration: none; font-weight: 500; border-bottom: 1px solid #d97706;">💬 Live Chat</a>
+                                                  </tr>
+                                                  <tr>
+                                                      <td colspan="2" style="padding-top: 8px;">
+                                                          <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 12px; color: #0C4A6E; font-weight: 400;">Mon–Sat: 9 AM – 6 PM IST • Response within 24 hours</p>
                                                       </td>
                                                   </tr>
                                               </table>
@@ -255,14 +298,14 @@ const sendWelcomeMail = async (email, name = 'Admin') => {
                               </td>
                           </tr>
 
-                          <!-- Call to Action -->
+                          <!-- Call to Action Button -->}
                           <tr>
                               <td style="padding: 0 60px 50px; text-align: center;">
                                   <table cellpadding="0" cellspacing="0" border="0" width="100%">
                                       <tr>
                                           <td align="center">
-                                              <a href="https://admin.aharyas.com/" style="display: inline-block; background: #1a1a1a; color: #ffffff; padding: 16px 48px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none; border-radius: 2px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
-                                                  Access Admin Dashboard
+                                              <a href="#" style="display: inline-block; background: linear-gradient(135deg, #4F200D 0%, #6B2D10 100%); color: #ffffff; padding: 18px 56px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none; border-radius: 8px; box-shadow: 0 8px 20px rgba(79, 32, 13, 0.3); transition: all 0.3s ease;">
+                                                  Access Admin Dashboard →
                                               </a>
                                           </td>
                                       </tr>
@@ -270,29 +313,41 @@ const sendWelcomeMail = async (email, name = 'Admin') => {
                               </td>
                           </tr>
 
-                          <!-- Closing Message -->
+                          <!-- Closing Message -->}
                           <tr>
-                              <td style="padding: 40px 60px; text-align: center; background: #fafaf9; border-top: 1px solid #e7e7e7;">
-                                  <p style="margin: 0 0 8px 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 17px; color: #1a1a1a; font-weight: 300; letter-spacing: 0.5px; font-style: italic;">Welcome to the Aharyas family</p>
-                                  <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 13px; color: #737373; font-weight: 300; line-height: 1.7;">
-                                      We're excited to work together in preserving India's handcrafted heritage.
+                              <td style="padding: 44px 60px; text-align: center; background: linear-gradient(135deg, #FCFAFA 0%, #EBD9D1 100%); border-top: 2px solid #EBD9D1;">
+                                  <p style="margin: 0 0 12px 0; font-family: 'Bodoni Moda', Georgia, serif; font-size: 20px; color: #4F200D; font-weight: 600; letter-spacing: 0.5px; font-style: italic;">Welcome to the Aarovi Family</p>
+                                  <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 400; line-height: 1.7; opacity: 0.85;">
+                                      Together, we celebrate handcrafted excellence and custom-made fashion.
                                   </p>
                               </td>
                           </tr>
 
-                          <!-- Footer -->
+                          <!-- Terms & Legal Notice -->
                           <tr>
-                              <td style="padding: 32px 60px; text-align: center; background: #ffffff; border-top: 1px solid #e7e7e7;">
-                                  <p style="margin: 0 0 8px 0; font-family: 'Inter', sans-serif; font-size: 12px; color: #737373; font-weight: 300;">
-                                      This email was sent to <a href="mailto:${email}" style="color: #1a1a1a; text-decoration: none; font-weight: 500; border-bottom: 1px solid #d4d4d4;">${email}</a>
+                              <td style="padding: 32px 60px; text-align: center; background: #ffffff; border-top: 2px solid #EBD9D1;">
+                                  <div style="background: #FCFAFA; border: 1px solid #EBD9D1; border-radius: 8px; padding: 24px; margin-bottom: 28px;">
+                                      <h4 style="margin: 0 0 12px 0; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; color: #4F200D; text-transform: uppercase; letter-spacing: 1.5px;">📜 Terms & Responsibilities</h4>
+                                      <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #131010; font-weight: 400; line-height: 1.7; opacity: 0.85;">
+                                          By using your admin account, you agree to maintain confidentiality, ensure accuracy in all operations, and comply with Aarovi's Terms & Conditions. All disputes fall under the jurisdiction of Hyderabad, Telangana, India.
+                                      </p>
+                                  </div>
+                                  
+                                  <p style="margin: 0 0 8px 0; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #131010; font-weight: 400; opacity: 0.7;">
+                                      This email was sent to <a href="mailto:${email}" style="color: #4F200D; text-decoration: none; font-weight: 600; border-bottom: 1px solid #EBD9D1;">${email}</a>
                                   </p>
-                                  <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 12px; color: #737373; font-weight: 300;">
-                                      Questions? <a href="mailto:aharyasofficial@gmail.com" style="color: #1a1a1a; text-decoration: none; font-weight: 500; border-bottom: 1px solid #d4d4d4;">Contact Support</a>
+                                  <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #131010; font-weight: 400; opacity: 0.7;">
+                                      Questions? <a href="mailto:aaroiviofficial@gmail.com" style="color: #4F200D; text-decoration: none; font-weight: 600; border-bottom: 1px solid #EBD9D1;">Contact Support</a>
                                   </p>
-                                  <div style="margin: 20px 0 0 0; padding-top: 20px; border-top: 1px solid #e7e7e7;">
-                                      <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 11px; color: #a3a3a3; font-weight: 300; line-height: 1.6;">
-                                          © ${new Date().getFullYear()} Aharyas. All rights reserved.<br>
-                                          Preserving heritage, one thread at a time.
+                                  
+                                  <div style="margin: 28px 0 0 0; padding-top: 24px; border-top: 1px solid #EBD9D1;">
+                                      <p style="margin: 0 0 12px 0; font-family: 'DM Sans', sans-serif; font-size: 12px; color: #131010; font-weight: 500; opacity: 0.6; line-height: 1.6;">
+                                          <strong style="font-weight: 600;">AAROVI FASHIONS</strong><br>
+                                          Hyderabad, Telangana - 502345, India
+                                      </p>
+                                      <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 11px; color: #131010; font-weight: 400; opacity: 0.5; line-height: 1.6;">
+                                          © ${new Date().getFullYear()} Aarovi. All rights reserved.<br>
+                                          Handcrafted with care, delivered with love.
                                       </p>
                                   </div>
                               </td>
@@ -300,7 +355,7 @@ const sendWelcomeMail = async (email, name = 'Admin') => {
 
                           <!-- Decorative Bottom Border -->
                           <tr>
-                              <td style="height: 6px; background: linear-gradient(90deg, #1a1a1a 0%, #4a4a4a 50%, #1a1a1a 100%);"></td>
+                              <td style="height: 8px; background: linear-gradient(90deg, #4F200D 0%, #8B4513 50%, #4F200D 100%);"></td>
                           </tr>
 
                       </table>
@@ -316,6 +371,7 @@ const sendWelcomeMail = async (email, name = 'Admin') => {
     await transporter.sendMail(mailOptions);
     return true;
   } catch (error) {
+    console.error('Error sending welcome email:', error);
     return false;
   }
 };

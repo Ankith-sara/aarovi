@@ -1,5 +1,6 @@
 import userModel from "../models/UserModel.js";
 import customizationModel from "../models/CustomizationModel.js";
+import mongoose from "mongoose";
 
 // Add product to cart
 const addToCart = async (req, res) => {
@@ -7,9 +8,9 @@ const addToCart = async (req, res) => {
     const { userId, itemId, size, quantity = 1 } = req.body;
 
     if (!userId || !itemId || !size) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "userId, itemId, and size are required" 
+      return res.status(400).json({
+        success: false,
+        message: "userId, itemId, and size are required"
       });
     }
 
@@ -40,9 +41,9 @@ const updateCart = async (req, res) => {
     const { userId, itemId, size, quantity } = req.body;
 
     if (!userId || !itemId || !size || quantity === undefined) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "userId, itemId, size and quantity are required" 
+      return res.status(400).json({
+        success: false,
+        message: "userId, itemId, size and quantity are required"
       });
     }
 
@@ -101,9 +102,9 @@ const removeFromCart = async (req, res) => {
     const { userId, itemId, size } = req.body;
 
     if (!userId || !itemId || !size) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "userId, itemId, and size are required" 
+      return res.status(400).json({
+        success: false,
+        message: "userId, itemId, and size are required"
       });
     }
 
@@ -116,7 +117,7 @@ const removeFromCart = async (req, res) => {
 
     if (cartData[itemId] && cartData[itemId][size]) {
       delete cartData[itemId][size];
-      
+
       if (Object.keys(cartData[itemId]).length === 0) {
         delete cartData[itemId];
       }
@@ -147,15 +148,14 @@ const clearCart = async (req, res) => {
   }
 };
 
-// Add customization to cart
 const addCustomToCart = async (req, res) => {
   try {
     const { userId, customizationId } = req.body;
 
     if (!userId || !customizationId) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "userId and customizationId are required" 
+      return res.status(400).json({
+        success: false,
+        message: "userId and customizationId are required"
       });
     }
 
@@ -164,18 +164,24 @@ const addCustomToCart = async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    const customizationModel = mongoose.model('customization');
     const customization = await customizationModel.findById(customizationId);
-    
+
     if (!customization) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Customization not found" 
+      return res.status(404).json({
+        success: false,
+        message: "Customization not found"
+      });
+    }
+
+    if (customization.userId.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized access to this customization"
       });
     }
 
     let cartData = user.cartData || {};
-    
+
     if (!cartData.customizations) {
       cartData.customizations = {};
     }
@@ -183,18 +189,30 @@ const addCustomToCart = async (req, res) => {
     if (cartData.customizations[customizationId]) {
       cartData.customizations[customizationId].quantity += 1;
     } else {
+      // ✅ SIMPLIFIED: Only essential info + final product image
       cartData.customizations[customizationId] = {
         price: customization.estimatedPrice || 0,
         quantity: 1,
-        snapshot: customization.toObject()
+        snapshot: {
+          gender: customization.gender,
+          dressType: customization.dressType,
+          fabric: customization.fabric,
+          color: customization.color,
+          productImage: customization.canvasDesign?.png || '',  // ✅ Just the PNG
+          designNotes: customization.designNotes || '',
+          createdAt: customization.createdAt
+        }
       };
     }
 
-    await userModel.findByIdAndUpdate(userId, { cartData });
-    res.json({ 
-      success: true, 
-      message: "Customization added to cart", 
-      cartData 
+    // Mark nested object as modified
+    user.markModified('cartData');
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Customization added to cart",
+      cartData
     });
   } catch (error) {
     console.error("Error in addCustomToCart:", error);
@@ -208,9 +226,9 @@ const updateCustomCart = async (req, res) => {
     const { userId, customizationId, quantity } = req.body;
 
     if (!userId || !customizationId || quantity === undefined) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "userId, customizationId, and quantity are required" 
+      return res.status(400).json({
+        success: false,
+        message: "userId, customizationId, and quantity are required"
       });
     }
 
@@ -224,7 +242,7 @@ const updateCustomCart = async (req, res) => {
     if (quantity === 0) {
       if (cartData.customizations && cartData.customizations[customizationId]) {
         delete cartData.customizations[customizationId];
-        
+
         if (Object.keys(cartData.customizations).length === 0) {
           delete cartData.customizations;
         }
@@ -235,7 +253,10 @@ const updateCustomCart = async (req, res) => {
       }
     }
 
-    await userModel.findByIdAndUpdate(userId, { cartData });
+    // ✅ Use markModified
+    user.markModified('cartData');
+    await user.save();
+
     res.json({ success: true, message: "Cart updated", cartData });
   } catch (error) {
     console.error("Error in updateCustomCart:", error);
@@ -249,9 +270,9 @@ const removeCustomFromCart = async (req, res) => {
     const { userId, customizationId } = req.body;
 
     if (!userId || !customizationId) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "userId and customizationId are required" 
+      return res.status(400).json({
+        success: false,
+        message: "userId and customizationId are required"
       });
     }
 
@@ -269,11 +290,14 @@ const removeCustomFromCart = async (req, res) => {
       }
     }
 
-    await userModel.findByIdAndUpdate(userId, { cartData });
-    res.json({ 
-      success: true, 
-      message: "Customization removed from cart", 
-      cartData 
+    // ✅ Use markModified
+    user.markModified('cartData');
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Customization removed from cart",
+      cartData
     });
   } catch (error) {
     console.error("Error in removeCustomFromCart:", error);

@@ -166,12 +166,6 @@ const FABRIC_PRINTS = {
     thumbnail: assets.shibori_img,
     description: 'Japanese tie-dye technique'
   },
-  painting: {
-    name: 'Hand Painting',
-    imageUrl: assets.painting_img,
-    thumbnail: assets.painting_img,
-    description: 'Artistic hand-painted design'
-  },
   kalamkari: {
     name: 'Kalamkari',
     imageUrl: assets.kalamkari_img,

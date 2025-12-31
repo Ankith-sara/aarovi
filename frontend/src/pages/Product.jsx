@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
-import { Camera, ChevronDown, ChevronUp, Minus, Plus, Heart, Share2, Ruler, Package, Truck, Shield, RefreshCw, X, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, Check, Info } from 'lucide-react';
+import { Camera, ChevronDown, ChevronUp, Minus, Plus, Heart, Share2, Ruler, Package, X, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, Check, Info } from 'lucide-react';
 import RelatedProducts from '../components/RelatedProducts';
 import RecentlyViewed from '../components/RecentlyViewed';
 import SizeChartModal from '../components/SizeChartModal';
@@ -187,9 +187,7 @@ const Product = () => {
       <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8 lg:gap-12">
-            {/* Left: Image Gallery */}
             <div className="space-y-4">
-              {/* Main Image */}
               <div className="relative group bg-background/20 overflow-hidden cursor-pointer" onClick={handleImageClick}>
                 <div className="relative aspect-[3/4]">
                   <img
@@ -197,17 +195,12 @@ const Product = () => {
                     alt={productData.name}
                     className="w-full h-full object-contain"
                   />
-                  
-                  {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                  {/* Zoom Badge */}
                   <div className="absolute top-4 right-4 bg-white/95 text-text px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg">
                     <Camera size={12} />
                     <span>Click to enlarge</span>
                   </div>
 
-                  {/* Navigation */}
                   {productData.images.length > 1 && (
                     <>
                       <button
@@ -224,8 +217,6 @@ const Product = () => {
                       </button>
                     </>
                   )}
-
-                  {/* Counter */}
                   <div className="absolute bottom-4 left-4 bg-white/95 px-3 py-1.5 text-xs font-medium text-text shadow-lg">
                     {currentIndex + 1} / {productData.images.length}
                   </div>
@@ -254,9 +245,8 @@ const Product = () => {
               </div>
             </div>
 
-            {/* Right: Sticky Product Details */}
+            {/* Product Details */}
             <div className="lg:sticky lg:top-24 lg:self-start space-y-6">
-              {/* Product Header */}
               <div className="border-b border-background/50 pb-6">
                 <div className="flex items-start justify-between mb-3">
                   <h1 className="text-3xl sm:text-4xl font-serif font-bold text-text leading-tight pr-4">
@@ -291,22 +281,6 @@ const Product = () => {
                 <div className="flex items-baseline gap-3 mb-4">
                   <span className="text-4xl font-serif font-bold text-secondary">{currency}{productData.price}</span>
                   <span className="text-sm text-text/50 font-light">Incl. GST</span>
-                </div>
-
-                {/* Trust Badges */}
-                <div className="flex flex-wrap gap-3 text-xs text-text/60">
-                  <div className="flex items-center gap-1.5">
-                    <Shield size={14} className="text-secondary" />
-                    <span>Secure checkout</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Truck size={14} className="text-secondary" />
-                    <span>Free shipping</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <RefreshCw size={14} className="text-secondary" />
-                    <span>Easy returns</span>
-                  </div>
                 </div>
               </div>
 
@@ -348,7 +322,6 @@ const Product = () => {
                 </div>
               </div>
 
-              {/* Quantity */}
               <div>
                 <label className="text-xs font-bold text-text uppercase tracking-wider mb-3 block">Quantity</label>
                 <div className="inline-flex items-center border border-background/50">
@@ -399,12 +372,6 @@ const Product = () => {
                     <span>View Cart</span>
                   </button>
                 )}
-                <Link
-                  to="/customize"
-                  className="w-full py-4 border-2 border-secondary text-secondary font-semibold uppercase tracking-wider hover:bg-secondary hover:text-white transition-all duration-300 flex items-center justify-center"
-                >
-                  Customize This Product
-                </Link>
               </div>
 
               {/* Product Information */}
@@ -542,7 +509,7 @@ const Product = () => {
         <RecentlyViewed />
       </section>
 
-      <style jsx>{`
+      <style>{`
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button {
           -webkit-appearance: none;

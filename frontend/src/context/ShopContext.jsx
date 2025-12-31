@@ -550,7 +550,6 @@ const ShopContextProvider = (props) => {
             );
 
             if (res.data.success) {
-                // Update customizations array with new status
                 setCustomizations(prev =>
                     prev.map(c =>
                         c._id === customizationId
@@ -572,12 +571,13 @@ const ShopContextProvider = (props) => {
         }
     }, [token, backendUrl]);
 
-    const getCustomizationById = useCallback(async (customizationId) => {
+const getCustomizationById = useCallback(async (customizationId) => {
         if (!token) {
             return null;
         }
 
         try {
+            // FIXED: Use GET method instead of POST
             const res = await axios.get(
                 `${backendUrl}/api/customization/${customizationId}`,
                 { headers: { Authorization: `Bearer ${token}` } }
@@ -601,6 +601,7 @@ const ShopContextProvider = (props) => {
         }
 
         try {
+            // FIXED: Use DELETE method
             const res = await axios.delete(
                 `${backendUrl}/api/customization/${customizationId}`,
                 { headers: { Authorization: `Bearer ${token}` } }

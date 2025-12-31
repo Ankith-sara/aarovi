@@ -1,421 +1,257 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
-import CartTotal from '../components/CartTotal';
-import { Trash2, Sparkles, Palette, ShoppingBag, Package, ArrowRight, Plus, Minus, X } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 const Cart = () => {
-  const { products, currency, cartItems, updateQuantity, navigate, updateCustomizationQuantity, removeCustomizationFromCart } = useContext(ShopContext);
-  const [cartData, setCartData] = useState([]);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState(null);
+  const { products, cartItems, currency, updateQuantity, removeFromCart, updateCustomizationQuantity, removeCustomizationFromCart, getCartAmount, navigate, delivery_fee } = useContext(ShopContext);
+  const [cartProducts, setCartProducts] = useState([]);
+  const [customizationItems, setCustomizationItems] = useState([]);
 
   useEffect(() => {
-    if (products.length > 0 || cartItems.customizations) {
-      const tempData = [];
+    if (!cartItems) return;
 
-      // Add regular products
-      for (const items in cartItems) {
-        if (items === 'customizations') continue;
+    // Process regular products
+    const tempProducts = [];
+    for (const itemId in cartItems) {
+      if (itemId === 'customizations') continue;
 
-        for (const item in cartItems[items]) {
-          if (cartItems[items][item] > 0) {
-            tempData.push({
-              _id: items,
-              size: item,
-              quantity: cartItems[items][item],
-              type: 'product'
+      const product = products.find(p => p._id === itemId);
+      if (product) {
+        for (const size in cartItems[itemId]) {
+          if (cartItems[itemId][size] > 0) {
+            tempProducts.push({
+              _id: itemId,
+              size,
+              quantity: cartItems[itemId][size],
+              ...product
             });
           }
         }
       }
-
-      // Add customizations
-      if (cartItems.customizations) {
-        for (const customId in cartItems.customizations) {
-          const custom = cartItems.customizations[customId];
-          if (custom && custom.quantity > 0) {
-            tempData.push({
-              _id: customId,
-              quantity: custom.quantity,
-              price: custom.price,
-              snapshot: custom.snapshot,
-              type: 'customization'
-            });
-          }
-        }
-      }
-
-      setCartData(tempData);
     }
+    setCartProducts(tempProducts);
+
+    // Process customizations
+    const tempCustomizations = [];
+    if (cartItems.customizations) {
+      for (const customId in cartItems.customizations) {
+        const customItem = cartItems.customizations[customId];
+        if (customItem && customItem.quantity > 0) {
+          tempCustomizations.push({
+            _id: customId,
+            ...customItem
+          });
+        }
+      }
+    }
+    setCustomizationItems(tempCustomizations);
   }, [cartItems, products]);
 
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape' && showDeleteModal) {
-        cancelDelete();
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [showDeleteModal]);
-
-  useEffect(() => {
-    document.title = 'Shopping Cart | Aarovi';
-  }, []);
-
-  const handleDeleteClick = (item) => {
-    setItemToDelete(item);
-    setShowDeleteModal(true);
+  const handleUpdateQuantity = (itemId, size, delta) => {
+    const currentQty = cartItems[itemId]?.[size] || 0;
+    const newQty = Math.max(0, currentQty + delta);
+    updateQuantity(itemId, size, newQty);
   };
 
-  const confirmDelete = () => {
-    if (itemToDelete) {
-      if (itemToDelete.type === 'customization') {
-        removeCustomizationFromCart(itemToDelete._id);
-      } else {
-        updateQuantity(itemToDelete._id, itemToDelete.size, 0);
-      }
-      setShowDeleteModal(false);
-      setItemToDelete(null);
-    }
+  const handleUpdateCustomQuantity = (customId, delta) => {
+    const currentQty = cartItems.customizations?.[customId]?.quantity || 0;
+    const newQty = Math.max(0, currentQty + delta);
+    updateCustomizationQuantity(customId, newQty);
   };
 
-  const cancelDelete = () => {
-    setShowDeleteModal(false);
-    setItemToDelete(null);
-  };
+  const cartAmount = getCartAmount();
+  const totalAmount = cartAmount + delivery_fee;
+
+  if (cartProducts.length === 0 && customizationItems.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <ShoppingBag size={80} className="mx-auto mb-4 text-gray-300" />
+          <h2 className="text-2xl font-bold text-gray-700 mb-2">Your Cart is Empty</h2>
+          <p className="text-gray-500 mb-6">Add some items to get started!</p>
+          <button
+            onClick={() => navigate('/shop/collection')}
+            className="px-6 py-3 bg-secondary text-white rounded-full hover:bg-secondary/90 transition-all"
+          >
+            Continue Shopping
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="mt-20 min-h-screen bg-white">
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-slideUp overflow-hidden">
-            <div className="p-8 text-center">
-              <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Trash2 size={28} className="text-red-500" />
-              </div>
-              <h3 className="text-2xl font-serif font-bold text-text mb-3">Remove from Cart?</h3>
-              <p className="text-text/60 font-light leading-relaxed text-sm">
-                This item will be removed from your cart. You can add it back anytime.
-              </p>
-            </div>
+    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 mt-16">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
 
-            <div className="px-8 pb-8 flex gap-3">
-              <button
-                onClick={cancelDelete}
-                className="flex-1 py-3.5 bg-gray-100 text-text font-semibold rounded-xl hover:bg-gray-200 transition-all duration-300"
-              >
-                Keep Item
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="flex-1 py-3.5 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition-all duration-300 shadow-lg shadow-red-500/30"
-              >
-                Remove
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Hero Section */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-2">
-              Shopping Cart
-            </h1>
-            {cartData.length > 0 && (
-              <p className="text-text/50 font-light flex items-center gap-2">
-                <ShoppingBag size={16} />
-                {cartData.length} {cartData.length === 1 ? 'item' : 'items'} in cart
-              </p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {cartData.length === 0 ? (
-        <section className="px-4 sm:px-6 lg:px-8 pb-20">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col items-center justify-center py-32">
-              <div className="relative mb-8">
-                <div className="w-32 h-32 bg-gradient-to-br from-background/20 to-background/40 rounded-full flex items-center justify-center">
-                  <ShoppingBag size={56} className="text-text/30" strokeWidth={1.5} />
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Cart Items */}
+          <div className="lg:col-span-2 space-y-4">
+            {cartProducts.map((item, index) => (
+              <div key={`${item._id}-${item.size}-${index}`} className="bg-white rounded-2xl shadow-lg p-6 flex gap-4">
+                <div className="w-24 h-24 flex-shrink-0">
+                  <img
+                    src={item.images?.[0] || '/placeholder-image.png'}
+                    alt={item.name}
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.target.src = '/placeholder-image.png';
+                    }}
+                  />
                 </div>
-                <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg">
-                  <Package size={24} className="text-secondary" />
+
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg text-gray-900">{item.name}</h3>
+                  <p className="text-sm text-gray-500">Size: {item.size}</p>
+                  <p className="text-lg font-bold text-secondary mt-2">
+                    {currency}{item.price?.toLocaleString()}
+                  </p>
+                </div>
+
+                <div className="flex flex-col items-end justify-between">
+                  <button
+                    onClick={() => removeFromCart(item._id, item.size)}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+
+                  <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
+                    <button
+                      onClick={() => handleUpdateQuantity(item._id, item.size, -1)}
+                      className="text-gray-600 hover:text-gray-900 transition-colors"
+                    >
+                      <Minus size={16} />
+                    </button>
+                    <span className="text-sm font-semibold w-8 text-center">{item.quantity}</span>
+                    <button
+                      onClick={() => handleUpdateQuantity(item._id, item.size, 1)}
+                      className="text-gray-600 hover:text-gray-900 transition-colors"
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="text-center max-w-md mb-10">
-                <h3 className="text-3xl font-serif font-bold mb-3 text-text">Your cart is empty</h3>
-                <p className="text-text/60 font-light leading-relaxed">
-                  Add some amazing products to get started with your shopping
-                </p>
-              </div>
-              <button
-                onClick={() => navigate('/collection')}
-                className="group px-10 py-4 bg-secondary text-white font-semibold rounded-full hover:bg-secondary/90 transition-all duration-300 flex items-center gap-3 shadow-xl shadow-secondary/30 hover:shadow-2xl hover:shadow-secondary/40 hover:-translate-y-0.5"
-              >
-                <span>Start Shopping</span>
-                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-          </div>
-        </section>
-      ) : (
-        <section className="px-4 sm:px-6 lg:px-8 pb-20">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-3 gap-8">
-              {/* Cart Items */}
-              <div className="lg:col-span-2 space-y-4">
-                {cartData.map((item, index) => {
-                  if (item.type === 'customization') {
-                    // CUSTOM PRODUCT CARD
-                    const customData = item.snapshot;
-                    return (
-                      <div
-                        key={`custom-${item._id}`}
-                        className="group bg-white rounded-2xl p-6 hover:shadow-lg transition-all duration-300 border border-secondary/30"
-                      >
-                        <div className="flex flex-col sm:flex-row gap-6">
-                          {/* Custom Badge & Image */}
-                          <div className="flex-shrink-0 relative">
-                            <div className="absolute -top-2 -left-2 z-10">
-                              <div className="bg-gradient-to-r from-secondary to-secondary/80 text-white px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
-                                <Sparkles size={14} className="animate-pulse" />
-                                <span className="text-xs font-bold uppercase tracking-wider">Custom</span>
-                              </div>
-                            </div>
-                            <div className="w-full sm:w-40 h-48 sm:h-40 bg-gradient-to-br from-background/20 to-background/40 rounded-xl flex items-center justify-center border border-background/30 relative overflow-hidden">
-                              <Palette size={40} className="text-text/30" strokeWidth={1.5} />
-                              <div
-                                className="absolute inset-0"
-                                style={{
-                                  backgroundColor: customData.color || '#e11d48',
-                                  opacity: 0.2
-                                }}
-                              />
-                            </div>
-                          </div>
+            ))}
 
-                          {/* Custom Details */}
-                          <div className="flex-1 min-w-0">
-                            <div className="mb-4">
-                              <h3 className="font-serif font-bold text-lg text-text mb-3">
-                                Custom {customData.dressType}
-                              </h3>
+            {/* Custom Designs */}
+            {customizationItems.map((item, index) => {
+              const snapshot = item.snapshot || {};
+              const productImage = snapshot.productImage || '/placeholder-custom.png';
 
-                              <div className="space-y-2 text-sm mb-4">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-text/50 font-medium min-w-[60px]">Gender:</span>
-                                  <span className="text-text font-semibold">{customData.gender}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-text/50 font-medium min-w-[60px]">Fabric:</span>
-                                  <span className="text-text font-semibold">{customData.fabric}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-text/50 font-medium min-w-[60px]">Color:</span>
-                                  <div className="flex items-center gap-2">
-                                    <div
-                                      className="w-5 h-5 rounded-full border-2 border-background/50 shadow-sm"
-                                      style={{ backgroundColor: customData.color }}
-                                    />
-                                    <span className="text-text/70 text-xs font-semibold">{customData.color}</span>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-text/50 font-medium min-w-[60px]">Status:</span>
-                                  <span className="text-secondary font-semibold text-xs bg-secondary/10 px-3 py-1 rounded-full">
-                                    {customData.status}
-                                  </span>
-                                </div>
-                              </div>
+              return (
+                <div key={`custom-${item._id}-${index}`} className="bg-white rounded-2xl shadow-lg p-6 flex gap-4">
+                  <div className="w-24 h-24 flex-shrink-0">
+                    <img
+                      src={productImage}
+                      alt={`Custom ${snapshot.dressType}`}
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        console.error('Failed to load custom design image:', productImage);
+                        e.target.src = '/placeholder-custom.png';
+                      }}
+                    />
+                  </div>
 
-                              {customData.designNotes && (
-                                <div className="p-3 bg-background/30 rounded-xl border border-background/40">
-                                  <p className="text-xs text-text/70 italic">
-                                    <span className="font-semibold text-text">Note:</span> {customData.designNotes}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs bg-secondary text-white px-2 py-1 rounded-full font-semibold">
+                        CUSTOM DESIGN
+                      </span>
+                    </div>
+                    <h3 className="font-semibold text-lg text-gray-900">
+                      Custom {snapshot.dressType || 'Design'}
+                    </h3>
+                    <div className="text-sm text-gray-600 space-y-1 mt-2">
+                      <p><span className="font-medium">Fabric:</span> {snapshot.fabric}</p>
+                      <p><span className="font-medium">Color:</span>
+                        <span
+                          className="inline-block w-4 h-4 rounded-full ml-2 border border-gray-300"
+                          style={{ backgroundColor: snapshot.color }}
+                        />
+                        {snapshot.designNotes && (
+                          <p className="notes">{snapshot.designNotes.substring(0, 50)}...</p>
+                        )}
+                      </p>
+                    </div>
+                    <p className="text-lg font-bold text-secondary mt-2">
+                      {currency}{item.price?.toLocaleString()}
+                    </p>
+                  </div>
 
-                            {/* Quantity & Price */}
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                              <div className="flex items-center bg-background/30 rounded-xl overflow-hidden">
-                                <button
-                                  onClick={() => updateCustomizationQuantity(item._id, item.quantity - 1)}
-                                  className="p-3 hover:bg-background/60 transition-colors disabled:opacity-30"
-                                  disabled={item.quantity <= 1}
-                                >
-                                  <Minus size={16} className="text-text" />
-                                </button>
-                                <span className="px-4 py-3 font-bold text-text">
-                                  {item.quantity}
-                                </span>
-                                <button
-                                  onClick={() => updateCustomizationQuantity(item._id, item.quantity + 1)}
-                                  className="p-3 hover:bg-background/60 transition-colors"
-                                >
-                                  <Plus size={16} className="text-text" />
-                                </button>
-                              </div>
+                  <div className="flex flex-col items-end justify-between">
+                    <button
+                      onClick={() => removeCustomizationFromCart(item._id)}
+                      className="text-red-500 hover:text-red-700 transition-colors"
+                    >
+                      <Trash2 size={20} />
+                    </button>
 
-                              <div className="flex items-center gap-4">
-                                <div className="text-right">
-                                  <p className="text-2xl font-bold text-secondary">
-                                    {currency}{(item.price * item.quantity).toLocaleString()}
-                                  </p>
-                                  <p className="text-xs text-text/50">
-                                    {currency}{item.price.toLocaleString()} each
-                                  </p>
-                                </div>
-                                <button
-                                  onClick={() => handleDeleteClick(item)}
-                                  className="p-2.5 text-text/40 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-300"
-                                >
-                                  <Trash2 size={20} />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  } else {
-                    // REGULAR PRODUCT CARD
-                    const productData = products.find((product) => product._id === item._id);
-                    if (!productData) return null;
-
-                    return (
-                      <div
-                        key={index}
-                        className="group bg-white rounded-2xl p-6 hover:shadow-lg transition-all duration-300 border border-background/50"
-                      >
-                        <div className="flex flex-col sm:flex-row gap-6">
-                          {/* Product Image */}
-                          <div className="flex-shrink-0">
-                            <div className="relative w-full sm:w-40 h-48 sm:h-40 rounded-xl overflow-hidden bg-white border border-background/30">
-                              <img
-                                className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                                src={productData.images[0]}
-                                alt={productData.name}
-                              />
-                            </div>
-                          </div>
-
-                          {/* Product Details */}
-                          <div className="flex-1 min-w-0">
-                            <div className="mb-4">
-                              <h3 className="font-serif font-bold text-lg text-text mb-3 line-clamp-2">
-                                {productData.name}
-                              </h3>
-                              <div className="flex flex-wrap items-center gap-3 text-sm text-text/60 mb-3">
-                                <div className="flex items-center gap-2">
-                                  <Package size={16} />
-                                  <span className="font-medium">Size: <span className="text-text font-semibold">{item.size}</span></span>
-                                </div>
-                                <div className="px-3 py-1 bg-background/50 rounded-full">
-                                  <span className="font-semibold text-text">{productData.category}</span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Quantity & Price */}
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                              <div className="flex items-center bg-background/30 rounded-xl overflow-hidden">
-                                <button
-                                  onClick={() => updateQuantity(item._id, item.size, item.quantity - 1)}
-                                  className="p-3 hover:bg-background/60 transition-colors disabled:opacity-30"
-                                  disabled={item.quantity <= 1}
-                                >
-                                  <Minus size={16} className="text-text" />
-                                </button>
-                                <span className="px-4 py-3 font-bold text-text">
-                                  {item.quantity}
-                                </span>
-                                <button
-                                  onClick={() => updateQuantity(item._id, item.size, item.quantity + 1)}
-                                  className="p-3 hover:bg-background/60 transition-colors"
-                                >
-                                  <Plus size={16} className="text-text" />
-                                </button>
-                              </div>
-
-                              <div className="flex items-center gap-4">
-                                <div className="text-right">
-                                  <p className="text-2xl font-bold text-secondary">
-                                    {currency}{(productData.price * item.quantity).toLocaleString()}
-                                  </p>
-                                  <p className="text-xs text-text/50">
-                                    {currency}{productData.price.toLocaleString()} each
-                                  </p>
-                                </div>
-                                <button
-                                  onClick={() => handleDeleteClick(item)}
-                                  className="p-2.5 text-text/40 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-300"
-                                >
-                                  <Trash2 size={20} />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  }
-                })}
-              </div>
-
-              {/* Cart Summary */}
-              <div className="lg:col-span-1">
-                <div className="sticky top-24">
-                  <div className="bg-white rounded-2xl shadow-xl border border-background/50 p-8">
-                    <h3 className="text-2xl font-serif font-bold mb-6 text-text">Order Summary</h3>
-                    <CartTotal />
-                    <div className="mt-8 space-y-3">
+                    <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
                       <button
-                        onClick={() => navigate('/place-order')}
-                        className="w-full py-4 bg-secondary text-white rounded-xl hover:bg-secondary/90 transition-all duration-300 shadow-lg shadow-secondary/30 hover:shadow-xl hover:shadow-secondary/40 font-bold text-lg flex items-center justify-center gap-2"
+                        onClick={() => handleUpdateCustomQuantity(item._id, -1)}
+                        className="text-text hover:text-text transition-colors"
                       >
-                        <span>Proceed to Checkout</span>
-                        <ArrowRight size={20} />
+                        <Minus size={16} />
                       </button>
+                      <span className="text-sm font-semibold w-8 text-center">{item.quantity}</span>
                       <button
-                        onClick={() => navigate('/collection')}
-                        className="w-full py-3 bg-background/40 text-text rounded-xl hover:bg-background/60 transition-all duration-300 font-semibold"
+                        onClick={() => handleUpdateCustomQuantity(item._id, 1)}
+                        className="text-text hover:text-text transition-colors"
                       >
-                        Continue Shopping
+                        <Plus size={16} />
                       </button>
                     </div>
                   </div>
                 </div>
+              );
+            })}
+          </div>
+
+          {/* Cart Summary */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+
+              <div className="space-y-4">
+                <div className="flex justify-between text-gray-600">
+                  <span>Subtotal</span>
+                  <span className="font-semibold">{currency}{cartAmount.toLocaleString()}</span>
+                </div>
+
+                <div className="flex justify-between text-gray-600">
+                  <span>Delivery Fee</span>
+                  <span className="font-semibold">{currency}{delivery_fee}</span>
+                </div>
+
+                <div className="border-t pt-4">
+                  <div className="flex justify-between text-lg font-bold text-gray-900">
+                    <span>Total</span>
+                    <span className="text-secondary">{currency}{totalAmount.toLocaleString()}</span>
+                  </div>
+                </div>
               </div>
+
+              <button
+                onClick={() => navigate('/place-order')}
+                className="w-full mt-6 px-6 py-4 bg-secondary text-white rounded-full hover:bg-secondary/90 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl"
+              >
+                Proceed to Checkout
+              </button>
+
+              <button
+                onClick={() => navigate('/shop/collection')}
+                className="w-full mt-3 px-6 py-3 border-2 border-secondary text-secondary rounded-full hover:bg-secondary/5 transition-all duration-300 font-semibold"
+              >
+                Continue Shopping
+              </button>
             </div>
           </div>
-        </section>
-      )}
-
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes slideUp {
-          from { transform: translateY(20px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out;
-        }
-        .animate-slideUp {
-          animation: slideUp 0.3s ease-out;
-        }
-      `}</style>
+        </div>
+      </div>
     </div>
   );
 };

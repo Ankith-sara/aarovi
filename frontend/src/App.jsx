@@ -52,7 +52,7 @@ const App = () => {
         <Route path='/login' element={<Login />} />
         <Route path='/place-order' element={<PlaceOrder />} />
         <Route path='/orders' element={<Orders />} />
-        <Route path='/trackorder/:orderId' element={<TrackOrder />} />
+        <Route path='/status/:orderId' element={<TrackOrder />} />
         <Route path='/verify' element={<Verify />} />
         <Route path='/profile/:id' element={<MyProfile />} />
         <Route path='/refundpolicy' element={<CancellationRefundPolicy />} />

@@ -473,7 +473,6 @@ const Add = ({ token }) => {
                       </>
                     ) : (
                       <>
-                        <Plus size={20} />
                         <span>Add Product</span>
                       </>
                     )}

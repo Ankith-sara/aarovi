@@ -21,7 +21,7 @@ const sendOrderMail = async (email, subject, text, html) => {
         return false;
     }
     const mailOptions = {
-        from: `"Aharyas" <${process.env.EMAIL_USER}>`,
+        from: `"Aarovi" <${process.env.EMAIL_USER}>`,
         to: email,
         subject,
         text,
@@ -67,7 +67,7 @@ const sendShippingEmail = async (orderData, user) => {
             return false;
         }
 
-        const subject = `Your Aharyas Order #${orderId} Has Been Shipped!`;
+        const subject = `Your Aarovi Order #${orderId} Has Been Shipped!`;
 
         const html = `
             <!DOCTYPE html>
@@ -75,57 +75,66 @@ const sendShippingEmail = async (orderData, user) => {
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Order Shipped - Aharyas</title>
+                <title>Order Shipped - Aarovi</title>
+                <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+                </style>
             </head>
-            <body style="margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: linear-gradient(to bottom, #fafaf9 0%, #ffffff 100%); color: #1a1a1a;">
-                <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(to bottom, #fafaf9 0%, #ffffff 100%); min-height: 100vh;">
+            <body style="margin: 0; padding: 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: linear-gradient(to bottom, #FCFAFA 0%, #ffffff 100%); color: #131010;">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(to bottom, #FCFAFA 0%, #EBD9D1 100%); min-height: 100vh;">
                     <tr>
                         <td align="center" style="padding: 60px 20px;">
-                            <table cellpadding="0" cellspacing="0" border="0" width="680" style="max-width: 680px; background-color: #ffffff; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);">
+                            <table cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; background-color: #ffffff; box-shadow: 0 10px 40px rgba(79, 32, 13, 0.12); border-radius: 4px; overflow: hidden;">
                                 
                                 <tr>
-                                    <td style="height: 6px; background: #000000;"></td>
+                                    <td style="height: 8px; background: linear-gradient(90deg, #4F200D 0%, #8B4513 50%, #4F200D 100%);"></td>
                                 </tr>
 
                                 <tr>
-                                    <td style="padding: 50px 60px 40px; text-align: center; background: linear-gradient(135deg, #fafaf9 0%, #f5f5f4 100%); border-bottom: 1px solid #e7e7e7;">
-                                        <h1 style="margin: 0 0 8px 0; font-family: Georgia, serif; font-size: 48px; font-weight: 300; letter-spacing: 8px; color: #1a1a1a; text-transform: uppercase;">AHARYAS</h1>
-                                        <div style="width: 40px; height: 1px; background: #1a1a1a; margin: 0 auto 12px;"></div>
-                                        <p style="margin: 0; font-size: 11px; letter-spacing: 3px; color: #6b6b6b; text-transform: uppercase; font-weight: 400;">Conscious Luxury · Indian Heritage</p>
+                                    <td style="padding: 50px 50px 40px; text-align: center; background: #ffffff; border-bottom: 2px solid #EBD9D1;">
+                                        <h1 style="margin: 0 0 12px 0; font-family: 'Bodoni Moda', Georgia, serif; font-size: 48px; font-weight: 600; letter-spacing: 4px; color: #4F200D; text-transform: uppercase;">AAROVI</h1>
+                                        <div style="width: 60px; height: 2px; background: #4F200D; margin: 0 auto 16px;"></div>
+                                        <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: 3px; color: #131010; text-transform: uppercase; font-weight: 600; opacity: 0.7;">Handcrafted Heritage · Timeless Elegance</p>
                                     </td>
                                 </tr>
 
                                 <tr>
-                                    <td style="padding: 60px 60px 50px; text-align: center;">
-                                        <h2 style="margin: 0 0 16px 0; font-family: Georgia, serif; font-size: 36px; font-weight: 400; letter-spacing: 2px; color: #1a1a1a;">Your Order is On Its Way!</h2>
-                                        <p style="margin: 0; font-size: 16px; color: #525252; font-weight: 300; line-height: 1.7; max-width: 480px; margin: 0 auto;">
-                                            Great news, <strong style="font-weight: 500; color: #1a1a1a;">${user.name}</strong>! Your handcrafted treasures have been shipped and are making their way to you.
+                                    <td style="background: linear-gradient(135deg, #4F200D 0%, #6B2D10 100%); padding: 18px 32px; text-align: center;">
+                                        <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 11px; color: #ffffff; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;">📦 Your Order Is On Its Way</p>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding: 50px 50px 40px; text-align: center; background: #FCFAFA;">
+                                        <h2 style="margin: 0 0 20px 0; font-family: 'Bodoni Moda', Georgia, serif; font-size: 36px; font-weight: 600; letter-spacing: 1px; color: #4F200D; line-height: 1.2;">Package Shipped!</h2>
+                                        <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 15px; color: #131010; font-weight: 400; line-height: 1.8; max-width: 460px; margin: 0 auto; opacity: 0.85;">
+                                            Great news, <strong style="font-weight: 700; color: #4F200D;">${user.name}</strong>! Your handcrafted treasures have been shipped and are making their way to you.
                                         </p>
                                     </td>
                                 </tr>
 
                                 <tr>
-                                    <td style="padding: 0 60px 50px;">
-                                        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border: 1px solid #e7e7e7; background: #ffffff;">
+                                    <td style="padding: 0 50px 40px;">
+                                        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border: 2px solid #EBD9D1; background: #ffffff; border-radius: 12px; overflow: hidden;">
                                             <tr>
-                                                <td style="padding: 24px 32px; background: #000000; border-bottom: 1px solid #e7e7e7;">
-                                                    <h3 style="margin: 0; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #ffffff;">Shipment Details</h3>
+                                                <td style="padding: 28px 32px; background: linear-gradient(135deg, #4F200D, #6B2D10); border-bottom: 2px solid #EBD9D1;">
+                                                    <h3 style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #ffffff;">Shipment Details</h3>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td style="padding: 32px;">
                                                     <table cellpadding="0" cellspacing="0" border="0" width="100%">
                                                         <tr>
-                                                            <td style="padding: 14px 0; font-size: 14px; color: #737373;">Order Number</td>
-                                                            <td style="padding: 14px 0; font-size: 14px; color: #1a1a1a; font-weight: 500; text-align: right;">#${orderId}</td>
+                                                            <td style="padding: 14px 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 400; opacity: 0.7;">Order Number</td>
+                                                            <td style="padding: 14px 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #4F200D; font-weight: 700; text-align: right;">#${orderId}</td>
                                                         </tr>
-                                                        <tr style="border-top: 1px solid #f5f5f4;">
-                                                            <td style="padding: 14px 0; font-size: 14px; color: #737373;">Items</td>
-                                                            <td style="padding: 14px 0; font-size: 14px; color: #1a1a1a; text-align: right;">${items.length} item(s)</td>
+                                                        <tr style="border-top: 1px solid #EBD9D1;">
+                                                            <td style="padding: 14px 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 400; opacity: 0.7;">Items Shipped</td>
+                                                            <td style="padding: 14px 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #4F200D; font-weight: 600; text-align: right;">${items.length} item(s)</td>
                                                         </tr>
-                                                        <tr style="border-top: 1px solid #f5f5f4;">
-                                                            <td style="padding: 14px 0; font-size: 14px; color: #737373;">Order Total</td>
-                                                            <td style="padding: 14px 0; font-size: 18px; color: #1a1a1a; font-weight: 600; text-align: right;">₹${amount.toLocaleString('en-IN')}</td>
+                                                        <tr style="border-top: 1px solid #EBD9D1;">
+                                                            <td style="padding: 14px 0; font-family: 'DM Sans', sans-serif; font-size: 14px; color: #131010; font-weight: 400; opacity: 0.7;">Order Total</td>
+                                                            <td style="padding: 14px 0; font-family: 'Bodoni Moda', serif; font-size: 20px; color: #4F200D; font-weight: 600; text-align: right;">₹${amount.toLocaleString('en-IN')}</td>
                                                         </tr>
                                                     </table>
                                                 </td>
@@ -135,21 +144,21 @@ const sendShippingEmail = async (orderData, user) => {
                                 </tr>
 
                                 <tr>
-                                    <td style="padding: 0 60px 50px;">
-                                        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border: 1px solid #e7e7e7; background: #fafaf9;">
+                                    <td style="padding: 0 50px 40px;">
+                                        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border: 2px solid #EBD9D1; background: #FCFAFA; border-radius: 12px; overflow: hidden;">
                                             <tr>
-                                                <td style="padding: 24px 32px; border-bottom: 1px solid #e7e7e7;">
-                                                    <h3 style="margin: 0; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #1a1a1a;">Delivering To</h3>
+                                                <td style="padding: 24px 32px; border-bottom: 1px solid #EBD9D1;">
+                                                    <h3 style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #4F200D;">Delivering To</h3>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td style="padding: 28px 32px;">
-                                                    <p style="margin: 0; font-size: 15px; color: #1a1a1a; line-height: 1.9;">
-                                                        <strong>${address.firstName || ''} ${address.lastName || ''}</strong><br>
+                                                    <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 15px; color: #131010; font-weight: 400; line-height: 1.9;">
+                                                        <strong style="font-weight: 700; color: #4F200D;">${address.firstName || ''} ${address.lastName || ''}</strong><br>
                                                         ${address.street || ''}<br>
                                                         ${address.city || ''}, ${address.state || ''} ${address.zipcode || ''}<br>
                                                         ${address.country || ''}<br>
-                                                        <span style="color: #737373;">📞 ${address.phone || 'N/A'}</span>
+                                                        <span style="color: #131010; margin-top: 8px; display: inline-block; opacity: 0.7;">📞 ${address.phone || 'N/A'}</span>
                                                     </p>
                                                 </td>
                                             </tr>
@@ -158,12 +167,12 @@ const sendShippingEmail = async (orderData, user) => {
                                 </tr>
 
                                 <tr>
-                                    <td style="padding: 0 60px 50px;">
-                                        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #1a1a1a; border-left: 4px solid #000000;">
+                                    <td style="padding: 0 50px 40px;">
+                                        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(135deg, #FEF3C7, #FDE68A); border: 2px solid #F59E0B; border-left: 6px solid #D97706; border-radius: 12px;">
                                             <tr>
-                                                <td style="padding: 32px 36px;">
-                                                    <h3 style="margin: 0 0 16px 0; font-family: Georgia, serif; font-size: 22px; font-weight: 400; color: #1a1a1a;">What's Next?</h3>
-                                                    <p style="margin: 0; font-size: 15px; color: #525252; line-height: 1.8;">
+                                                <td style="padding: 28px 32px;">
+                                                    <h3 style="margin: 0 0 14px 0; font-family: 'Bodoni Moda', serif; font-size: 22px; font-weight: 600; color: #92400E;">What's Next?</h3>
+                                                    <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 15px; color: #78350F; font-weight: 500; line-height: 1.8;">
                                                         Your package is on its way! You'll receive another email once it's out for delivery. Please ensure someone is available to receive the package at the delivery address.
                                                     </p>
                                                 </td>
@@ -173,27 +182,25 @@ const sendShippingEmail = async (orderData, user) => {
                                 </tr>
 
                                 <tr>
-                                    <td style="padding: 50px 60px; text-align: center; background: #ffffff; border-top: 1px solid #e7e7e7;">
-                                        <p style="margin: 0 0 8px 0; font-size: 13px; color: #737373;">
-                                            Questions? Reach us at <a href="mailto:support@aharyas.com" style="color: #1a1a1a; text-decoration: none; font-weight: 500; border-bottom: 1px solid #1a1a1a;">support@aharyas.com</a>
+                                    <td style="padding: 40px 50px; text-align: center; background: linear-gradient(135deg, #FCFAFA, #EBD9D1); border-top: 2px solid #EBD9D1;">
+                                        <p style="margin: 0 0 10px 0; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #131010; font-weight: 400; opacity: 0.7;">
+                                            Questions? Email us at <a href="mailto:aaroviofficial@gmail.com" style="color: #4F200D; text-decoration: none; font-weight: 700; border-bottom: 2px solid #EBD9D1;">aaroviofficial@gmail.com</a>
                                         </p>
-                                        <p style="margin: 0; font-size: 13px; color: #737373;">
-                                            or call us at <a href="tel:+919063284008" style="color: #1a1a1a; text-decoration: none; font-weight: 500;">+91 9063284008</a>
+                                        <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 13px; color: #131010; font-weight: 400; opacity: 0.7;">
+                                            or call us at <a href="tel:+919399336666" style="color: #4F200D; text-decoration: none; font-weight: 700;">+91 9399336666</a>
                                         </p>
+                                        
+                                        <div style="margin: 24px 0 0 0; padding-top: 24px; border-top: 1px solid #EBD9D1;">
+                                            <p style="margin: 0; font-family: 'DM Sans', sans-serif; font-size: 11px; color: #131010; font-weight: 400; opacity: 0.5; line-height: 1.6;">
+                                                © ${new Date().getFullYear()} Aarovi Fashions. All rights reserved.<br>
+                                                Handcrafted with care, delivered with love.
+                                            </p>
+                                        </div>
                                     </td>
                                 </tr>
 
                                 <tr>
-                                    <td style="padding: 40px 60px; text-align: center; background: #fafaf9; border-top: 1px solid #e7e7e7;">
-                                        <p style="margin: 0; font-size: 11px; color: #a3a3a3; line-height: 1.7;">
-                                            © ${new Date().getFullYear()} Aharyas. All rights reserved.<br>
-                                            Preserving heritage, one thread at a time.
-                                        </p>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td style="height: 6px; background: #000000;"></td>
+                                    <td style="height: 8px; background: linear-gradient(90deg, #4F200D 0%, #8B4513 50%, #4F200D 100%);"></td>
                                 </tr>
                             </table>
                         </td>
@@ -220,7 +227,7 @@ const sendDeliveredEmail = async (orderData, user) => {
             return false;
         }
 
-        const subject = `Your Aharyas Order #${orderId} Has Been Delivered!`;
+        const subject = `Your Aarovi Order #${orderId} Has Been Delivered!`;
 
         const html = `
             <!DOCTYPE html>

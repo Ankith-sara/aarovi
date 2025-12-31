@@ -15,8 +15,8 @@ const sizeCharts = {
       ["XXL", "34", "52", "41"]
     ]
   },
-  womensTops: {
-    title: "Women's Tops Size Chart",
+  womensKurti: {
+    title: "Women's Kurti Size Chart",
     headers: ["Size", "Chest (in)", "Waist (in)", "Hip (in)", "Armhole (in)", "Shoulder (in)"],
     rows: [
       ["XS", "34", "30", "38", "16.5", "14"],
@@ -182,13 +182,11 @@ const getSizeChartKey = (productName, category, subCategory) => {
   
   // Check for women's products first
   if (cat.includes('women') || subCat.includes('women')) {
-    // Check if it's a bottom
     if (cat.includes('bottom') || cat.includes('pant') || cat.includes('trouser') || 
         subCat.includes('bottom') || subCat.includes('pant') || subCat.includes('trouser')) {
       return 'womensBottoms';
     }
-    // Otherwise it's a top
-    return 'womensTops';
+    return 'womensKurti';
   }
   
   // Product name matching for men's products

@@ -491,7 +491,7 @@ const PlaceOrder = () => {
                       className={`group w-full py-4 font-bold rounded-full transition-all duration-300 flex items-center justify-center gap-3 ${
                         !agreeToTerms
                           ? 'bg-background/30 text-text/40 cursor-not-allowed'
-                          : 'bg-secondary text-white hover:bg-secondary/90 shadow-xl shadow-secondary/30 hover:shadow-2xl hover:shadow-secondary/40 hover:-translate-y-0.5'
+                          : 'bg-secondary text-white hover:bg-secondary/90'
                       } disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       {isLoading ? (
@@ -502,7 +502,6 @@ const PlaceOrder = () => {
                       ) : (
                         <>
                           <span>Place Order</span>
-                          <CheckCircle size={20} className="group-hover:scale-110 transition-transform" />
                         </>
                       )}
                     </button>
@@ -512,7 +511,6 @@ const PlaceOrder = () => {
                       onClick={() => navigate('/cart')}
                       className="w-full py-4 bg-background/30 text-text font-semibold rounded-full hover:bg-background/50 transition-all duration-300 flex items-center justify-center gap-2"
                     >
-                      <ArrowLeft size={18} />
                       <span>Back to Cart</span>
                     </button>
                   </div>

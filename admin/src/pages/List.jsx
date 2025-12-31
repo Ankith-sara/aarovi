@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { backendUrl, currency } from '../App';
 import { toast } from 'react-toastify';
-import { Package, Edit3, Trash2, Search, Filter, Star, Image as ImageIcon, Upload, X, Save, CheckCircle2, IndianRupee, Grid, List as ListIcon, Tag, Building2, Plus, AlertCircle } from 'lucide-react';
+import { Package, Edit3, Trash2, Search, Filter, Star, Image as ImageIcon, Upload, X, Save, CheckCircle2, IndianRupee, Grid, List as ListIcon, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const ImageUpload = ({ id, image, currentImage, setImage, index, onRemove }) => (
   <div className="relative group">
@@ -86,13 +86,6 @@ const ProductCard = ({ item, index, onEdit, onRemove, currency }) => (
         )}
       </div>
 
-      {item.company && item.company !== 'Aharyas' && (
-        <div className="flex items-center gap-2 mb-3 bg-blue-50 px-3 py-1.5 rounded-lg">
-          <Building2 size={14} className="text-blue-500" />
-          <span className="text-sm text-blue-600 font-semibold">{item.company}</span>
-        </div>
-      )}
-
       <div className="flex items-center justify-between pt-3 border-t border-background/30">
         <div className="flex items-center gap-1">
           <IndianRupee size={18} className="text-secondary" />
@@ -132,20 +125,26 @@ const List = ({ token }) => {
   const [images, setImages] = useState([null, null, null, null, null, null]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSubCategory, setSelectedSubCategory] = useState('');
   const [viewMode, setViewMode] = useState('grid');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(12);
 
   const categoryData = {
     Women: {
-      subCategories: ["", "Kurtis", "Kurti Sets", "Lehangas", "Anarkalis", "Sheraras"],
+      subCategories: ["Kurtis", "Kurti Sets", "Lehangas", "Anarkalis", "Sheraras"],
       sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
     },
     Men: {
-      subCategories: ["", "Kurtas", "Kurta Sets", "Sherwanis"],
+      subCategories: ["Kurtas", "Kurta Sets", "Sherwanis"],
       sizes: ['28', '30', '32', '34', '36', '38', '40', '42', '44', '46']
     }
   };
 
   const currentCategoryData = editedProduct ? (categoryData[editedProduct.category] || { subCategories: [], sizes: [] }) : { subCategories: [], sizes: [] };
+
+  // Get available subcategories based on selected category
+  const availableSubCategories = selectedCategory ? (categoryData[selectedCategory]?.subCategories || []) : [];
 
   const fetchList = async () => {
     setLoading(true);
@@ -258,7 +257,6 @@ const List = ({ token }) => {
   const openEditModal = (product) => {
     setEditedProduct({
       ...product,
-      company: product.company || '',
       sizes: product.sizes || []
     });
     setImages([null, null, null, null, null, null]);
@@ -267,6 +265,7 @@ const List = ({ token }) => {
 
   const uploadedImagesCount = images.filter(img => img !== null).length;
 
+  // Filtering logic
   useEffect(() => {
     let filtered = list;
 
@@ -284,12 +283,40 @@ const List = ({ token }) => {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
 
+    if (selectedSubCategory) {
+      filtered = filtered.filter(product => product.subCategory === selectedSubCategory);
+    }
+
     setFilteredList(filtered);
-  }, [list, searchTerm, selectedCategory]);
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [list, searchTerm, selectedCategory, selectedSubCategory]);
+
+  // Reset subcategory when category changes
+  useEffect(() => {
+    setSelectedSubCategory('');
+  }, [selectedCategory]);
 
   useEffect(() => {
     fetchList();
   }, [token]);
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredList.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredList.length / itemsPerPage);
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const clearAllFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('');
+    setSelectedSubCategory('');
+    setCurrentPage(1);
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -326,7 +353,7 @@ const List = ({ token }) => {
             </div>
 
             <div className="p-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {/* Search */}
                 <div className="lg:col-span-2">
                   <label className="block text-sm font-semibold text-text/70 mb-2">Search Products</label>
@@ -344,7 +371,7 @@ const List = ({ token }) => {
 
                 {/* Category Filter */}
                 <div>
-                  <label className="block text-sm font-semibold text-text/70 mb-2">Filter by Category</label>
+                  <label className="block text-sm font-semibold text-text/70 mb-2">Category</label>
                   <div className="relative">
                     <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text/40" size={20} />
                     <select
@@ -359,14 +386,59 @@ const List = ({ token }) => {
                     </select>
                   </div>
                 </div>
+
+                {/* Subcategory Filter */}
+                <div>
+                  <label className="block text-sm font-semibold text-text/70 mb-2">Sub-Category</label>
+                  <div className="relative">
+                    <Tag className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text/40" size={20} />
+                    <select
+                      value={selectedSubCategory}
+                      onChange={(e) => setSelectedSubCategory(e.target.value)}
+                      className="w-full pl-12 pr-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-all duration-300 appearance-none bg-white font-light"
+                      disabled={!selectedCategory}
+                    >
+                      <option value="">All Sub-Categories</option>
+                      {availableSubCategories.map(subCat => (
+                        <option key={subCat} value={subCat}>{subCat}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
 
-              {/* View Mode Toggle */}
+              {/* View Mode Toggle & Active Filters */}
               <div className="flex justify-between items-center mt-6 pt-6 border-t border-background/30">
-                <div className="text-sm text-text/60 font-light">
-                  Showing {filteredList.length} of {list.length} products
-                  {searchTerm && ` for "${searchTerm}"`}
-                  {selectedCategory && ` in ${selectedCategory}`}
+                <div className="flex flex-col gap-2">
+                  <div className="text-sm text-text/60 font-light">
+                    Showing {currentItems.length} of {filteredList.length} products
+                    {totalPages > 1 && ` (Page ${currentPage} of ${totalPages})`}
+                  </div>
+                  {(searchTerm || selectedCategory || selectedSubCategory) && (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {searchTerm && (
+                        <span className="px-3 py-1 bg-secondary/10 text-secondary text-xs font-medium rounded-full">
+                          Search: "{searchTerm}"
+                        </span>
+                      )}
+                      {selectedCategory && (
+                        <span className="px-3 py-1 bg-secondary/10 text-secondary text-xs font-medium rounded-full">
+                          Category: {selectedCategory}
+                        </span>
+                      )}
+                      {selectedSubCategory && (
+                        <span className="px-3 py-1 bg-secondary/10 text-secondary text-xs font-medium rounded-full">
+                          Sub: {selectedSubCategory}
+                        </span>
+                      )}
+                      <button
+                        onClick={clearAllFilters}
+                        className="px-3 py-1 bg-red-50 text-red-600 text-xs font-medium rounded-full hover:bg-red-100 transition-colors"
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div className="flex bg-background/30 rounded-xl p-1">
                   <button
@@ -432,119 +504,158 @@ const List = ({ token }) => {
                       : "Try adjusting your search terms or filters to find what you're looking for"
                     }
                   </p>
-                  {searchTerm || selectedCategory ? (
+                  {(searchTerm || selectedCategory || selectedSubCategory) && (
                     <button
-                      onClick={() => {
-                        setSearchTerm('');
-                        setSelectedCategory('');
-                      }}
+                      onClick={clearAllFilters}
                       className="px-6 py-3 bg-secondary text-white font-semibold rounded-xl hover:bg-secondary/90 transition-all duration-300 shadow-lg shadow-secondary/30"
                     >
-                      Clear Filters
+                      Clear All Filters
                     </button>
-                  ) : null}
-                </div>
-              ) : (
-                <div className={viewMode === 'grid' ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "space-y-4"}>
-                  {viewMode === 'grid' ? (
-                    filteredList.map((item, index) => (
-                      <ProductCard
-                        key={item._id}
-                        item={item}
-                        index={index}
-                        onEdit={openEditModal}
-                        onRemove={removeProduct}
-                        currency={currency}
-                      />
-                    ))
-                  ) : (
-                    <div className="bg-background/20 rounded-2xl overflow-hidden">
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
-                          <thead className="bg-gradient-to-r from-secondary to-secondary/90 text-white">
-                            <tr>
-                              <th className="px-6 py-4 text-left text-sm font-serif font-bold">#</th>
-                              <th className="px-6 py-4 text-left text-sm font-serif font-bold">Image</th>
-                              <th className="px-6 py-4 text-left text-sm font-serif font-bold">Product Details</th>
-                              <th className="px-6 py-4 text-left text-sm font-serif font-bold">Category</th>
-                              <th className="px-6 py-4 text-left text-sm font-serif font-bold">Company</th>
-                              <th className="px-6 py-4 text-left text-sm font-serif font-bold">Price</th>
-                              <th className="px-6 py-4 text-center text-sm font-serif font-bold">Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-background/30">
-                            {filteredList.map((item, index) => (
-                              <tr key={item._id} className="hover:bg-background/10 transition-colors">
-                                <td className="px-6 py-4 font-bold text-text/60">#{index + 1}</td>
-                                <td className="px-6 py-4">
-                                  <div className="relative w-16 h-16">
-                                    <img
-                                      src={item.images?.[0] || '/api/placeholder/100/100'}
-                                      alt={item.name}
-                                      className="w-16 h-16 object-cover rounded-xl border-2 border-background/30"
-                                      onError={(e) => {
-                                        e.target.src = '/api/placeholder/100/100';
-                                      }}
-                                    />
-                                    {item.bestseller && (
-                                      <Star className="absolute -top-1 -right-1 text-yellow-500 fill-yellow-500" size={16} />
-                                    )}
-                                  </div>
-                                </td>
-                                <td className="px-6 py-4">
-                                  <h3 className="font-serif font-bold text-text mb-1">{item.name}</h3>
-                                  <p className="text-sm text-text/60 font-light line-clamp-2">{item.description}</p>
-                                </td>
-                                <td className="px-6 py-4">
-                                  <div className="font-semibold text-text">{item.category}</div>
-                                  {item.subCategory && (
-                                    <div className="text-sm text-text/60 font-light">{item.subCategory}</div>
-                                  )}
-                                </td>
-                                <td className="px-6 py-4">
-                                  <div className="flex items-center gap-2">
-                                    <Building2 size={14} className="text-blue-500" />
-                                    <span className="text-sm text-blue-600 font-semibold">
-                                      {item.company || 'Aharyas'}
-                                    </span>
-                                  </div>
-                                </td>
-                                <td className="px-6 py-4">
-                                  <div className="flex items-center gap-1 font-bold text-secondary">
-                                    <IndianRupee size={16} />
-                                    {item.price}
-                                  </div>
-                                </td>
-                                <td className="px-6 py-4 text-center">
-                                  <div className="flex justify-center gap-2">
-                                    <button
-                                      onClick={() => openEditModal(item)}
-                                      className="p-2.5 text-secondary bg-secondary/10 hover:bg-secondary/20 rounded-xl transition-all duration-300"
-                                      title="Edit Product"
-                                    >
-                                      <Edit3 size={16} />
-                                    </button>
-                                    <button
-                                      onClick={() => {
-                                        if (window.confirm(`Are you sure you want to delete "${item.name}"?\n\nThis action cannot be undone.`)) {
-                                          removeProduct(item._id);
-                                        }
-                                      }}
-                                      className="p-2.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-all duration-300"
-                                      title="Delete Product"
-                                    >
-                                      <Trash2 size={16} />
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
                   )}
                 </div>
+              ) : (
+                <>
+                  <div className={viewMode === 'grid' ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "space-y-4"}>
+                    {viewMode === 'grid' ? (
+                      currentItems.map((item, index) => (
+                        <ProductCard
+                          key={item._id}
+                          item={item}
+                          index={indexOfFirstItem + index}
+                          onEdit={openEditModal}
+                          onRemove={removeProduct}
+                          currency={currency}
+                        />
+                      ))
+                    ) : (
+                      <div className="bg-background/20 rounded-2xl overflow-hidden">
+                        <div className="overflow-x-auto">
+                          <table className="w-full">
+                            <thead className="bg-gradient-to-r from-secondary to-secondary/90 text-white">
+                              <tr>
+                                <th className="px-6 py-4 text-left text-sm font-serif font-bold">#</th>
+                                <th className="px-6 py-4 text-left text-sm font-serif font-bold">Image</th>
+                                <th className="px-6 py-4 text-left text-sm font-serif font-bold">Product Details</th>
+                                <th className="px-6 py-4 text-left text-sm font-serif font-bold">Category</th>
+                                <th className="px-6 py-4 text-left text-sm font-serif font-bold">Price</th>
+                                <th className="px-6 py-4 text-center text-sm font-serif font-bold">Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-background/30">
+                              {currentItems.map((item, index) => (
+                                <tr key={item._id} className="hover:bg-background/10 transition-colors">
+                                  <td className="px-6 py-4 font-bold text-text/60">#{indexOfFirstItem + index + 1}</td>
+                                  <td className="px-6 py-4">
+                                    <div className="relative w-16 h-16">
+                                      <img
+                                        src={item.images?.[0] || '/api/placeholder/100/100'}
+                                        alt={item.name}
+                                        className="w-16 h-16 object-cover rounded-xl border-2 border-background/30"
+                                        onError={(e) => {
+                                          e.target.src = '/api/placeholder/100/100';
+                                        }}
+                                      />
+                                      {item.bestseller && (
+                                        <Star className="absolute -top-1 -right-1 text-yellow-500 fill-yellow-500" size={16} />
+                                      )}
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    <h3 className="font-serif font-bold text-text mb-1">{item.name}</h3>
+                                    <p className="text-sm text-text/60 font-light line-clamp-2">{item.description}</p>
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    <div className="font-semibold text-text">{item.category}</div>
+                                    {item.subCategory && (
+                                      <div className="text-sm text-text/60 font-light">{item.subCategory}</div>
+                                    )}
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    <div className="flex items-center gap-1 font-bold text-secondary">
+                                      <IndianRupee size={16} />
+                                      {item.price}
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4 text-center">
+                                    <div className="flex justify-center gap-2">
+                                      <button
+                                        onClick={() => openEditModal(item)}
+                                        className="p-2.5 text-secondary bg-secondary/10 hover:bg-secondary/20 rounded-xl transition-all duration-300"
+                                        title="Edit Product"
+                                      >
+                                        <Edit3 size={16} />
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          if (window.confirm(`Are you sure you want to delete "${item.name}"?\n\nThis action cannot be undone.`)) {
+                                            removeProduct(item._id);
+                                          }
+                                        }}
+                                        className="p-2.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-all duration-300"
+                                        title="Delete Product"
+                                      >
+                                        <Trash2 size={16} />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="mt-8 flex justify-center items-center gap-2">
+                      <button
+                        onClick={() => paginate(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="p-2 rounded-lg border border-background/40 hover:bg-background/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                      >
+                        <ChevronLeft size={20} />
+                      </button>
+
+                      <div className="flex gap-2">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                          // Show first page, last page, current page, and pages around current
+                          if (
+                            page === 1 ||
+                            page === totalPages ||
+                            (page >= currentPage - 1 && page <= currentPage + 1)
+                          ) {
+                            return (
+                              <button
+                                key={page}
+                                onClick={() => paginate(page)}
+                                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                                  currentPage === page
+                                    ? 'bg-secondary text-white shadow-lg shadow-secondary/30'
+                                    : 'bg-background/20 text-text hover:bg-background/40'
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            );
+                          } else if (page === currentPage - 2 || page === currentPage + 2) {
+                            return <span key={page} className="px-2 py-2 text-text/40">...</span>;
+                          }
+                          return null;
+                        })}
+                      </div>
+
+                      <button
+                        onClick={() => paginate(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="p-2 rounded-lg border border-background/40 hover:bg-background/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                      >
+                        <ChevronRight size={20} />
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -681,8 +792,9 @@ const List = ({ token }) => {
                             className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-all duration-300 bg-white font-light"
                             required
                           >
+                            <option value="">Select Sub-Category</option>
                             {currentCategoryData.subCategories.map((subCat, index) => (
-                              <option key={index} value={subCat}>{subCat || "Select Sub-Category"}</option>
+                              <option key={index} value={subCat}>{subCat}</option>
                             ))}
                           </select>
                         </div>

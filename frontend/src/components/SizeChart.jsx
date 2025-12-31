@@ -364,7 +364,7 @@ const SizeChartModal = ({ isOpen, onClose, productName, category, subCategory })
                         </button>
                     </div>
                 </div>
-              </div>
+            </div>
 
             <style jsx>{`
                 @keyframes fadeIn {

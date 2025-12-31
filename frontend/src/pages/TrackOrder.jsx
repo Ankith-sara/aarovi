@@ -30,16 +30,14 @@ const TrackOrder = () => {
       setError(null);
 
       try {
-        if (!backendUrl || !token || !orderId) {
-          throw new Error("Missing backend URL, token, or order ID");
+        if (!backendUrl || !orderId) {
+          throw new Error("Missing backend URL or order ID");
         }
 
-        const response = await fetch(`${backendUrl}/api/order/track/${orderId}`, {
-          method: "GET",
-          headers: {
-            token: token
-          }
-        })
+        // FIX: Changed from /track/ to /status/ to match backend route
+        const response = await fetch(`${backendUrl}/api/order/status/${orderId}`, {
+          method: "GET"
+        });
 
         const data = await response.json();
 
@@ -57,7 +55,7 @@ const TrackOrder = () => {
     };
 
     fetchOrder();
-  }, [orderId, backendUrl, token]);
+  }, [orderId, backendUrl]);
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -205,15 +203,10 @@ const TrackOrder = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-background/20 mt-20">
-      {/* Header Section */}
+    <div className="min-h-screen bg-gradient-to-b from-white to-background/20 mt-16">
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-secondary to-[#8B6F47] text-white text-xs px-4 py-2 rounded-full font-bold uppercase tracking-wide shadow-lg mb-6">
-              <Sparkles size={14} />
-              <span>Order Tracking</span>
-            </div>
             <h1 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-3">
               Track Your Order
             </h1>
@@ -227,8 +220,6 @@ const TrackOrder = () => {
       {/* Order Status Section */}
       <section className="px-4 sm:px-6 lg:px-8 pb-20">
         <div className="max-w-7xl mx-auto space-y-6">
-          
-          {/* Order Header Card */}
           <div className="bg-white border border-background/20 rounded-xl shadow-md overflow-hidden">
             <div className="p-6 border-b border-background/20 bg-gradient-to-r from-background/10 to-primary/5">
               <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
@@ -236,7 +227,7 @@ const TrackOrder = () => {
                   <div className="flex items-center gap-2">
                     <Hash size={14} className="text-secondary" />
                     <span className="text-xs font-semibold text-text/60 uppercase tracking-wider">ORDER ID:</span>
-                    <span className="font-semibold text-text tracking-wide">{order._id?.slice(-8)}</span>
+                    <span className="font-semibold text-text tracking-wide">{order._id?.slice(-8) || orderId.slice(-8)}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -442,31 +433,36 @@ const TrackOrder = () => {
                     </h4>
                     
                     <div className="space-y-4">
-                      {order.items?.map((item, index) => (
-                        <div key={index} className="flex gap-4 p-4 border border-background/20 rounded-lg hover:shadow-md transition-all duration-300 bg-gradient-to-br from-white to-background/5">
-                          <div className="w-20 h-20 bg-white border border-background/20 rounded-lg overflow-hidden flex-shrink-0">
-                            <img
-                              src={item.images?.[0] || item.image || '/api/placeholder/80/80'}
-                              alt={item.name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h5 className="font-semibold text-text">{item.name}</h5>
-                            <div className="mt-2 flex gap-4 text-sm">
-                              <span className="text-text/60 font-medium">
-                                Size: <span className="text-text font-semibold">{item.size || 'N/A'}</span>
-                              </span>
-                              <span className="text-text/60 font-medium">
-                                Qty: <span className="text-text font-semibold">{item.quantity}</span>
-                              </span>
+                      {order.items?.map((item, index) => {
+                        // FIX: Get price from finalPrice, basePrice, or price
+                        const itemPrice = item.finalPrice || item.basePrice || item.price || 0;
+                        
+                        return (
+                          <div key={index} className="flex gap-4 p-4 border border-background/20 rounded-lg hover:shadow-md transition-all duration-300 bg-gradient-to-br from-white to-background/5">
+                            <div className="w-20 h-20 bg-white border border-background/20 rounded-lg overflow-hidden flex-shrink-0">
+                              <img
+                                src={item.image || item.images?.[0] || '/api/placeholder/80/80'}
+                                alt={item.name}
+                                className="w-full h-full object-cover"
+                              />
                             </div>
-                            <p className="text-lg font-serif font-bold text-secondary mt-2">
-                              {currency}{(item.price || 0).toFixed(2)}
-                            </p>
+                            <div className="flex-1 min-w-0">
+                              <h5 className="font-semibold text-text">{item.name}</h5>
+                              <div className="mt-2 flex gap-4 text-sm">
+                                <span className="text-text/60 font-medium">
+                                  Size: <span className="text-text font-semibold">{item.size || 'Custom'}</span>
+                                </span>
+                                <span className="text-text/60 font-medium">
+                                  Qty: <span className="text-text font-semibold">{item.quantity || 1}</span>
+                                </span>
+                              </div>
+                              <p className="text-lg font-serif font-bold text-secondary mt-2">
+                                {currency}{Number(itemPrice).toFixed(2)}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
