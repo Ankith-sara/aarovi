@@ -9,7 +9,6 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
       <section className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-4xl mx-auto">
@@ -27,7 +26,6 @@ const Contact = () => {
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-3 gap-6">
-            {/* Phone Card */}
             <div className="group bg-white rounded-2xl p-8 border border-background/50 hover:shadow-xl hover:border-secondary/30 transition-all duration-300">
               <div className="w-14 h-14 bg-secondary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Phone size={24} className="text-secondary" />
@@ -39,8 +37,6 @@ const Contact = () => {
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </a>
             </div>
-
-            {/* Email Card */}
             <div className="group bg-white rounded-2xl p-8 border border-background/50 hover:shadow-xl hover:border-secondary/30 transition-all duration-300">
               <div className="w-14 h-14 bg-secondary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Mail size={24} className="text-secondary" />
@@ -52,8 +48,6 @@ const Contact = () => {
                 <Send size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform flex-shrink-0" />
               </a>
             </div>
-
-            {/* Location Card */}
             <div className="group bg-white rounded-2xl p-8 border border-background/50 hover:shadow-xl hover:border-secondary/30 transition-all duration-300">
               <div className="w-14 h-14 bg-secondary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <MapPin size={24} className="text-secondary" />

@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { backendUrl, currency } from '../App';
 import { toast } from 'react-toastify';
-import { Package, Edit3, Trash2, Search, Filter, Star, Image as ImageIcon, Upload, X, Save, CheckCircle2, IndianRupee, Grid, List as ListIcon, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Package, Edit3, Trash2, Search, Filter, Star, Image as ImageIcon, Upload, X, Save, CheckCircle2, IndianRupee, Grid, List as ListIcon, Tag, ChevronLeft, ChevronRight, Droplet, AlertCircle } from 'lucide-react';
 
 const ImageUpload = ({ id, image, currentImage, setImage, index, onRemove }) => (
   <div className="relative group">
@@ -128,7 +128,7 @@ const List = ({ token }) => {
   const [selectedSubCategory, setSelectedSubCategory] = useState('');
   const [viewMode, setViewMode] = useState('grid');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(12);
+  const [itemsPerPage] = useState(16);
 
   const categoryData = {
     Women: {
@@ -140,6 +140,13 @@ const List = ({ token }) => {
       sizes: ['28', '30', '32', '34', '36', '38', '40', '42', '44', '46']
     }
   };
+
+  const defaultWashCareInstructions = [
+    "Dry clean or hand wash with mild detergent",
+    "Do not machine wash or soak",
+    "Wash separately, dry inside out in shade",
+    "Slight irregularities are natural in handcrafted items"
+  ];
 
   const currentCategoryData = editedProduct ? (categoryData[editedProduct.category] || { subCategories: [], sizes: [] }) : { subCategories: [], sizes: [] };
 
@@ -187,6 +194,13 @@ const List = ({ token }) => {
     }
   };
 
+  const handleUseDefaultWashCare = () => {
+    setEditedProduct(prev => ({
+      ...prev,
+      washCare: defaultWashCareInstructions.join('\n')
+    }));
+  };
+
   const editProduct = async () => {
     if (!editedProduct.name || !editedProduct.description || !editedProduct.price || !editedProduct.subCategory) {
       toast.error("Please fill in all required fields.");
@@ -203,6 +217,7 @@ const List = ({ token }) => {
       formData.append('subCategory', editedProduct.subCategory);
       formData.append('bestseller', editedProduct.bestseller);
       formData.append('sizes', JSON.stringify(editedProduct.sizes || []));
+      formData.append('washCare', editedProduct.washCare || '');
 
       images.forEach((image, index) => {
         if (image) formData.append(`image${index + 1}`, image);
@@ -257,7 +272,8 @@ const List = ({ token }) => {
   const openEditModal = (product) => {
     setEditedProduct({
       ...product,
-      sizes: product.sizes || []
+      sizes: product.sizes || [],
+      washCare: product.washCare || ''
     });
     setImages([null, null, null, null, null, null]);
     setIsEditing(true);
@@ -817,6 +833,36 @@ const List = ({ token }) => {
                         </div>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Wash Care Instructions */}
+                  <div className="bg-background/20 rounded-2xl p-6 border border-background/30">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
+                          <Droplet size={20} className="text-secondary" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-serif font-bold text-text">Wash Care Instructions</h3>
+                          <p className="text-sm text-text/50 font-light">Care and maintenance guidelines</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleUseDefaultWashCare}
+                        className="px-4 py-2 text-sm bg-secondary/10 text-secondary hover:bg-secondary/20 rounded-lg font-semibold transition-colors"
+                      >
+                        Use Default
+                      </button>
+                    </div>
+
+                    <textarea
+                      value={editedProduct.washCare}
+                      onChange={(e) => setEditedProduct(prev => ({ ...prev, washCare: e.target.value }))}
+                      className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-all duration-300 resize-none bg-white font-light"
+                      rows="6"
+                      placeholder="Enter wash care instructions, each on a new line...&#10;Example:&#10;Dry clean or hand wash with mild detergent&#10;Do not machine wash or soak&#10;Wash separately, dry inside out in shade"
+                    />
                   </div>
 
                   {/* Sizes */}

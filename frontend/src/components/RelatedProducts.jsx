@@ -18,7 +18,6 @@ const RelatedProducts = ({ category, subCategory, currentProductId }) => {
 
   return (
     <div className="bg-white rounded-lg border border-background shadow-lg overflow-hidden">
-      {/* Header */}
       <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
         <div className="flex items-center">
           <div>

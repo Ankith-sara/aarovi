@@ -178,7 +178,7 @@ function LatestCollection() {
           </div>
         )}
 
-        {/* View More Link (Mobile) */}
+        {/* View More Link */}
         {latestProducts.length > 0 && (
           <div className="mt-12 text-center lg:hidden">
             <NavLink 

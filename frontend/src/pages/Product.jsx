@@ -121,6 +121,25 @@ const Product = () => {
     setCurrentIndex(index);
   };
 
+  // Parse wash care instructions
+  const getWashCareInstructions = () => {
+    if (!productData?.washCare) {
+      // Return default instructions if none are provided
+      return [
+        "Dry clean or hand wash with mild detergent",
+        "Do not machine wash or soak",
+        "Wash separately, dry inside out in shade",
+        "Slight irregularities are natural in handcrafted items"
+      ];
+    }
+    
+    // Split by newlines and filter out empty lines
+    return productData.washCare
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0);
+  };
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!isModalOpen && !showSizeChart) return;
@@ -180,6 +199,8 @@ const Product = () => {
       </div>
     );
   }
+
+  const washCareInstructions = getWashCareInstructions();
 
   return (
     <div className="min-h-screen bg-white mt-20">
@@ -384,10 +405,9 @@ const Product = () => {
                       title: 'Care Instructions', 
                       content: (
                         <ul className="space-y-1.5 text-sm">
-                          <li>• Dry clean or hand wash with mild detergent</li>
-                          <li>• Do not machine wash or soak</li>
-                          <li>• Wash separately, dry inside out in shade</li>
-                          <li>• Slight irregularities are natural in handcrafted items</li>
+                          {washCareInstructions.map((instruction, index) => (
+                            <li key={index}>• {instruction}</li>
+                          ))}
                         </ul>
                       )
                     },

@@ -16,7 +16,6 @@ const RecentlyViewed = () => {
 
   return (
     <div className="bg-white rounded-lg border border-background shadow-lg overflow-hidden">
-      {/* Header */}
       <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -52,7 +51,6 @@ const RecentlyViewed = () => {
           ))}
         </div>
 
-        {/* View All Button - Mobile */}
         {recentlyViewed.length > 5 && (
           <div className="mt-6 sm:hidden">
             <button

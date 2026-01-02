@@ -87,7 +87,6 @@ const Cart = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {cartProducts.map((item, index) => (
               <div key={`${item._id}-${item.size}-${index}`} className="bg-white rounded-2xl shadow-lg p-6 flex gap-4">

@@ -1,11 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
-import Title from '../components/Title';
 import axios from 'axios';
-import {
-  Truck, Package, CheckCircle, RefreshCw, ShoppingBag, Calendar, CreditCard, Hash, ArrowRight
-} from 'lucide-react';
+import { Truck, Package, CheckCircle, RefreshCw, ShoppingBag, Calendar, CreditCard, Hash, ArrowRight } from 'lucide-react';
 
 const Orders = () => {
   const { backendUrl, token, currency } = useContext(ShopContext);
@@ -30,16 +27,14 @@ const Orders = () => {
         let allOrdersItem = [];
         response.data.orders.forEach((order) => {
           order.items.forEach((item) => {
-            // FIX: Normalize price property for both regular and custom items
             const itemPrice = item.finalPrice || item.price || item.basePrice || 0;
             const itemQuantity = item.quantity || 1;
-            
             item['status'] = order.status;
             item['payment'] = order.payment;
             item['paymentMethod'] = order.paymentMethod;
             item['date'] = order.date;
             item['orderId'] = order._id || `ORD-${Math.floor(Math.random() * 10000)}`;
-            item['price'] = itemPrice; // Normalize to 'price' for consistency
+            item['price'] = itemPrice;
             item['quantity'] = itemQuantity;
             allOrdersItem.push(item);
           });
@@ -132,8 +127,7 @@ const Orders = () => {
       item.status?.toLowerCase() === 'shipping' ||
       item.status?.toLowerCase() === 'out for delivery'
     ).length;
-    
-    // FIX: Properly calculate total spent using normalized price
+
     const totalSpent = orderData.reduce((sum, item) => {
       const price = Number(item.price) || 0;
       const quantity = Number(item.quantity) || 1;
@@ -148,7 +142,6 @@ const Orders = () => {
   if (loading) {
     return (
       <div className="min-h-screen mt-20">
-        {/* Hero Section */}
         <section className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-text mb-4">
@@ -173,7 +166,6 @@ const Orders = () => {
 
   return (
     <div className="min-h-screen mt-20">
-      {/* Hero Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-text mb-4">
@@ -239,11 +231,10 @@ const Orders = () => {
                       <button
                         key={key}
                         onClick={() => setFilterStatus(key)}
-                        className={`px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg border-2 transition-all duration-300 ${
-                          filterStatus === key
+                        className={`px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg border-2 transition-all duration-300 ${filterStatus === key
                             ? 'bg-secondary text-white border-secondary shadow-md'
                             : 'bg-white text-text border-background hover:border-secondary hover:text-secondary'
-                        }`}
+                          }`}
                       >
                         {label}
                       </button>
@@ -291,7 +282,6 @@ const Orders = () => {
             <div className="space-y-6">
               {filteredOrders.map((item, index) => (
                 <div key={index} className="bg-white rounded-lg border border-background shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group">
-                  {/* Order Header */}
                   <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
                     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-wrap">
@@ -421,7 +411,7 @@ const Orders = () => {
         </div>
       </section>
 
-      <style jsx>{`
+      <style>{`
         /* Hide number input arrows */
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button {

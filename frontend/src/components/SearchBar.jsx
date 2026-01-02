@@ -90,7 +90,6 @@ const SearchBar = () => {
         <div className="mt-20 mb-[-75px] border-b border-background/30 bg-white sticky top-0 z-40 shadow-lg">
             <div className="px-4 sm:px-6 md:px-10 lg:px-20 py-6">
                 <form onSubmit={handleSearchSubmit} className="relative">
-                    {/* Search Bar */}
                     <div className="flex items-center gap-3">
                         <div className="flex-1 relative">
                             <div className="relative">
@@ -110,7 +109,6 @@ const SearchBar = () => {
                             {/* Suggestions Dropdown */}
                             {showSuggestions && (
                                 <div className="absolute top-full left-0 right-0 mt-3 bg-white border border-background/50 rounded-2xl shadow-2xl max-h-96 overflow-y-auto z-50">
-                                    {/* Recent Searches */}
                                     {!search && recentSearches.length > 0 && (
                                         <div className="p-5 border-b border-background/30">
                                             <div className="flex items-center justify-between mb-4">
@@ -213,7 +211,6 @@ const SearchBar = () => {
                 </form>
             </div>
 
-            {/* Click outside to close suggestions */}
             {showSuggestions && (
                 <div
                     className="fixed inset-0 z-30"

@@ -82,8 +82,8 @@ const Navbar = () => {
       id: 'men',
       subcategories: [
         { name: 'Kurtas', path: '/shop/Kurtas' },
-        { name: 'Kurta Sets', path: '/shop/Men-Kurtas-Sets' },
-        { name: 'Sherwanis', path: '/shop/Sherwanis' },
+        // { name: 'Kurta Sets', path: '/shop/Men-Kurtas-Sets' },
+        // { name: 'Sherwanis', path: '/shop/Sherwanis' },
       ]
     }
   ];

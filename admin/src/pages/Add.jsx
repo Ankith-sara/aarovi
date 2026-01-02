@@ -4,7 +4,7 @@ import { backendUrl, currency } from '../App';
 import { toast } from 'react-toastify';
 import { 
   Upload, Package, Tag, Star, AlertCircle, 
-  CheckCircle2, X, Plus, Sparkles, Image, ArrowRight
+  CheckCircle2, X, Plus, Sparkles, Image, ArrowRight, Droplet
 } from 'lucide-react';
 
 const Add = ({ token }) => {
@@ -16,6 +16,7 @@ const Add = ({ token }) => {
   const [subCategory, setSubCategory] = useState('');
   const [bestseller, setBestseller] = useState(false);
   const [sizes, setSizes] = useState([]);
+  const [washCare, setWashCare] = useState('');
   const [loading, setLoading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
@@ -32,6 +33,13 @@ const Add = ({ token }) => {
   };
 
   const currentCategoryData = categoryData[category] || { subCategories: [], sizes: [] };
+
+  const defaultWashCareInstructions = [
+    "Dry clean or hand wash with mild detergent",
+    "Do not machine wash or soak",
+    "Wash separately, dry inside out in shade",
+    "Slight irregularities are natural in handcrafted items"
+  ];
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -80,6 +88,10 @@ const Add = ({ token }) => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleUseDefaultWashCare = () => {
+    setWashCare(defaultWashCareInstructions.join('\n'));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -103,6 +115,7 @@ const Add = ({ token }) => {
       formData.append('subCategory', subCategory);
       formData.append('bestseller', bestseller);
       formData.append('sizes', JSON.stringify(sizes));
+      formData.append('washCare', washCare);
 
       images.forEach((image, index) => {
         formData.append(`image${index + 1}`, image);
@@ -143,6 +156,7 @@ const Add = ({ token }) => {
     setBestseller(false);
     setSizes([]);
     setImages([]);
+    setWashCare('');
   };
 
   const toggleSize = (size) => {
@@ -228,11 +242,11 @@ const Add = ({ token }) => {
                   <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
                     {images.map((image, index) => (
                       <div key={index} className="relative group">
-                        <div className="aspect-square rounded-xl overflow-hidden border-2 border-background/30 bg-white">
+                        <div className="border-2 border-background/30 bg-white">
                           <img
                             src={URL.createObjectURL(image)}
                             alt={`Product ${index + 1}`}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            className="w-full h-full object-cover"
                           />
                         </div>
                         <button
@@ -380,6 +394,40 @@ const Add = ({ token }) => {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Wash Care Instructions */}
+            <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
+              <div className="p-6 border-b border-background/30">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                      <Droplet size={20} className="text-secondary" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-serif font-bold text-text">Wash Care Instructions</h2>
+                      <p className="text-sm text-text/50 font-light">Care and maintenance guidelines</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleUseDefaultWashCare}
+                    className="px-4 py-2 text-sm bg-secondary/10 text-secondary hover:bg-secondary/20 rounded-lg font-semibold transition-colors"
+                  >
+                    Use Default
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6">
+                <textarea
+                  onChange={(e) => setWashCare(e.target.value)}
+                  value={washCare}
+                  className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-colors resize-none bg-white font-light"
+                  rows={6}
+                  placeholder="Enter wash care instructions, each on a new line...&#10;Example:&#10;Dry clean or hand wash with mild detergent&#10;Do not machine wash or soak&#10;Wash separately, dry inside out in shade"
+                />
               </div>
             </div>
 

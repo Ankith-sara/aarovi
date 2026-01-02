@@ -190,7 +190,6 @@ const PlaceOrder = () => {
 
   return (
     <div className="mt-20 min-h-screen">
-      {/* Header Section */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 border-b border-background/30">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">

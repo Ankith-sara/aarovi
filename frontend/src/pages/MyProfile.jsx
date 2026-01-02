@@ -2,8 +2,8 @@ import React, { useState, useEffect, useContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import {
-  ChevronRight, Heart, Clock, User, ShoppingBag, Settings, LogOut, Edit2, Trash2,
-  MapPinHouse, X, Camera, Mail, Calendar, Plus, ArrowRight, AlertCircle, Package
+  ChevronRight, Heart, Clock, User, Settings, LogOut, Edit2, Trash2,
+  MapPinHouse, X, Camera, Calendar, Plus, ArrowRight, AlertCircle, Package
 } from "lucide-react";
 import ProductItem from "../components/ProductItem";
 import { ShopContext } from "../context/ShopContext";
@@ -16,12 +16,9 @@ const MyProfile = () => {
   const [editProfile, setEditProfile] = useState({ name: "", email: "", image: "" });
   const [addressModal, setAddressModal] = useState({ open: false, address: {}, index: -1 });
   const [loading, setLoading] = useState(false);
-
-  // Custom modal states
   const [logoutModal, setLogoutModal] = useState(false);
   const [deleteAddressModal, setDeleteAddressModal] = useState({ open: false, index: -1 });
   const [errorModal, setErrorModal] = useState({ open: false, message: "" });
-
   const { backendUrl, setToken, navigate } = useContext(ShopContext);
 
   // Fetch user details
@@ -68,7 +65,7 @@ const MyProfile = () => {
     setToken("");
   };
 
-  // --- Profile Image Upload ---
+  // Profile Image Upload
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -79,7 +76,7 @@ const MyProfile = () => {
     }));
   };
 
-  // --- Edit Profile Submit ---
+  // Edit Profile Submit
   const handleEditProfileSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -123,7 +120,7 @@ const MyProfile = () => {
     }
   };
 
-  // --- Address Management ---
+  // Address Management
   const saveAddress = async (addressObj, index = -1) => {
     setLoading(true);
     try {
@@ -302,7 +299,6 @@ const MyProfile = () => {
       <section className="px-4 sm:px-6 lg:px-8 pb-20">
         <div className="max-w-7xl mx-auto">
           <div className="grid xl:grid-cols-[1fr_2fr] gap-10">
-            {/* Profile Card */}
             <div className="space-y-4">
               <div className="bg-white rounded-2xl p-6 border border-background/50 shadow-lg">
                 <div className="flex flex-col items-center mb-6">
@@ -365,7 +361,6 @@ const MyProfile = () => {
 
             {/* Main Content */}
             <div className="space-y-6">
-              {/* Quick Actions */}
               <div className="bg-white rounded-2xl border border-background/50 shadow-lg overflow-hidden">
                 <div className="p-6 border-b border-background/30">
                   <h3 className="text-xl font-serif font-bold text-text">Quick Actions</h3>
@@ -655,7 +650,7 @@ const MyProfile = () => {
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }

@@ -10,7 +10,6 @@ const Footer = () => {
     <footer className="bg-text">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          {/* Brand Section */}
           <div className="lg:col-span-4 space-y-6">
             <div>
               <h2 className="text-3xl font-serif font-bold text-white mb-4">Aarovi</h2>
@@ -182,14 +181,11 @@ const Footer = () => {
       <div className="border-t border-white/20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            {/* Copyright */}
             <div className="text-center md:text-left">
               <p className="text-white/60 text-sm font-light">
                 &copy; {currentYear} <span className="text-secondary font-semibold">Aarovi Fashions</span>. All rights reserved.
               </p>
             </div>
-
-            {/* Quick Footer Links */}
             <div className="flex flex-wrap items-center justify-center gap-4 text-xs">
               <a href="/faqs" className="text-white/60 hover:text-white transition-colors duration-300 font-light">
                 FAQs

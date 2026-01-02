@@ -4,7 +4,7 @@ import productModel from '../models/ProductModal.js';
 // Function for adding a product
 const addProduct = async (req, res) => {
     try {
-        const { name, description, price, category, subCategory, bestseller, sizes } = req.body;
+        const { name, description, price, category, subCategory, bestseller, sizes, washCare } = req.body;
         const adminId = req.user.id;
 
         // Handle images
@@ -37,6 +37,7 @@ const addProduct = async (req, res) => {
             bestseller: isBestseller,
             sizes: parsedSizes,
             images: imagesUrl,
+            washCare: washCare || '',
             adminId,
             date: Date.now(),
         };
@@ -56,7 +57,7 @@ const editProduct = async (req, res) => {
     try {
         const { id } = req.params;
         const adminId = req.user.id;
-        const { name, description, price, category, subCategory, bestseller, sizes } = req.body;
+        const { name, description, price, category, subCategory, bestseller, sizes, washCare } = req.body;
 
         const existingProduct = await productModel.findById(id);
         if (!existingProduct) {
@@ -102,6 +103,7 @@ const editProduct = async (req, res) => {
                 bestseller: isBestseller,
                 sizes: parsedSizes,
                 images: updatedImages,
+                washCare: washCare || '',
             },
             { new: true }
         );

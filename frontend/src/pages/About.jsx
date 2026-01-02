@@ -12,7 +12,6 @@ const About = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
       <section className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-4xl mx-auto">
@@ -77,7 +76,6 @@ const About = () => {
         </div>
       </section>
 
-      {/* Call to Action */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="bg-gradient-to-br from-white to-background/20 rounded-3xl p-12 border border-background/50 shadow-xl text-center">

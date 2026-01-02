@@ -29,9 +29,7 @@ const NewsletterBox = () => {
     <div className="py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <div className="bg-gradient-to-br from-white to-background/20 rounded-3xl border border-background/50 shadow-2xl overflow-hidden">
-          {/* Header Section */}
           <div className="relative px-8 pt-12 pb-8 text-center bg-gradient-to-br from-background/10 to-transparent">
-            {/* Decorative Elements */}
             <div className="relative z-10">
               <h2 className="text-3xl sm:text-4xl font-serif font-bold text-text mb-4"> Join the Aarovi Community </h2>
               <p className="text-text/60 text-base font-light leading-relaxed max-w-4xl mx-auto"> Be the first to discover new collections, artisan stories, and exclusive offers. Subscribe to our newsletter for inspiration delivered to your inbox. </p>
@@ -42,7 +40,6 @@ const NewsletterBox = () => {
           <div className="px-8 pb-12">
             <div className="max-w-2xl mx-auto">
               {isSuccess ? (
-                // Success Message
                 <div className="bg-green-50 rounded-2xl p-8 border-l-4 border-green-500 animate-fadeIn">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -62,7 +59,6 @@ const NewsletterBox = () => {
                 // Form
                 <div className="space-y-4">
                   <div className="flex flex-col sm:flex-row gap-3">
-                    {/* Email Input */}
                     <div className="flex-1 relative group">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                         <Mail
@@ -81,7 +77,6 @@ const NewsletterBox = () => {
                       />
                     </div>
 
-                    {/* Subscribe Button */}
                     <button
                       onClick={onSubmitHandler}
                       disabled={isSubmitting || !email}
