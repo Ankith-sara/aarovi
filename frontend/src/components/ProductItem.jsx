@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
 import { Link } from 'react-router-dom';
-import { Heart, ShoppingBag } from 'lucide-react';
+import { Heart } from 'lucide-react';
 
 const ProductItem = ({ id, image, name, price }) => {
   const { currency, toggleWishlist, isInWishlist, navigate, token } = useContext(ShopContext);
@@ -31,10 +31,11 @@ const ProductItem = ({ id, image, name, price }) => {
       className="group cursor-pointer block"
       to={`/product/${id}`}
     >
-      <div className="relative bg-white rounded-lg overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500">
-        <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="relative bg-white rounded-lg overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 h-full flex flex-col">
+        {/* Image Container with Fixed Aspect Ratio */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 aspect-[3/4]">
           <img
-            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+            className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
             src={image[0]}
             alt={name}
           />
@@ -66,12 +67,13 @@ const ProductItem = ({ id, image, name, price }) => {
           </button>
         </div>
 
-        <div className="p-4">
-          <h3 className="text-base font-medium text-gray-900 mb-2 tracking-wide leading-snug line-clamp-2 group-hover:text-secondary transition-colors duration-300">
+        {/* Content Container */}
+        <div className="p-4 flex flex-col flex-grow">
+          <h3 className="text-base font-medium text-gray-900 mb-3 tracking-wide leading-snug line-clamp-2 group-hover:text-secondary transition-colors duration-300 flex-grow">
             {name}
           </h3>
           
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-auto">
             <div className="flex items-baseline gap-1">
               <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 {currency}

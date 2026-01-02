@@ -18,7 +18,7 @@
       } = req.body;
 
       // Get userId from auth middleware (set in req.body.userId)
-      const userId = req.body.userId;
+      const userId = req.userId;
 
       // Validate userId
       if (!userId) {
@@ -105,7 +105,7 @@
   const getCustomization = async (req, res) => {
     try {
       const { id } = req.params;
-      const userId = req.body.userId;
+      const userId = req.userId;
 
       // Validate userId
       if (!userId) {
@@ -158,7 +158,7 @@
   const getUserCustomizations = async (req, res) => {
     try {
       // Get userId from auth middleware (set in req.body.userId)
-      const userId = req.body.userId;
+      const userId = req.userId;
 
       // Validate userId
       if (!userId) {
@@ -202,7 +202,7 @@
   const updateCustomization = async (req, res) => {
     try {
       const { id } = req.params;
-      const userId = req.body.userId;
+      const userId = req.userId;
 
       // Validate authentication
       if (!userId) {
@@ -279,7 +279,7 @@
   const submitCustomization = async (req, res) => {
     try {
       const { customizationId } = req.body;
-      const userId = req.body.userId;
+      const userId = req.userId;
 
       // Validate authentication
       if (!userId) {
@@ -352,7 +352,7 @@
   const deleteCustomization = async (req, res) => {
     try {
       const { id } = req.params;
-      const userId = req.body.userId;
+      const userId = req.userId;
 
       // Validate authentication
       if (!userId) {

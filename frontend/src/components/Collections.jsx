@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
-import Title from './Title';
 import { ShopContext } from '../context/ShopContext';
 import { ArrowRight, Sparkles } from 'lucide-react';
 

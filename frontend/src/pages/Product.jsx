@@ -21,6 +21,10 @@ const Product = () => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [expandedSection, setExpandedSection] = useState('description');
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const imageContainerRef = useRef(null);
+  const minSwipeDistance = 50;
 
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section);
@@ -56,14 +60,24 @@ const Product = () => {
     }
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const shareData = {
       title: productData.name,
       text: `Check out this product: ${productData.name}`,
       url: window.location.href,
     };
+    
     if (navigator.share) {
-      navigator.share(shareData).catch((err) => {});
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          // Fallback to clipboard
+          navigator.clipboard.writeText(shareData.url).then(() => {
+            alert("Product link copied to clipboard!");
+          });
+        }
+      }
     } else {
       navigator.clipboard.writeText(shareData.url).then(() => {
         alert("Product link copied to clipboard!");
@@ -72,11 +86,11 @@ const Product = () => {
   };
 
   const zoomIn = () => {
-    if (zoomLevel < 1.5) setZoomLevel(zoomLevel + 0.1);
+    if (zoomLevel < 2) setZoomLevel(zoomLevel + 0.2);
   };
 
   const zoomOut = () => {
-    if (zoomLevel > 0.5) setZoomLevel(zoomLevel - 0.1);
+    if (zoomLevel > 0.5) setZoomLevel(zoomLevel - 0.2);
   };
 
   const handleNext = () => {
@@ -92,6 +106,31 @@ const Product = () => {
     setCurrentIndex(prevIndex);
     if (isModalOpen) {
       setModalImage(productData.images[prevIndex]);
+    }
+  };
+
+  // Touch handlers for swiping
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe) {
+      handleNext();
+    }
+    if (isRightSwipe) {
+      handlePrev();
     }
   };
 
@@ -124,7 +163,6 @@ const Product = () => {
   // Parse wash care instructions
   const getWashCareInstructions = () => {
     if (!productData?.washCare) {
-      // Return default instructions if none are provided
       return [
         "Dry clean or hand wash with mild detergent",
         "Do not machine wash or soak",
@@ -133,7 +171,6 @@ const Product = () => {
       ];
     }
     
-    // Split by newlines and filter out empty lines
     return productData.washCare
       .split('\n')
       .map(line => line.trim())
@@ -203,105 +240,131 @@ const Product = () => {
   const washCareInstructions = getWashCareInstructions();
 
   return (
-    <div className="min-h-screen bg-white mt-20">
+    <div className="min-h-screen bg-white mt-16 sm:mt-20">
       {/* Product Section */}
-      <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+      <section className="py-4 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8 lg:gap-12">
-            <div className="space-y-4">
-              <div className="relative group bg-background/20 overflow-hidden cursor-pointer" onClick={handleImageClick}>
+          <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-6 lg:gap-12">
+            <div className="space-y-3 sm:space-y-4">
+              <div 
+                ref={imageContainerRef}
+                className="relative group bg-background/20 overflow-hidden touch-pan-y"
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
+                onClick={handleImageClick}
+              >
                 <div className="relative aspect-[3/4]">
                   <img
                     src={productData.images[currentIndex]}
                     alt={productData.name}
                     className="w-full h-full object-contain"
+                    draggable="false"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="absolute top-4 right-4 bg-white/95 text-text px-3 py-1.5 text-xs font-medium flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg">
+                  
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                  
+                  {/* Desktop Click to Enlarge */}
+                  <div className="hidden sm:flex absolute top-4 right-4 bg-white/95 text-text px-3 py-1.5 text-xs font-medium items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg pointer-events-none">
                     <Camera size={12} />
                     <span>Click to enlarge</span>
                   </div>
 
+                  {/* Desktop Navigation Buttons */}
                   {productData.images.length > 1 && (
                     <>
                       <button
-                        className="absolute top-1/2 left-3 -translate-y-1/2 w-10 h-10 bg-white/95 text-text shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 flex items-center justify-center"
+                        className="hidden sm:flex absolute top-1/2 left-3 -translate-y-1/2 w-10 h-10 bg-white/95 text-text shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 items-center justify-center"
                         onClick={(e) => { e.stopPropagation(); handlePrev(); }}
                       >
                         <ChevronLeft size={18} />
                       </button>
                       <button
-                        className="absolute top-1/2 right-3 -translate-y-1/2 w-10 h-10 bg-white/95 text-text shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 flex items-center justify-center"
+                        className="hidden sm:flex absolute top-1/2 right-3 -translate-y-1/2 w-10 h-10 bg-white/95 text-text shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 items-center justify-center"
                         onClick={(e) => { e.stopPropagation(); handleNext(); }}
                       >
                         <ChevronRight size={18} />
                       </button>
                     </>
                   )}
-                  <div className="absolute bottom-4 left-4 bg-white/95 px-3 py-1.5 text-xs font-medium text-text shadow-lg">
+                  
+                  {/* Image Counter */}
+                  <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 bg-white/95 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-medium text-text shadow-lg">
                     {currentIndex + 1} / {productData.images.length}
                   </div>
+
+                  {/* Mobile Swipe Indicator */}
+                  {productData.images.length > 1 && (
+                    <div className="sm:hidden absolute bottom-3 right-3 bg-white/95 px-2.5 py-1 text-xs font-medium text-text shadow-lg flex items-center gap-1">
+                      <span>Swipe</span>
+                      <ChevronRight size={12} />
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Thumbnails */}
-              <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
-                {productData.images.map((img, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleThumbnailClick(index)}
-                    className={`aspect-square overflow-hidden transition-all duration-300 ${
-                      currentIndex === index 
-                        ? 'ring-2 ring-secondary shadow-lg' 
-                        : 'ring-1 ring-background/50 hover:ring-secondary/50'
-                    }`}
-                  >
-                    <img
-                      src={img}
-                      alt={`View ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
+              <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+                <div className="flex sm:grid sm:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 min-w-min sm:min-w-0">
+                  {productData.images.map((img, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleThumbnailClick(index)}
+                      className={`flex-shrink-0 w-20 h-20 sm:w-auto sm:h-auto sm:aspect-square overflow-hidden transition-all duration-300 ${
+                        currentIndex === index 
+                          ? 'ring-2 ring-secondary shadow-lg' 
+                          : 'ring-1 ring-background/50 hover:ring-secondary/50'
+                      }`}
+                    >
+                      <img
+                        src={img}
+                        alt={`View ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
             {/* Product Details */}
-            <div className="lg:sticky lg:top-24 lg:self-start space-y-6">
-              <div className="border-b border-background/50 pb-6">
-                <div className="flex items-start justify-between mb-3">
-                  <h1 className="text-3xl sm:text-4xl font-serif font-bold text-text leading-tight pr-4">
+            <div className="lg:sticky lg:top-24 lg:self-start space-y-5 sm:space-y-6">
+              <div className="border-b border-background/50 pb-5 sm:pb-6">
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-text leading-tight">
                     {productData.name}
                   </h1>
                   <div className="flex gap-2 flex-shrink-0">
                     <button
                       onClick={handleWishlistToggle}
-                      className={`w-11 h-11 flex items-center justify-center transition-all duration-300 ${
+                      className={`w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center transition-all duration-300 ${
                         isWishlisted 
                           ? 'bg-secondary text-white' 
-                          : 'bg-background/50 text-text hover:bg-secondary hover:text-white'
+                          : 'bg-background/50 text-text active:bg-secondary active:text-white'
                       }`}
                       title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
                     >
                       <Heart
-                        size={17}
+                        size={16}
+                        className="sm:w-[17px] sm:h-[17px]"
                         fill={isWishlisted ? 'currentColor' : 'none'}
                         stroke="currentColor"
                       />
                     </button>
                     <button
                       onClick={handleShare}
-                      className="w-11 h-11 bg-background/50 text-text hover:bg-secondary hover:text-white flex items-center justify-center transition-all duration-300"
+                      className="w-10 h-10 sm:w-11 sm:h-11 bg-background/50 text-text active:bg-secondary active:text-white flex items-center justify-center transition-all duration-300"
                       title="Share"
                     >
-                      <Share2 size={17} />
+                      <Share2 size={16} className="sm:w-[17px] sm:h-[17px]" />
                     </button>
                   </div>
                 </div>
                 
-                <div className="flex items-baseline gap-3 mb-4">
-                  <span className="text-4xl font-serif font-bold text-secondary">{currency}{productData.price}</span>
-                  <span className="text-sm text-text/50 font-light">Incl. GST</span>
+                <div className="flex items-baseline gap-2 sm:gap-3 mb-3 sm:mb-4">
+                  <span className="text-3xl sm:text-4xl font-serif font-bold text-secondary">{currency}{productData.price}</span>
+                  <span className="text-xs sm:text-sm text-text/50 font-light">Incl. GST</span>
                 </div>
               </div>
 
@@ -311,7 +374,7 @@ const Product = () => {
                   <label className="text-xs font-bold text-text uppercase tracking-wider">Select Size</label>
                   <button
                     onClick={() => setShowSizeChart(true)}
-                    className="text-xs text-secondary hover:text-secondary/80 font-medium underline flex items-center gap-1"
+                    className="text-xs text-secondary active:text-secondary/80 font-medium underline flex items-center gap-1"
                   >
                     <Ruler size={14} />
                     <span>Size Guide</span>
@@ -331,10 +394,10 @@ const Product = () => {
                     <button
                       key={index}
                       onClick={() => setSize(size === s ? '' : s)}
-                      className={`min-w-[3rem] px-4 py-2.5 text-sm font-semibold transition-all duration-300 ${
+                      className={`min-w-[3rem] px-3 sm:px-4 py-2 sm:py-2.5 text-sm font-semibold transition-all duration-300 active:scale-95 ${
                         size === s
                           ? 'bg-secondary text-white'
-                          : 'bg-background/40 text-text hover:bg-background/60'
+                          : 'bg-background/40 text-text active:bg-background/60'
                       }`}
                     >
                       {s}
@@ -343,19 +406,20 @@ const Product = () => {
                 </div>
               </div>
 
+              {/* Quantity */}
               <div>
                 <label className="text-xs font-bold text-text uppercase tracking-wider mb-3 block">Quantity</label>
                 <div className="inline-flex items-center border border-background/50">
                   <button
                     onClick={() => handleQuantityChange('decrease')}
-                    className="w-11 h-11 flex items-center justify-center hover:bg-background/20 transition-colors"
+                    className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center active:bg-background/40 transition-colors"
                     disabled={quantity <= 1}
                   >
                     <Minus size={16} className={quantity <= 1 ? "text-text/30" : "text-text"} />
                   </button>
                   <input
                     type="number"
-                    className="w-16 h-11 text-center focus:outline-none bg-transparent font-semibold text-text"
+                    className="w-14 sm:w-16 h-10 sm:h-11 text-center focus:outline-none bg-transparent font-semibold text-text"
                     value={quantity}
                     min="1"
                     onChange={(e) => {
@@ -367,7 +431,7 @@ const Product = () => {
                   />
                   <button
                     onClick={() => handleQuantityChange('increase')}
-                    className="w-11 h-11 flex items-center justify-center hover:bg-background/20 transition-colors"
+                    className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center active:bg-background/40 transition-colors"
                   >
                     <Plus size={16} />
                   </button>
@@ -380,23 +444,23 @@ const Product = () => {
                   <button
                     onClick={handleAddToCart}
                     disabled={!size}
-                    className="w-full py-4 bg-secondary text-white font-semibold uppercase tracking-wider hover:bg-secondary/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full py-3.5 sm:py-4 bg-secondary text-white font-semibold uppercase tracking-wider active:bg-secondary/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98]"
                   >
                     {!size && <Info size={16} />}
-                    <span>{!size ? 'Please select a size' : 'Add to Cart'}</span>
+                    <span className="text-sm sm:text-base">{!size ? 'Please select a size' : 'Add to Cart'}</span>
                   </button>
                 ) : (
                   <button
                     onClick={handleViewCart}
-                    className="w-full py-4 bg-text text-white font-semibold uppercase tracking-wider hover:bg-text/90 transition-all duration-300 flex items-center justify-center gap-2"
+                    className="w-full py-3.5 sm:py-4 bg-text text-white font-semibold uppercase tracking-wider active:bg-text/90 transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98]"
                   >
-                    <span>View Cart</span>
+                    <span className="text-sm sm:text-base">View Cart</span>
                   </button>
                 )}
               </div>
 
               {/* Product Information */}
-              <div className="border-t border-background/50 pt-6">
+              <div className="border-t border-background/50 pt-5 sm:pt-6">
                 <div className="space-y-1">
                   {[
                     { id: 'description', title: 'Product Details', content: productData.description },
@@ -436,13 +500,13 @@ const Product = () => {
                     <div key={section.id} className="border-b border-background/30 last:border-b-0">
                       <button
                         onClick={() => toggleSection(section.id)}
-                        className="w-full py-4 flex justify-between items-center text-left font-semibold text-text hover:text-secondary transition-colors"
+                        className="w-full py-3.5 sm:py-4 flex justify-between items-center text-left font-semibold text-text active:text-secondary transition-colors"
                       >
-                        <span className="text-sm uppercase tracking-wider">{section.title}</span>
+                        <span className="text-xs sm:text-sm uppercase tracking-wider">{section.title}</span>
                         {expandedSection === section.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                       </button>
                       {expandedSection === section.id && (
-                        <div className="pb-4 text-text/70 font-light leading-relaxed">
+                        <div className="pb-3.5 sm:pb-4 text-text/70 font-light leading-relaxed">
                           {typeof section.content === 'string' ? <p className="text-sm">{section.content}</p> : section.content}
                         </div>
                       )}
@@ -466,66 +530,82 @@ const Product = () => {
 
       {/* Image Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/95 flex items-center justify-center z-50" onClick={closeModal}>
-          <div className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+        <div 
+          className="fixed inset-0 bg-black/95 flex items-center justify-center z-50" 
+          onClick={closeModal}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
+          <div className="relative w-full h-full flex items-center justify-center p-4" onClick={(e) => e.stopPropagation()}>
             <img
               src={modalImage}
               alt="Product Detail"
-              className="max-w-full max-h-[90vh] object-contain transition-transform duration-200 shadow-2xl"
+              className="max-w-full max-h-full object-contain transition-transform duration-200 shadow-2xl"
               style={{ transform: `scale(${zoomLevel})` }}
+              draggable="false"
             />
           </div>
 
-          {/* Controls */}
           <button
-            className="absolute top-6 right-6 w-12 h-12 bg-white/95 text-text flex items-center justify-center hover:bg-white transition-colors shadow-xl"
+            className="absolute top-4 sm:top-6 right-4 sm:right-6 w-10 h-10 sm:w-12 sm:h-12 bg-white/95 text-text flex items-center justify-center active:bg-white transition-colors shadow-xl z-10"
             onClick={closeModal}
           >
-            <X size={20} />
+            <X size={18} className="sm:w-5 sm:h-5" />
           </button>
           
+          {/* Desktop Navigation */}
           <button
-            className="absolute top-1/2 left-6 -translate-y-1/2 w-12 h-12 bg-white/95 text-text flex items-center justify-center hover:bg-white transition-colors shadow-xl"
+            className="hidden sm:flex absolute top-1/2 left-4 sm:left-6 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/95 text-text items-center justify-center active:bg-white transition-colors shadow-xl"
             onClick={(e) => { e.stopPropagation(); handlePrev(); }}
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={18} className="sm:w-5 sm:h-5" />
           </button>
           
           <button
-            className="absolute top-1/2 right-6 -translate-y-1/2 w-12 h-12 bg-white/95 text-text flex items-center justify-center hover:bg-white transition-colors shadow-xl"
+            className="hidden sm:flex absolute top-1/2 right-4 sm:right-6 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/95 text-text items-center justify-center active:bg-white transition-colors shadow-xl"
             onClick={(e) => { e.stopPropagation(); handleNext(); }}
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={18} className="sm:w-5 sm:h-5" />
           </button>
 
-          <div className="absolute bottom-6 right-6 flex gap-3">
+          {/* Zoom Controls */}
+          <div className="hidden sm:flex absolute bottom-4 sm:bottom-6 right-4 sm:right-6 gap-3">
             <button
-              className="w-12 h-12 bg-white/95 text-text flex items-center justify-center hover:bg-white transition-colors shadow-xl"
+              className="w-10 h-10 sm:w-12 sm:h-12 bg-white/95 text-text flex items-center justify-center active:bg-white transition-colors shadow-xl"
               onClick={(e) => { e.stopPropagation(); zoomIn(); }}
             >
-              <ZoomIn size={20} />
+              <ZoomIn size={18} className="sm:w-5 sm:h-5" />
             </button>
             <button
-              className="w-12 h-12 bg-white/95 text-text flex items-center justify-center hover:bg-white transition-colors shadow-xl"
+              className="w-10 h-10 sm:w-12 sm:h-12 bg-white/95 text-text flex items-center justify-center active:bg-white transition-colors shadow-xl"
               onClick={(e) => { e.stopPropagation(); zoomOut(); }}
             >
-              <ZoomOut size={20} />
+              <ZoomOut size={18} className="sm:w-5 sm:h-5" />
             </button>
           </div>
 
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/95 text-text px-6 py-3 text-sm font-semibold shadow-xl">
+          {/* Image Counter */}
+          <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 bg-white/95 text-text px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold shadow-xl">
             {currentIndex + 1} / {productData.images.length}
+          </div>
+
+          {/* Mobile Swipe Indicator */}
+          <div className="sm:hidden absolute top-4 left-1/2 -translate-x-1/2 bg-white/95 text-text px-4 py-2 text-xs font-medium shadow-xl flex items-center gap-1">
+            <ChevronLeft size={12} />
+            <span>Swipe</span>
+            <ChevronRight size={12} />
           </div>
         </div>
       )}
 
       {/* Related Products */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-12">
+      <section className="px-4 sm:px-6 lg:px-8 pb-8 sm:pb-12">
         <RelatedProducts category={productData.category} subCategory={productData.subCategory} currentProductId={productId} />
       </section>
 
       {/* Recently Viewed */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-20">
+      <section className="px-4 sm:px-6 lg:px-8 pb-12 sm:pb-20">
         <RecentlyViewed />
       </section>
 
@@ -537,6 +617,24 @@ const Product = () => {
         }
         input[type=number] {
           -moz-appearance: textfield;
+        }
+        
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+
+        /* Prevent text selection on touch elements */
+        .touch-pan-y {
+          touch-action: pan-y;
+          -webkit-user-select: none;
+          user-select: none;
         }
       `}</style>
     </div>
