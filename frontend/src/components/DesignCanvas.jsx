@@ -213,36 +213,37 @@ const PRINT_SCALE_VALUES = {
 const processSVGColor = async (url, newColor) => {
   try {
     const response = await fetch(url);
-    let text = await response.text();
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(text, "image/svg+xml");
-    const svgElement = xmlDoc.getElementsByTagName("svg")[0];
-    const paths = xmlDoc.getElementsByTagName("path");
-    const bgGroup = xmlDoc.createElementNS("http://www.w3.org/2000/svg", "g");
-    bgGroup.setAttribute("id", "dress-body-fill");
-
-    for (let i = 0; i < paths.length; i++) {
-        const clone = paths[i].cloneNode(true);
-        clone.setAttribute("fill", newColor); // The actual fabric color
-        clone.setAttribute("opacity", "1");
-        bgGroup.appendChild(clone);
-    }
-
-    svgElement.insertBefore(bgGroup, svgElement.firstChild);
-
-    for (let i = 0; i < paths.length; i++) {
-        if (paths[i].parentNode.id !== "dress-body-fill") {
-            paths[i].setAttribute("fill", "rgba(0,0,0,0.2)"); // Subtle black outlines
-        }
-    }
-
-    const serializer = new XMLSerializer();
-    const modifiedSvg = serializer.serializeToString(xmlDoc);
+    const text = await response.text();
     
-    const blob = new Blob([modifiedSvg], { type: 'image/svg+xml' });
+    // Parse SVG
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, "image/svg+xml");
+    const svg = doc.querySelector('svg');
+    
+    if (!svg) return url;
+    
+    // Create a clone to avoid mutating original
+    const svgClone = svg.cloneNode(true);
+    
+    // Find all paths
+    const paths = Array.from(svgClone.querySelectorAll('path'));
+    
+    // Set fill color on all paths
+    paths.forEach(path => {
+      path.setAttribute('fill', newColor);
+      path.setAttribute('stroke', 'rgba(0,0,0,0.2)');
+      path.setAttribute('stroke-width', '2');
+    });
+    
+    // Serialize back to string
+    const serializer = new XMLSerializer();
+    const modifiedSvg = serializer.serializeToString(svgClone);
+    
+    // Create blob URL
+    const blob = new Blob([modifiedSvg], { type: 'image/svg+xml;charset=utf-8' });
     return URL.createObjectURL(blob);
   } catch (error) {
-    console.error("Error processing SVG:", error);
+    console.error("SVG processing error:", error);
     return url;
   }
 };
