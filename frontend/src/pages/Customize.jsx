@@ -569,8 +569,8 @@ Return JSON only:
               </div>
 
               {estimatedPrice > 0 && (
-                <div className="bg-gradient-to-br from-secondary/5 to-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border-2xl border-2 border-secondary/20 shadow-lg">
-                  <h3 className="flex items-center gap-2 text-lg sm:text-xl font-serif font-semibold mb-3 sm:mb-4 text-text">
+                <div className="rounded-xl sm:rounded-2xl p-4 border-2xl border-2 border-secondary/20 shadow-lg">
+                  <h3 className="flex items-center gap-2 text-lg sm:text-xl font-serif font-semibold mb-3 text-text">
                     <IndianRupee size={20} className="text-secondary flex-shrink-0" />
                     <span className="text-base sm:text-xl">Price Estimate</span>
                   </h3>
