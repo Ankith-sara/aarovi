@@ -571,7 +571,7 @@ const ShopContextProvider = (props) => {
         }
     }, [token, backendUrl]);
 
-const getCustomizationById = useCallback(async (customizationId) => {
+    const getCustomizationById = useCallback(async (customizationId) => {
         if (!token) {
             return null;
         }

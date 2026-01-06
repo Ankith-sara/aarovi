@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   Palette, Trash2, Undo, Redo, Sparkles,
-  Move, Info, Settings, CheckCircle2, X, Menu
+  Move, Info, Settings, CheckCircle2, X, Menu, Wand2, Send
 } from 'lucide-react';
 import { assets } from '../assets/assets';
 import { 
@@ -9,6 +9,8 @@ import {
   EMBROIDERY_PATTERNS as IMPORTED_EMBROIDERY,
   FABRIC_PRINTS as IMPORTED_PRINTS 
 } from '../data/svg_templates';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 // ============================================================================
 // EMBROIDERY PATTERNS (Using imported patterns)
@@ -151,53 +153,36 @@ const FABRIC_PRINTS = {
 const getEssentialZones = (zones, dressType) => {
   if (!zones) return [];
   
-  // Define essential zone patterns for different dress types
   const essentialPatterns = {
-    // Core body zones (always include)
-    core: ['body', 'top'],
-    // Neckline zones
+    core: ['body', 'bodice', 'top'],
     neck: ['neckline', 'collar'],
-    // Sleeve zones
     sleeves: ['sleeve_left', 'sleeve_right', 'sleeve'],
-    // Button zones
     buttons: ['button', 'buttons'],
-    // Special zones for specific dresses
     lehenga: ['blouse', 'skirt', 'waist', 'border'],
     sherara: ['top', 'pants', 'sharara'],
-    anarkali: ['top', 'waist_band', 'neckline', 'skirt', 'border']
+    anarkali: ['bodice', 'waist_band', 'upper_flare', 'lower_flare', 'border']
   };
 
   return zones.filter(zone => {
     const id = zone.id.toLowerCase();
     
-    // Always include core body zones
     if (essentialPatterns.core.some(pattern => id === pattern)) return true;
-    
-    // Always include neckline/collar
     if (essentialPatterns.neck.some(pattern => id.includes(pattern))) return true;
-    
-    // Always include sleeves
     if (essentialPatterns.sleeves.some(pattern => id.includes(pattern))) return true;
-    
-    // Include buttons if present
     if (essentialPatterns.buttons.some(pattern => id === pattern)) return true;
     
-    // For Lehenga - include skirt, blouse, waist, border
     if (dressType === 'Lehenga' && essentialPatterns.lehenga.some(pattern => id.includes(pattern))) {
       return true;
     }
     
-    // For Sherara - include top, pants, sharara zones
     if (dressType === 'Sherara' && essentialPatterns.sherara.some(pattern => id.includes(pattern))) {
       return true;
     }
     
-    // For Anarkali - include bodice, waist_band, flare, border
     if (dressType === 'Anarkali' && essentialPatterns.anarkali.some(pattern => id.includes(pattern))) {
       return true;
     }
     
-    // For Kurta/Kurti Sets - include pants/bottom if present
     if ((dressType === 'Kurta Sets' || dressType === 'Kurti Sets') && id === 'pants') {
       return true;
     }
@@ -217,7 +202,8 @@ const DesignCanvas = ({
   aiPrompt = '',
   onAIPromptChange,
   onAIGenerate,
-  aiGenerating = false
+  aiGenerating = false,
+  backendUrl
 }) => {
   const svgRef = useRef(null);
   const containerRef = useRef(null);
@@ -232,6 +218,11 @@ const DesignCanvas = ({
   const [neckStyle, setNeckStyle] = useState('round');
   const [sleeveStyle, setSleeveStyle] = useState('full');
   const [initialized, setInitialized] = useState(false);
+
+  // AI Editing State
+  const [aiEditMode, setAiEditMode] = useState(false);
+  const [aiEditPrompt, setAiEditPrompt] = useState('');
+  const [aiEditLoading, setAiEditLoading] = useState(false);
 
   // Undo/Redo history
   const [history, setHistory] = useState([]);
@@ -264,7 +255,7 @@ const DesignCanvas = ({
   // Reset initialization when dress type changes
   useEffect(() => {
     setInitialized(false);
-    setSelectedZone(null); // Clear selection when changing dress
+    setSelectedZone(null);
   }, [dressType]);
 
   // Detect mobile
@@ -350,6 +341,187 @@ const DesignCanvas = ({
       saveToHistory();
     }
   }, []);
+
+  // ============================================================================
+  // AI EDITING FUNCTION
+  // ============================================================================
+  const handleAIEdit = async () => {
+    if (!aiEditPrompt.trim()) {
+      toast.error('Please describe what you want to change');
+      return;
+    }
+
+    setAiEditLoading(true);
+
+    try {
+      // Build context for AI
+      const currentDesignContext = {
+        dressType,
+        gender,
+        currentColor,
+        sleeveStyle,
+        neckStyle,
+        zoneColors,
+        embroideryMetadata,
+        availableZones: template.zones.map(z => ({ id: z.id, label: z.label }))
+      };
+
+      // Build AI prompt
+      const systemPrompt = `You are a garment design AI assistant. Analyze the user's edit request and provide structured JSON instructions for modifying the design canvas.
+
+CURRENT DESIGN CONTEXT:
+- Dress Type: ${dressType}
+- Gender: ${gender}
+- Current Base Color: ${currentColor}
+- Current Sleeve Style: ${sleeveStyle}
+- Current Neckline: ${neckStyle}
+- Current Zone Colors: ${JSON.stringify(zoneColors)}
+- Applied Embroidery: ${JSON.stringify(Object.values(embroideryMetadata))}
+
+AVAILABLE ZONES FOR THIS DRESS:
+${template.zones.map(z => `- ${z.id}: ${z.label}`).join('\n')}
+
+USER EDIT REQUEST: "${aiEditPrompt}"
+
+AVAILABLE MODIFICATIONS:
+1. SLEEVE STYLES: full, elbow (3/4), short, sleeveless
+2. NECKLINE STYLES (Women): round, square, vNeck, boat, sweetheart, halter
+3. NECKLINE STYLES (Men): collar, round, vNeck
+4. EMBROIDERY TYPES: maggam, threadWork, sequins, beadwork
+5. FABRIC PRINTS: block, bagru, floral, kalamkari, shibori, painting
+6. COLORS: Use color names and convert to hex codes
+
+Return ONLY valid JSON:
+{
+  "modifications": {
+    "sleeveStyle": "full|elbow|short|sleeveless",
+    "neckStyle": "collar|round|vNeck|...",
+    "baseColor": "#hexcolor",
+    "zoneColors": {
+      "zone_id": "#hexcolor"
+    },
+    "applyEmbroidery": {
+      "zones": ["zone_id"],
+      "pattern": "maggam|threadWork|sequins|beadwork"
+    },
+    "applyPrint": {
+      "zones": ["zone_id"],
+      "print": "block|bagru|floral|kalamkari|shibori|painting"
+    },
+    "removeFromZones": ["zone_id"]
+  },
+  "explanation": "Brief explanation of changes made"
+}
+
+RULES:
+- Only modify what the user asks for
+- Preserve existing design elements not mentioned
+- Convert color names to hex codes (red=#FF0000, blue=#0000FF, etc.)
+- Zone IDs must match available zones
+- If user says "change body to red", set zoneColors: {"body": "#FF0000"}
+- If user says "add floral print to sleeves", set applyPrint: {"zones": ["sleeve_left", "sleeve_right"], "print": "floral"}
+- If user says "make sleeves half", set sleeveStyle: "elbow"
+- If user says "change to full sleeves", set sleeveStyle: "full"`;
+
+      const response = await axios.post(`${backendUrl}/api/customization/ai-edit`, {
+        editPrompt: aiEditPrompt,
+        currentDesign: currentDesignContext,
+        systemPrompt
+      });
+
+      if (response.data.success) {
+        const { modifications, explanation } = response.data;
+
+        // Apply modifications
+        if (modifications.sleeveStyle) {
+          setSleeveStyle(modifications.sleeveStyle);
+        }
+
+        if (modifications.neckStyle) {
+          setNeckStyle(modifications.neckStyle);
+        }
+
+        if (modifications.baseColor) {
+          setCurrentColor(modifications.baseColor);
+        }
+
+        if (modifications.zoneColors) {
+          setZoneColors(prev => ({
+            ...prev,
+            ...modifications.zoneColors
+          }));
+        }
+
+        if (modifications.applyEmbroidery) {
+          modifications.applyEmbroidery.zones.forEach(zoneId => {
+            const pattern = EMBROIDERY_PATTERNS[modifications.applyEmbroidery.pattern];
+            if (pattern) {
+              const patternCanvas = pattern.createPattern(pattern.threadColors[0]);
+              const patternUrl = patternCanvas.toDataURL();
+
+              setZonePatterns(prev => ({
+                ...prev,
+                [zoneId]: { type: 'embroidery', url: patternUrl }
+              }));
+
+              setEmbroideryMetadata(prev => ({
+                ...prev,
+                [zoneId]: {
+                  type: modifications.applyEmbroidery.pattern,
+                  zone: zoneId,
+                  zoneName: template.zones.find(z => z.id === zoneId)?.label,
+                  density: pattern.density,
+                  threadColor: pattern.threadColors[0],
+                  appliedAt: new Date().toISOString()
+                }
+              }));
+            }
+          });
+        }
+
+        if (modifications.applyPrint) {
+          modifications.applyPrint.zones.forEach(zoneId => {
+            const print = FABRIC_PRINTS[modifications.applyPrint.print];
+            if (print) {
+              const patternCanvas = print.createPattern();
+              const patternUrl = patternCanvas.toDataURL();
+
+              setZonePatterns(prev => ({
+                ...prev,
+                [zoneId]: { type: 'print', url: patternUrl }
+              }));
+            }
+          });
+        }
+
+        if (modifications.removeFromZones) {
+          modifications.removeFromZones.forEach(zoneId => {
+            setZonePatterns(prev => {
+              const updated = { ...prev };
+              delete updated[zoneId];
+              return updated;
+            });
+
+            setEmbroideryMetadata(prev => {
+              const updated = { ...prev };
+              delete updated[zoneId];
+              return updated;
+            });
+          });
+        }
+
+        saveToHistory();
+        toast.success(`✨ ${explanation}`);
+        setAiEditPrompt('');
+        setAiEditMode(false);
+      }
+    } catch (error) {
+      console.error('AI Edit Error:', error);
+      toast.error(error.response?.data?.message || 'AI edit failed. Please try again.');
+    } finally {
+      setAiEditLoading(false);
+    }
+  };
 
   // Get available necklines based on gender
   const getAvailableNecklines = () => {
@@ -476,23 +648,58 @@ const DesignCanvas = ({
     saveToHistory();
   };
 
-  // Export design
-  useEffect(() => {
-    if (onDesignChange && svgRef.current) {
-      const svgString = new XMLSerializer().serializeToString(svgRef.current);
+  // Convert SVG to PNG
+  const svgToPng = useCallback(() => {
+    return new Promise((resolve) => {
+      if (!svgRef.current) {
+        resolve('');
+        return;
+      }
 
-      onDesignChange({
-        svg: svgString,
-        zoneColors,
-        zonePatterns,
-        neckStyle,
-        sleeveStyle,
-        color: currentColor,
-        baseColor: currentColor,
-        embroideryMetadata: Object.values(embroideryMetadata)
-      });
-    }
-  }, [zoneColors, zonePatterns, currentColor, neckStyle, sleeveStyle, embroideryMetadata, onDesignChange]);
+      const svg = svgRef.current;
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      canvas.width = 800;
+      canvas.height = 800;
+
+      img.onload = () => {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      };
+
+      img.onerror = () => resolve('');
+      img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+    });
+  }, []);
+
+  // Export design with PNG
+  useEffect(() => {
+    const exportDesign = async () => {
+      if (onDesignChange && svgRef.current) {
+        const svgString = new XMLSerializer().serializeToString(svgRef.current);
+        const pngData = await svgToPng();
+
+        onDesignChange({
+          svg: svgString,
+          png: pngData,
+          zoneColors,
+          zonePatterns,
+          neckStyle,
+          sleeveStyle,
+          color: currentColor,
+          baseColor: currentColor,
+          embroideryMetadata: Object.values(embroideryMetadata)
+        });
+      }
+    };
+
+    exportDesign();
+  }, [zoneColors, zonePatterns, currentColor, neckStyle, sleeveStyle, embroideryMetadata, onDesignChange, svgToPng]);
 
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
@@ -545,6 +752,13 @@ const DesignCanvas = ({
               >
                 <Redo size={18} />
               </button>
+              <button
+                onClick={() => setAiEditMode(!aiEditMode)}
+                className={`p-2 sm:p-3 rounded-lg transition-all ${aiEditMode ? 'bg-purple-500 text-white' : 'bg-purple-100 text-purple-600 hover:bg-purple-200'}`}
+                title="AI Edit Mode"
+              >
+                <Wand2 size={18} />
+              </button>
               {isMobile && (
                 <button
                   onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -554,6 +768,44 @@ const DesignCanvas = ({
               )}
             </div>
           </div>
+
+          {/* AI Edit Mode */}
+          {aiEditMode && (
+            <div className="mb-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border-2 border-purple-200">
+              <div className="flex items-center gap-2 mb-3">
+                <Wand2 size={20} className="text-purple-600" />
+                <h4 className="font-bold text-purple-900">AI Edit Mode</h4>
+              </div>
+              <p className="text-xs text-purple-700 mb-3">
+                Tell me what you want to change! Examples:
+              </p>
+              <div className="text-xs text-purple-600 mb-3 space-y-1">
+                <div>• "Change sleeves to half"</div>
+                <div>• "Make body red and sleeves blue"</div>
+                <div>• "Add floral print to the entire dress"</div>
+                <div>• "Add maggam embroidery on collar"</div>
+                <div>• "Change to full sleeves"</div>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={aiEditPrompt}
+                  onChange={(e) => setAiEditPrompt(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && !aiEditLoading && handleAIEdit()}
+                  placeholder="E.g., 'Change sleeves to half and make body red'"
+                  className="flex-1 px-3 py-2 border-2 border-purple-200 rounded-lg focus:border-purple-400 focus:outline-none text-sm"
+                  disabled={aiEditLoading}
+                />
+                <button
+                  onClick={handleAIEdit}
+                  disabled={aiEditLoading || !aiEditPrompt.trim()}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm font-semibold"
+                >
+                  {aiEditLoading ? 'Editing...' : <Send size={16} />}
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* SVG Canvas */}
           <div ref={containerRef} className="flex justify-center bg-gray-100 rounded-xl p-4 sm:p-8">
@@ -781,7 +1033,6 @@ const DesignCanvas = ({
                   </div>
                 </div>
 
-                {/* Only show sleeve options if dress has sleeves */}
                 {template.zones.some(z => z.id.includes('sleeve')) && (
                   <div>
                     <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Sleeve Length</h4>
