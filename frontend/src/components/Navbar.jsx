@@ -131,7 +131,7 @@ const Navbar = () => {
               </span>
             </Link>
 
-            {/* Desktop Navigation - Center */}
+            {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-1">
               <NavLink
                 to="/"
