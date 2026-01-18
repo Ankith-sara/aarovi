@@ -1,4 +1,5 @@
 import customizationModel from "../models/CustomizationModel.js";
+import userModel from "../models/UserModel.js";
 import mongoose from "mongoose";
 
 // SAVE CUSTOMIZATION
@@ -17,7 +18,7 @@ const saveCustomization = async (req, res) => {
       estimatedPrice
     } = req.body;
 
-    // Get userId from auth middleware (same as cart)
+    // Get userId from auth middleware
     const userId = req.body.userId;
 
     // Validate userId
@@ -47,6 +48,7 @@ const saveCustomization = async (req, res) => {
     // Process canvasDesign - ensure we store the SVG and metadata
     const processedCanvasDesign = {
       svg: canvasDesign?.svg || "",
+      png: canvasDesign?.png || "",
       zoneColors: canvasDesign?.zoneColors || {},
       zonePatterns: canvasDesign?.zonePatterns || {},
       neckStyle: canvasDesign?.neckStyle || "round",
@@ -85,7 +87,8 @@ const saveCustomization = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "Customization saved successfully",
-      customization: customization
+      customization: customization,
+      _id: customization._id
     });
 
   } catch (error) {
@@ -160,10 +163,10 @@ const getCustomization = async (req, res) => {
   }
 };
 
-// GET ALL USER CUSTOMIZATIONS - FIXED TO MATCH CART PATTERN
+// GET ALL USER CUSTOMIZATIONS
 const getUserCustomizations = async (req, res) => {
   try {
-    // Get userId from request body (same as cart)
+    // Get userId from request body
     const { userId } = req.body;
 
     // Validate userId
@@ -254,6 +257,7 @@ const updateCustomization = async (req, res) => {
     if (updateData.canvasDesign) {
       updateData.canvasDesign = {
         svg: updateData.canvasDesign.svg || customization.canvasDesign.svg,
+        png: updateData.canvasDesign.png || customization.canvasDesign.png,
         zoneColors: updateData.canvasDesign.zoneColors || customization.canvasDesign.zoneColors,
         zonePatterns: updateData.canvasDesign.zonePatterns || customization.canvasDesign.zonePatterns,
         neckStyle: updateData.canvasDesign.neckStyle || customization.canvasDesign.neckStyle,
@@ -294,7 +298,7 @@ const updateCustomization = async (req, res) => {
   }
 };
 
-// AI CANVAS EDITING - NEW ENDPOINT
+// AI CANVAS EDITING
 const aiEditCanvas = async (req, res) => {
   try {
     const { editPrompt, currentDesign, systemPrompt } = req.body;
@@ -349,7 +353,7 @@ const aiEditCanvas = async (req, res) => {
       'emerald': '#50C878'
     };
 
-    // Simple AI logic for pattern matching
+    // AI logic for pattern matching
     const parseEditRequest = (prompt, design) => {
       const lowerPrompt = prompt.toLowerCase();
       const modifications = {
@@ -422,7 +426,7 @@ const aiEditCanvas = async (req, res) => {
             zones.push('neckline');
           }
         }
-        if (zones.length === 0) zones.push('body'); // Default to body
+        if (zones.length === 0) zones.push('body');
         modifications.applyEmbroidery = { zones, pattern: 'maggam' };
         explanationParts.push(`Added Maggam embroidery to ${zones.join(', ')}`);
       } else if (lowerPrompt.includes('thread work') || lowerPrompt.includes('embroidery')) {
@@ -621,7 +625,7 @@ const deleteCustomization = async (req, res) => {
       });
     }
 
-    // Optional: Prevent deletion of customizations in certain statuses
+    // Prevent deletion of customizations in certain statuses
     if (["In Production", "Ready", "Delivered"].includes(customization.status)) {
       return res.status(400).json({
         success: false,
@@ -645,4 +649,85 @@ const deleteCustomization = async (req, res) => {
   }
 };
 
-export { saveCustomization, getCustomization, updateCustomization, getUserCustomizations, submitCustomization, deleteCustomization, aiEditCanvas };
+// ============================================================================
+// ADMIN FUNCTIONS
+// ============================================================================
+
+// GET ALL CUSTOMIZATIONS (ADMIN ONLY)
+const getAllCustomizationsAdmin = async (req, res) => {
+  try {
+    // Fetch all customizations with user details populated
+    const customizations = await customizationModel
+      .find()
+      .populate('userId', 'name email')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      customizations: customizations || [],
+      count: customizations.length
+    });
+
+  } catch (error) {
+    console.error("Get All Customizations Admin Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching customizations",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// UPDATE CUSTOMIZATION STATUS (ADMIN ONLY)
+const updateCustomizationStatusAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    // Validate customization ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid customization ID"
+      });
+    }
+
+    // Validate status
+    const validStatuses = ["Draft", "Submitted", "In Review", "In Production", "Ready", "Delivered"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+      });
+    }
+
+    const customization = await customizationModel.findById(id);
+
+    if (!customization) {
+      return res.status(404).json({
+        success: false,
+        message: "Customization not found"
+      });
+    }
+
+    // Update status
+    customization.status = status;
+    await customization.save();
+
+    res.json({
+      success: true,
+      message: "Status updated successfully",
+      customization
+    });
+
+  } catch (error) {
+    console.error("Update Customization Status Admin Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later."
+    });
+  }
+};
+
+export { saveCustomization, getCustomization, updateCustomization, getUserCustomizations, submitCustomization, deleteCustomization, aiEditCanvas, getAllCustomizationsAdmin, updateCustomizationStatusAdmin };

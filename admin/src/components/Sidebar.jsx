@@ -33,6 +33,12 @@ const Sidebar = ({ token, setToken }) => {
       icon: ShoppingBag,
       label: 'Orders',
       description: 'Track & fulfill'
+    },
+    {
+      to: '/customizations',
+      icon: ShoppingBag,
+      label: 'Customizations',
+      description: 'Customer Requests'
     }
   ];
 

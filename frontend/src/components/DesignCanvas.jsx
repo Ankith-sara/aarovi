@@ -235,12 +235,12 @@ const DesignCanvas = ({
     zones: getEssentialZones(rawTemplate.zones, dressType)
   };
 
-  // ✅ Sync selectedColor prop with local currentColor state
+  // Sync selectedColor prop with local currentColor state
   useEffect(() => {
     setCurrentColor(selectedColor);
   }, [selectedColor]);
 
-  // ✅ Initialize all zones with base color ONCE
+  // Initialize all zones with base color ONCE
   useEffect(() => {
     if (!initialized && template.zones.length > 0) {
       const initialColors = {};
@@ -511,13 +511,12 @@ RULES:
         }
 
         saveToHistory();
-        toast.success(`✨ ${explanation}`);
         setAiEditPrompt('');
         setAiEditMode(false);
       }
     } catch (error) {
       console.error('AI Edit Error:', error);
-      toast.error(error.response?.data?.message || 'AI edit failed. Please try again.');
+      toast.error('AI edit failed. Please try again.');
     } finally {
       setAiEditLoading(false);
     }
@@ -648,6 +647,39 @@ RULES:
     saveToHistory();
   };
 
+  // Apply color to all zones
+  const applyColorToAllZones = (color) => {
+    const updatedColors = {};
+    template.zones.forEach(zone => {
+      updatedColors[zone.id] = color;
+    });
+    setZoneColors(updatedColors);
+    saveToHistory();
+  };
+
+  // Reset all colors
+  const resetAllColors = () => {
+    const resetColors = {};
+    template.zones.forEach(zone => {
+      resetColors[zone.id] = '#FFFFFF';
+    });
+    setZoneColors(resetColors);
+    setCurrentColor('#FFFFFF');
+    saveToHistory();
+  };
+
+  // Reset selected zone color
+  const resetSelectedZoneColor = () => {
+    if (selectedZone) {
+      setZoneColors(prev => {
+        const updated = { ...prev };
+        delete updated[selectedZone];
+        return updated;
+      });
+      saveToHistory();
+    }
+  };
+
   // Convert SVG to PNG
   const svgToPng = useCallback(() => {
     return new Promise((resolve) => {
@@ -720,6 +752,25 @@ RULES:
     }
   };
 
+  // Color presets
+  const colorPresets = [
+    { name: 'Red', color: '#EF4444' },
+    { name: 'Pink', color: '#EC4899' },
+    { name: 'Purple', color: '#A855F7' },
+    { name: 'Blue', color: '#3B82F6' },
+    { name: 'Green', color: '#10B981' },
+    { name: 'Yellow', color: '#F59E0B' },
+    { name: 'Orange', color: '#F97316' },
+    { name: 'Teal', color: '#14B8A6' },
+    { name: 'Indigo', color: '#6366F1' },
+    { name: 'White', color: '#FFFFFF' },
+    { name: 'Black', color: '#1F2937' },
+    { name: 'Gold', color: '#D4AF37' },
+    { name: 'Silver', color: '#C0C0C0' },
+    { name: 'Navy', color: '#1E3A8A' },
+    { name: 'Maroon', color: '#7C2D12' }
+  ];
+
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="grid lg:grid-cols-[1fr_380px] gap-4 sm:gap-6">
@@ -769,7 +820,6 @@ RULES:
             </div>
           </div>
 
-          {/* AI Edit Mode */}
           {aiEditMode && (
             <div className="mb-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border-2 border-purple-200">
               <div className="flex items-center gap-2 mb-3">
@@ -777,7 +827,7 @@ RULES:
                 <h4 className="font-bold text-purple-900">AI Edit Mode</h4>
               </div>
               <p className="text-xs text-purple-700 mb-3">
-                Tell me what you want to change! Examples:
+                Tell me what you want to change. Examples:
               </p>
               <div className="text-xs text-purple-600 mb-3 space-y-1">
                 <div>• "Change sleeves to half"</div>
@@ -807,7 +857,6 @@ RULES:
             </div>
           )}
 
-          {/* SVG Canvas */}
           <div ref={containerRef} className="flex justify-center bg-gray-100 rounded-xl p-4 sm:p-8">
             <svg
               ref={svgRef}
@@ -855,7 +904,6 @@ RULES:
             </svg>
           </div>
 
-          {/* Zone Selection */}
           <div className="mt-4 sm:mt-6">
             <h4 className="text-xs sm:text-sm font-bold text-gray-600 mb-2 sm:mb-3 uppercase">Select Area to Customize</h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -913,7 +961,6 @@ RULES:
           )}
         </div>
 
-        {/* Tools Sidebar */}
         <div className={`
           ${isMobile ? 'fixed inset-x-0 bottom-0 z-50 transform transition-transform duration-300' : 'relative'}
           ${isMobile && !sidebarOpen ? 'translate-y-full' : 'translate-y-0'}
@@ -968,14 +1015,6 @@ RULES:
                         onChange={(e) => {
                           const color = e.target.value;
                           setCurrentColor(color);
-
-                          if (selectedZone) {
-                            setZoneColors(prev => ({
-                              ...prev,
-                              [selectedZone]: color
-                            }));
-                          }
-
                           saveToHistory();
                         }}
                         className="w-20 h-20 rounded-xl cursor-pointer border-2 border-white shadow-lg"
@@ -988,14 +1027,6 @@ RULES:
                           onChange={(e) => {
                             const color = e.target.value;
                             setCurrentColor(color);
-
-                            if (selectedZone) {
-                              setZoneColors(prev => ({
-                                ...prev,
-                                [selectedZone]: color
-                              }));
-                            }
-
                             saveToHistory();
                           }}
                           className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-sm"
@@ -1003,14 +1034,77 @@ RULES:
                       </div>
                     </div>
 
+                    <button
+                      onClick={() => applyColorToAllZones(currentColor)}
+                      className="w-full mt-3 px-4 py-2.5 bg-secondary text-white rounded-lg hover:shadow-lg transition-all font-semibold text-sm flex items-center justify-center gap-2"
+                    >
+                      <Palette size={16} />
+                      Apply
+                    </button>
+
                     {selectedZone && (
                       <button
-                        onClick={() => applyColorToZone(currentColor)}
-                        className="w-full mt-4 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary transition-all font-semibold text-sm"
+                        onClick={() => {
+                          applyColorToZone(currentColor);
+                        }}
+                        className="w-full mt-2 px-4 py-2 bg-white border-2 border-secondary text-secondary rounded-lg hover:bg-secondary hover:text-white transition-all font-semibold text-sm"
                       >
-                        Apply to {template.zones.find(z => z.id === selectedZone)?.label}
+                        Apply to {template.zones.find(z => z.id === selectedZone)?.label} Only
                       </button>
                     )}
+
+                    {selectedZone && (
+                      <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-xs text-blue-700">
+                          Apply color to all zones or customize individual zones
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Quick Color Presets</h4>
+                  <div className="grid grid-cols-5 gap-2">
+                    {colorPresets.map(preset => (
+                      <button
+                        key={preset.color}
+                        onClick={() => {
+                          setCurrentColor(preset.color);
+                          if (selectedZone) {
+                            applyColorToZone(preset.color);
+                          }
+                          saveToHistory();
+                        }}
+                        className="group relative aspect-square rounded-lg border-2 border-gray-200 hover:border-secondary hover:scale-110 transition-all shadow-sm hover:shadow-md"
+                        style={{ backgroundColor: preset.color }}
+                        title={preset.name}
+                      >
+                        <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold opacity-0 group-hover:opacity-100 transition-opacity bg-black/30 rounded-lg text-white">
+                          {preset.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Color Actions</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={resetAllColors}
+                      className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all text-xs font-semibold"
+                    >
+                      Reset All Colors
+                    </button>
+                    
+                    <button
+                      onClick={resetSelectedZoneColor}
+                      disabled={!selectedZone}
+                      className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Reset Selected Zone
+                    </button>
                   </div>
                 </div>
 
@@ -1024,8 +1118,11 @@ RULES:
                           setNeckStyle(style.value);
                           saveToHistory();
                         }}
-                        className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${neckStyle === style.value ? 'border-secondary' : 'border-gray-200'
-                          }`}
+                        className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${
+                          neckStyle === style.value 
+                            ? 'border-secondary bg-secondary/5' 
+                            : 'border-gray-200 hover:border-secondary/50'
+                        }`}
                       >
                         {style.label}
                       </button>
@@ -1047,8 +1144,11 @@ RULES:
                             }
                             saveToHistory();
                           }}
-                          className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${sleeveStyle === style.value ? 'border-secondary' : 'border-gray-200'
-                            }`}
+                          className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${
+                            sleeveStyle === style.value 
+                              ? 'border-secondary bg-secondary/5' 
+                              : 'border-gray-200 hover:border-secondary/50'
+                          }`}
                         >
                           {style.label}
                         </button>

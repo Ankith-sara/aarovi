@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import { ChevronDown, Search, User, ShoppingCart, Heart, Menu, X, LogOut, ShoppingBag } from 'lucide-react';
 import { jwtDecode } from "jwt-decode";
@@ -8,9 +8,11 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const { setShowSearch, getWishlistCount, getCartCount, navigate, token, setToken, setCartItems, setSelectedSubCategory } = useContext(ShopContext);
+  const { setShowSearch, getWishlistCount, getCartCount, token, setToken, setCartItems, setSelectedSubCategory } = useContext(ShopContext);
   const location = useLocation();
-  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+  const womenDropdownRef = useRef(null);
+  const menDropdownRef = useRef(null);
   const profileDropdownRef = useRef(null);
 
   let userId = "";
@@ -50,11 +52,11 @@ const Navbar = () => {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if click is outside both category and profile dropdowns
-      const isOutsideCategoryDropdown = dropdownRef.current && !dropdownRef.current.contains(event.target);
+      const isOutsideWomenDropdown = womenDropdownRef.current && !womenDropdownRef.current.contains(event.target);
+      const isOutsideMenDropdown = menDropdownRef.current && !menDropdownRef.current.contains(event.target);
       const isOutsideProfileDropdown = profileDropdownRef.current && !profileDropdownRef.current.contains(event.target);
 
-      if (isOutsideCategoryDropdown && isOutsideProfileDropdown) {
+      if (isOutsideWomenDropdown && isOutsideMenDropdown && isOutsideProfileDropdown) {
         setActiveDropdown(null);
       }
     };
@@ -88,10 +90,11 @@ const Navbar = () => {
     }
   ];
 
-  const handleCategoryClick = (subCategory) => {
+  const handleCategoryClick = (subCategory, path) => {
     setSelectedSubCategory(subCategory);
     setMobileMenuOpen(false);
     setActiveDropdown(null);
+    navigate(path);
   };
 
   const toggleDropdown = (dropdownName) => {
@@ -116,8 +119,9 @@ const Navbar = () => {
   return (
     <>
       <div
-        className={`fixed inset-0 bg-black/60 backdrop-blur-sm transition-all duration-300 z-40 ${mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-          }`}
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm transition-all duration-300 z-40 ${
+          mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
         onClick={() => setMobileMenuOpen(false)}
       />
 
@@ -135,21 +139,24 @@ const Navbar = () => {
             <div className="hidden lg:flex items-center space-x-1">
               <NavLink
                 to="/"
-                className={({ isActive }) => `px-5 py-2 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${isActive
-                  ? 'text-secondary bg-background/20'
-                  : `${getTextColor()} ${getHoverClass()}`
-                  }`}
+                className={({ isActive }) => `px-5 py-2 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${
+                  isActive
+                    ? 'text-secondary bg-background/20'
+                    : `${getTextColor()} ${getHoverClass()}`
+                }`}
               >
                 Home
               </NavLink>
             
-              <div className="relative" ref={dropdownRef}>
+              {/* Women Dropdown */}
+              <div className="relative" ref={womenDropdownRef}>
                 <button
                   onClick={() => toggleDropdown('women')}
-                  className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${activeDropdown === 'women'
-                    ? 'text-secondary bg-background/20'
-                    : `${getTextColor()} ${getHoverClass()}`
-                    }`}
+                  className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${
+                    activeDropdown === 'women'
+                      ? 'text-secondary bg-background/20'
+                      : `${getTextColor()} ${getHoverClass()}`
+                  }`}
                 >
                   Women
                   <ChevronDown
@@ -167,11 +174,12 @@ const Navbar = () => {
                           <NavLink
                             key={sub.path}
                             to={sub.path}
-                            onClick={() => handleCategoryClick(sub.name)}
-                            className={`block px-5 py-3 text-sm font-medium transition-all duration-200 ${isSubActive
-                              ? 'bg-gradient-to-r from-background/30 to-primary text-secondary'
-                              : 'text-text hover:bg-background/20 hover:text-secondary hover:pl-6'
-                              }`}
+                            onClick={() => handleCategoryClick(sub.name, sub.path)}
+                            className={`block px-5 py-3 text-sm font-medium transition-all duration-200 ${
+                              isSubActive
+                                ? 'bg-gradient-to-r from-background/30 to-background/10 text-secondary'
+                                : 'text-text hover:bg-background/20 hover:text-secondary hover:pl-6'
+                            }`}
                           >
                             {sub.name}
                           </NavLink>
@@ -182,13 +190,15 @@ const Navbar = () => {
                 )}
               </div>
 
-              <div className="relative">
+              {/* Men Dropdown */}
+              <div className="relative" ref={menDropdownRef}>
                 <button
                   onClick={() => toggleDropdown('men')}
-                  className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${activeDropdown === 'men'
-                    ? 'text-secondary bg-background/20'
-                    : `${getTextColor()} ${getHoverClass()}`
-                    }`}
+                  className={`flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${
+                    activeDropdown === 'men'
+                      ? 'text-secondary bg-background/20'
+                      : `${getTextColor()} ${getHoverClass()}`
+                  }`}
                 >
                   Men
                   <ChevronDown
@@ -206,11 +216,12 @@ const Navbar = () => {
                           <NavLink
                             key={sub.path}
                             to={sub.path}
-                            onClick={() => handleCategoryClick(sub.name)}
-                            className={`block px-5 py-3 text-sm font-medium transition-all duration-200 ${isSubActive
-                              ? 'bg-gradient-to-r from-background/30 to-primary text-secondary'
-                              : 'text-text hover:bg-background/20 hover:text-secondary hover:pl-6'
-                              }`}
+                            onClick={() => handleCategoryClick(sub.name, sub.path)}
+                            className={`block px-5 py-3 text-sm font-medium transition-all duration-200 ${
+                              isSubActive
+                                ? 'bg-gradient-to-r from-background/30 to-background/10 text-secondary'
+                                : 'text-text hover:bg-background/20 hover:text-secondary hover:pl-6'
+                            }`}
                           >
                             {sub.name}
                           </NavLink>
@@ -223,30 +234,33 @@ const Navbar = () => {
 
               <NavLink
                 to="/about"
-                className={({ isActive }) => `px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${isActive
-                  ? 'text-secondary bg-background/20'
-                  : `${getTextColor()} ${getHoverClass()}`
-                  }`}
+                className={({ isActive }) => `px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${
+                  isActive
+                    ? 'text-secondary bg-background/20'
+                    : `${getTextColor()} ${getHoverClass()}`
+                }`}
               >
                 About
               </NavLink>
 
               <NavLink
                 to="/customize"
-                className={({ isActive }) => `px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${isActive
-                  ? 'text-secondary bg-background/20'
-                  : `${getTextColor()} ${getHoverClass()}`
-                  }`}
+                className={({ isActive }) => `px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${
+                  isActive
+                    ? 'text-secondary bg-background/20'
+                    : `${getTextColor()} ${getHoverClass()}`
+                }`}
               >
                 Customize
               </NavLink>
 
               <NavLink
                 to="/contact"
-                className={({ isActive }) => `px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${isActive
-                  ? 'text-secondary bg-background/20'
-                  : `${getTextColor()} ${getHoverClass()}`
-                  }`}
+                className={({ isActive }) => `px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg transition-all duration-300 ${
+                  isActive
+                    ? 'text-secondary bg-background/20'
+                    : `${getTextColor()} ${getHoverClass()}`
+                }`}
               >
                 Contact
               </NavLink>
@@ -265,10 +279,11 @@ const Navbar = () => {
               <div className="relative hidden lg:block" ref={profileDropdownRef}>
                 <button
                   onClick={() => token ? toggleDropdown('profile') : navigate('/login')}
-                  className={`p-2.5 rounded-lg transition-all duration-300 ${activeDropdown === 'profile'
-                    ? 'text-secondary bg-background/20'
-                    : `${getTextColor()} ${getHoverClass()}`
-                    }`}
+                  className={`p-2.5 rounded-lg transition-all duration-300 ${
+                    activeDropdown === 'profile'
+                      ? 'text-secondary bg-background/20'
+                      : `${getTextColor()} ${getHoverClass()}`
+                  }`}
                   aria-label="User Profile"
                 >
                   <User size={20} />
@@ -345,8 +360,9 @@ const Navbar = () => {
       </nav>
 
       {/* Mobile Slide Menu */}
-      <div className={`fixed top-0 right-0 bottom-0 w-full sm:w-96 bg-white shadow-2xl z-50 transition-transform duration-300 overflow-y-auto ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}>
+      <div className={`fixed top-0 right-0 bottom-0 w-full sm:w-96 bg-white shadow-2xl z-50 transition-transform duration-300 overflow-y-auto ${
+        mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+      }`}>
         <div className="bg-gradient-to-br from-secondary to-secondary/80 p-6">
           <div className="flex items-center justify-between">
             <span className="text-2xl font-serif font-bold text-white tracking-tight">AAROVI</span>
@@ -361,17 +377,21 @@ const Navbar = () => {
 
         <div className="p-6">
           <div className="space-y-2">
-            <NavLink
-              to="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className={({ isActive }) => `block px-5 py-3.5 rounded-lg font-semibold transition-all duration-300 ${isActive
-                ? 'bg-gradient-to-r from-background/30 to-primary text-secondary shadow-sm'
-                : 'text-text hover:bg-background/20 hover:text-secondary'
-                }`}
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate('/');
+              }}
+              className={`w-full text-left block px-5 py-3.5 rounded-lg font-semibold transition-all duration-300 ${
+                location.pathname === '/'
+                  ? 'bg-gradient-to-r from-background/30 to-background/10 text-secondary shadow-sm'
+                  : 'text-text hover:bg-background/20 hover:text-secondary'
+              }`}
             >
               Home
-            </NavLink>
+            </button>
 
+            {/* Women Mobile Dropdown */}
             <div>
               <button
                 onClick={() => setActiveDropdown(activeDropdown === 'women-mobile' ? null : 'women-mobile')}
@@ -385,23 +405,30 @@ const Navbar = () => {
               </button>
               {activeDropdown === 'women-mobile' && (
                 <div className="ml-4 mt-2 space-y-1 animate-slideDown">
-                  {categories[0].subcategories.map((sub) => (
-                    <NavLink
-                      key={sub.path}
-                      to={sub.path}
-                      onClick={() => { handleCategoryClick(sub.name); setMobileMenuOpen(false); }}
-                      className={({ isActive }) => `block px-5 py-2.5 text-sm rounded-lg font-medium transition-all duration-200 ${isActive
-                        ? 'bg-gradient-to-r from-background/30 to-primary text-secondary'
-                        : 'text-text/80 hover:bg-background/10 hover:text-secondary hover:pl-6'
+                  {categories[0].subcategories.map((sub) => {
+                    const isSubActive = location.pathname === sub.path;
+                    return (
+                      <button
+                        key={sub.path}
+                        onClick={() => {
+                          handleCategoryClick(sub.name, sub.path);
+                          setMobileMenuOpen(false);
+                        }}
+                        className={`w-full text-left block px-5 py-2.5 text-sm rounded-lg font-medium transition-all duration-200 ${
+                          isSubActive
+                            ? 'bg-gradient-to-r from-background/30 to-background/10 text-secondary'
+                            : 'text-text/80 hover:bg-background/10 hover:text-secondary hover:pl-6'
                         }`}
-                    >
-                      {sub.name}
-                    </NavLink>
-                  ))}
+                      >
+                        {sub.name}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
 
+            {/* Men Mobile Dropdown */}
             <div>
               <button
                 onClick={() => setActiveDropdown(activeDropdown === 'men-mobile' ? null : 'men-mobile')}
@@ -415,55 +442,70 @@ const Navbar = () => {
               </button>
               {activeDropdown === 'men-mobile' && (
                 <div className="ml-4 mt-2 space-y-1 animate-slideDown">
-                  {categories[1].subcategories.map((sub) => (
-                    <NavLink
-                      key={sub.path}
-                      to={sub.path}
-                      onClick={() => { handleCategoryClick(sub.name); setMobileMenuOpen(false); }}
-                      className={({ isActive }) => `block px-5 py-2.5 text-sm rounded-lg font-medium transition-all duration-200 ${isActive
-                        ? 'bg-gradient-to-r from-background/30 to-primary text-secondary'
-                        : 'text-text/80 hover:bg-background/10 hover:text-secondary hover:pl-6'
+                  {categories[1].subcategories.map((sub) => {
+                    const isSubActive = location.pathname === sub.path;
+                    return (
+                      <button
+                        key={sub.path}
+                        onClick={() => {
+                          handleCategoryClick(sub.name, sub.path);
+                          setMobileMenuOpen(false);
+                        }}
+                        className={`w-full text-left block px-5 py-2.5 text-sm rounded-lg font-medium transition-all duration-200 ${
+                          isSubActive
+                            ? 'bg-gradient-to-r from-background/30 to-background/10 text-secondary'
+                            : 'text-text/80 hover:bg-background/10 hover:text-secondary hover:pl-6'
                         }`}
-                    >
-                      {sub.name}
-                    </NavLink>
-                  ))}
+                      >
+                        {sub.name}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
 
-            <NavLink
-              to="/about"
-              onClick={() => setMobileMenuOpen(false)}
-              className={({ isActive }) => `block px-5 py-3.5 rounded-lg font-semibold transition-all duration-300 ${isActive
-                ? 'bg-gradient-to-r from-background/30 to-primary text-secondary shadow-sm'
-                : 'text-text hover:bg-background/20 hover:text-secondary'
-                }`}
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate('/about');
+              }}
+              className={`w-full text-left block px-5 py-3.5 rounded-lg font-semibold transition-all duration-300 ${
+                location.pathname === '/about'
+                  ? 'bg-gradient-to-r from-background/30 to-background/10 text-secondary shadow-sm'
+                  : 'text-text hover:bg-background/20 hover:text-secondary'
+              }`}
             >
               About
-            </NavLink>
+            </button>
 
-            <NavLink
-              to="/customize"
-              onClick={() => setMobileMenuOpen(false)}
-              className={({ isActive }) => `block px-5 py-3.5 rounded-lg font-semibold transition-all duration-300 ${isActive
-                ? 'bg-gradient-to-r from-background/30 to-primary text-secondary shadow-sm'
-                : 'text-text hover:bg-background/20 hover:text-secondary'
-                }`}
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate('/customize');
+              }}
+              className={`w-full text-left block px-5 py-3.5 rounded-lg font-semibold transition-all duration-300 ${
+                location.pathname === '/customize'
+                  ? 'bg-gradient-to-r from-background/30 to-background/10 text-secondary shadow-sm'
+                  : 'text-text hover:bg-background/20 hover:text-secondary'
+              }`}
             >
               Customize
-            </NavLink>
+            </button>
 
-            <NavLink
-              to="/contact"
-              onClick={() => setMobileMenuOpen(false)}
-              className={({ isActive }) => `block px-5 py-3.5 rounded-lg font-semibold transition-all duration-300 ${isActive
-                ? 'bg-gradient-to-r from-background/30 to-primary text-secondary shadow-sm'
-                : 'text-text hover:bg-background/20 hover:text-secondary'
-                }`}
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                navigate('/contact');
+              }}
+              className={`w-full text-left block px-5 py-3.5 rounded-lg font-semibold transition-all duration-300 ${
+                location.pathname === '/contact'
+                  ? 'bg-gradient-to-r from-background/30 to-background/10 text-secondary shadow-sm'
+                  : 'text-text hover:bg-background/20 hover:text-secondary'
+              }`}
             >
               Contact
-            </NavLink>
+            </button>
 
             <div className="pt-6 mt-6 border-t border-background">
               <p className="px-5 text-xs font-bold text-text/50 uppercase tracking-wider mb-3">
@@ -471,26 +513,30 @@ const Navbar = () => {
               </p>
               {token ? (
                 <div className="space-y-2">
-                  <NavLink
-                    to={`/profile/${userId}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center px-5 py-3.5 text-text hover:bg-background/20 hover:text-secondary rounded-lg transition-all duration-300"
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate(`/profile/${userId}`);
+                    }}
+                    className="w-full flex items-center px-5 py-3.5 text-text hover:bg-background/20 hover:text-secondary rounded-lg transition-all duration-300"
                   >
-                    <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-background/30 to-primary flex items-center justify-center mr-3">
+                    <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-background/30 to-background/10 flex items-center justify-center mr-3">
                       <User size={18} className="text-secondary" />
                     </div>
                     <span className="font-semibold">My Profile</span>
-                  </NavLink>
-                  <NavLink
-                    to="/orders"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center px-5 py-3.5 text-text hover:bg-background/20 hover:text-secondary rounded-lg transition-all duration-300"
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate('/orders');
+                    }}
+                    className="w-full flex items-center px-5 py-3.5 text-text hover:bg-background/20 hover:text-secondary rounded-lg transition-all duration-300"
                   >
-                    <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-background/30 to-primary flex items-center justify-center mr-3">
+                    <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-background/30 to-background/10 flex items-center justify-center mr-3">
                       <ShoppingBag size={18} className="text-secondary" />
                     </div>
                     <span className="font-semibold">My Orders</span>
-                  </NavLink>
+                  </button>
                   <button
                     onClick={() => {
                       if (window.confirm("Are you sure you want to log out?")) {
@@ -507,16 +553,18 @@ const Navbar = () => {
                   </button>
                 </div>
               ) : (
-                <NavLink
-                  to="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center px-5 py-3.5 text-text hover:bg-background/20 hover:text-secondary rounded-lg transition-all duration-300"
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    navigate('/login');
+                  }}
+                  className="w-full flex items-center px-5 py-3.5 text-text hover:bg-background/20 hover:text-secondary rounded-lg transition-all duration-300"
                 >
-                  <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-background/30 to-primary flex items-center justify-center mr-3">
+                  <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-background/30 to-background/10 flex items-center justify-center mr-3">
                     <User size={18} className="text-secondary" />
                   </div>
                   <span className="font-semibold">Login / Sign Up</span>
-                </NavLink>
+                </button>
               )}
             </div>
           </div>
