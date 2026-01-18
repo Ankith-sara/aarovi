@@ -485,7 +485,7 @@ Return JSON only:
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
                     {dressTypes[form.gender].map((dress) => (
                       <button key={dress.value} onClick={() => handleDressTypeChange(dress.value)}
-                        className={`group relative p-5 sm:p-7 rounded-xl border-3 transition-all duration-500 overflow-hidden ${
+                        className={`group relative p-3 sm:p-5 rounded-xl border-3 transition-all duration-500 overflow-hidden ${
                           form.dressType === dress.value 
                             ? "border-secondary bg-background/30 scale-105" 
                             : "border-background/40 hover:border-secondary/40 hover:shadow-lg hover:scale-105 active:scale-95"
@@ -521,7 +521,7 @@ Return JSON only:
                       const price = PRICING_MATRIX[form.dressType]?.[fabric.value] || 0;
                       return (
                         <button key={fabric.value} onClick={() => setForm({ ...form, fabric: fabric.value })}
-                          className={`group relative p-5 sm:p-6 rounded-2xl border-3 transition-all duration-500 text-left overflow-hidden ${
+                          className={`group relative p-3 sm:p-5 rounded-2xl border-3 transition-all duration-500 text-left overflow-hidden ${
                             form.fabric === fabric.value 
                               ? "border-secondary bg-background/30 scale-105" 
                               : "border-background/40 hover:border-secondary/40 hover:shadow-xl hover:scale-102 active:scale-95"
