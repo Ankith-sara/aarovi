@@ -257,25 +257,26 @@ const Product = () => {
       <section className="py-0 sm:py-8 lg:py-12">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-0 sm:gap-6 lg:gap-12">
-            <div className="space-y-3 sm:space-y-4 sm:px-6 lg:px-8">
+            <div className="space-y-3 sm:space-y-4 sm:px-6">
               {/* Main Image */}
               <div 
-                className="relative group bg-background/20 overflow-hidden"
+                className="relative group overflow-hidden bg-gray-50"
                 onTouchStart={onTouchStart}
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
                 onClick={handleImageClick}
               >
-                <div className="relative aspect-[3/4]">
+                <div className="relative h-[85vh] flex items-center justify-center overflow-hidden">
                   <img
                     src={productData.images[currentIndex]}
                     alt={productData.name}
-                    className="w-full h-full object-cover sm:object-contain select-none"
+                    className="w-full h-full object-contain select-none"
+                    style={{
+                      imageRendering: '-webkit-optimize-contrast',
+                    }}
                     draggable="false"
+                    loading="eager"
                   />
-                  
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                   
                   <div className="hidden sm:flex absolute top-4 right-4 bg-white/95 text-text px-3 py-1.5 text-xs font-medium items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg pointer-events-none">
                     <Camera size={12} />
@@ -322,7 +323,7 @@ const Product = () => {
                     <button
                       key={index}
                       onClick={() => handleThumbnailClick(index)}
-                      className={`flex-shrink-0 w-20 h-20 sm:w-auto sm:h-auto sm:aspect-square overflow-hidden transition-all duration-300 ${
+                      className={`flex-shrink-0 w-20 h-24 sm:w-auto sm:h-auto sm:aspect-[4/5] overflow-hidden transition-all duration-300 ${
                         currentIndex === index 
                           ? 'ring-2 ring-secondary shadow-lg' 
                           : 'ring-1 ring-background/50 active:ring-secondary/50'
@@ -331,7 +332,7 @@ const Product = () => {
                       <img
                         src={img}
                         alt={`View ${index + 1}`}
-                        className="w-full"
+                        className="w-full h-full object-cover"
                       />
                     </button>
                   ))}
@@ -560,7 +561,6 @@ const Product = () => {
               onClick={handleViewCart}
               className="flex-1 py-3 bg-text text-white font-semibold uppercase tracking-wider active:bg-text/90 transition-all duration-200 flex items-center justify-center gap-2 active:scale-95"
             >
-              <Check size={18} />
               <span className="text-sm">View Cart</span>
             </button>
           )}
@@ -585,12 +585,15 @@ const Product = () => {
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
         >
-          <div className="relative w-full h-full flex items-center justify-center p-4" onClick={(e) => e.stopPropagation()}>
+          <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-8" onClick={(e) => e.stopPropagation()}>
             <img
               src={modalImage}
               alt="Product Detail"
-              className="h-[80vh] transition-transform duration-200 select-none"
-              style={{ transform: `scale(${zoomLevel})` }}
+              className="max-w-full max-h-full object-contain transition-transform duration-200 select-none"
+              style={{ 
+                transform: `scale(${zoomLevel})`,
+                imageRendering: '-webkit-optimize-contrast',
+              }}
               draggable="false"
             />
           </div>
@@ -715,6 +718,12 @@ const Product = () => {
             min-height: 44px;
             min-width: 44px;
           }
+        }
+
+        /* Improve image quality */
+        img {
+          image-rendering: -webkit-optimize-contrast;
+          image-rendering: crisp-edges;
         }
       `}</style>
     </div>

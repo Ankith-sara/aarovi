@@ -1,8 +1,31 @@
 import customizationModel from "../models/CustomizationModel.js";
 import userModel from "../models/UserModel.js";
 import mongoose from "mongoose";
+import { v2 as cloudinary } from 'cloudinary';
 
-// SAVE CUSTOMIZATION
+// Helper function to upload base64 to Cloudinary
+const uploadToCloudinary = async (base64Data, folder = 'customizations') => {
+  try {
+    if (!base64Data || typeof base64Data !== 'string') {
+      return null;
+    }
+
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(base64Data, {
+      folder: folder,
+      resource_type: 'auto',
+      quality: 'auto:good',
+      format: 'png'
+    });
+
+    return result.secure_url;
+  } catch (error) {
+    console.error('Cloudinary upload error:', error);
+    return null;
+  }
+};
+
+// SAVE CUSTOMIZATION - WITH IMAGE UPLOAD
 const saveCustomization = async (req, res) => {
   try {
     const {
@@ -15,13 +38,12 @@ const saveCustomization = async (req, res) => {
       measurements,
       aiPrompt,
       canvasDesign,
-      estimatedPrice
+      estimatedPrice,
+      aiGeneratedDesign
     } = req.body;
 
-    // Get userId from auth middleware
     const userId = req.body.userId;
 
-    // Validate userId
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -37,7 +59,6 @@ const saveCustomization = async (req, res) => {
       });
     }
 
-    // Validate gender
     if (!["Men", "Women"].includes(gender)) {
       return res.status(400).json({
         success: false,
@@ -45,19 +66,49 @@ const saveCustomization = async (req, res) => {
       });
     }
 
-    // Process canvasDesign - ensure we store the SVG and metadata
+    // Upload PNG design to Cloudinary if exists
+    let designImageUrl = null;
+    if (canvasDesign?.png) {
+      console.log('Uploading design PNG to Cloudinary...');
+      designImageUrl = await uploadToCloudinary(
+        canvasDesign.png,
+        `customizations/${userId}`
+      );
+      console.log('Design image uploaded:', designImageUrl ? 'Success' : 'Failed');
+    }
+
+    // Upload reference images to Cloudinary
+    let uploadedReferenceImages = [];
+    if (Array.isArray(referenceImages) && referenceImages.length > 0) {
+      console.log(`Uploading ${referenceImages.length} reference images...`);
+
+      const uploadPromises = referenceImages.map(async (imgBase64, index) => {
+        const url = await uploadToCloudinary(
+          imgBase64,
+          `customizations/${userId}/references`
+        );
+        return url;
+      });
+
+      const results = await Promise.all(uploadPromises);
+      uploadedReferenceImages = results.filter(url => url !== null);
+      console.log(`Uploaded ${uploadedReferenceImages.length}/${referenceImages.length} reference images`);
+    }
+
+    // Process canvas design data
     const processedCanvasDesign = {
       svg: canvasDesign?.svg || "",
-      png: canvasDesign?.png || "",
+      pngUrl: designImageUrl || "", 
       zoneColors: canvasDesign?.zoneColors || {},
       zonePatterns: canvasDesign?.zonePatterns || {},
-      neckStyle: canvasDesign?.neckStyle || "round",
       sleeveStyle: canvasDesign?.sleeveStyle || "full",
       baseColor: canvasDesign?.baseColor || color,
-      embroideryMetadata: canvasDesign?.embroideryMetadata || []
+      embroideryMetadata: Array.isArray(canvasDesign?.embroideryMetadata)
+        ? canvasDesign.embroideryMetadata
+        : []
     };
 
-    // Create customization object
+    // Create customization document
     const customization = new customizationModel({
       userId,
       gender,
@@ -65,7 +116,7 @@ const saveCustomization = async (req, res) => {
       fabric,
       color,
       designNotes: designNotes || "",
-      referenceImages: Array.isArray(referenceImages) ? referenceImages : [],
+      referenceImages: uploadedReferenceImages,
       measurements: measurements || {
         bust: "",
         waist: "",
@@ -78,11 +129,13 @@ const saveCustomization = async (req, res) => {
       aiPrompt: aiPrompt || "",
       estimatedPrice: estimatedPrice || 0,
       canvasDesign: processedCanvasDesign,
+      aiGeneratedDesign: aiGeneratedDesign || null,
       status: "Draft"
     });
 
-    // Save to database
     await customization.save();
+
+    console.log('Customization saved successfully:', customization._id);
 
     return res.status(201).json({
       success: true,
@@ -94,7 +147,6 @@ const saveCustomization = async (req, res) => {
   } catch (error) {
     console.error("Customization Save Error:", error);
 
-    // Handle mongoose validation errors
     if (error.name === 'ValidationError') {
       const messages = Object.values(error.errors).map(err => err.message);
       return res.status(400).json({
@@ -105,18 +157,18 @@ const saveCustomization = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Server error. Please try again later."
+      message: "Server error. Please try again later.",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
 
-// GET SINGLE CUSTOMIZATION FOR REVIEW
+// GET SINGLE CUSTOMIZATION
 const getCustomization = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.body.userId;
 
-    // Validate userId
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -124,7 +176,6 @@ const getCustomization = async (req, res) => {
       });
     }
 
-    // Validate customization ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
@@ -141,7 +192,6 @@ const getCustomization = async (req, res) => {
       });
     }
 
-    // Check if user owns this customization
     if (customization.userId.toString() !== userId.toString()) {
       return res.status(403).json({
         success: false,
@@ -166,10 +216,8 @@ const getCustomization = async (req, res) => {
 // GET ALL USER CUSTOMIZATIONS
 const getUserCustomizations = async (req, res) => {
   try {
-    // Get userId from request body
-    const { userId } = req.body;
+    const userId = req.body.userId;
 
-    // Validate userId
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -177,7 +225,6 @@ const getUserCustomizations = async (req, res) => {
       });
     }
 
-    // Validate userId format
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({
         success: false,
@@ -185,7 +232,6 @@ const getUserCustomizations = async (req, res) => {
       });
     }
 
-    // Fetch customizations
     const customizations = await customizationModel
       .find({ userId })
       .sort({ createdAt: -1 })
@@ -213,7 +259,6 @@ const updateCustomization = async (req, res) => {
     const { id } = req.params;
     const userId = req.body.userId;
 
-    // Validate authentication
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -221,7 +266,6 @@ const updateCustomization = async (req, res) => {
       });
     }
 
-    // Validate customization ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
@@ -238,7 +282,6 @@ const updateCustomization = async (req, res) => {
       });
     }
 
-    // Verify ownership
     if (customization.userId.toString() !== userId.toString()) {
       return res.status(403).json({
         success: false,
@@ -246,28 +289,59 @@ const updateCustomization = async (req, res) => {
       });
     }
 
-    // Don't allow updates to certain fields
     const updateData = { ...req.body };
     delete updateData.userId;
     delete updateData._id;
     delete updateData.createdAt;
     delete updateData.__v;
 
-    // Process canvasDesign if provided
+    // Handle canvas design update with new PNG
     if (updateData.canvasDesign) {
+      let designImageUrl = customization.canvasDesign?.pngUrl;
+
+      // Upload new PNG if provided
+      if (updateData.canvasDesign.png) {
+        console.log('Uploading updated design PNG...');
+        const newUrl = await uploadToCloudinary(
+          updateData.canvasDesign.png,
+          `customizations/${userId}`
+        );
+        if (newUrl) {
+          designImageUrl = newUrl;
+        }
+      }
+
       updateData.canvasDesign = {
         svg: updateData.canvasDesign.svg || customization.canvasDesign.svg,
-        png: updateData.canvasDesign.png || customization.canvasDesign.png,
+        pngUrl: designImageUrl,
         zoneColors: updateData.canvasDesign.zoneColors || customization.canvasDesign.zoneColors,
         zonePatterns: updateData.canvasDesign.zonePatterns || customization.canvasDesign.zonePatterns,
-        neckStyle: updateData.canvasDesign.neckStyle || customization.canvasDesign.neckStyle,
         sleeveStyle: updateData.canvasDesign.sleeveStyle || customization.canvasDesign.sleeveStyle,
         baseColor: updateData.canvasDesign.baseColor || customization.canvasDesign.baseColor,
         embroideryMetadata: updateData.canvasDesign.embroideryMetadata || customization.canvasDesign.embroideryMetadata
       };
     }
 
-    // Update customization
+    // Handle reference images update
+    if (updateData.referenceImages && Array.isArray(updateData.referenceImages)) {
+      const uploadedRefs = [];
+
+      for (const img of updateData.referenceImages) {
+        // If it's already a URL, keep it
+        if (img.startsWith('http')) {
+          uploadedRefs.push(img);
+        } else {
+          // Upload new base64 image
+          const url = await uploadToCloudinary(img, `customizations/${userId}/references`);
+          if (url) {
+            uploadedRefs.push(url);
+          }
+        }
+      }
+
+      updateData.referenceImages = uploadedRefs;
+    }
+
     const updated = await customizationModel.findByIdAndUpdate(
       id,
       updateData,
@@ -298,228 +372,11 @@ const updateCustomization = async (req, res) => {
   }
 };
 
-// AI CANVAS EDITING
-const aiEditCanvas = async (req, res) => {
-  try {
-    const { editPrompt, currentDesign, systemPrompt } = req.body;
-    const userId = req.body.userId;
-
-    // Validate authentication
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Authentication required"
-      });
-    }
-
-    if (!editPrompt || !currentDesign) {
-      return res.status(400).json({
-        success: false,
-        message: "Edit prompt and current design are required"
-      });
-    }
-
-    // Color name to hex mapping
-    const colorMap = {
-      'red': '#FF0000',
-      'blue': '#0000FF',
-      'green': '#00FF00',
-      'yellow': '#FFFF00',
-      'orange': '#FFA500',
-      'purple': '#800080',
-      'pink': '#FFC0CB',
-      'brown': '#A52A2A',
-      'black': '#000000',
-      'white': '#FFFFFF',
-      'gray': '#808080',
-      'grey': '#808080',
-      'maroon': '#800000',
-      'navy': '#000080',
-      'gold': '#FFD700',
-      'silver': '#C0C0C0',
-      'beige': '#F5F5DC',
-      'ivory': '#FFFFF0',
-      'teal': '#008080',
-      'turquoise': '#40E0D0',
-      'lavender': '#E6E6FA',
-      'magenta': '#FF00FF',
-      'olive': '#808000',
-      'coral': '#FF7F50',
-      'peach': '#FFDAB9',
-      'mint': '#98FF98',
-      'cream': '#FFFDD0',
-      'burgundy': '#800020',
-      'mustard': '#FFDB58',
-      'emerald': '#50C878'
-    };
-
-    // AI logic for pattern matching
-    const parseEditRequest = (prompt, design) => {
-      const lowerPrompt = prompt.toLowerCase();
-      const modifications = {
-        sleeveStyle: null,
-        neckStyle: null,
-        baseColor: null,
-        zoneColors: {},
-        applyEmbroidery: null,
-        applyPrint: null,
-        removeFromZones: []
-      };
-
-      let explanation = "Applied changes: ";
-      const explanationParts = [];
-
-      // Sleeve modifications
-      if (lowerPrompt.includes('full sleeve') || lowerPrompt.includes('long sleeve')) {
-        modifications.sleeveStyle = 'full';
-        explanationParts.push('Changed to full sleeves');
-      } else if (lowerPrompt.includes('half sleeve') || lowerPrompt.includes('elbow') || lowerPrompt.includes('3/4')) {
-        modifications.sleeveStyle = 'elbow';
-        explanationParts.push('Changed to 3/4 length sleeves');
-      } else if (lowerPrompt.includes('short sleeve')) {
-        modifications.sleeveStyle = 'short';
-        explanationParts.push('Changed to short sleeves');
-      } else if (lowerPrompt.includes('sleeveless') || lowerPrompt.includes('no sleeve')) {
-        modifications.sleeveStyle = 'sleeveless';
-        explanationParts.push('Removed sleeves');
-      }
-
-      // Color modifications
-      for (const [colorName, hexCode] of Object.entries(colorMap)) {
-        if (lowerPrompt.includes(colorName)) {
-          // Check for zone-specific color changes
-          if (lowerPrompt.includes('body')) {
-            modifications.zoneColors.body = hexCode;
-            explanationParts.push(`Changed body to ${colorName}`);
-          }
-          if (lowerPrompt.includes('sleeve')) {
-            modifications.zoneColors.sleeve_left = hexCode;
-            modifications.zoneColors.sleeve_right = hexCode;
-            explanationParts.push(`Changed sleeves to ${colorName}`);
-          }
-          if (lowerPrompt.includes('collar') || lowerPrompt.includes('neck')) {
-            if (design.availableZones.some(z => z.id.includes('collar'))) {
-              modifications.zoneColors.collar = hexCode;
-            } else if (design.availableZones.some(z => z.id.includes('neckline'))) {
-              modifications.zoneColors.neckline = hexCode;
-            }
-            explanationParts.push(`Changed neckline to ${colorName}`);
-          }
-          // If no zone specified, apply to base color
-          if (!lowerPrompt.includes('body') && !lowerPrompt.includes('sleeve') &&
-            !lowerPrompt.includes('collar') && !lowerPrompt.includes('neck')) {
-            modifications.baseColor = hexCode;
-            explanationParts.push(`Changed base color to ${colorName}`);
-          }
-        }
-      }
-
-      // Embroidery modifications
-      if (lowerPrompt.includes('maggam')) {
-        const zones = [];
-        if (lowerPrompt.includes('body')) zones.push('body');
-        if (lowerPrompt.includes('sleeve')) zones.push('sleeve_left', 'sleeve_right');
-        if (lowerPrompt.includes('collar') || lowerPrompt.includes('neck')) {
-          if (design.availableZones.some(z => z.id.includes('collar'))) {
-            zones.push('collar');
-          } else if (design.availableZones.some(z => z.id.includes('neckline'))) {
-            zones.push('neckline');
-          }
-        }
-        if (zones.length === 0) zones.push('body');
-        modifications.applyEmbroidery = { zones, pattern: 'maggam' };
-        explanationParts.push(`Added Maggam embroidery to ${zones.join(', ')}`);
-      } else if (lowerPrompt.includes('thread work') || lowerPrompt.includes('embroidery')) {
-        const zones = [];
-        if (lowerPrompt.includes('body')) zones.push('body');
-        if (lowerPrompt.includes('sleeve')) zones.push('sleeve_left', 'sleeve_right');
-        if (zones.length === 0) zones.push('body');
-        modifications.applyEmbroidery = { zones, pattern: 'threadWork' };
-        explanationParts.push(`Added thread work to ${zones.join(', ')}`);
-      } else if (lowerPrompt.includes('sequin')) {
-        const zones = [];
-        if (lowerPrompt.includes('body')) zones.push('body');
-        if (lowerPrompt.includes('sleeve')) zones.push('sleeve_left', 'sleeve_right');
-        if (zones.length === 0) zones.push('body');
-        modifications.applyEmbroidery = { zones, pattern: 'sequins' };
-        explanationParts.push(`Added sequins to ${zones.join(', ')}`);
-      } else if (lowerPrompt.includes('bead')) {
-        const zones = [];
-        if (lowerPrompt.includes('body')) zones.push('body');
-        if (lowerPrompt.includes('sleeve')) zones.push('sleeve_left', 'sleeve_right');
-        if (zones.length === 0) zones.push('body');
-        modifications.applyEmbroidery = { zones, pattern: 'beadwork' };
-        explanationParts.push(`Added beadwork to ${zones.join(', ')}`);
-      }
-
-      // Print modifications
-      if (lowerPrompt.includes('floral')) {
-        const zones = [];
-        if (lowerPrompt.includes('entire') || lowerPrompt.includes('whole') || lowerPrompt.includes('all')) {
-          zones.push(...design.availableZones.map(z => z.id));
-        } else if (lowerPrompt.includes('body')) {
-          zones.push('body');
-        } else if (lowerPrompt.includes('sleeve')) {
-          zones.push('sleeve_left', 'sleeve_right');
-        }
-        if (zones.length === 0) zones.push('body');
-        modifications.applyPrint = { zones, print: 'floral' };
-        explanationParts.push(`Added floral print to ${zones.join(', ')}`);
-      } else if (lowerPrompt.includes('block')) {
-        const zones = lowerPrompt.includes('entire') ? design.availableZones.map(z => z.id) : ['body'];
-        modifications.applyPrint = { zones, print: 'block' };
-        explanationParts.push(`Added block print to ${zones.join(', ')}`);
-      } else if (lowerPrompt.includes('bagru')) {
-        const zones = lowerPrompt.includes('entire') ? design.availableZones.map(z => z.id) : ['body'];
-        modifications.applyPrint = { zones, print: 'bagru' };
-        explanationParts.push(`Added bagru print to ${zones.join(', ')}`);
-      } else if (lowerPrompt.includes('kalamkari')) {
-        const zones = lowerPrompt.includes('entire') ? design.availableZones.map(z => z.id) : ['body'];
-        modifications.applyPrint = { zones, print: 'kalamkari' };
-        explanationParts.push(`Added kalamkari print to ${zones.join(', ')}`);
-      } else if (lowerPrompt.includes('shibori')) {
-        const zones = lowerPrompt.includes('entire') ? design.availableZones.map(z => z.id) : ['body'];
-        modifications.applyPrint = { zones, print: 'shibori' };
-        explanationParts.push(`Added shibori print to ${zones.join(', ')}`);
-      }
-
-      // Remove/clear modifications
-      if (lowerPrompt.includes('remove') || lowerPrompt.includes('clear')) {
-        if (lowerPrompt.includes('embroidery') || lowerPrompt.includes('print')) {
-          modifications.removeFromZones = design.availableZones.map(z => z.id);
-          explanationParts.push('Removed all embroidery and prints');
-        }
-      }
-
-      explanation += explanationParts.join(', ') || 'No changes made';
-
-      return { modifications, explanation };
-    };
-
-    const result = parseEditRequest(editPrompt, currentDesign);
-
-    res.json({
-      success: true,
-      modifications: result.modifications,
-      explanation: result.explanation
-    });
-
-  } catch (error) {
-    console.error("AI Edit Canvas Error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error. Please try again later."
-    });
-  }
-};
-
 // SUBMIT CUSTOMIZATION
 const submitCustomization = async (req, res) => {
   try {
-    const { customizationId } = req.body;
-    const userId = req.body.userId;
+    const { customizationId, userId } = req.body;
 
-    // Validate authentication
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -527,15 +384,7 @@ const submitCustomization = async (req, res) => {
       });
     }
 
-    // Validate customizationId
-    if (!customizationId) {
-      return res.status(400).json({
-        success: false,
-        message: "Customization ID is required"
-      });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(customizationId)) {
+    if (!customizationId || !mongoose.Types.ObjectId.isValid(customizationId)) {
       return res.status(400).json({
         success: false,
         message: "Invalid customization ID"
@@ -551,7 +400,6 @@ const submitCustomization = async (req, res) => {
       });
     }
 
-    // Verify ownership
     if (customization.userId.toString() !== userId.toString()) {
       return res.status(403).json({
         success: false,
@@ -559,7 +407,6 @@ const submitCustomization = async (req, res) => {
       });
     }
 
-    // Check if already submitted
     if (customization.status !== "Draft") {
       return res.status(400).json({
         success: false,
@@ -567,7 +414,6 @@ const submitCustomization = async (req, res) => {
       });
     }
 
-    // Update status
     customization.status = "Submitted";
     await customization.save();
 
@@ -592,7 +438,6 @@ const deleteCustomization = async (req, res) => {
     const { id } = req.params;
     const userId = req.body.userId;
 
-    // Validate authentication
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -600,7 +445,6 @@ const deleteCustomization = async (req, res) => {
       });
     }
 
-    // Validate customization ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
@@ -617,7 +461,6 @@ const deleteCustomization = async (req, res) => {
       });
     }
 
-    // Verify ownership
     if (customization.userId.toString() !== userId.toString()) {
       return res.status(403).json({
         success: false,
@@ -625,7 +468,6 @@ const deleteCustomization = async (req, res) => {
       });
     }
 
-    // Prevent deletion of customizations in certain statuses
     if (["In Production", "Ready", "Delivered"].includes(customization.status)) {
       return res.status(400).json({
         success: false,
@@ -649,17 +491,11 @@ const deleteCustomization = async (req, res) => {
   }
 };
 
-// ============================================================================
 // ADMIN FUNCTIONS
-// ============================================================================
-
-// GET ALL CUSTOMIZATIONS (ADMIN ONLY)
 const getAllCustomizationsAdmin = async (req, res) => {
   try {
-    // Fetch all customizations with user details populated
     const customizations = await customizationModel
       .find()
-      .populate('userId', 'name email')
       .sort({ createdAt: -1 })
       .lean();
 
@@ -673,19 +509,16 @@ const getAllCustomizationsAdmin = async (req, res) => {
     console.error("Get All Customizations Admin Error:", error);
     return res.status(500).json({
       success: false,
-      message: "Server error while fetching customizations",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: "Server error while fetching customizations"
     });
   }
 };
 
-// UPDATE CUSTOMIZATION STATUS (ADMIN ONLY)
 const updateCustomizationStatusAdmin = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    // Validate customization ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
@@ -693,7 +526,6 @@ const updateCustomizationStatusAdmin = async (req, res) => {
       });
     }
 
-    // Validate status
     const validStatuses = ["Draft", "Submitted", "In Review", "In Production", "Ready", "Delivered"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
@@ -711,7 +543,6 @@ const updateCustomizationStatusAdmin = async (req, res) => {
       });
     }
 
-    // Update status
     customization.status = status;
     await customization.save();
 
@@ -730,4 +561,4 @@ const updateCustomizationStatusAdmin = async (req, res) => {
   }
 };
 
-export { saveCustomization, getCustomization, updateCustomization, getUserCustomizations, submitCustomization, deleteCustomization, aiEditCanvas, getAllCustomizationsAdmin, updateCustomizationStatusAdmin };
+export { saveCustomization, getCustomization, updateCustomization, getUserCustomizations, submitCustomization, deleteCustomization, getAllCustomizationsAdmin, updateCustomizationStatusAdmin };

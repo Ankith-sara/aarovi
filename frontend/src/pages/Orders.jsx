@@ -232,8 +232,8 @@ const Orders = () => {
                         key={key}
                         onClick={() => setFilterStatus(key)}
                         className={`px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg border-2 transition-all duration-300 ${filterStatus === key
-                            ? 'bg-secondary text-white border-secondary shadow-md'
-                            : 'bg-white text-text border-background hover:border-secondary hover:text-secondary'
+                          ? 'bg-secondary text-white border-secondary shadow-md'
+                          : 'bg-white text-text border-background hover:border-secondary hover:text-secondary'
                           }`}
                       >
                         {label}
@@ -316,17 +316,22 @@ const Orders = () => {
                   {/* Order Content */}
                   <div className="p-6">
                     <div className="flex flex-col lg:flex-row gap-6">
-                      {/* Product Image */}
                       <div className="flex-shrink-0">
-                        <div className="w-full h-48 sm:w-32 sm:h-32 lg:w-40 lg:h-40 rounded-lg overflow-hidden border border-background bg-gradient-to-br from-background/20 to-primary">
-                          <img
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                            src={item.image || item.images?.[0]}
-                            alt={item.name}
-                            onError={(e) => {
-                              e.target.src = '/api/placeholder/160/160';
-                            }}
-                          />
+                        <div className="w-full h-48 sm:w-32 sm:h-32 lg:w-40 lg:h-40">
+                          {item.image ? (
+                            <img
+                              className="w-full h-full object-contain"
+                              src={item.image || item.images?.[0]}
+                              alt={item.name}
+                              onError={(e) => {
+                                e.target.src = '/api/placeholder/160/160';
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-secondary/10 to-secondary/5">
+                              <Package size={40} className="text-secondary/30" />
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -337,6 +342,12 @@ const Orders = () => {
                             <h3 className="font-serif font-semibold text-xl text-text mb-2 tracking-wide group-hover:text-secondary transition-colors line-clamp-2">
                               {item.name}
                             </h3>
+
+                            {item.type === 'CUSTOM' && (
+                              <span className="inline-block px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full uppercase tracking-wider">
+                                Custom Design
+                              </span>
+                            )}
                           </div>
 
                           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -345,7 +356,7 @@ const Orders = () => {
                                 Price
                               </span>
                               <span className="font-bold text-text text-lg">
-                                {currency}{Number(item.price || 0).toFixed(2)}
+                                {currency}{Number(item.basePrice || item.finalPrice || item.price || 0).toFixed(2)}
                               </span>
                             </div>
 
@@ -358,10 +369,10 @@ const Orders = () => {
 
                             <div className="space-y-1">
                               <span className="block text-xs font-semibold text-text/50 uppercase tracking-wider">
-                                Size
+                                {item.type === 'CUSTOM' ? 'Type' : 'Size'}
                               </span>
                               <span className="inline-block px-3 py-1 bg-gradient-to-br from-background/30 to-primary rounded-md font-semibold text-text text-sm">
-                                {item.size || 'Custom'}
+                                {item.type === 'CUSTOM' ? 'Custom Made' : (item.size || 'Standard')}
                               </span>
                             </div>
 
@@ -370,10 +381,23 @@ const Orders = () => {
                                 Total
                               </span>
                               <span className="font-bold text-secondary text-lg">
-                                {currency}{(Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2)}
+                                {currency}{(Number(item.basePrice || item.finalPrice || item.price || 0) * Number(item.quantity || 1)).toFixed(2)}
                               </span>
                             </div>
                           </div>
+                          {item.type === 'CUSTOM' && item.productionStatus && (
+                            <div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                              <div className="flex items-center gap-2">
+                                <Package size={16} className="text-purple-600" />
+                                <span className="text-xs font-semibold text-purple-900 uppercase tracking-wider">
+                                  Production Status:
+                                </span>
+                                <span className="text-sm font-bold text-purple-700">
+                                  {item.productionStatus.replace('_', ' ')}
+                                </span>
+                              </div>
+                            </div>
+                          )}
                         </div>
 
                         {/* Action Buttons */}

@@ -25,46 +25,49 @@ const sendOrderNotifications = async (order, user) => {
   }
 };
 
-// Helper function to process order items (UPDATED with canvas design)
+// Helper function to process order items
 const processOrderItems = (items) => {
   return items.map(item => {
     if (item.type === 'customization') {
       // Custom order item - includes full canvas design
       return {
         type: 'CUSTOM',
-        name: `Custom ${item.gender}'s ${item.dressType}` || 'Custom Dress',
+        name: `Custom ${item.gender || ''}'s ${item.dressType || 'Design'}`,
         quantity: item.quantity || 1,
         basePrice: item.price || 0,
         finalPrice: item.price || 0,
         customization: {
           customizationId: item._id,
-          gender: item.gender,
-          dressType: item.dressType,
-          fabric: item.fabric,
-          color: item.color,
-          neckStyle: item.neckStyle || "",
-          sleeveStyle: item.sleeveStyle || "",
+          gender: item.gender || '',
+          dressType: item.dressType || '',
+          fabric: item.fabric || '',
+          color: item.color || '',
+          neckStyle: item.neckStyle || '',
+          sleeveStyle: item.canvasDesign?.sleeveStyle || item.sleeveStyle || '',
           canvasDesign: {
-            json: item.canvasDesign?.json || "",
-            svg: item.canvasDesign?.svg || "",
-            png: item.canvasDesign?.png || "",
-            backgroundImage: item.canvasDesign?.backgroundImage || ""
+            svg: item.canvasDesign?.svg || '',
+            pngUrl: item.canvasDesign?.pngUrl || item.canvasDesign?.png || '', // Handle both
+            zoneColors: item.canvasDesign?.zoneColors || {},
+            zonePatterns: item.canvasDesign?.zonePatterns || {},
+            sleeveStyle: item.canvasDesign?.sleeveStyle || '',
+            baseColor: item.canvasDesign?.baseColor || item.color || '',
+            embroideryMetadata: item.canvasDesign?.embroideryMetadata || []
           },
           measurements: {
-            bust: item.measurements?.bust || "",
-            waist: item.measurements?.waist || "",
-            hips: item.measurements?.hips || "",
-            shoulder: item.measurements?.shoulder || "",
-            sleeveLength: item.measurements?.sleeveLength || "",
-            length: item.measurements?.length || "",
-            customNotes: item.measurements?.customNotes || ""
+            bust: item.measurements?.bust || '',
+            waist: item.measurements?.waist || '',
+            hips: item.measurements?.hips || '',
+            shoulder: item.measurements?.shoulder || '',
+            sleeveLength: item.measurements?.sleeveLength || '',
+            length: item.measurements?.length || '',
+            customNotes: item.measurements?.customNotes || ''
           },
-          designNotes: item.designNotes || "",
+          designNotes: item.designNotes || '',
           referenceImages: item.referenceImages || [],
-          aiPrompt: item.aiPrompt || ""
+          aiPrompt: item.aiPrompt || ''
         },
         productionStatus: 'DESIGNING',
-        image: item.canvasDesign?.png || ""
+        image: item.canvasDesign?.pngUrl || item.canvasDesign?.png || item.image || ''
       };
     } else {
       // Regular product item
@@ -76,7 +79,7 @@ const processOrderItems = (items) => {
         basePrice: item.price,
         finalPrice: item.price,
         size: item.size,
-        image: item.images?.[0] || item.image || ""
+        image: item.images?.[0] || item.image || ''
       };
     }
   });
@@ -335,18 +338,7 @@ const verifyRazorpay = async (req, res) => {
 // All orders for admin
 const allOrders = async (req, res) => {
   try {
-    const adminId = req.user.id;
-    const adminProducts = await productModel.find({ adminId: adminId }).select('_id');
-    const adminProductIds = adminProducts.map(p => p._id);
-
-    // Find orders containing admin's products OR custom orders
-    const orders = await orderModel.find({
-      $or: [
-        { 'items.productId': { $in: adminProductIds } },
-        { 'items.type': 'CUSTOM' }
-      ]
-    }).populate('userId', 'name email').sort({ date: -1 });
-
+    const orders = await orderModel.find({}).sort({ date: -1 });
     res.json({ success: true, orders })
   } catch (error) {
     console.log(error)

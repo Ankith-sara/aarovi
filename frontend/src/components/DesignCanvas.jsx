@@ -1,25 +1,20 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
-  Palette, Trash2, Undo, Redo, Sparkles,
-  Move, Info, Settings, CheckCircle2, X, Menu, Wand2, Send
+  Palette, Trash2, Undo, Redo,
+  Move, Info, Settings, CheckCircle2, X, Menu, Wand2, Send, Sparkles
 } from 'lucide-react';
 import { assets } from '../assets/assets';
-import { 
-  SVG_TEMPLATES, 
+import {
+  SVG_TEMPLATES,
   EMBROIDERY_PATTERNS as IMPORTED_EMBROIDERY,
-  FABRIC_PRINTS as IMPORTED_PRINTS 
+  FABRIC_PRINTS as IMPORTED_PRINTS
 } from '../data/svg_templates';
-import axios from 'axios';
 import { toast } from 'react-toastify';
+import { generateDesignChat, editDesignChat } from '../context/GeminiConfig';
 
-// ============================================================================
-// EMBROIDERY PATTERNS (Using imported patterns)
-// ============================================================================
+// EMBROIDERY PATTERNS & FABRIC PRINTS
 const EMBROIDERY_PATTERNS = IMPORTED_EMBROIDERY;
 
-// ============================================================================
-// FABRIC PRINTS (Enhanced with image references)
-// ============================================================================
 const FABRIC_PRINTS = {
   block: {
     img: assets.block_img,
@@ -147,12 +142,10 @@ const FABRIC_PRINTS = {
   }
 };
 
-// ============================================================================
-// HELPER FUNCTION - Intelligently filter zones based on dress type
-// ============================================================================
+// HELPER FUNCTIONS
 const getEssentialZones = (zones, dressType) => {
   if (!zones) return [];
-  
+
   const essentialPatterns = {
     core: ['body', 'bodice', 'top'],
     neck: ['neckline', 'collar'],
@@ -165,82 +158,345 @@ const getEssentialZones = (zones, dressType) => {
 
   return zones.filter(zone => {
     const id = zone.id.toLowerCase();
-    
+
     if (essentialPatterns.core.some(pattern => id === pattern)) return true;
     if (essentialPatterns.neck.some(pattern => id.includes(pattern))) return true;
     if (essentialPatterns.sleeves.some(pattern => id.includes(pattern))) return true;
     if (essentialPatterns.buttons.some(pattern => id === pattern)) return true;
-    
+
     if (dressType === 'Lehenga' && essentialPatterns.lehenga.some(pattern => id.includes(pattern))) {
       return true;
     }
-    
+
     if (dressType === 'Sherara' && essentialPatterns.sherara.some(pattern => id.includes(pattern))) {
       return true;
     }
-    
+
     if (dressType === 'Anarkali' && essentialPatterns.anarkali.some(pattern => id.includes(pattern))) {
       return true;
     }
-    
+
     if ((dressType === 'Kurta Sets' || dressType === 'Kurti Sets') && id === 'pants') {
       return true;
     }
-    
+
     return false;
   });
 };
 
-// ============================================================================
+// Color name to hex mapping
+const COLOR_MAP = {
+  'red': '#DC2626', 'blue': '#3B82F6', 'green': '#10B981',
+  'yellow': '#F59E0B', 'orange': '#F97316', 'purple': '#A855F7',
+  'pink': '#EC4899', 'brown': '#A52A2A', 'black': '#1F2937',
+  'white': '#FFFFFF', 'gray': '#9CA3AF', 'grey': '#9CA3AF',
+  'maroon': '#800000', 'navy': '#1E40AF', 'gold': '#D4AF37',
+  'silver': '#C0C0C0', 'beige': '#F5F5DC', 'ivory': '#FFFFF0',
+  'teal': '#14B8A6', 'turquoise': '#06B6D4', 'lavender': '#E9D5FF',
+  'magenta': '#D946EF', 'olive': '#84CC16', 'coral': '#FB7185',
+  'peach': '#FBBF24', 'mint': '#6EE7B7', 'cream': '#FEF3C7',
+  'burgundy': '#991B1B', 'mustard': '#EAB308', 'emerald': '#10B981',
+  'crimson': '#DC2626', 'indigo': '#6366F1', 'cyan': '#06B6D4'
+};
+
 // MAIN COMPONENT
-// ============================================================================
 const DesignCanvas = ({
   onDesignChange,
   dressType = 'Kurta',
   selectedColor = '#ffffff',
   gender = 'Women',
-  aiPrompt = '',
-  onAIPromptChange,
-  onAIGenerate,
-  aiGenerating = false,
-  backendUrl
+  fabric = 'Cotton'
 }) => {
   const svgRef = useRef(null);
   const containerRef = useRef(null);
   const [selectedZone, setSelectedZone] = useState(null);
   const [zoneColors, setZoneColors] = useState({});
   const [zonePatterns, setZonePatterns] = useState({});
-  const [activeTab, setActiveTab] = useState('styles');
+  const [activeTab, setActiveTab] = useState('colors');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [currentColor, setCurrentColor] = useState(selectedColor);
   const [embroideryMetadata, setEmbroideryMetadata] = useState({});
-  const [neckStyle, setNeckStyle] = useState('round');
   const [sleeveStyle, setSleeveStyle] = useState('full');
   const [initialized, setInitialized] = useState(false);
-
-  // AI Editing State
+  const [aiGenerateMode, setAiGenerateMode] = useState(false);
+  const [aiGeneratePrompt, setAiGeneratePrompt] = useState('');
+  const [aiGenerateLoading, setAiGenerateLoading] = useState(false);
   const [aiEditMode, setAiEditMode] = useState(false);
   const [aiEditPrompt, setAiEditPrompt] = useState('');
   const [aiEditLoading, setAiEditLoading] = useState(false);
-
-  // Undo/Redo history
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
-  // Get template and filter to essential zones
+  // Get template
   const rawTemplate = SVG_TEMPLATES[dressType] || SVG_TEMPLATES.Kurta;
   const template = {
     ...rawTemplate,
     zones: getEssentialZones(rawTemplate.zones, dressType)
   };
 
-  // Sync selectedColor prop with local currentColor state
+  // AI FUNCTIONS - CLIENT SIDE
+  // Parse AI response and clean JSON
+  const parseAIResponse = (text) => {
+    try {
+      // Remove markdown code blocks
+      let cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+      // Try to find JSON object in the text
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        cleaned = jsonMatch[0];
+      }
+
+      return JSON.parse(cleaned);
+    } catch (error) {
+      console.error('JSON parse error:', error);
+      throw new Error('Failed to parse AI response');
+    }
+  };
+
+  // AI GENERATE FULL DESIGN
+  const handleAIGenerate = async () => {
+    if (!aiGeneratePrompt.trim()) {
+      toast.error('Please describe the design you want');
+      return;
+    }
+
+    if (!import.meta.env.VITE_GEMINI_API_KEY) {
+      toast.error('Gemini API key not configured');
+      return;
+    }
+
+    setAiGenerateLoading(true);
+
+    try {
+      const chat = generateDesignChat();
+
+      const userPrompt = `Generate a ${gender}'s ${dressType} made of ${fabric}.
+
+User Request: "${aiGeneratePrompt}"
+
+AVAILABLE ZONES:
+${template.zones.map(z => `- ${z.id}: ${z.label}`).join('\n')}
+
+Consider traditional Indian aesthetics and the fabric properties.`;
+
+      const result = await chat.sendMessage(userPrompt);
+      const response = await result.response;
+      const text = response.text();
+
+      // Parse JSON response
+      const design = JSON.parse(text);
+
+      // Apply the design
+      applyAIDesign(design);
+
+      toast.success('AI design generated successfully!');
+      setAiGeneratePrompt('');
+      setAiGenerateMode(false);
+
+    } catch (error) {
+      console.error('AI Generate Error:', error);
+      toast.error(error.message || 'AI generation failed. Please try again.');
+    } finally {
+      setAiGenerateLoading(false);
+    }
+  };
+
+  // Apply AI generated design to canvas
+  const applyAIDesign = (design) => {
+    // Apply colors
+    if (design.colorPalette?.[0]) {
+      const baseColor = design.colorPalette[0];
+      setCurrentColor(baseColor);
+
+      const updatedColors = {};
+      template.zones.forEach(zone => {
+        updatedColors[zone.id] = baseColor;
+      });
+      setZoneColors(updatedColors);
+    }
+
+    // Apply zone-specific colors
+    if (design.zoneColors) {
+      setZoneColors(prev => ({ ...prev, ...design.zoneColors }));
+    }
+
+    // Apply sleeve style
+    if (design.sleeveStyle) {
+      setSleeveStyle(design.sleeveStyle);
+    }
+
+    // Apply embroidery
+    if (design.embroidery && design.embroidery.type !== 'none') {
+      design.embroidery.zones.forEach(zoneId => {
+        const pattern = EMBROIDERY_PATTERNS[design.embroidery.type];
+        if (pattern) {
+          const patternCanvas = pattern.createPattern(pattern.threadColors[0]);
+          const patternUrl = patternCanvas.toDataURL();
+
+          setZonePatterns(prev => ({
+            ...prev,
+            [zoneId]: { type: 'embroidery', url: patternUrl }
+          }));
+
+          setEmbroideryMetadata(prev => ({
+            ...prev,
+            [zoneId]: {
+              type: design.embroidery.type,
+              zone: zoneId,
+              zoneName: template.zones.find(z => z.id === zoneId)?.label,
+              density: design.embroidery.density,
+              threadColor: pattern.threadColors[0],
+              appliedAt: new Date().toISOString()
+            }
+          }));
+        }
+      });
+    }
+
+    // Apply prints
+    if (design.fabricPrint && design.fabricPrint !== 'none' && design.printZones) {
+      design.printZones.forEach(zoneId => {
+        const print = FABRIC_PRINTS[design.fabricPrint];
+        if (print) {
+          const patternCanvas = print.createPattern();
+          const patternUrl = patternCanvas.toDataURL();
+          setZonePatterns(prev => ({
+            ...prev,
+            [zoneId]: { type: 'print', url: patternUrl }
+          }));
+        }
+      });
+    }
+
+    saveToHistory();
+  };
+
+  // AI EDIT EXISTING DESIGN
+  const handleAIEdit = async () => {
+    if (!aiEditPrompt.trim()) {
+      toast.error('Please describe what you want to change');
+      return;
+    }
+
+    if (!import.meta.env.VITE_GEMINI_API_KEY) {
+      toast.error('Gemini API key not configured');
+      return;
+    }
+
+    setAiEditLoading(true);
+
+    try {
+      const chat = editDesignChat();
+
+      const userPrompt = `CURRENT DESIGN:
+- Dress: ${dressType}, Gender: ${gender}
+- Base Color: ${currentColor}
+- Sleeve: ${sleeveStyle}
+
+AVAILABLE ZONES:
+${template.zones.map(z => `- ${z.id}: ${z.label}`).join('\n')}
+
+USER REQUEST: "${aiEditPrompt}"`;
+
+      const result = await chat.sendMessage(userPrompt);
+      const response = await result.response;
+      const text = response.text();
+
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (parseError) {
+        // Use fallback if JSON parsing fails
+        data = { modifications: parseEditRequestFallback(aiEditPrompt, {}) };
+      }
+
+      const modifications = data.modifications;
+
+      // Apply modifications (same code as before)
+      if (modifications.sleeveStyle) setSleeveStyle(modifications.sleeveStyle);
+      if (modifications.baseColor) setCurrentColor(modifications.baseColor);
+      if (modifications.zoneColors) {
+        setZoneColors(prev => ({ ...prev, ...modifications.zoneColors }));
+      }
+
+      saveToHistory();
+      toast.success('Design updated successfully');
+      setAiEditPrompt('');
+      setAiEditMode(false);
+
+    } catch (error) {
+      console.error('AI Edit Error:', error);
+      toast.error(error.message || 'AI edit failed. Please try again.');
+    } finally {
+      setAiEditLoading(false);
+    }
+  };
+
+  // Fallback parser for when AI fails
+  const parseEditRequestFallback = (prompt, design) => {
+    const lowerPrompt = prompt.toLowerCase();
+    const modifications = {
+      sleeveStyle: null,
+      baseColor: null,
+      zoneColors: {},
+      applyEmbroidery: null,
+      applyPrint: null,
+      removeFromZones: []
+    };
+
+    // Sleeve modifications
+    if (lowerPrompt.includes('full sleeve') || lowerPrompt.includes('long sleeve')) {
+      modifications.sleeveStyle = 'full';
+    } else if (lowerPrompt.includes('half sleeve') || lowerPrompt.includes('elbow') || lowerPrompt.includes('3/4')) {
+      modifications.sleeveStyle = 'elbow';
+    } else if (lowerPrompt.includes('short sleeve')) {
+      modifications.sleeveStyle = 'short';
+    } else if (lowerPrompt.includes('sleeveless') || lowerPrompt.includes('no sleeve')) {
+      modifications.sleeveStyle = 'sleeveless';
+    }
+
+    // Color modifications
+    for (const [colorName, hexCode] of Object.entries(COLOR_MAP)) {
+      if (lowerPrompt.includes(colorName)) {
+        if (lowerPrompt.includes('body')) {
+          modifications.zoneColors.body = hexCode;
+        }
+        if (lowerPrompt.includes('sleeve')) {
+          modifications.zoneColors.sleeve_left = hexCode;
+          modifications.zoneColors.sleeve_right = hexCode;
+        }
+        if (!lowerPrompt.includes('body') && !lowerPrompt.includes('sleeve')) {
+          modifications.baseColor = hexCode;
+        }
+      }
+    }
+
+    // Embroidery
+    if (lowerPrompt.includes('maggam')) {
+      const zones = lowerPrompt.includes('body') ? ['body'] : ['body'];
+      if (lowerPrompt.includes('sleeve')) zones.push('sleeve_left', 'sleeve_right');
+      modifications.applyEmbroidery = { zones, pattern: 'maggam' };
+    } else if (lowerPrompt.includes('thread work')) {
+      modifications.applyEmbroidery = { zones: ['body'], pattern: 'threadWork' };
+    }
+
+    // Prints
+    if (lowerPrompt.includes('floral')) {
+      modifications.applyPrint = { zones: ['body'], print: 'floral' };
+    } else if (lowerPrompt.includes('block')) {
+      modifications.applyPrint = { zones: ['body'], print: 'block' };
+    }
+
+    return modifications;
+  };
+
+  // REGULAR FUNCTIONS 
   useEffect(() => {
     setCurrentColor(selectedColor);
   }, [selectedColor]);
 
-  // Initialize all zones with base color ONCE
   useEffect(() => {
     if (!initialized && template.zones.length > 0) {
       const initialColors = {};
@@ -252,13 +508,11 @@ const DesignCanvas = ({
     }
   }, [initialized, template.zones, selectedColor]);
 
-  // Reset initialization when dress type changes
   useEffect(() => {
     setInitialized(false);
     setSelectedZone(null);
   }, [dressType]);
 
-  // Detect mobile
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
@@ -266,7 +520,6 @@ const DesignCanvas = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Sleeve visibility logic
   const getSleeveVisibility = (zoneId) => {
     if (!zoneId.includes('sleeve')) return { visible: true, clipPath: null };
 
@@ -284,14 +537,12 @@ const DesignCanvas = ({
     }
   };
 
-  // Save to history
   const saveToHistory = useCallback(() => {
     const state = {
       zoneColors: { ...zoneColors },
       zonePatterns: { ...zonePatterns },
       embroideryMetadata: { ...embroideryMetadata },
       currentColor,
-      neckStyle,
       sleeveStyle
     };
 
@@ -301,9 +552,8 @@ const DesignCanvas = ({
       return newHistory.slice(-50);
     });
     setHistoryIndex(prev => Math.min(prev + 1, 49));
-  }, [zoneColors, zonePatterns, embroideryMetadata, currentColor, neckStyle, sleeveStyle, historyIndex]);
+  }, [zoneColors, zonePatterns, embroideryMetadata, currentColor, sleeveStyle, historyIndex]);
 
-  // Undo
   const handleUndo = useCallback(() => {
     if (historyIndex > 0) {
       const newIndex = historyIndex - 1;
@@ -313,13 +563,11 @@ const DesignCanvas = ({
       setZonePatterns(state.zonePatterns);
       setEmbroideryMetadata(state.embroideryMetadata);
       setCurrentColor(state.currentColor);
-      setNeckStyle(state.neckStyle);
       setSleeveStyle(state.sleeveStyle);
       setHistoryIndex(newIndex);
     }
   }, [history, historyIndex]);
 
-  // Redo
   const handleRedo = useCallback(() => {
     if (historyIndex < history.length - 1) {
       const newIndex = historyIndex + 1;
@@ -329,236 +577,32 @@ const DesignCanvas = ({
       setZonePatterns(state.zonePatterns);
       setEmbroideryMetadata(state.embroideryMetadata);
       setCurrentColor(state.currentColor);
-      setNeckStyle(state.neckStyle);
       setSleeveStyle(state.sleeveStyle);
       setHistoryIndex(newIndex);
     }
   }, [history, historyIndex]);
 
-  // Initialize history
   useEffect(() => {
     if (history.length === 0) {
       saveToHistory();
     }
   }, []);
 
-  // ============================================================================
-  // AI EDITING FUNCTION
-  // ============================================================================
-  const handleAIEdit = async () => {
-    if (!aiEditPrompt.trim()) {
-      toast.error('Please describe what you want to change');
-      return;
-    }
-
-    setAiEditLoading(true);
-
-    try {
-      // Build context for AI
-      const currentDesignContext = {
-        dressType,
-        gender,
-        currentColor,
-        sleeveStyle,
-        neckStyle,
-        zoneColors,
-        embroideryMetadata,
-        availableZones: template.zones.map(z => ({ id: z.id, label: z.label }))
-      };
-
-      // Build AI prompt
-      const systemPrompt = `You are a garment design AI assistant. Analyze the user's edit request and provide structured JSON instructions for modifying the design canvas.
-
-CURRENT DESIGN CONTEXT:
-- Dress Type: ${dressType}
-- Gender: ${gender}
-- Current Base Color: ${currentColor}
-- Current Sleeve Style: ${sleeveStyle}
-- Current Neckline: ${neckStyle}
-- Current Zone Colors: ${JSON.stringify(zoneColors)}
-- Applied Embroidery: ${JSON.stringify(Object.values(embroideryMetadata))}
-
-AVAILABLE ZONES FOR THIS DRESS:
-${template.zones.map(z => `- ${z.id}: ${z.label}`).join('\n')}
-
-USER EDIT REQUEST: "${aiEditPrompt}"
-
-AVAILABLE MODIFICATIONS:
-1. SLEEVE STYLES: full, elbow (3/4), short, sleeveless
-2. NECKLINE STYLES (Women): round, square, vNeck, boat, sweetheart, halter
-3. NECKLINE STYLES (Men): collar, round, vNeck
-4. EMBROIDERY TYPES: maggam, threadWork, sequins, beadwork
-5. FABRIC PRINTS: block, bagru, floral, kalamkari, shibori, painting
-6. COLORS: Use color names and convert to hex codes
-
-Return ONLY valid JSON:
-{
-  "modifications": {
-    "sleeveStyle": "full|elbow|short|sleeveless",
-    "neckStyle": "collar|round|vNeck|...",
-    "baseColor": "#hexcolor",
-    "zoneColors": {
-      "zone_id": "#hexcolor"
-    },
-    "applyEmbroidery": {
-      "zones": ["zone_id"],
-      "pattern": "maggam|threadWork|sequins|beadwork"
-    },
-    "applyPrint": {
-      "zones": ["zone_id"],
-      "print": "block|bagru|floral|kalamkari|shibori|painting"
-    },
-    "removeFromZones": ["zone_id"]
-  },
-  "explanation": "Brief explanation of changes made"
-}
-
-RULES:
-- Only modify what the user asks for
-- Preserve existing design elements not mentioned
-- Convert color names to hex codes (red=#FF0000, blue=#0000FF, etc.)
-- Zone IDs must match available zones
-- If user says "change body to red", set zoneColors: {"body": "#FF0000"}
-- If user says "add floral print to sleeves", set applyPrint: {"zones": ["sleeve_left", "sleeve_right"], "print": "floral"}
-- If user says "make sleeves half", set sleeveStyle: "elbow"
-- If user says "change to full sleeves", set sleeveStyle: "full"`;
-
-      const response = await axios.post(`${backendUrl}/api/customization/ai-edit`, {
-        editPrompt: aiEditPrompt,
-        currentDesign: currentDesignContext,
-        systemPrompt
-      });
-
-      if (response.data.success) {
-        const { modifications, explanation } = response.data;
-
-        // Apply modifications
-        if (modifications.sleeveStyle) {
-          setSleeveStyle(modifications.sleeveStyle);
-        }
-
-        if (modifications.neckStyle) {
-          setNeckStyle(modifications.neckStyle);
-        }
-
-        if (modifications.baseColor) {
-          setCurrentColor(modifications.baseColor);
-        }
-
-        if (modifications.zoneColors) {
-          setZoneColors(prev => ({
-            ...prev,
-            ...modifications.zoneColors
-          }));
-        }
-
-        if (modifications.applyEmbroidery) {
-          modifications.applyEmbroidery.zones.forEach(zoneId => {
-            const pattern = EMBROIDERY_PATTERNS[modifications.applyEmbroidery.pattern];
-            if (pattern) {
-              const patternCanvas = pattern.createPattern(pattern.threadColors[0]);
-              const patternUrl = patternCanvas.toDataURL();
-
-              setZonePatterns(prev => ({
-                ...prev,
-                [zoneId]: { type: 'embroidery', url: patternUrl }
-              }));
-
-              setEmbroideryMetadata(prev => ({
-                ...prev,
-                [zoneId]: {
-                  type: modifications.applyEmbroidery.pattern,
-                  zone: zoneId,
-                  zoneName: template.zones.find(z => z.id === zoneId)?.label,
-                  density: pattern.density,
-                  threadColor: pattern.threadColors[0],
-                  appliedAt: new Date().toISOString()
-                }
-              }));
-            }
-          });
-        }
-
-        if (modifications.applyPrint) {
-          modifications.applyPrint.zones.forEach(zoneId => {
-            const print = FABRIC_PRINTS[modifications.applyPrint.print];
-            if (print) {
-              const patternCanvas = print.createPattern();
-              const patternUrl = patternCanvas.toDataURL();
-
-              setZonePatterns(prev => ({
-                ...prev,
-                [zoneId]: { type: 'print', url: patternUrl }
-              }));
-            }
-          });
-        }
-
-        if (modifications.removeFromZones) {
-          modifications.removeFromZones.forEach(zoneId => {
-            setZonePatterns(prev => {
-              const updated = { ...prev };
-              delete updated[zoneId];
-              return updated;
-            });
-
-            setEmbroideryMetadata(prev => {
-              const updated = { ...prev };
-              delete updated[zoneId];
-              return updated;
-            });
-          });
-        }
-
-        saveToHistory();
-        setAiEditPrompt('');
-        setAiEditMode(false);
-      }
-    } catch (error) {
-      console.error('AI Edit Error:', error);
-      toast.error('AI edit failed. Please try again.');
-    } finally {
-      setAiEditLoading(false);
-    }
-  };
-
-  // Get available necklines based on gender
-  const getAvailableNecklines = () => {
-    if (gender === 'Men') {
-      return [
-        { value: 'collar', label: 'Collar Neck' },
-        { value: 'round', label: 'Round Neck' },
-        { value: 'vNeck', label: 'V Neck' }
-      ];
-    }
-    return [
-      { value: 'round', label: 'Round Neck' },
-      { value: 'square', label: 'Square Neck' },
-      { value: 'vNeck', label: 'V Neck' },
-      { value: 'boat', label: 'Boat Neck' },
-      { value: 'sweetheart', label: 'Sweetheart' },
-      { value: 'halter', label: 'Halter Neck' }
-    ];
-  };
-
   const sleeveOptions = [
     { value: 'full', label: 'Full Sleeve' },
-    { value: 'elbow', label: '3/4 (Elbow)' },
+    { value: 'elbow', label: '3/4 Sleeve' },
     { value: 'short', label: 'Short Sleeve' },
     { value: 'sleeveless', label: 'Sleeveless' }
   ];
 
-  // Handle zone click
   const handleZoneClick = (zoneId) => {
     setSelectedZone(zoneId);
   };
 
-  // Get zone color
   const getZoneColor = (zoneId) => {
     return zoneColors[zoneId] || currentColor;
   };
 
-  // Apply embroidery to zone
   const applyEmbroidery = (patternKey) => {
     if (!selectedZone) return;
 
@@ -591,7 +635,6 @@ RULES:
     if (isMobile) setSidebarOpen(false);
   };
 
-  // Apply fabric print to zone
   const applyFabricPrint = (printKey) => {
     if (!selectedZone) return;
 
@@ -610,7 +653,6 @@ RULES:
     if (isMobile) setSidebarOpen(false);
   };
 
-  // Clear zone
   const clearZone = () => {
     if (!selectedZone) return;
 
@@ -635,19 +677,12 @@ RULES:
     saveToHistory();
   };
 
-  // Apply color to zone
   const applyColorToZone = (color) => {
     if (!selectedZone) return;
-
-    setZoneColors(prev => ({
-      ...prev,
-      [selectedZone]: color
-    }));
-
+    setZoneColors(prev => ({ ...prev, [selectedZone]: color }));
     saveToHistory();
   };
 
-  // Apply color to all zones
   const applyColorToAllZones = (color) => {
     const updatedColors = {};
     template.zones.forEach(zone => {
@@ -657,30 +692,23 @@ RULES:
     saveToHistory();
   };
 
-  // Reset all colors
-  const resetAllColors = () => {
-    const resetColors = {};
-    template.zones.forEach(zone => {
-      resetColors[zone.id] = '#FFFFFF';
-    });
-    setZoneColors(resetColors);
-    setCurrentColor('#FFFFFF');
-    saveToHistory();
-  };
+  const optimizePngSize = (canvas, maxWidth = 800) => {
+    if (canvas.width > maxWidth) {
+      const ratio = maxWidth / canvas.width;
+      const optimizedCanvas = document.createElement('canvas');
+      optimizedCanvas.width = maxWidth;
+      optimizedCanvas.height = canvas.height * ratio;
 
-  // Reset selected zone color
-  const resetSelectedZoneColor = () => {
-    if (selectedZone) {
-      setZoneColors(prev => {
-        const updated = { ...prev };
-        delete updated[selectedZone];
-        return updated;
-      });
-      saveToHistory();
+      const ctx = optimizedCanvas.getContext('2d');
+      ctx.drawImage(canvas, 0, 0, optimizedCanvas.width, optimizedCanvas.height);
+
+      return optimizedCanvas.toDataURL('image/png', 0.8);
     }
+
+    return canvas.toDataURL('image/png', 0.8);
   };
 
-  // Convert SVG to PNG
+  // Update the svgToPng function
   const svgToPng = useCallback(() => {
     return new Promise((resolve) => {
       if (!svgRef.current) {
@@ -694,14 +722,18 @@ RULES:
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
-      canvas.width = 800;
-      canvas.height = 800;
+      // Use smaller size to reduce payload
+      canvas.width = 600;
+      canvas.height = 600;
 
       img.onload = () => {
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0);
-        resolve(canvas.toDataURL('image/png'));
+
+        // Optimize size
+        const optimizedPng = optimizePngSize(canvas, 600);
+        resolve(optimizedPng);
       };
 
       img.onerror = () => resolve('');
@@ -709,7 +741,6 @@ RULES:
     });
   }, []);
 
-  // Export design with PNG
   useEffect(() => {
     const exportDesign = async () => {
       if (onDesignChange && svgRef.current) {
@@ -721,7 +752,6 @@ RULES:
           png: pngData,
           zoneColors,
           zonePatterns,
-          neckStyle,
           sleeveStyle,
           color: currentColor,
           baseColor: currentColor,
@@ -731,30 +761,13 @@ RULES:
     };
 
     exportDesign();
-  }, [zoneColors, zonePatterns, currentColor, neckStyle, sleeveStyle, embroideryMetadata, onDesignChange, svgToPng]);
+  }, [zoneColors, zonePatterns, currentColor, sleeveStyle, embroideryMetadata, onDesignChange, svgToPng]);
 
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
 
-  // Get description for sleeve style
-  const getSleeveDescription = () => {
-    switch (sleeveStyle) {
-      case 'full':
-        return 'Full length sleeves';
-      case 'elbow':
-        return '3/4 length (elbow) sleeves';
-      case 'short':
-        return 'Short sleeves';
-      case 'sleeveless':
-        return 'No sleeves';
-      default:
-        return '';
-    }
-  };
-
-  // Color presets
   const colorPresets = [
-    { name: 'Red', color: '#EF4444' },
+    { name: 'Red', color: '#DC2626' },
     { name: 'Pink', color: '#EC4899' },
     { name: 'Purple', color: '#A855F7' },
     { name: 'Blue', color: '#3B82F6' },
@@ -765,24 +778,21 @@ RULES:
     { name: 'Indigo', color: '#6366F1' },
     { name: 'White', color: '#FFFFFF' },
     { name: 'Black', color: '#1F2937' },
-    { name: 'Gold', color: '#D4AF37' },
-    { name: 'Silver', color: '#C0C0C0' },
-    { name: 'Navy', color: '#1E3A8A' },
-    { name: 'Maroon', color: '#7C2D12' }
+    { name: 'Gold', color: '#D4AF37' }
   ];
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="grid lg:grid-cols-[1fr_380px] gap-4 sm:gap-6">
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 p-4 sm:p-8">
-          <div className="mb-4 sm:mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-secondary rounded-xl flex items-center justify-center shadow-lg">
-                <Sparkles size={24} className="text-white" />
+    <div className="space-y-6">
+      <div className="grid lg:grid-cols-[1fr_360px] gap-6">
+        <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+                <Palette size={20} className="text-white" />
               </div>
               <div>
-                <h3 className="text-lg sm:text-2xl font-bold text-gray-800">Design Canvas</h3>
-                <p className="text-xs sm:text-sm text-gray-500">{dressType} • {getSleeveDescription()}</p>
+                <h3 className="text-xl font-bold text-text">Design Canvas</h3>
+                <p className="text-sm text-text/60">{dressType}</p>
               </div>
             </div>
 
@@ -790,80 +800,122 @@ RULES:
               <button
                 onClick={handleUndo}
                 disabled={!canUndo}
-                className="p-2 sm:p-3 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                title="Undo"
-              >
+                className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                title="Undo">
                 <Undo size={18} />
               </button>
               <button
                 onClick={handleRedo}
                 disabled={!canRedo}
-                className="p-2 sm:p-3 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                title="Redo"
-              >
+                className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                title="Redo">
                 <Redo size={18} />
               </button>
               <button
-                onClick={() => setAiEditMode(!aiEditMode)}
-                className={`p-2 sm:p-3 rounded-lg transition-all ${aiEditMode ? 'bg-purple-500 text-white' : 'bg-purple-100 text-purple-600 hover:bg-purple-200'}`}
-                title="AI Edit Mode"
-              >
+                onClick={() => {
+                  setAiEditMode(!aiEditMode);
+                  setAiGenerateMode(false);
+                }}
+                className={`p-2 rounded-lg transition-all ${aiEditMode ? 'bg-purple-500 text-white' : 'bg-purple-100 text-purple-600 hover:bg-purple-200'}`}
+                title="AI Edit">
                 <Wand2 size={18} />
               </button>
               {isMobile && (
                 <button
                   onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="p-2 sm:p-3 bg-secondary text-white rounded-lg">
+                  className="p-2 bg-secondary text-white rounded-lg">
                   <Menu size={18} />
                 </button>
               )}
             </div>
           </div>
 
-          {aiEditMode && (
-            <div className="mb-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border-2 border-purple-200">
+          {/* AI GENERATE MODE */}
+          {aiGenerateMode && (
+            <div className="mb-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border-2 border-purple-300">
               <div className="flex items-center gap-2 mb-3">
-                <Wand2 size={20} className="text-purple-600" />
+                <Sparkles size={18} className="text-purple-600" />
+                <h4 className="font-bold text-purple-900">AI Design Generator</h4>
+              </div>
+              <p className="text-xs text-purple-700 mb-3">
+                Describe your dream design and let AI create it for you!
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={aiGeneratePrompt}
+                  onChange={(e) => setAiGeneratePrompt(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && !aiGenerateLoading && handleAIGenerate()}
+                  placeholder="e.g., 'Elegant silk kurta with golden embroidery'"
+                  className="flex-1 px-3 py-2 border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none text-sm"
+                  disabled={aiGenerateLoading}
+                />
+                <button
+                  onClick={handleAIGenerate}
+                  disabled={aiGenerateLoading || !aiGeneratePrompt.trim()}
+                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm font-semibold">
+                  {aiGenerateLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Send size={16} />
+                      Generate
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* AI EDIT MODE */}
+          {aiEditMode && (
+            <div className="mb-6 bg-purple-50 rounded-lg p-4 border border-purple-200">
+              <div className="flex items-center gap-2 mb-3">
+                <Wand2 size={18} className="text-purple-600" />
                 <h4 className="font-bold text-purple-900">AI Edit Mode</h4>
               </div>
               <p className="text-xs text-purple-700 mb-3">
-                Tell me what you want to change. Examples:
+                Examples: "Change sleeves to half" or "Make body red and sleeves blue"
               </p>
-              <div className="text-xs text-purple-600 mb-3 space-y-1">
-                <div>• "Change sleeves to half"</div>
-                <div>• "Make body red and sleeves blue"</div>
-                <div>• "Add floral print to the entire dress"</div>
-                <div>• "Add maggam embroidery on collar"</div>
-                <div>• "Change to full sleeves"</div>
-              </div>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={aiEditPrompt}
                   onChange={(e) => setAiEditPrompt(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && !aiEditLoading && handleAIEdit()}
-                  placeholder="E.g., 'Change sleeves to half and make body red'"
+                  placeholder="Describe your changes"
                   className="flex-1 px-3 py-2 border-2 border-purple-200 rounded-lg focus:border-purple-400 focus:outline-none text-sm"
                   disabled={aiEditLoading}
                 />
                 <button
                   onClick={handleAIEdit}
                   disabled={aiEditLoading || !aiEditPrompt.trim()}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm font-semibold"
-                >
-                  {aiEditLoading ? 'Editing...' : <Send size={16} />}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm font-semibold">
+                  {aiEditLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Editing...
+                    </>
+                  ) : (
+                    <>
+                      <Send size={16} />
+                      Edit
+                    </>
+                  )}
                 </button>
               </div>
             </div>
           )}
 
-          <div ref={containerRef} className="flex justify-center bg-gray-100 rounded-xl p-4 sm:p-8">
+          <div ref={containerRef} className="flex justify-center bg-gray-100 rounded-xl p-8">
             <svg
               ref={svgRef}
               viewBox={template.viewBox}
-              className="w-full max-w-md rounded-xl"
-              style={{ maxHeight: '600px' }}
-            >
+              className="w-full max-w-md"
+              style={{ maxHeight: '600px' }}>
               <defs>
                 {Object.entries(zonePatterns).map(([zoneId, pattern]) => (
                   <pattern
@@ -873,8 +925,7 @@ RULES:
                     y="0"
                     width="100"
                     height="100"
-                    patternUnits="userSpaceOnUse"
-                  >
+                    patternUnits="userSpaceOnUse">
                     <image href={pattern.url} width="100" height="100" />
                   </pattern>
                 ))}
@@ -882,7 +933,6 @@ RULES:
 
               {template.zones.map((zone) => {
                 const sleeveVis = getSleeveVisibility(zone.id);
-
                 return sleeveVis.visible && (
                   <path
                     key={zone.id}
@@ -893,7 +943,7 @@ RULES:
                     onClick={() => handleZoneClick(zone.id)}
                     style={{
                       cursor: 'pointer',
-                      transition: 'all 0.3s ease',
+                      transition: 'all 0.2s ease',
                       opacity: selectedZone === zone.id ? 0.9 : 1,
                       clipPath: sleeveVis.clipPath || 'none'
                     }}
@@ -904,18 +954,16 @@ RULES:
             </svg>
           </div>
 
-          <div className="mt-4 sm:mt-6">
-            <h4 className="text-xs sm:text-sm font-bold text-gray-600 mb-2 sm:mb-3 uppercase">Select Area to Customize</h4>
+          <div className="mt-6">
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {template.zones.filter(zone => getSleeveVisibility(zone.id).visible).map(zone => (
                 <button
                   key={zone.id}
                   onClick={() => handleZoneClick(zone.id)}
-                  className={`p-2 sm:p-3 rounded-lg border-2 transition-all text-xs font-semibold ${selectedZone === zone.id
-                    ? 'border-secondary/90 shadow-lg'
-                    : 'border-gray-200 hover:border-background'
-                    }`}
-                >
+                  className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${selectedZone === zone.id
+                    ? 'border-secondary bg-secondary/5'
+                    : 'border-gray-200 hover:border-gray-300'
+                    }`}>
                   {zone.label}
                 </button>
               ))}
@@ -923,17 +971,16 @@ RULES:
           </div>
 
           {selectedZone && (
-            <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-gradient-to-r from-background to-background/80 rounded-xl border-2 border-secondary flex items-center justify-between">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <CheckCircle2 size={20} className="text-secondary" />
-                <span className="text-xs sm:text-sm font-semibold text-gray-700">
+            <div className="mt-4 p-4 bg-secondary/5 rounded-lg border border-secondary/20 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={18} className="text-secondary" />
+                <span className="text-sm font-semibold text-text">
                   Editing: {template.zones.find(z => z.id === selectedZone)?.label}
                 </span>
               </div>
               <button
                 onClick={clearZone}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white text-red-600 rounded-lg hover:bg-red-50 transition-all text-xs font-semibold flex items-center gap-1"
-              >
+                className="px-3 py-1.5 bg-white text-red-600 rounded-lg hover:bg-red-50 transition-all text-xs font-semibold flex items-center gap-1">
                 <Trash2 size={14} />
                 <span>Clear</span>
               </button>
@@ -941,34 +988,26 @@ RULES:
           )}
 
           {Object.keys(embroideryMetadata).length > 0 && (
-            <div className="mt-4 bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
+            <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-4">
               <h4 className="font-bold text-sm text-amber-900 mb-2">Applied Embroidery</h4>
               {Object.entries(embroideryMetadata).map(([zoneId, data]) => (
                 <div key={zoneId} className="text-xs text-amber-800 mb-1">
-                  • {data.zoneName}: {EMBROIDERY_PATTERNS[data.type].name}
+                  {data.zoneName}: {EMBROIDERY_PATTERNS[data.type].name}
                 </div>
               ))}
             </div>
           )}
-
-          {sleeveStyle !== 'full' && template.zones.some(z => z.id.includes('sleeve')) && (
-            <div className="mt-4 bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-              <p className="text-xs text-blue-800 font-semibold flex items-center gap-2">
-                <Info size={14} />
-                {getSleeveDescription()} applied
-              </p>
-            </div>
-          )}
         </div>
 
+        {/* Tools Sidebar */}
         <div className={`
           ${isMobile ? 'fixed inset-x-0 bottom-0 z-50 transform transition-transform duration-300' : 'relative'}
           ${isMobile && !sidebarOpen ? 'translate-y-full' : 'translate-y-0'}
-          bg-white rounded-t-3xl lg:rounded-2xl shadow-2xl border border-gray-200 
-          ${isMobile ? 'max-h-[80vh] overflow-y-auto' : 'p-6 space-y-6'}
+          bg-white rounded-t-2xl lg:rounded-xl shadow-xl border border-gray-200 
+          ${isMobile ? 'max-h-[80vh] overflow-y-auto' : 'p-6'}
         `}>
           {isMobile && (
-            <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between rounded-t-3xl">
+            <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between rounded-t-2xl">
               <div className="flex items-center gap-3">
                 <Settings className="text-secondary" size={20} />
                 <h3 className="text-lg font-bold">Design Tools</h3>
@@ -986,38 +1025,47 @@ RULES:
             </div>
           )}
 
-          <div className={isMobile ? 'p-4 space-y-6' : 'space-y-6'}>
-            <div className="flex gap-2 p-1.5 bg-gray-100 rounded-xl text-xs">
-              {['styles', 'embroidery', 'prints'].map(tab => (
+          <div className={isMobile ? 'p-4 space-y-6' : 'space-y-6 mt-6'}>
+            {/* AI Generate Button */}
+            <button
+              onClick={() => {
+                setAiGenerateMode(!aiGenerateMode);
+                setAiEditMode(false);
+              }}
+              className={`w-full px-4 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all ${aiGenerateMode
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+                : 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-900 hover:shadow-md'
+                }`}>
+              <Sparkles size={20} />
+              <span>AI Design Generator</span>
+            </button>
+
+            <div className="flex gap-2 p-1 bg-gray-100 rounded-lg text-xs">
+              {['colors', 'styles', 'embroidery', 'prints'].map(tab => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`flex-1 px-3 py-2.5 rounded-lg font-bold transition-all capitalize ${activeTab === tab ? 'bg-secondary text-white' : 'text-gray-600'
-                    }`}
-                >
+                  className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all capitalize ${activeTab === tab ? 'bg-secondary text-white' : 'text-gray-600'
+                    }`}>
                   {tab}
                 </button>
               ))}
             </div>
 
-            {activeTab === 'styles' && (
+            {activeTab === 'colors' && (
               <div className="space-y-6">
                 <div>
-                  <h4 className="font-bold text-sm uppercase text-gray-600 mb-3 flex items-center gap-2">
-                    <Palette size={14} className="text-secondary" />
-                    Base Color
-                  </h4>
-                  <div className="rounded-xl p-4 border-2 border-secondary">
-                    <div className="flex items-center gap-4">
+                  <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Base Color</h4>
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="flex items-center gap-4 mb-4">
                       <input
                         type="color"
                         value={currentColor}
                         onChange={(e) => {
-                          const color = e.target.value;
-                          setCurrentColor(color);
+                          setCurrentColor(e.target.value);
                           saveToHistory();
                         }}
-                        className="w-20 h-20 rounded-xl cursor-pointer border-2 border-white shadow-lg"
+                        className="w-16 h-16 rounded-lg cursor-pointer border-2 border-white shadow-md"
                       />
                       <div className="flex-1">
                         <label className="block text-xs font-semibold text-gray-600 mb-1.5">Hex Code</label>
@@ -1025,8 +1073,7 @@ RULES:
                           type="text"
                           value={currentColor}
                           onChange={(e) => {
-                            const color = e.target.value;
-                            setCurrentColor(color);
+                            setCurrentColor(e.target.value);
                             saveToHistory();
                           }}
                           className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-sm"
@@ -1036,36 +1083,24 @@ RULES:
 
                     <button
                       onClick={() => applyColorToAllZones(currentColor)}
-                      className="w-full mt-3 px-4 py-2.5 bg-secondary text-white rounded-lg hover:shadow-lg transition-all font-semibold text-sm flex items-center justify-center gap-2"
-                    >
+                      className="w-full px-4 py-2.5 bg-secondary text-white rounded-lg hover:shadow-md transition-all font-semibold text-sm flex items-center justify-center gap-2">
                       <Palette size={16} />
-                      Apply
+                      Apply to All Zones
                     </button>
 
                     {selectedZone && (
                       <button
-                        onClick={() => {
-                          applyColorToZone(currentColor);
-                        }}
-                        className="w-full mt-2 px-4 py-2 bg-white border-2 border-secondary text-secondary rounded-lg hover:bg-secondary hover:text-white transition-all font-semibold text-sm"
-                      >
-                        Apply to {template.zones.find(z => z.id === selectedZone)?.label} Only
+                        onClick={() => applyColorToZone(currentColor)}
+                        className="w-full mt-2 px-4 py-2 bg-white border-2 border-secondary text-secondary rounded-lg hover:bg-secondary hover:text-white transition-all font-semibold text-sm">
+                        Apply to {template.zones.find(z => z.id === selectedZone)?.label}
                       </button>
-                    )}
-
-                    {selectedZone && (
-                      <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
-                        <p className="text-xs text-blue-700">
-                          Apply color to all zones or customize individual zones
-                        </p>
-                      </div>
                     )}
                   </div>
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Quick Color Presets</h4>
-                  <div className="grid grid-cols-5 gap-2">
+                  <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Color Presets</h4>
+                  <div className="grid grid-cols-6 gap-2">
                     {colorPresets.map(preset => (
                       <button
                         key={preset.color}
@@ -1076,60 +1111,18 @@ RULES:
                           }
                           saveToHistory();
                         }}
-                        className="group relative aspect-square rounded-lg border-2 border-gray-200 hover:border-secondary hover:scale-110 transition-all shadow-sm hover:shadow-md"
+                        className="aspect-square rounded-lg border-2 border-gray-200 hover:border-secondary hover:scale-110 transition-all shadow-sm"
                         style={{ backgroundColor: preset.color }}
                         title={preset.name}
-                      >
-                        <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold opacity-0 group-hover:opacity-100 transition-opacity bg-black/30 rounded-lg text-white">
-                          {preset.name}
-                        </span>
-                      </button>
+                      />
                     ))}
                   </div>
                 </div>
+              </div>
+            )}
 
-                <div>
-                  <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Color Actions</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={resetAllColors}
-                      className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all text-xs font-semibold"
-                    >
-                      Reset All Colors
-                    </button>
-                    
-                    <button
-                      onClick={resetSelectedZoneColor}
-                      disabled={!selectedZone}
-                      className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Reset Selected Zone
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Neckline Style</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {getAvailableNecklines().map(style => (
-                      <button
-                        key={style.value}
-                        onClick={() => {
-                          setNeckStyle(style.value);
-                          saveToHistory();
-                        }}
-                        className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${
-                          neckStyle === style.value 
-                            ? 'border-secondary bg-secondary/5' 
-                            : 'border-gray-200 hover:border-secondary/50'
-                        }`}
-                      >
-                        {style.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
+            {activeTab === 'styles' && (
+              <div className="space-y-6">
                 {template.zones.some(z => z.id.includes('sleeve')) && (
                   <div>
                     <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Sleeve Length</h4>
@@ -1144,12 +1137,10 @@ RULES:
                             }
                             saveToHistory();
                           }}
-                          className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${
-                            sleeveStyle === style.value 
-                              ? 'border-secondary bg-secondary/5' 
-                              : 'border-gray-200 hover:border-secondary/50'
-                          }`}
-                        >
+                          className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${sleeveStyle === style.value
+                            ? 'border-secondary bg-secondary/5'
+                            : 'border-gray-200 hover:border-gray-300'
+                            }`}>
                           {style.label}
                         </button>
                       ))}
@@ -1163,29 +1154,28 @@ RULES:
               <div className="space-y-4">
                 {selectedZone ? (
                   <>
-                    <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
                       <p className="text-xs text-amber-800 font-semibold flex items-center gap-2">
                         <Info size={14} />
-                        Select embroidery style for the selected zone
+                        Select embroidery for {template.zones.find(z => z.id === selectedZone)?.label}
                       </p>
                     </div>
-                    <div className="grid grid-cols-1 gap-4">
+                    <div className="grid grid-cols-1 gap-3">
                       {Object.entries(EMBROIDERY_PATTERNS).map(([key, config]) => {
                         const patternCanvas = config.createPattern();
                         return (
                           <button
                             key={key}
                             onClick={() => applyEmbroidery(key)}
-                            className="group p-4 rounded-xl border-2 border-gray-200 hover:border-secondary hover:shadow-lg transition-all flex items-center gap-4"
-                          >
-                            <div className="w-16 h-16 rounded-lg border-2 border-gray-200 overflow-hidden bg-white shadow-inner">
+                            className="group p-4 rounded-lg border-2 border-gray-200 hover:border-secondary hover:shadow-md transition-all flex items-center gap-4">
+                            <div className="w-14 h-14 rounded-lg border-2 border-gray-200 overflow-hidden bg-white">
                               <img src={patternCanvas.toDataURL()} alt={config.name} className="w-full h-full object-cover" />
                             </div>
                             <div className="text-left flex-1">
-                              <div className="text-sm font-semibold text-gray-800 mb-1">{config.name}</div>
-                              <div className="text-xs text-gray-500">{config.note}</div>
+                              <div className="text-sm font-semibold text-text mb-1">{config.name}</div>
+                              <div className="text-xs text-text/60">{config.note}</div>
                             </div>
-                            <CheckCircle2 size={20} className="text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <CheckCircle2 size={18} className="text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
                           </button>
                         );
                       })}
@@ -1193,7 +1183,7 @@ RULES:
                   </>
                 ) : (
                   <div className="text-center py-12">
-                    <Move size={48} className="mx-auto mb-4 text-gray-300" />
+                    <Move size={40} className="mx-auto mb-3 text-gray-300" />
                     <p className="text-sm text-gray-500">Select a zone first</p>
                   </div>
                 )}
@@ -1203,39 +1193,26 @@ RULES:
             {activeTab === 'prints' && (
               <div className="space-y-4">
                 {selectedZone ? (
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="grid grid-cols-1 gap-3">
                     {Object.entries(FABRIC_PRINTS).map(([key, config]) => (
                       <button
                         key={key}
                         onClick={() => applyFabricPrint(key)}
-                        className="group p-4 rounded-xl border-2 border-gray-200 hover:border-secondary hover:shadow-lg transition-all flex items-center gap-4"
-                      >
-                        <div className="w-16 h-16 rounded-lg border-2 border-gray-200 overflow-hidden bg-white shadow-inner">
-                          <img
-                            src={config.img}
-                            alt={config.name}
-                            className="w-full h-full object-cover"
-                          />
+                        className="group p-4 rounded-lg border-2 border-gray-200 hover:border-secondary hover:shadow-md transition-all flex items-center gap-4">
+                        <div className="w-14 h-14 rounded-lg border-2 border-gray-200 overflow-hidden bg-white">
+                          <img src={config.img} alt={config.name} className="w-full h-full object-cover" />
                         </div>
-
                         <div className="text-left flex-1">
-                          <div className="text-sm font-semibold text-gray-800">
-                            {config.name}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {config.description}
-                          </div>
+                          <div className="text-sm font-semibold text-text">{config.name}</div>
+                          <div className="text-xs text-text/60">{config.description}</div>
                         </div>
-
-                        <CheckCircle2
-                          size={20}
-                          className="text-secondary opacity-0 group-hover:opacity-100 transition-opacity"
-                        />
+                        <CheckCircle2 size={18} className="text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
                       </button>
                     ))}
                   </div>
                 ) : (
                   <div className="text-center py-12">
+                    <Move size={40} className="mx-auto mb-3 text-gray-300" />
                     <p className="text-sm text-gray-500">Select a zone first</p>
                   </div>
                 )}

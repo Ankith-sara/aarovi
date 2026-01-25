@@ -129,7 +129,7 @@ const CanvasModal = ({ item, onClose }) => {
             <img
               src={item.customization.canvasDesign.png}
               alt="Canvas Design"
-              className="w-full rounded-2xl border-2 border-background/30 shadow-lg mb-6"
+              className="w-full border-2 border-background/30 shadow-lg mb-6"
             />
           )}
 
@@ -796,7 +796,7 @@ const Orders = ({ token }) => {
                                         <img 
                                           src={item.image} 
                                           alt={item.name}
-                                          className="w-20 h-20 object-cover rounded-lg border-2 border-background/30"
+                                          className="w-20 h-20 object-contain"
                                         />
                                       ) : (
                                         <div className={`w-20 h-20 rounded-lg flex items-center justify-center ${

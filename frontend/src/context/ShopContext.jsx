@@ -219,17 +219,31 @@ const ShopContextProvider = (props) => {
             }
         }
 
-        // Get customizations
+        // Get customizations - FIXED
         if (cartItems.customizations) {
             for (const customId in cartItems.customizations) {
                 const custom = cartItems.customizations[customId];
                 if (custom && custom.quantity > 0) {
                     items.push({
                         _id: customId,
-                        ...custom.snapshot,
+                        type: 'customization',
+                        name: `Custom ${custom.snapshot?.gender || ''} ${custom.snapshot?.dressType || 'Design'}`,
                         quantity: custom.quantity,
                         price: custom.price,
-                        type: 'customization'
+                        // Include all necessary fields for order processing
+                        gender: custom.snapshot?.gender || '',
+                        dressType: custom.snapshot?.dressType || '',
+                        fabric: custom.snapshot?.fabric || '',
+                        color: custom.snapshot?.color || '',
+                        designNotes: custom.snapshot?.designNotes || '',
+                        measurements: custom.snapshot?.measurements || {},
+                        canvasDesign: custom.snapshot?.canvasDesign || {},
+                        referenceImages: custom.snapshot?.referenceImages || [],
+                        aiPrompt: custom.snapshot?.aiPrompt || '',
+                        neckStyle: custom.snapshot?.neckStyle || '',
+                        sleeveStyle: custom.snapshot?.sleeveStyle || '',
+                        image: custom.snapshot?.canvasDesign?.png || '',
+                        images: [custom.snapshot?.canvasDesign?.png || '']
                     });
                 }
             }
@@ -431,109 +445,6 @@ const ShopContextProvider = (props) => {
     }, [products]);
 
     // ============= CUSTOMIZATION FUNCTIONS =============
-    const getUserCustomizations = useCallback(async (userToken) => {
-        try {
-            setCustomizationLoading(true);
-
-            // Send as POST with userId in body to match your auth pattern
-            const res = await axios.post(
-                `${backendUrl}/api/customization/my`, {}, { headers: { Authorization: `Bearer ${userToken}` } }
-            );
-
-            if (res.data.success) {
-                setCustomizations(res.data.customizations);
-            }
-        } catch (err) {
-            console.error('Get customizations error:', err);
-
-            if (err.response?.status !== 401) {
-                toast.error('Failed to load customizations');
-            }
-        } finally {
-            setCustomizationLoading(false);
-        }
-    }, [backendUrl]);
-
-    const saveCustomization = useCallback(async (data) => {
-        if (!token) {
-            toast.error("Please login to save customization");
-            navigate("/login");
-            return null;
-        }
-
-        try {
-            setCustomizationLoading(true);
-
-            // FIXED: Removed userId from body, it comes from auth middleware
-            const res = await axios.post(
-                `${backendUrl}/api/customization/save`,
-                data,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-
-            if (res.data.success) {
-                const savedCustomization = res.data.customization;
-                setActiveCustomization(savedCustomization);
-
-                // Update customizations array
-                setCustomizations(prev => {
-                    const index = prev.findIndex(c => c._id === savedCustomization._id);
-                    if (index >= 0) {
-                        const updated = [...prev];
-                        updated[index] = savedCustomization;
-                        return updated;
-                    }
-                    return [savedCustomization, ...prev];
-                });
-
-                toast.success("Customization saved successfully");
-                return savedCustomization;
-            }
-        } catch (err) {
-            console.error('Save customization error:', err);
-            toast.error(err.response?.data?.message || "Failed to save customization");
-            return null;
-        } finally {
-            setCustomizationLoading(false);
-        }
-    }, [token, backendUrl, navigate]);
-
-    const updateCustomization = useCallback(async (customizationId, data) => {
-        if (!token) {
-            toast.error("Please login to update customization");
-            return null;
-        }
-
-        try {
-            setCustomizationLoading(true);
-
-            // FIXED: userId removed from body
-            const res = await axios.put(
-                `${backendUrl}/api/customization/update/${customizationId}`,
-                data,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-
-            if (res.data.success) {
-                const updatedCustomization = res.data.customization;
-
-                // Update in array
-                setCustomizations(prev =>
-                    prev.map(c => c._id === customizationId ? updatedCustomization : c)
-                );
-
-                toast.success("Customization updated");
-                return updatedCustomization;
-            }
-        } catch (err) {
-            console.error('Update customization error:', err);
-            toast.error(err.response?.data?.message || "Failed to update customization");
-            return null;
-        } finally {
-            setCustomizationLoading(false);
-        }
-    }, [token, backendUrl]);
-
     const submitCustomization = useCallback(async (customizationId) => {
         if (!token) {
             toast.error("Please login to submit customization");
@@ -571,15 +482,117 @@ const ShopContextProvider = (props) => {
         }
     }, [token, backendUrl]);
 
+    const saveCustomization = useCallback(async (data) => {
+        if (!token) {
+            toast.error("Please login to save customization");
+            navigate("/login");
+            return null;
+        }
+
+        try {
+            setCustomizationLoading(true);
+
+            // Get userId from userProfile or decode token
+            const userId = userProfile?._id;
+
+            if (!userId) {
+                toast.error("User ID not found. Please login again.");
+                return null;
+            }
+
+            // FIXED: Include userId in the request body
+            const res = await axios.post(
+                `${backendUrl}/api/customization/save`,
+                { ...data, userId }, // Add userId to the data
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (res.data.success) {
+                const savedCustomization = res.data.customization;
+                setActiveCustomization(savedCustomization);
+
+                // Update customizations array
+                setCustomizations(prev => {
+                    const index = prev.findIndex(c => c._id === savedCustomization._id);
+                    if (index >= 0) {
+                        const updated = [...prev];
+                        updated[index] = savedCustomization;
+                        return updated;
+                    }
+                    return [savedCustomization, ...prev];
+                });
+
+                toast.success("Customization saved successfully");
+                return savedCustomization;
+            }
+        } catch (err) {
+            console.error('Save customization error:', err);
+            toast.error(err.response?.data?.message || "Failed to save customization");
+            return null;
+        } finally {
+            setCustomizationLoading(false);
+        }
+    }, [token, backendUrl, navigate, userProfile]);
+
+    const updateCustomization = useCallback(async (customizationId, data) => {
+        if (!token) {
+            toast.error("Please login to update customization");
+            return null;
+        }
+
+        try {
+            setCustomizationLoading(true);
+
+            const userId = userProfile?._id;
+
+            if (!userId) {
+                toast.error("User ID not found. Please login again.");
+                return null;
+            }
+
+            // FIXED: Include userId
+            const res = await axios.put(
+                `${backendUrl}/api/customization/update/${customizationId}`,
+                { ...data, userId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (res.data.success) {
+                const updatedCustomization = res.data.customization;
+
+                // Update in array
+                setCustomizations(prev =>
+                    prev.map(c => c._id === customizationId ? updatedCustomization : c)
+                );
+
+                toast.success("Customization updated");
+                return updatedCustomization;
+            }
+        } catch (err) {
+            console.error('Update customization error:', err);
+            toast.error(err.response?.data?.message || "Failed to update customization");
+            return null;
+        } finally {
+            setCustomizationLoading(false);
+        }
+    }, [token, backendUrl, userProfile]);
+
     const getCustomizationById = useCallback(async (customizationId) => {
         if (!token) {
             return null;
         }
 
         try {
-            // FIXED: Use GET method instead of POST
-            const res = await axios.get(
+            const userId = userProfile?._id;
+
+            if (!userId) {
+                return null;
+            }
+
+            // FIXED: Send as POST with userId in body (matching your backend pattern)
+            const res = await axios.post(
                 `${backendUrl}/api/customization/${customizationId}`,
+                { userId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -592,7 +605,7 @@ const ShopContextProvider = (props) => {
             toast.error(err.response?.data?.message || "Failed to fetch customization");
             return null;
         }
-    }, [backendUrl, token]);
+    }, [backendUrl, token, userProfile]);
 
     const deleteCustomization = useCallback(async (customizationId) => {
         if (!token) {
@@ -601,10 +614,20 @@ const ShopContextProvider = (props) => {
         }
 
         try {
-            // FIXED: Use DELETE method
+            const userId = userProfile?._id;
+
+            if (!userId) {
+                toast.error("User ID not found. Please login again.");
+                return false;
+            }
+
+            // FIXED: Send DELETE with userId in body via data parameter
             const res = await axios.delete(
                 `${backendUrl}/api/customization/${customizationId}`,
-                { headers: { Authorization: `Bearer ${token}` } }
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                    data: { userId } // DELETE requests use 'data' not 'body'
+                }
             );
 
             if (res.data.success) {
@@ -618,7 +641,38 @@ const ShopContextProvider = (props) => {
             toast.error(err.response?.data?.message || "Failed to delete");
             return false;
         }
-    }, [token, backendUrl]);
+    }, [token, backendUrl, userProfile]);
+
+    const getUserCustomizations = useCallback(async (userToken) => {
+        try {
+            setCustomizationLoading(true);
+
+            const userId = userProfile?._id;
+
+            if (!userId) {
+                return;
+            }
+
+            // Send as POST with userId in body to match your auth pattern
+            const res = await axios.post(
+                `${backendUrl}/api/customization/my`,
+                { userId },
+                { headers: { Authorization: `Bearer ${userToken}` } }
+            );
+
+            if (res.data.success) {
+                setCustomizations(res.data.customizations);
+            }
+        } catch (err) {
+            console.error('Get customizations error:', err);
+
+            if (err.response?.status !== 401) {
+                toast.error('Failed to load customizations');
+            }
+        } finally {
+            setCustomizationLoading(false);
+        }
+    }, [backendUrl, userProfile]);
 
     // ============= CUSTOMIZATION CART FUNCTIONS =============
     const addCustomizationToCart = useCallback(async (customization) => {
@@ -647,6 +701,12 @@ const ShopContextProvider = (props) => {
                         fabric: customization.fabric,
                         color: customization.color,
                         designNotes: customization.designNotes,
+                        measurements: customization.measurements,
+                        canvasDesign: customization.canvasDesign, // Include full canvas design
+                        referenceImages: customization.referenceImages,
+                        aiPrompt: customization.aiPrompt,
+                        neckStyle: customization.canvasDesign?.neckStyle || '',
+                        sleeveStyle: customization.canvasDesign?.sleeveStyle || '',
                         status: customization.status
                     }
                 };
@@ -657,7 +717,9 @@ const ShopContextProvider = (props) => {
 
             if (token) {
                 await axios.post(`${backendUrl}/api/cart/add-custom`, {
-                    customizationId: customization._id
+                    customizationId: customization._id,
+                    snapshot: updatedCart.customizations[customization._id].snapshot,
+                    price: customization.estimatedPrice || customization.price || 0
                 });
             }
 

@@ -2,7 +2,7 @@ import userModel from "../models/UserModel.js";
 import customizationModel from "../models/CustomizationModel.js";
 import mongoose from "mongoose";
 
-// Add product to cart
+// ADD TO CART
 const addToCart = async (req, res) => {
   try {
     const { userId, itemId, size, quantity = 1 } = req.body;
@@ -10,48 +10,53 @@ const addToCart = async (req, res) => {
     if (!userId || !itemId || !size) {
       return res.status(400).json({
         success: false,
-        message: "userId, itemId, and size are required"
+        message: "Missing required fields"
       });
     }
 
     const userData = await userModel.findById(userId);
-    if (!userData) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
     let cartData = userData.cartData || {};
 
     if (cartData[itemId]) {
-      cartData[itemId][size] = (cartData[itemId][size] || 0) + quantity;
+      if (cartData[itemId][size]) {
+        cartData[itemId][size] += quantity;
+      } else {
+        cartData[itemId][size] = quantity;
+      }
     } else {
       cartData[itemId] = { [size]: quantity };
     }
 
     await userModel.findByIdAndUpdate(userId, { cartData });
-    res.json({ success: true, message: "Product added to cart", cartData });
+
+    res.json({
+      success: true,
+      message: "Added to cart",
+      cartData
+    });
+
   } catch (error) {
-    console.error("Error in addToCart:", error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Add to cart error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
   }
 };
 
-// Update product quantity in cart
+// UPDATE CART
 const updateCart = async (req, res) => {
   try {
     const { userId, itemId, size, quantity } = req.body;
 
-    if (!userId || !itemId || !size || quantity === undefined) {
+    if (!userId || !itemId || !size) {
       return res.status(400).json({
         success: false,
-        message: "userId, itemId, size and quantity are required"
+        message: "Missing required fields"
       });
     }
 
     const userData = await userModel.findById(userId);
-    if (!userData) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
     let cartData = userData.cartData || {};
 
     if (quantity === 0) {
@@ -62,41 +67,59 @@ const updateCart = async (req, res) => {
         }
       }
     } else {
-      if (!cartData[itemId]) cartData[itemId] = {};
+      if (!cartData[itemId]) {
+        cartData[itemId] = {};
+      }
       cartData[itemId][size] = quantity;
     }
 
     await userModel.findByIdAndUpdate(userId, { cartData });
-    res.json({ success: true, message: "Cart updated", cartData });
+
+    res.json({
+      success: true,
+      message: "Cart updated",
+      cartData
+    });
+
   } catch (error) {
-    console.error("Error in updateCart:", error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Update cart error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
   }
 };
 
-// Get user cart data
+// GET USER CART
 const getUserCart = async (req, res) => {
   try {
     const { userId } = req.body;
 
     if (!userId) {
-      return res.status(400).json({ success: false, message: "userId is required" });
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required"
+      });
     }
 
     const userData = await userModel.findById(userId);
-    if (!userData) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
+    const cartData = userData.cartData || {};
 
-    let cartData = userData.cartData || {};
-    res.json({ success: true, cartData });
+    res.json({
+      success: true,
+      cartData
+    });
+
   } catch (error) {
-    console.error("Error in getUserCart:", error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Get cart error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
   }
 };
 
-// Remove item from cart
+// REMOVE FROM CART
 const removeFromCart = async (req, res) => {
   try {
     const { userId, itemId, size } = req.body;
@@ -104,64 +127,88 @@ const removeFromCart = async (req, res) => {
     if (!userId || !itemId || !size) {
       return res.status(400).json({
         success: false,
-        message: "userId, itemId, and size are required"
+        message: "Missing required fields"
       });
     }
 
     const userData = await userModel.findById(userId);
-    if (!userData) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
     let cartData = userData.cartData || {};
 
-    if (cartData[itemId] && cartData[itemId][size]) {
+    if (cartData[itemId]) {
       delete cartData[itemId][size];
-
       if (Object.keys(cartData[itemId]).length === 0) {
         delete cartData[itemId];
       }
     }
 
     await userModel.findByIdAndUpdate(userId, { cartData });
-    res.json({ success: true, message: "Item removed from cart", cartData });
+
+    res.json({
+      success: true,
+      message: "Removed from cart",
+      cartData
+    });
+
   } catch (error) {
-    console.error("Error in removeFromCart:", error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Remove from cart error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
   }
 };
 
-// Clear entire cart
+// CLEAR CART
 const clearCart = async (req, res) => {
   try {
     const { userId } = req.body;
 
     if (!userId) {
-      return res.status(400).json({ success: false, message: "userId is required" });
-    }
-
-    await userModel.findByIdAndUpdate(userId, { cartData: {} });
-    res.json({ success: true, message: "Cart cleared" });
-  } catch (error) {
-    console.error("Error in clearCart:", error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-const addCustomToCart = async (req, res) => {
-  try {
-    const { userId, customizationId } = req.body;
-
-    if (!userId || !customizationId) {
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
-        message: "userId and customizationId are required"
+        message: "Authentication required"
       });
     }
 
-    const user = await userModel.findById(userId);
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+    await userModel.findByIdAndUpdate(userId, { cartData: {} });
+
+    res.json({
+      success: true,
+      message: "Cart cleared",
+      cartData: {}
+    });
+
+  } catch (error) {
+    console.error("Clear cart error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+// ============================================================================
+// CUSTOMIZATION CART FUNCTIONS
+// ============================================================================
+
+// ADD CUSTOMIZATION TO CART
+const addCustomizationToCart = async (req, res) => {
+  try {
+    const { customizationId, snapshot, price } = req.body;
+    const userId = req.body.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Login required"
+      });
+    }
+
+    if (!customizationId || !mongoose.Types.ObjectId.isValid(customizationId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid customization ID"
+      });
     }
 
     const customization = await customizationModel.findById(customizationId);
@@ -176,10 +223,11 @@ const addCustomToCart = async (req, res) => {
     if (customization.userId.toString() !== userId.toString()) {
       return res.status(403).json({
         success: false,
-        message: "Unauthorized access to this customization"
+        message: "Unauthorized access"
       });
     }
 
+    const user = await userModel.findById(userId);
     let cartData = user.cartData || {};
 
     if (!cartData.customizations) {
@@ -189,120 +237,139 @@ const addCustomToCart = async (req, res) => {
     if (cartData.customizations[customizationId]) {
       cartData.customizations[customizationId].quantity += 1;
     } else {
-      // ✅ SIMPLIFIED: Only essential info + final product image
       cartData.customizations[customizationId] = {
-        price: customization.estimatedPrice || 0,
+        price: price,
         quantity: 1,
-        snapshot: {
-          gender: customization.gender,
-          dressType: customization.dressType,
-          fabric: customization.fabric,
-          color: customization.color,
-          productImage: customization.canvasDesign?.png || '',  // ✅ Just the PNG
-          designNotes: customization.designNotes || '',
-          createdAt: customization.createdAt
-        }
+        snapshot: snapshot
       };
     }
 
-    // Mark nested object as modified
-    user.markModified('cartData');
-    await user.save();
+    await userModel.findByIdAndUpdate(userId, { cartData });
 
-    res.json({
+    return res.json({
       success: true,
       message: "Customization added to cart",
       cartData
     });
+
   } catch (error) {
-    console.error("Error in addCustomToCart:", error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Add customization to cart error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
   }
 };
 
-// Update custom item quantity
-const updateCustomCart = async (req, res) => {
+// UPDATE CUSTOMIZATION QUANTITY IN CART
+const updateCustomizationQuantity = async (req, res) => {
   try {
-    const { userId, customizationId, quantity } = req.body;
+    const { customizationId, quantity } = req.body;
+    const userId = req.body.userId;
 
-    if (!userId || !customizationId || quantity === undefined) {
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Login required"
+      });
+    }
+
+    if (!customizationId || !mongoose.Types.ObjectId.isValid(customizationId)) {
       return res.status(400).json({
         success: false,
-        message: "userId, customizationId, and quantity are required"
+        message: "Invalid customization ID"
+      });
+    }
+
+    if (quantity < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid quantity"
       });
     }
 
     const user = await userModel.findById(userId);
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
     let cartData = user.cartData || {};
 
-    if (quantity === 0) {
-      if (cartData.customizations && cartData.customizations[customizationId]) {
-        delete cartData.customizations[customizationId];
-
-        if (Object.keys(cartData.customizations).length === 0) {
-          delete cartData.customizations;
-        }
-      }
-    } else {
-      if (cartData.customizations && cartData.customizations[customizationId]) {
-        cartData.customizations[customizationId].quantity = quantity;
-      }
+    if (!cartData.customizations || !cartData.customizations[customizationId]) {
+      return res.status(404).json({
+        success: false,
+        message: "Item not in cart"
+      });
     }
 
-    // ✅ Use markModified
-    user.markModified('cartData');
-    await user.save();
+    if (quantity === 0) {
+      delete cartData.customizations[customizationId];
+      if (Object.keys(cartData.customizations).length === 0) {
+        delete cartData.customizations;
+      }
+    } else {
+      cartData.customizations[customizationId].quantity = quantity;
+    }
 
-    res.json({ success: true, message: "Cart updated", cartData });
+    await userModel.findByIdAndUpdate(userId, { cartData });
+
+    return res.json({
+      success: true,
+      message: "Cart updated",
+      cartData
+    });
+
   } catch (error) {
-    console.error("Error in updateCustomCart:", error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Update customization quantity error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
   }
 };
 
-// Remove custom item from cart
-const removeCustomFromCart = async (req, res) => {
+// REMOVE CUSTOMIZATION FROM CART
+const removeCustomizationFromCart = async (req, res) => {
   try {
-    const { userId, customizationId } = req.body;
+    const { customizationId } = req.body;
+    const userId = req.body.userId;
 
-    if (!userId || !customizationId) {
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Login required"
+      });
+    }
+
+    if (!customizationId || !mongoose.Types.ObjectId.isValid(customizationId)) {
       return res.status(400).json({
         success: false,
-        message: "userId and customizationId are required"
+        message: "Invalid customization ID"
       });
     }
 
     const user = await userModel.findById(userId);
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
     let cartData = user.cartData || {};
 
     if (cartData.customizations && cartData.customizations[customizationId]) {
       delete cartData.customizations[customizationId];
+
       if (Object.keys(cartData.customizations).length === 0) {
         delete cartData.customizations;
       }
     }
 
-    // ✅ Use markModified
-    user.markModified('cartData');
-    await user.save();
+    await userModel.findByIdAndUpdate(userId, { cartData });
 
-    res.json({
+    return res.json({
       success: true,
-      message: "Customization removed from cart",
+      message: "Removed from cart",
       cartData
     });
+
   } catch (error) {
-    console.error("Error in removeCustomFromCart:", error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Remove customization from cart error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
   }
 };
 
-export { addToCart, updateCart, getUserCart, removeFromCart, clearCart, addCustomToCart, updateCustomCart, removeCustomFromCart };
+export { addToCart, updateCart, getUserCart, removeFromCart, clearCart, addCustomizationToCart, updateCustomizationQuantity, removeCustomizationFromCart };

@@ -3,83 +3,117 @@ import mongoose from "mongoose";
 const customizationSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
-    required: true
+    ref: 'user',
+    required: [true, 'User ID is required'],
+    index: true
   },
+  
   gender: {
     type: String,
-    required: true,
-    enum: ["Men", "Women"]
+    required: [true, 'Gender is required'],
+    enum: {
+      values: ['Men', 'Women'],
+      message: 'Gender must be either Men or Women'
+    }
   },
+  
   dressType: {
     type: String,
-    required: true
+    required: [true, 'Dress type is required'],
+    trim: true
   },
+  
   fabric: {
     type: String,
-    required: true
+    required: [true, 'Fabric is required'],
+    trim: true
   },
+  
   color: {
     type: String,
-    required: true
+    required: [true, 'Color is required'],
+    trim: true
   },
+  
   designNotes: {
     type: String,
-    default: ""
+    trim: true,
+    default: ''
   },
-  referenceImages: [{
-    type: String  // Base64 encoded images
-  }],
+  
+  referenceImages: {
+    type: [String],
+    default: [],
+    validate: {
+      validator: function(arr) {
+        return arr.length <= 5;
+      },
+      message: 'Maximum 5 reference images allowed'
+    }
+  },
+  
   measurements: {
-    bust: { type: String, default: "" },
-    waist: { type: String, default: "" },
-    hips: { type: String, default: "" },
-    shoulder: { type: String, default: "" },
-    sleeveLength: { type: String, default: "" },
-    length: { type: String, default: "" },
-    customNotes: { type: String, default: "" }
+    bust: { type: String, default: '' },
+    waist: { type: String, default: '' },
+    hips: { type: String, default: '' },
+    shoulder: { type: String, default: '' },
+    sleeveLength: { type: String, default: '' },
+    length: { type: String, default: '' },
+    customNotes: { type: String, default: '' }
   },
+  
   aiPrompt: {
     type: String,
-    default: ""
+    trim: true,
+    default: ''
   },
-  canvasDesign: {
-    svg: { type: String, default: "" },
-    png: { type: String, default: "" },    
-    zoneColors: { type: Map, of: String, default: {} },
-    zonePatterns: { type: Map, of: mongoose.Schema.Types.Mixed, default: {} }, 
-    neckStyle: { type: String, default: "round" },
-    sleeveStyle: { type: String, default: "full" },
-    baseColor: { type: String, default: "#ffffff" },
-    embroideryMetadata: [{
-      type: {
-        type: String,
-        enum: ['maggam', 'threadWork', 'sequins', 'beadwork']
-      },
-      zone: String,
-      zoneName: String,
-      density: String,
-      threadColor: String,
-      appliedAt: { type: Date, default: Date.now }
-    }]
-  },
+  
   estimatedPrice: {
     type: Number,
-    default: 0
+    default: 0,
+    min: [0, 'Price cannot be negative']
   },
+  
+  canvasDesign: {
+    svg: { type: String, default: '' },
+    pngUrl: { type: String, default: '' },
+    zoneColors: { type: mongoose.Schema.Types.Mixed, default: {} },
+    zonePatterns: { type: mongoose.Schema.Types.Mixed, default: {} },
+    sleeveStyle: { 
+      type: String, 
+      default: 'full',
+      enum: ['full', 'elbow', 'short', 'sleeveless']
+    },
+    baseColor: { type: String, default: '#ffffff' },
+    embroideryMetadata: { 
+      type: [mongoose.Schema.Types.Mixed], 
+      default: [] 
+    }
+  },
+  
+  aiGeneratedDesign: {
+    type: mongoose.Schema.Types.Mixed,
+    default: null
+  },
+  
   status: {
     type: String,
-    enum: ["Draft", "Submitted", "In Review", "In Production", "Ready", "Delivered"],
-    default: "Draft"
+    required: true,
+    enum: {
+      values: ['Draft', 'Submitted', 'In Review', 'In Production', 'Ready', 'Delivered'],
+      message: 'Invalid status'
+    },
+    default: 'Draft',
+    index: true
   }
 }, {
   timestamps: true
 });
 
-// Index for faster queries
+// Indexes for better query performance
 customizationSchema.index({ userId: 1, createdAt: -1 });
-customizationSchema.index({ status: 1 });
+customizationSchema.index({ status: 1, createdAt: -1 });
 
-const customizationModel = mongoose.models.customization || mongoose.model("customization", customizationSchema);
+const customizationModel = mongoose.models.customization || mongoose.model('customization', customizationSchema);
 
 export default customizationModel;
