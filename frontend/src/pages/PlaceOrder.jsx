@@ -459,7 +459,7 @@ const PlaceOrder = () => {
                 </div>
 
                 <div className="p-6 space-y-3">
-                  <PaymentOption method={method} setMethod={setMethod} type="razorpay" logo={assets.razorpay_logo} />
+                  {/* <PaymentOption method={method} setMethod={setMethod} type="razorpay" logo={assets.razorpay_logo} /> */}
                   <PaymentOption method={method} setMethod={setMethod} type="cod" />
                 </div>
               </div>

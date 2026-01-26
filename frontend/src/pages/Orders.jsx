@@ -316,20 +316,25 @@ const Orders = () => {
                   {/* Order Content */}
                   <div className="p-6">
                     <div className="flex flex-col lg:flex-row gap-6">
+                      {/* Product Image */}
                       <div className="flex-shrink-0">
-                        <div className="w-full h-48 sm:w-32 sm:h-32 lg:w-40 lg:h-40">
+                        <div className="w-full h-48 sm:w-32 sm:h-32 lg:w-40 lg:h-40 rounded-lg overflow-hidden border border-background bg-gradient-to-br from-background/20 to-primary">
                           {item.image ? (
                             <img
-                              className="w-full h-full object-contain"
-                              src={item.image || item.images?.[0]}
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                              src={item.image}
                               alt={item.name}
                               onError={(e) => {
-                                e.target.src = '/api/placeholder/160/160';
+                                e.target.src = '/placeholder-dress.png';
                               }}
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-secondary/10 to-secondary/5">
-                              <Package size={40} className="text-secondary/30" />
+                            <div className="w-full h-full flex items-center justify-center">
+                              {item.type === 'CUSTOM' ? (
+                                <Sparkles size={40} className="text-purple-400" />
+                              ) : (
+                                <Package size={40} className="text-text/30" />
+                              )}
                             </div>
                           )}
                         </div>
@@ -343,6 +348,7 @@ const Orders = () => {
                               {item.name}
                             </h3>
 
+                            {/* Show custom badge if it's a custom item */}
                             {item.type === 'CUSTOM' && (
                               <span className="inline-block px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full uppercase tracking-wider">
                                 Custom Design
@@ -356,7 +362,7 @@ const Orders = () => {
                                 Price
                               </span>
                               <span className="font-bold text-text text-lg">
-                                {currency}{Number(item.basePrice || item.finalPrice || item.price || 0).toFixed(2)}
+                                {currency}{Number(item.finalPrice || item.basePrice || item.price || 0).toFixed(2)}
                               </span>
                             </div>
 
@@ -381,10 +387,12 @@ const Orders = () => {
                                 Total
                               </span>
                               <span className="font-bold text-secondary text-lg">
-                                {currency}{(Number(item.basePrice || item.finalPrice || item.price || 0) * Number(item.quantity || 1)).toFixed(2)}
+                                {currency}{(Number(item.finalPrice || item.basePrice || item.price || 0) * Number(item.quantity || 1)).toFixed(2)}
                               </span>
                             </div>
                           </div>
+
+                          {/* Show production status for custom items */}
                           {item.type === 'CUSTOM' && item.productionStatus && (
                             <div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
                               <div className="flex items-center gap-2">

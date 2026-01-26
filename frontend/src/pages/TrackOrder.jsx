@@ -4,7 +4,7 @@ import { ShopContext } from '../context/ShopContext';
 import {
   Package, Truck, CheckCircle, Clock, MapPin, AlertCircle,
   ChevronDown, ChevronUp, ArrowLeft, Calendar, Phone,
-  Hash, CreditCard, Sparkles
+  Hash, CreditCard, Sparkles, Palette
 } from 'lucide-react';
 
 const TrackOrder = () => {
@@ -16,6 +16,7 @@ const TrackOrder = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // FIXED: Match these statuses with your actual database statuses
   const allStatuses = [
     'Order Placed',
     'Processing',
@@ -34,12 +35,17 @@ const TrackOrder = () => {
           throw new Error("Missing backend URL or order ID");
         }
 
-        // FIX: Changed from /track/ to /status/ to match backend route
+        console.log('Fetching order from:', `${backendUrl}/api/order/status/${orderId}`);
+
         const response = await fetch(`${backendUrl}/api/order/status/${orderId}`, {
-          method: "GET"
+          method: "GET",
+          headers: {
+            'Content-Type': 'application/json'
+          }
         });
 
         const data = await response.json();
+        console.log('Order data received:', data);
 
         if (data.success) {
           setOrder(data.order);
@@ -47,6 +53,7 @@ const TrackOrder = () => {
           throw new Error(data.message || 'Failed to load order');
         }
       } catch (err) {
+        console.error('Fetch order error:', err);
         setError(err.message || 'Failed to load order data');
         setOrder(null);
       } finally {
@@ -74,37 +81,51 @@ const TrackOrder = () => {
   };
 
   const getStatusIcon = (status) => {
-    switch (status) {
-      case 'Order Placed': return <CheckCircle size={16} />;
-      case 'Processing': return <Package size={16} />;
-      case 'Shipping': return <Truck size={16} />;
-      case 'Out for Delivery': return <Truck size={16} />;
-      case 'Delivered': return <CheckCircle size={16} />;
-      default: return <Clock size={16} />;
-    }
+    const statusLower = status.toLowerCase();
+    if (statusLower.includes('placed')) return <CheckCircle size={16} />;
+    if (statusLower.includes('processing')) return <Package size={16} />;
+    if (statusLower.includes('shipping') || statusLower.includes('shipped')) return <Truck size={16} />;
+    if (statusLower.includes('delivery')) return <Truck size={16} />;
+    if (statusLower.includes('delivered')) return <CheckCircle size={16} />;
+    return <Clock size={16} />;
   };
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case 'Delivered':
-        return 'text-green-700 bg-green-50 border-green-200';
-      case 'Out for Delivery':
-      case 'Shipping':
-        return 'text-blue-700 bg-blue-50 border-blue-200';
-      case 'Processing':
-        return 'text-secondary bg-background/10 border-background';
-      case 'Order Placed':
-        return 'text-text/70 bg-background/5 border-background/30';
-      default:
-        return 'text-text/70 bg-background/5 border-background/30';
+    const statusLower = status.toLowerCase();
+    if (statusLower.includes('delivered')) return 'text-green-700 bg-green-50 border-green-200';
+    if (statusLower.includes('delivery') || statusLower.includes('shipping') || statusLower.includes('shipped')) {
+      return 'text-blue-700 bg-blue-50 border-blue-200';
     }
+    if (statusLower.includes('processing')) return 'text-secondary bg-background/10 border-background';
+    if (statusLower.includes('placed')) return 'text-text/70 bg-background/5 border-background/30';
+    return 'text-text/70 bg-background/5 border-background/30';
+  };
+
+  // FIXED: Better status matching logic
+  const normalizeStatus = (status) => {
+    if (!status) return '';
+    const statusLower = status.toLowerCase();
+    
+    if (statusLower.includes('placed')) return 'Order Placed';
+    if (statusLower.includes('processing')) return 'Processing';
+    if (statusLower.includes('shipping') || statusLower.includes('shipped')) return 'Shipping';
+    if (statusLower.includes('out') && statusLower.includes('delivery')) return 'Out for Delivery';
+    if (statusLower.includes('delivered')) return 'Delivered';
+    
+    return status; // Return original if no match
   };
 
   const getStatusState = (status) => {
     if (!order || !order.status) return 'upcoming';
 
-    const currentStatusIndex = allStatuses.indexOf(order.status);
+    const normalizedOrderStatus = normalizeStatus(order.status);
+    const currentStatusIndex = allStatuses.indexOf(normalizedOrderStatus);
     const statusIndex = allStatuses.indexOf(status);
+
+    console.log('Order Status:', order.status);
+    console.log('Normalized Order Status:', normalizedOrderStatus);
+    console.log('Current Index:', currentStatusIndex);
+    console.log('Checking Status:', status, 'Index:', statusIndex);
 
     if (statusIndex < 0) return 'upcoming';
 
@@ -112,7 +133,7 @@ const TrackOrder = () => {
       return 'completed';
     }
 
-    if (order.status === 'Delivered') {
+    if (normalizedOrderStatus === 'Delivered') {
       return 'completed';
     }
 
@@ -127,13 +148,16 @@ const TrackOrder = () => {
 
   const findHistoryForStatus = (status) => {
     if (!order || !order.trackingHistory) return null;
-    return order.trackingHistory.find(item => item.status === status);
+    return order.trackingHistory.find(item => normalizeStatus(item.status) === status);
   };
 
   const getProgressPercentage = () => {
     if (!order || !order.status) return 0;
-    const currentIndex = allStatuses.indexOf(order.status);
-    return currentIndex >= 0 ? ((currentIndex + 1) / allStatuses.length) * 100 : 0;
+    const normalizedStatus = normalizeStatus(order.status);
+    const currentIndex = allStatuses.indexOf(normalizedStatus);
+    const percentage = currentIndex >= 0 ? ((currentIndex + 1) / allStatuses.length) * 100 : 0;
+    console.log('Progress:', percentage, '% for status:', order.status);
+    return percentage;
   };
 
   if (loading) {
@@ -193,9 +217,10 @@ const TrackOrder = () => {
     );
   }
 
+  // Create tracking history with normalized statuses
   const trackingHistory = order.trackingHistory || [
     {
-      status: order.status || 'Order Placed',
+      status: normalizeStatus(order.status) || 'Order Placed',
       location: order.address?.city || 'N/A',
       timestamp: order.date || Date.now(),
       description: `Order status: ${order.status || 'Order Placed'}`
@@ -294,7 +319,7 @@ const TrackOrder = () => {
                                 state === 'completed'
                                   ? 'bg-secondary border-secondary text-white'
                                   : state === 'current'
-                                  ? 'bg-white border-secondary text-secondary'
+                                  ? 'bg-white border-secondary text-secondary animate-pulse'
                                   : 'bg-white border-background/40 text-text/40'
                               }`}
                             >
@@ -335,7 +360,7 @@ const TrackOrder = () => {
                               )}
 
                               {state === 'current' && !historyItem && (
-                                <p className="text-xs text-secondary mt-2 font-bold uppercase tracking-wider">In Progress</p>
+                                <p className="text-xs text-secondary mt-2 font-bold uppercase tracking-wider animate-pulse">In Progress</p>
                               )}
                             </div>
                           </div>
@@ -356,11 +381,11 @@ const TrackOrder = () => {
                     <div key={index} className="flex items-start gap-4">
                       {/* Status Circle */}
                       <div
-                        className={`flex items-center justify-center w-12 h-12 rounded-full border-4 transition-all shadow-md ${
+                        className={`flex items-center justify-center w-12 h-12 rounded-full border-4 transition-all shadow-md flex-shrink-0 ${
                           state === 'completed'
                             ? 'bg-secondary border-secondary text-white'
                             : state === 'current'
-                            ? 'bg-white border-secondary text-secondary'
+                            ? 'bg-white border-secondary text-secondary animate-pulse'
                             : 'bg-white border-background/40 text-text/40'
                         }`}
                       >
@@ -403,7 +428,7 @@ const TrackOrder = () => {
                         )}
 
                         {state === 'current' && !historyItem && (
-                          <p className="text-sm text-secondary font-bold uppercase tracking-wider mt-1">In Progress</p>
+                          <p className="text-sm text-secondary font-bold uppercase tracking-wider mt-1 animate-pulse">In Progress</p>
                         )}
                       </div>
                     </div>
@@ -434,19 +459,45 @@ const TrackOrder = () => {
                     
                     <div className="space-y-4">
                       {order.items?.map((item, index) => {
-                        // FIX: Get price from finalPrice, basePrice, or price
                         const itemPrice = item.finalPrice || item.basePrice || item.price || 0;
+                        const isCustom = item.type === 'CUSTOM';
                         
                         return (
-                          <div key={index} className="flex gap-4 p-4 border border-background/20 rounded-lg hover:shadow-md transition-all duration-300 bg-gradient-to-br from-white to-background/5">
+                          <div 
+                            key={index} 
+                            className={`flex gap-4 p-4 border rounded-lg hover:shadow-md transition-all duration-300 ${
+                              isCustom 
+                                ? 'border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50' 
+                                : 'border-background/20 bg-gradient-to-br from-white to-background/5'
+                            }`}
+                          >
                             <div className="w-20 h-20 bg-white border border-background/20 rounded-lg overflow-hidden flex-shrink-0">
-                              <img
-                                src={item.image || item.images?.[0] || '/api/placeholder/80/80'}
-                                alt={item.name}
-                                className="w-full h-full object-cover"
-                              />
+                              {item.image ? (
+                                <img
+                                  src={item.image}
+                                  alt={item.name}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    e.target.nextSibling.style.display = 'flex';
+                                  }}
+                                />
+                              ) : null}
+                              <div className={`w-full h-full ${item.image ? 'hidden' : 'flex'} items-center justify-center bg-background/10`}>
+                                {isCustom ? (
+                                  <Palette size={24} className="text-purple-400" />
+                                ) : (
+                                  <Package size={24} className="text-text/30" />
+                                )}
+                              </div>
                             </div>
                             <div className="flex-1 min-w-0">
+                              {isCustom && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-xs font-bold mb-1">
+                                  <Sparkles size={10} />
+                                  CUSTOM
+                                </span>
+                              )}
                               <h5 className="font-semibold text-text">{item.name}</h5>
                               <div className="mt-2 flex gap-4 text-sm">
                                 <span className="text-text/60 font-medium">
@@ -459,6 +510,15 @@ const TrackOrder = () => {
                               <p className="text-lg font-serif font-bold text-secondary mt-2">
                                 {currency}{Number(itemPrice).toFixed(2)}
                               </p>
+                              
+                              {/* Production Status for Custom Items */}
+                              {isCustom && item.productionStatus && (
+                                <div className="mt-2">
+                                  <span className="text-xs text-purple-600 font-semibold">
+                                    Production: {item.productionStatus.replace('_', ' ')}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           </div>
                         );
@@ -475,7 +535,9 @@ const TrackOrder = () => {
                       </h4>
                       <div className="border border-background/20 rounded-lg p-4 bg-gradient-to-br from-background/5 to-white">
                         <address className="not-italic text-text/70 font-medium">
-                          <p className="text-text font-semibold mb-2">{order.address?.firstName} {order.address?.lastName}</p>
+                          <p className="text-text font-semibold mb-2">
+                            {order.address?.firstName || order.address?.Name} {order.address?.lastName || ''}
+                          </p>
                           <p className="mt-1">{order.address?.street || 'N/A'}</p>
                           <p>
                             {order.address?.city || ''}{order.address?.city && order.address?.state ? ', ' : ''}
@@ -503,13 +565,13 @@ const TrackOrder = () => {
                           <span>
                             {currency}
                             {order.amount
-                              ? (order.amount - (order.delivery_fee || 0) - (order.tax || 0)).toFixed(2)
+                              ? (order.amount - (order.delivery_fee || 50)).toFixed(2)
                               : '0.00'}
                           </span>
                         </div>
                         <div className="flex justify-between text-text/70 font-medium">
                           <span>Shipping</span>
-                          <span>{currency}{order.delivery_fee ? order.delivery_fee.toFixed(2) : '0.00'}</span>
+                          <span>{currency}{(order.delivery_fee || 50).toFixed(2)}</span>
                         </div>
                         {order.tax > 0 && (
                           <div className="flex justify-between text-text/70 font-medium">
@@ -530,7 +592,16 @@ const TrackOrder = () => {
                         Payment Method
                       </h4>
                       <div className="border border-background/20 rounded-lg p-4 bg-gradient-to-br from-background/5 to-white">
-                        <p className="text-text font-semibold">{order.paymentMethod || 'N/A'}</p>
+                        <div className="flex items-center justify-between">
+                          <p className="text-text font-semibold">{order.paymentMethod || 'N/A'}</p>
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                            order.payment 
+                              ? 'bg-green-50 text-green-700 border border-green-200' 
+                              : 'bg-red-50 text-red-700 border border-red-200'
+                          }`}>
+                            {order.payment ? 'Paid' : 'Pending'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>

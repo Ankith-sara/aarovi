@@ -468,14 +468,44 @@ const updateProductionStatus = async (req, res) => {
 const orderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const order = await orderModel.findById(orderId);
-    if (!order) {
-      return res.status(404).json({ success: false, message: 'Order not found' });
+
+    console.log('Fetching order status for:', orderId);
+
+    if (!orderId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Order ID is required'
+      });
     }
-    res.json({ success: true, order });
-  } catch (e) {
-    console.error("Tracking Error:", e.message);
-    res.status(500).json({ success: false, message: e.message });
+
+    // Validate MongoDB ObjectId format
+    if (!orderId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid order ID format'
+      });
+    }
+
+    const order = await orderModel.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      order
+    });
+
+  } catch (error) {
+    console.error("Order Status Tracking Error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to fetch order status'
+    });
   }
 };
 

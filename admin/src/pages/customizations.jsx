@@ -304,10 +304,6 @@ const Customizations = ({ token }) => {
                                 </div>
                                 <div className="space-y-2 text-xs">
                                   <div className="flex justify-between">
-                                    <span className="text-text/60">Neck Style:</span>
-                                    <span className="font-semibold">{customization.canvasDesign.neckStyle || 'N/A'}</span>
-                                  </div>
-                                  <div className="flex justify-between">
                                     <span className="text-text/60">Sleeve Style:</span>
                                     <span className="font-semibold">{customization.canvasDesign.sleeveStyle || 'N/A'}</span>
                                   </div>

@@ -23,7 +23,7 @@ const StatusBadge = ({ status }) => {
       icon: Truck,
       dotColor: "bg-purple-500"
     },
-    "Out of delivery": {
+    "Out for delivery": {
       color: "bg-orange-50 text-orange-700 border-orange-200",
       icon: Package2,
       dotColor: "bg-orange-500"
@@ -74,18 +74,24 @@ const PaymentBadge = ({ payment, paymentMethod }) => (
 );
 
 const CanvasModal = ({ item, onClose }) => {
+  // Get the canvas image - check multiple possible locations
+  const canvasImage = item.customization?.canvasDesign?.pngUrl ||
+    item.customization?.canvasDesign?.png ||
+    item.image;
+
   const downloadCanvas = () => {
-    if (item.customization.canvasDesign.png) {
+    if (canvasImage) {
       const link = document.createElement('a');
-      link.href = item.customization.canvasDesign.png;
+      link.href = canvasImage;
       link.download = `${item.name.replace(/\s+/g, '_')}_canvas.png`;
       link.click();
     }
   };
 
   const downloadSVG = () => {
-    if (item.customization.canvasDesign.svg) {
-      const blob = new Blob([item.customization.canvasDesign.svg], { type: 'image/svg+xml' });
+    const svgData = item.customization?.canvasDesign?.svg;
+    if (svgData) {
+      const blob = new Blob([svgData], { type: 'image/svg+xml' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -96,11 +102,11 @@ const CanvasModal = ({ item, onClose }) => {
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
-      <div 
+      <div
         className="bg-white rounded-2xl max-w-5xl w-full max-h-[95vh] overflow-y-auto shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
@@ -125,51 +131,79 @@ const CanvasModal = ({ item, onClose }) => {
 
         {/* Canvas Image */}
         <div className="p-6">
-          {item.customization.canvasDesign.png && (
-            <img
-              src={item.customization.canvasDesign.png}
-              alt="Canvas Design"
-              className="w-full border-2 border-background/30 shadow-lg mb-6"
-            />
+          {canvasImage ? (
+            <div className="mb-6 bg-gray-50 rounded-xl p-4 border-2 border-background/30">
+              <img
+                src={canvasImage}
+                alt="Canvas Design"
+                className="w-full max-h-[500px] object-contain rounded-lg"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+              <div className="hidden w-full h-64 items-center justify-center bg-gray-100 rounded-lg">
+                <div className="text-center">
+                  <Palette size={48} className="text-gray-300 mx-auto mb-2" />
+                  <p className="text-gray-500 text-sm">Canvas image not available</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="mb-6 bg-gray-50 rounded-xl p-8 border-2 border-background/30 flex items-center justify-center h-64">
+              <div className="text-center">
+                <Palette size={48} className="text-gray-300 mx-auto mb-2" />
+                <p className="text-gray-500">No canvas design available</p>
+              </div>
+            </div>
           )}
 
-          {/* Details */}
+          {/* Details Grid */}
           <div className="grid md:grid-cols-2 gap-6 mb-6">
+            {/* Design Details */}
             <div className="bg-background/20 rounded-xl p-4 border border-background/30">
               <h4 className="font-serif font-bold text-text flex items-center gap-2 mb-4">
                 <Palette size={18} className="text-secondary" />
                 Design Details
               </h4>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-text/60 font-light">Gender:</span>
-                  <span className="font-semibold">{item.customization.gender}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-text/60 font-light">Dress Type:</span>
-                  <span className="font-semibold">{item.customization.dressType}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-text/60 font-light">Fabric:</span>
-                  <span className="font-semibold">{item.customization.fabric}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-text/60 font-light">Color:</span>
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-6 h-6 rounded-full border-2 border-background/40" 
-                      style={{ backgroundColor: item.customization.color }}
-                    />
-                    <span className="text-xs font-mono">{item.customization.color}</span>
+                {item.customization?.gender && (
+                  <div className="flex justify-between">
+                    <span className="text-text/60 font-light">Gender:</span>
+                    <span className="font-semibold">{item.customization.gender}</span>
                   </div>
-                </div>
-                {item.customization.neckStyle && (
+                )}
+                {item.customization?.dressType && (
+                  <div className="flex justify-between">
+                    <span className="text-text/60 font-light">Dress Type:</span>
+                    <span className="font-semibold">{item.customization.dressType}</span>
+                  </div>
+                )}
+                {item.customization?.fabric && (
+                  <div className="flex justify-between">
+                    <span className="text-text/60 font-light">Fabric:</span>
+                    <span className="font-semibold">{item.customization.fabric}</span>
+                  </div>
+                )}
+                {item.customization?.color && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-text/60 font-light">Color:</span>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-6 h-6 rounded-full border-2 border-background/40"
+                        style={{ backgroundColor: item.customization.color }}
+                      />
+                      <span className="text-xs font-mono">{item.customization.color}</span>
+                    </div>
+                  </div>
+                )}
+                {item.customization?.neckStyle && (
                   <div className="flex justify-between">
                     <span className="text-text/60 font-light">Neck Style:</span>
                     <span className="font-semibold">{item.customization.neckStyle}</span>
                   </div>
                 )}
-                {item.customization.sleeveStyle && (
+                {item.customization?.sleeveStyle && (
                   <div className="flex justify-between">
                     <span className="text-text/60 font-light">Sleeve Style:</span>
                     <span className="font-semibold">{item.customization.sleeveStyle}</span>
@@ -179,7 +213,7 @@ const CanvasModal = ({ item, onClose }) => {
             </div>
 
             {/* Measurements */}
-            {item.customization.measurements && Object.values(item.customization.measurements).some(v => v) && (
+            {item.customization?.measurements && Object.values(item.customization.measurements).some(v => v) && (
               <div className="bg-background/20 rounded-xl p-4 border border-background/30">
                 <h4 className="font-serif font-bold text-text flex items-center gap-2 mb-4">
                   <Ruler size={18} className="text-secondary" />
@@ -228,7 +262,7 @@ const CanvasModal = ({ item, onClose }) => {
           </div>
 
           {/* Design Notes */}
-          {item.customization.designNotes && (
+          {item.customization?.designNotes && (
             <div className="p-4 bg-secondary/5 rounded-xl border border-secondary/20 mb-6">
               <h4 className="font-serif font-bold text-text mb-2">Design Notes:</h4>
               <p className="text-sm text-text/70 font-light">{item.customization.designNotes}</p>
@@ -237,14 +271,16 @@ const CanvasModal = ({ item, onClose }) => {
 
           {/* Download Buttons */}
           <div className="flex gap-3">
-            <button
-              onClick={downloadCanvas}
-              className="flex-1 px-6 py-3 bg-secondary text-white rounded-xl hover:bg-secondary/90 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-secondary/30 font-semibold"
-            >
-              <Download size={20} />
-              Download PNG
-            </button>
-            {item.customization.canvasDesign.svg && (
+            {canvasImage && (
+              <button
+                onClick={downloadCanvas}
+                className="flex-1 px-6 py-3 bg-secondary text-white rounded-xl hover:bg-secondary/90 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-secondary/30 font-semibold"
+              >
+                <Download size={20} />
+                Download PNG
+              </button>
+            )}
+            {item.customization?.canvasDesign?.svg && (
               <button
                 onClick={downloadSVG}
                 className="flex-1 px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg font-semibold"
@@ -286,11 +322,11 @@ const Orders = ({ token }) => {
     try {
       const response = await axios.get(
         `${backendUrl}/api/order/list`,
-        { 
-          headers: { 
+        {
+          headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-          } 
+          }
         }
       );
 
@@ -303,7 +339,7 @@ const Orders = ({ token }) => {
       }
     } catch (error) {
       console.error('Error fetching orders:', error);
-      
+
       if (error.response) {
         const status = error.response.status;
         const message = error.response.data?.message;
@@ -338,11 +374,11 @@ const Orders = ({ token }) => {
       const response = await axios.post(
         `${backendUrl}/api/order/status`,
         { orderId, status: event.target.value },
-        { 
-          headers: { 
+        {
+          headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-          } 
+          }
         }
       );
 
@@ -372,11 +408,11 @@ const Orders = ({ token }) => {
       const response = await axios.post(
         `${backendUrl}/api/order/update-production`,
         { orderId, itemIndex, productionStatus },
-        { 
-          headers: { 
+        {
+          headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-          } 
+          }
         }
       );
 
@@ -615,7 +651,7 @@ const Orders = ({ token }) => {
                       <option value="Order Placed">Order Placed</option>
                       <option value="Processing">Processing</option>
                       <option value="Shipping">Shipping</option>
-                      <option value="Out of delivery">Out of delivery</option>
+                      <option value="Out for delivery">Out for delivery</option>
                       <option value="Delivered">Delivered</option>
                     </select>
                   </div>
@@ -722,25 +758,20 @@ const Orders = ({ token }) => {
                   <div className="space-y-6">
                     {currentItems.map((order, index) => {
                       const hasCustomItems = order.items?.some(item => item.type === 'CUSTOM');
-                      
+
                       return (
-                        <div 
-                          key={order._id || index} 
-                          className={`bg-white rounded-2xl shadow-sm border-2 overflow-hidden hover:shadow-lg transition-all duration-200 ${
-                            hasCustomItems ? 'border-purple-200' : 'border-background/30'
-                          }`}
+                        <div
+                          key={order._id || index}
+                          className={`bg-white rounded-2xl shadow-sm border-2 overflow-hidden hover:shadow-lg transition-all duration-200 ${hasCustomItems ? 'border-purple-200' : 'border-background/30'}`}
                         >
                           {/* Order Header */}
-                          <div className={`p-6 border-b border-background/30 ${
-                            hasCustomItems 
-                              ? 'bg-gradient-to-r from-purple-50 to-pink-50' 
-                              : 'bg-gradient-to-br from-secondary/5 to-secondary/10'
-                          }`}>
+                          <div className={`p-6 border-b border-background/30 ${hasCustomItems
+                            ? 'bg-gradient-to-r from-purple-50 to-pink-50'
+                            : 'bg-gradient-to-br from-secondary/5 to-secondary/10'
+                            }`}>
                             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                               <div className="flex items-center gap-3">
-                                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                                  hasCustomItems ? 'bg-purple-200' : 'bg-secondary/20'
-                                }`}>
+                                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${hasCustomItems ? 'bg-purple-200' : 'bg-secondary/20'}`}>
                                   {hasCustomItems ? (
                                     <Sparkles size={24} className="text-purple-600" />
                                   ) : (
@@ -782,35 +813,39 @@ const Orders = ({ token }) => {
                               </h4>
                               <div className="space-y-3">
                                 {order.items.map((item, idx) => (
-                                  <div 
-                                    key={idx} 
-                                    className={`flex items-start gap-4 p-4 rounded-xl border ${
-                                      item.type === 'CUSTOM' 
-                                        ? 'bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200' 
-                                        : 'bg-background/10 border-background/30'
-                                    }`}
+                                  <div
+                                    key={idx}
+                                    className={`flex items-start gap-4 p-4 rounded-xl border ${item.type === 'CUSTOM'
+                                      ? 'bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200'
+                                      : 'bg-background/10 border-background/30'
+                                      }`}
                                   >
                                     {/* Item Image */}
                                     <div className="flex-shrink-0">
                                       {item.image ? (
-                                        <img 
-                                          src={item.image} 
+                                        <img
+                                          src={item.image}
                                           alt={item.name}
-                                          className="w-20 h-20 object-contain"
+                                          className="w-20 h-20 object-cover rounded-lg border-2 border-white shadow-sm"
+                                          onError={(e) => {
+                                            e.target.style.display = 'none';
+                                            e.target.nextSibling.style.display = 'flex';
+                                          }}
                                         />
-                                      ) : (
-                                        <div className={`w-20 h-20 rounded-lg flex items-center justify-center ${
-                                          item.type === 'CUSTOM' 
-                                            ? 'bg-gradient-to-br from-purple-200 to-pink-200' 
+                                      ) : null}
+                                      <div
+                                        className={`w-20 h-20 rounded-lg flex items-center justify-center ${item.image ? 'hidden' : 'flex'
+                                          } ${item.type === 'CUSTOM'
+                                            ? 'bg-gradient-to-br from-purple-200 to-pink-200'
                                             : 'bg-background/30'
-                                        }`}>
-                                          {item.type === 'CUSTOM' ? (
-                                            <Palette size={24} className="text-purple-600" />
-                                          ) : (
-                                            <Package size={24} className="text-text/40" />
-                                          )}
-                                        </div>
-                                      )}
+                                          }`}
+                                      >
+                                        {item.type === 'CUSTOM' ? (
+                                          <Palette size={24} className="text-purple-600" />
+                                        ) : (
+                                          <Package size={24} className="text-text/40" />
+                                        )}
+                                      </div>
                                     </div>
 
                                     <div className="flex-1 min-w-0">
@@ -826,15 +861,15 @@ const Orders = ({ token }) => {
                                       )}
 
                                       <p className="font-serif font-bold text-text mb-1">{item.name}</p>
-                                      
+
                                       <div className="flex flex-wrap items-center gap-3 text-sm text-text/60 font-light mb-2">
                                         <span>Qty: <span className="font-semibold">{item.quantity}</span></span>
                                         <span>•</span>
-                                        <span>Size: <span className="font-semibold">{item.size}</span></span>
+                                        <span>Size: <span className="font-semibold">{item.size || 'Custom'}</span></span>
                                         <span>•</span>
                                         <div className="flex items-center gap-1 font-semibold text-secondary">
                                           <IndianRupee size={14} />
-                                          {item.finalPrice?.toLocaleString()}
+                                          {(item.finalPrice || item.basePrice || 0).toLocaleString()}
                                         </div>
                                       </div>
 
@@ -856,8 +891,8 @@ const Orders = ({ token }) => {
                                             </div>
                                             <div className="flex items-center gap-1">
                                               <span className="text-text/50 font-light">Color:</span>
-                                              <div 
-                                                className="w-4 h-4 rounded-full border border-background/40 ml-1" 
+                                              <div
+                                                className="w-4 h-4 rounded-full border border-background/40 ml-1"
                                                 style={{ backgroundColor: item.customization.color }}
                                               />
                                             </div>
@@ -876,15 +911,15 @@ const Orders = ({ token }) => {
                                               onChange={(e) => updateProductionStatus(order._id, idx, e.target.value)}
                                               className="flex-1 px-3 py-2 text-xs border border-purple-300 rounded-lg focus:outline-none focus:border-purple-500 font-light"
                                             >
-                                              <option value="DESIGNING">🎨 Designing</option>
-                                              <option value="CUTTING">✂️ Cutting</option>
-                                              <option value="STITCHING">🧵 Stitching</option>
-                                              <option value="QC">✓ QC</option>
-                                              <option value="READY">✓ Ready</option>
+                                              <option value="DESIGNING">Designing</option>
+                                              <option value="CUTTING">Cutting</option>
+                                              <option value="STITCHING">Stitching</option>
+                                              <option value="QC">QC</option>
+                                              <option value="READY">Ready</option>
                                             </select>
 
                                             {/* View Canvas Button */}
-                                            {item.customization.canvasDesign?.png && (
+                                            {item.customization?.canvasDesign?.pngUrl || item.customization?.canvasDesign?.png || item.image ? (
                                               <button
                                                 onClick={() => setSelectedCanvas(item)}
                                                 className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs font-semibold flex items-center gap-1"
@@ -892,7 +927,7 @@ const Orders = ({ token }) => {
                                                 <Eye size={12} />
                                                 Canvas
                                               </button>
-                                            )}
+                                            ) : null}
                                           </div>
                                         </div>
                                       )}
@@ -965,7 +1000,7 @@ const Orders = ({ token }) => {
                                   <option value="Order Placed">Order Placed</option>
                                   <option value="Processing">Processing</option>
                                   <option value="Shipping">Shipping</option>
-                                  <option value="Out of delivery">Out of delivery</option>
+                                  <option value="Out for delivery">Out for delivery</option>
                                   <option value="Delivered">Delivered</option>
                                 </select>
                               </div>
@@ -998,11 +1033,10 @@ const Orders = ({ token }) => {
                               <button
                                 key={page}
                                 onClick={() => paginate(page)}
-                                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                                  currentPage === page
-                                    ? 'bg-secondary text-white shadow-lg shadow-secondary/30'
-                                    : 'bg-background/20 text-text hover:bg-background/40'
-                                }`}
+                                className={`px-4 py-2 rounded-lg font-semibold transition-all ${currentPage === page
+                                  ? 'bg-secondary text-white shadow-lg shadow-secondary/30'
+                                  : 'bg-background/20 text-text hover:bg-background/40'
+                                  }`}
                               >
                                 {page}
                               </button>

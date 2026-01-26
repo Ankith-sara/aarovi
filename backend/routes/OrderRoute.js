@@ -1,7 +1,7 @@
 import express from 'express';
-import authUser from '../middlewares/Auth.js';
-import adminAuth from '../middlewares/AdminAuth.js';
-import { placeOrder, placeOrderRazorpay, verifyRazorpay, verifyCOD, allOrders, userOrders, updateStatus, orderStatus } from '../controllers/OrderController.js';
+import { placeOrder, placeOrderRazorpay, verifyRazorpay, verifyCOD, allOrders, userOrders, updateStatus, orderStatus, updateProductionStatus } from '../controllers/OrderController.js';
+import authUser from '../middlewares/auth.js';
+import adminAuth from '../middlewares/adminAuth.js';
 
 const orderRouter = express.Router();
 
@@ -13,5 +13,6 @@ orderRouter.post('/userorders', authUser, userOrders);
 orderRouter.get('/status/:orderId', orderStatus);
 orderRouter.get('/list', adminAuth, allOrders);
 orderRouter.post('/status', adminAuth, updateStatus);
+orderRouter.post('/update-production', adminAuth, updateProductionStatus);
 
 export default orderRouter;
