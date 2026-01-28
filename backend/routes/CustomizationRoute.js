@@ -1,7 +1,7 @@
 import express from 'express';
 import { saveCustomization, getCustomization, updateCustomization, getUserCustomizations, submitCustomization, deleteCustomization, getAllCustomizationsAdmin, updateCustomizationStatusAdmin } from '../controllers/CustomizationController.js';
-import authUser from '../middlewares/auth.js';
-import adminAuth from '../middlewares/adminAuth.js';
+import authUser from '../middlewares/Auth.js';
+import adminAuth from '../middlewares/AdminAuth.js';
 
 const customizationRouter = express.Router();
 
