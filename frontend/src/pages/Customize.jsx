@@ -301,6 +301,45 @@ Return JSON only:
     return true;
   };
 
+  // NEW: Validate measurements before adding to cart
+  const validateMeasurements = () => {
+    const { bust, waist, hips, shoulder, sleeveLength, length } = form.measurements;
+    
+    // Check if at least the primary measurements are provided
+    if (!bust || !waist || !hips) {
+      toast.error("Please provide Bust, Waist, and Hips measurements");
+      return false;
+    }
+
+    if (!length) {
+      toast.error("Please provide Length measurement");
+      return false;
+    }
+
+    // Validate that measurements are reasonable numbers
+    const measurements = [bust, waist, hips, length];
+    for (const measurement of measurements) {
+      const num = parseFloat(measurement);
+      if (isNaN(num) || num <= 0 || num > 100) {
+        toast.error("Please provide valid measurements (between 1-100 inches)");
+        return false;
+      }
+    }
+
+    // Optional measurements validation if provided
+    if (shoulder && (parseFloat(shoulder) <= 0 || parseFloat(shoulder) > 30)) {
+      toast.error("Shoulder measurement should be between 1-30 inches");
+      return false;
+    }
+
+    if (sleeveLength && (parseFloat(sleeveLength) <= 0 || parseFloat(sleeveLength) > 40)) {
+      toast.error("Sleeve length should be between 1-40 inches");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSaveDraft = async () => {
     if (!token) {
       toast.error("Please login to save customization");
@@ -324,6 +363,11 @@ Return JSON only:
     if (!token) {
       toast.error("Please login to add to cart");
       navigate("/login");
+      return;
+    }
+
+    // Validate measurements before adding to cart
+    if (!validateMeasurements()) {
       return;
     }
 
@@ -567,6 +611,7 @@ Return JSON only:
                 dressType={form.dressType}
                 selectedColor={form.color}
                 gender={form.gender}
+                fabric={form.fabric}
                 aiPrompt={form.aiPrompt}
                 onAIPromptChange={(value) => setForm({ ...form, aiPrompt: value })}
                 onAIGenerate={handleAIGenerate}
@@ -664,33 +709,46 @@ Return JSON only:
                   rows="4" />
               </div>
 
-              {/* Measurements */}
-              <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                <label className="flex items-center gap-3 font-bold text-base mb-4 text-text">
+              {/* Measurements - NOW REQUIRED */}
+              <div className="bg-gradient-to-br from-amber-50 to-white rounded-xl p-6 border-2 border-amber-300">
+                <label className="flex items-center gap-3 font-bold text-base mb-2 text-text">
                   <Ruler size={20} className="text-secondary" />
                   <span>Measurements</span>
+                  <span className="text-red-500">*</span>
+                  <span className="text-xs font-normal text-amber-600 bg-amber-100 px-2 py-1 rounded-full">Required for Cart</span>
                 </label>
                 <p className="text-sm text-text/60 mb-5">
-                  Provide your measurements in inches for a perfect fit. Leave blank for standard sizing.
+                  Provide your measurements in inches for a perfect fit. All measurements marked with * are required to add to cart.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {[
-                    { key: "bust", label: "Bust", placeholder: "e.g., 36" },
-                    { key: "waist", label: "Waist", placeholder: "e.g., 28" },
-                    { key: "hips", label: "Hips", placeholder: "e.g., 38" },
-                    { key: "shoulder", label: "Shoulder", placeholder: "e.g., 15" },
-                    { key: "sleeveLength", label: "Sleeve Length", placeholder: "e.g., 18" },
-                    { key: "length", label: "Length", placeholder: "e.g., 42" },
-                  ].map(({ key, label, placeholder }) => (
+                    { key: "bust", label: "Bust", placeholder: "e.g., 36", required: true },
+                    { key: "waist", label: "Waist", placeholder: "e.g., 28", required: true },
+                    { key: "hips", label: "Hips", placeholder: "e.g., 38", required: true },
+                    { key: "shoulder", label: "Shoulder", placeholder: "e.g., 15", required: false },
+                    { key: "sleeveLength", label: "Sleeve Length", placeholder: "e.g., 18", required: false },
+                    { key: "length", label: "Length", placeholder: "e.g., 42", required: true },
+                  ].map(({ key, label, placeholder, required }) => (
                     <div key={key}>
                       <label className="block text-sm font-semibold text-text/70 mb-2 uppercase tracking-wide">
                         {label}
+                        {required && <span className="text-red-500 ml-1">*</span>}
                       </label>
                       <div className="relative">
-                        <input name={key} value={form.measurements[key]}
-                          placeholder={placeholder} onChange={handleMeasurementChange}
-                          className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 pr-16 focus:border-secondary focus:outline-none transition-all text-sm"
-                          type="number" step="0.5" />
+                        <input 
+                          name={key} 
+                          value={form.measurements[key]}
+                          placeholder={placeholder} 
+                          onChange={handleMeasurementChange}
+                          className={`w-full border-2 rounded-lg px-4 py-3 pr-16 focus:outline-none transition-all text-sm ${
+                            required 
+                              ? 'border-amber-300 focus:border-amber-500 bg-amber-50/50' 
+                              : 'border-gray-200 focus:border-secondary bg-white'
+                          }`}
+                          type="number" 
+                          step="0.5"
+                          required={required}
+                        />
                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-text/40 text-xs">inches</span>
                       </div>
                     </div>
@@ -701,6 +759,17 @@ Return JSON only:
                   onChange={handleMeasurementChange}
                   className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 mt-5 h-24 focus:border-secondary focus:outline-none transition-all resize-none text-sm"
                   rows="3" />
+                  
+                {/* Measurements Help */}
+                <div className="mt-4 p-4 bg-white rounded-lg border border-amber-200">
+                  <p className="text-xs text-amber-800 font-semibold mb-2">📏 Measurement Guide:</p>
+                  <ul className="text-xs text-amber-700 space-y-1">
+                    <li>• <strong>Bust:</strong> Measure around the fullest part of your chest</li>
+                    <li>• <strong>Waist:</strong> Measure around your natural waistline</li>
+                    <li>• <strong>Hips:</strong> Measure around the fullest part of your hips</li>
+                    <li>• <strong>Length:</strong> Measure from shoulder to desired hem length</li>
+                  </ul>
+                </div>
               </div>
 
               {/* Price Estimate */}

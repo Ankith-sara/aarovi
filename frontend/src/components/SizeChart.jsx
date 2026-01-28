@@ -1,496 +1,262 @@
-import React, { useState } from 'react';
-import { X, Ruler, Info, TrendingUp } from 'lucide-react';
+import React from 'react';
+import { Ruler, Info, TrendingUp } from 'lucide-react';
 
-// Size chart data organized by product type
+// Size chart data - Essential charts for customization platform
 const sizeCharts = {
-    unisexRelaxedPants: {
-        title: "Unisex Relaxed Fit Pant",
-        subtitle: "(Sudhhvasa, Samatva, Tandav, Kayavritt)",
-        headers: ["Size", "Waist (in)", "Hip (in)", "Inseam (in)", "Length (in)"],
-        rows: [
-            ["XS", "28", "42", "27", "38"],
-            ["S", "30", "44", "28", "39.5"],
-            ["M", "32", "46", "29", "41"],
-            ["L", "36", "48", "30", "42.5"],
-            ["XL", "40", "50", "30.5", "43.5"],
-            ["XXL", "44", "52", "31", "45"]
-        ]
-    },
-    mensRegularTrousers: {
-        title: "Men's Regular Trouser",
-        subtitle: "(Rekha)",
-        headers: ["Size", "Alpha", "Waist (in)", "Hip (in)", "Inseam (in)", "Full Length (in)"],
-        rows: [
-            ["28", "XS", "28", "34", "30", "40"],
-            ["30", "S", "30", "36", "30.5", "40.5"],
-            ["32", "M", "32", "38", "31", "41"],
-            ["34", "L", "34", "40", "31.5", "42"],
-            ["36", "XL", "36", "42", "32", "42.5"],
-            ["38", "XXL", "38", "44", "32", "43"]
-        ]
-    },
-    looseFitHalfPants: {
-        title: "Loose Fit Men's Half Pant",
-        subtitle: "(Neelambar)",
-        headers: ["Size", "Waist (in)", "Hip (in)", "Inseam (in)", "Full Length (in)"],
-        rows: [
-            ["XS", "26", "36", "7", "18"],
-            ["S", "28", "38", "7.5", "18.5"],
-            ["M", "30", "40", "8", "19"],
-            ["L", "32", "42", "8.5", "20"],
-            ["XL", "34", "44", "9", "21"],
-            ["XXL", "36", "46", "9.5", "21.5"]
-        ]
-    },
-    regularFitHalfPants: {
-        title: "Regular Fit Men's Half Pant",
-        subtitle: "(Prakriti)",
-        headers: ["Size", "Waist (in)", "Hip (in)", "Inseam (in)", "Full Length (in)"],
-        rows: [
-            ["XS", "28", "34", "6.5", "18"],
-            ["S", "30", "36", "7", "18.5"],
-            ["M", "32", "38", "7.5", "19"],
-            ["L", "34", "40", "8", "20"],
-            ["XL", "36", "44", "8.5", "21"],
-            ["XXL", "38", "46", "9", "22"]
-        ]
-    },
-    tennisCollarShirt: {
-        title: "Tennis Collar Men's Shirt",
-        subtitle: "(Samatva, Prakriti, Neelambar)",
-        headers: ["Size", "Chest (in)", "Shoulder (in)", "Shirt Length (in)", "Sleeve Length (in)", "Neck Opening (in)"],
-        rows: [
-            ["XS", "42", "18.5", "29", "9", "7.25"],
-            ["S", "44", "19", "29.5", "9.5", "7.5"],
-            ["M", "46", "19.5", "30", "10", "7.75"],
-            ["L", "48", "20", "30.5", "10.5", "8"],
-            ["XL", "50", "20.5", "31", "11", "8.25"],
-            ["XXL", "52", "21", "31.5", "11.5", "8.5"]
-        ]
-    },
-    mensLongKurta: {
-        title: "Men's Long Kurta",
-        subtitle: "(Chandra)",
-        headers: ["Size", "Chest (in)", "Shoulder (in)", "Length (in)", "Bottom Hem (in)", "Sleeve (in)"],
-        rows: [
-            ["XS", "40", "17.5", "39", "23", "24"],
-            ["S", "42", "18", "39.5", "24", "24"],
-            ["M", "44", "18.5", "40", "25", "25"],
-            ["L", "46", "19", "40.5", "26", "26"],
-            ["XL", "48", "19.5", "41", "27", "27"],
-            ["XXL", "50", "20", "41.5", "28", "27"]
-        ]
-    },
-    mensShortKurta: {
-        title: "Men's Short Kurta",
-        subtitle: "(Avikarya, Sangatam)",
-        headers: ["Size", "Chest (in)", "Shoulder (in)", "Length (in)", "Bottom Hem (in)", "Sleeve (in)"],
-        rows: [
-            ["XS", "40", "17.5", "29", "22.5", "24"],
-            ["S", "42", "18", "29.5", "23", "24"],
-            ["M", "44", "18.5", "30", "23.5", "25"],
-            ["L", "46", "19", "30.5", "24", "26"],
-            ["XL", "48", "19.5", "31", "24.5", "27"],
-            ["XXL", "50", "20", "31.5", "25", "27"]
-        ]
-    },
-    mensOversizeKurta: {
-        title: "Men's Oversize Kurta",
-        subtitle: "(Parakhya)",
-        headers: ["Size", "Chest (in)", "Shoulder (in)", "Length (in)", "Bottom Hem (in)", "Sleeve (in)"],
-        rows: [
-            ["XS", "42", "19", "29.5", "24", "13"],
-            ["S", "44", "19.5", "30", "25", "13.5"],
-            ["M", "46", "20", "30.5", "26", "14"],
-            ["L", "48", "20.5", "31.5", "27", "14.5"],
-            ["XL", "50", "21", "32", "28", "15"],
-            ["XXL", "52", "22", "32.5", "29", "15.5"]
-        ]
-    },
-    mensFullSleeveShirt: {
-        title: "Men's Full Sleeve Shirt",
-        subtitle: "(Achal, Aatma, Avyakta, Kamanam)",
-        headers: ["Size", "Chest (in)", "Shoulder (in)", "Length (in)", "Sleeve Length (in)", "Neck (in)"],
-        rows: [
-            ["XS", "40", "17.5", "28.5", "24.5", "14.5"],
-            ["S", "42", "18", "29", "25", "15"],
-            ["M", "44", "18.5", "29.5", "25.5", "15.5"],
-            ["L", "46", "19", "30", "26", "16"],
-            ["XL", "48", "19.5", "30.5", "26.5", "16.5"],
-            ["XXL", "50", "20", "31", "27", "17"]
-        ]
-    },
-    mensHalfSleeveShirt: {
-        title: "Men's Half Sleeve Shirt",
-        subtitle: "(Tusht, Achhedya, Sajjayen, Nitya, Vihay, Vriksha)",
-        headers: ["Size", "Chest (in)", "Shoulder (in)", "Length (in)", "Sleeve Length (in)", "Neck (in)"],
-        rows: [
-            ["XS", "40", "17.5", "28.5", "9", "14.5"],
-            ["S", "42", "18", "29", "9.5", "15"],
-            ["M", "44", "18.5", "29.5", "10", "15.5"],
-            ["L", "46", "19", "30", "10.5", "16"],
-            ["XL", "48", "19.5", "30.5", "11", "16.5"],
-            ["XXL", "50", "20", "31", "11.5", "17"]
-        ]
-    },
-    mensTunicShirt: {
-        title: "Men's Tunic Shirt",
-        subtitle: "(Tripundra)",
-        headers: ["Size", "Chest (in)", "Shoulder (in)", "Shirt Length (in)", "Sleeve Length (in)"],
-        rows: [
-            ["XS", "42", "17.5", "27.5", "9"],
-            ["S", "44", "18", "28", "9.5"],
-            ["M", "46", "18.5", "28.5", "10"],
-            ["L", "48", "19", "29", "10.5"],
-            ["XL", "50", "19.5", "29.5", "11"],
-            ["XXL", "52", "20", "30", "11.5"]
-        ]
-    },
-    mensTandavShirt: {
-        title: "Men's Half Sleeve Shirt - Tandav",
-        subtitle: "",
-        headers: ["Size", "Chest (in)", "Shoulder (in)", "Length (in)", "Sleeve Length (in)"],
-        rows: [
-            ["XS", "40", "17.5", "25", "10"],
-            ["S", "42", "18", "25.5", "10.5"],
-            ["M", "44", "18.5", "26", "11"],
-            ["L", "46", "19", "26.5", "11.5"],
-            ["XL", "48", "19.5", "27", "12"],
-            ["XXL", "50", "20", "27.5", "12.5"]
-        ]
-    }
+  womensKurti: {
+    title: "Women's Kurti & Kurti Sets",
+    headers: ["Size", "Chest (in)", "Waist (in)", "Hip (in)", "Shoulder (in)", "Length (in)"],
+    rows: [
+      ["XXXS", "30", "26", "34", "13", "38"],
+      ["XXS", "32", "28", "36", "13.5", "38.5"],
+      ["XS", "34", "30", "38", "14", "39"],
+      ["S", "36", "32", "40", "14.5", "39.5"],
+      ["M", "38", "34", "42", "15", "40"],
+      ["L", "40", "36", "44", "15.5", "40.5"],
+      ["XL", "42", "38", "46", "16", "41"],
+      ["XXL", "44", "40", "48", "16.5", "41.5"],
+      ["XXXL", "46", "42", "50", "17", "42"]
+    ]
+  },
+  womensLehenga: {
+    title: "Women's Lehenga",
+    headers: ["Size", "Blouse Chest (in)", "Waist (in)", "Hip (in)", "Skirt Length (in)"],
+    rows: [
+      ["XXXS", "30", "26", "34", "40"],
+      ["XXS", "32", "28", "36", "40"],
+      ["XS", "34", "30", "38", "41"],
+      ["S", "36", "32", "40", "41"],
+      ["M", "38", "34", "42", "42"],
+      ["L", "40", "36", "44", "42"],
+      ["XL", "42", "38", "46", "43"],
+      ["XXL", "44", "40", "48", "43"],
+      ["XXXL", "46", "42", "50", "44"]
+    ]
+  },
+  womensAnarkali: {
+    title: "Women's Anarkali",
+    headers: ["Size", "Chest (in)", "Waist (in)", "Hip (in)", "Length (in)", "Flare (in)"],
+    rows: [
+      ["XXXS", "30", "26", "34", "48", "60"],
+      ["XXS", "32", "28", "36", "49", "62"],
+      ["XS", "34", "30", "38", "50", "64"],
+      ["S", "36", "32", "40", "51", "66"],
+      ["M", "38", "34", "42", "52", "68"],
+      ["L", "40", "36", "44", "53", "70"],
+      ["XL", "42", "38", "46", "54", "72"],
+      ["XXL", "44", "40", "48", "55", "74"],
+      ["XXXL", "46", "42", "50", "56", "76"]
+    ]
+  },
+  womensSherara: {
+    title: "Women's Sherara",
+    headers: ["Size", "Top Chest (in)", "Waist (in)", "Hip (in)", "Pant Length (in)"],
+    rows: [
+      ["XXXS", "30", "26", "34", "38"],
+      ["XXS", "32", "28", "36", "38.5"],
+      ["XS", "34", "30", "38", "39"],
+      ["S", "36", "32", "40", "39.5"],
+      ["M", "38", "34", "42", "40"],
+      ["L", "40", "36", "44", "40.5"],
+      ["XL", "42", "38", "46", "41"],
+      ["XXL", "44", "40", "48", "41.5"],
+      ["XXXL", "46", "42", "50", "42"]
+    ]
+  },
+  mensKurta: {
+    title: "Men's Kurta & Kurta Sets",
+    headers: ["Size", "Chest (in)", "Shoulder (in)", "Length (in)", "Sleeve (in)"],
+    rows: [
+      ["24", "32", "16", "38", "23"],
+      ["26", "34", "16.5", "38.5", "23"],
+      ["28", "36", "17", "39", "23.5"],
+      ["30", "38", "17.5", "39.5", "24"],
+      ["32", "40", "18", "40", "24.5"],
+      ["34", "42", "18.5", "40.5", "25"],
+      ["36", "44", "19", "41", "25.5"],
+      ["38", "46", "19.5", "41.5", "26"],
+      ["40", "48", "20", "42", "26.5"],
+      ["42", "50", "20.5", "42.5", "27"],
+      ["44", "52", "21", "43", "27.5"],
+      ["46", "54", "21.5", "43.5", "28"]
+    ]
+  },
+  mensSherwani: {
+    title: "Men's Sherwani",
+    headers: ["Size", "Chest (in)", "Shoulder (in)", "Length (in)", "Sleeve (in)", "Bottom Hem (in)"],
+    rows: [
+      ["24", "32", "16", "42", "24", "20"],
+      ["26", "34", "16.5", "42.5", "24", "21"],
+      ["28", "36", "17", "43", "24.5", "22"],
+      ["30", "38", "17.5", "43.5", "25", "23"],
+      ["32", "40", "18", "44", "25.5", "24"],
+      ["34", "42", "18.5", "44.5", "26", "25"],
+      ["36", "44", "19", "45", "26.5", "26"],
+      ["38", "46", "19.5", "45.5", "27", "27"],
+      ["40", "48", "20", "46", "27.5", "28"],
+      ["42", "50", "20.5", "46.5", "28", "29"],
+      ["44", "52", "21", "47", "28.5", "30"],
+      ["46", "54", "21.5", "47.5", "29", "31"]
+    ]
+  }
 };
 
-// Helper function to determine which chart to show based on product details
-const getSizeChartKey = (productName, category, subCategory) => {
-    const name = productName?.toLowerCase() || '';
-    const cat = category?.toLowerCase() || '';
-    const subCat = subCategory?.toLowerCase() || '';
-
-    // Product name matching
-    const productNames = {
-        'sudhhvasa': 'unisexRelaxedPants',
-        'samatva': 'unisexRelaxedPants',
-        'tandav': 'unisexRelaxedPants',
-        'kayavritt': 'unisexRelaxedPants',
-        'rekha': 'mensRegularTrousers',
-        'neelambar': 'looseFitHalfPants',
-        'prakriti': 'regularFitHalfPants',
-        'chandra': 'mensLongKurta',
-        'avikarya': 'mensShortKurta',
-        'sangatam': 'mensShortKurta',
-        'parakhya': 'mensOversizeKurta',
-        'achal': 'mensFullSleeveShirt',
-        'aatma': 'mensFullSleeveShirt',
-        'avyakta': 'mensFullSleeveShirt',
-        'kamanam': 'mensFullSleeveShirt',
-        'tusht': 'mensHalfSleeveShirt',
-        'achhedya': 'mensHalfSleeveShirt',
-        'sajjayen': 'mensHalfSleeveShirt',
-        'nitya': 'mensHalfSleeveShirt',
-        'vihay': 'mensHalfSleeveShirt',
-        'vriksha': 'mensHalfSleeveShirt',
-        'tripundra': 'mensTunicShirt'
-    };
-
-    // Check product name first
-    for (const [key, value] of Object.entries(productNames)) {
-        if (name.includes(key)) {
-            return value;
-        }
+// Helper function to determine which chart to show
+const getSizeChartKey = (productName, category, subCategory, gender) => {
+  const name = productName?.toLowerCase() || '';
+  const cat = category?.toLowerCase() || '';
+  const subCat = subCategory?.toLowerCase() || '';
+  const genderLower = gender?.toLowerCase() || '';
+  
+  // Check for women's products
+  if (genderLower.includes('women') || cat.includes('women') || subCat.includes('women')) {
+    if (subCat.includes('lehenga') || subCat.includes('lehangas') || name.includes('lehenga')) {
+      return 'womensLehenga';
     }
-
-    // Category-based fallback
-    if (cat.includes('kurta') || subCat.includes('kurta')) {
-        if (name.includes('long') || subCat.includes('long')) return 'mensLongKurta';
-        if (name.includes('oversize') || subCat.includes('oversize')) return 'mensOversizeKurta';
-        return 'mensShortKurta';
+    if (subCat.includes('anarkali') || name.includes('anarkali')) {
+      return 'womensAnarkali';
     }
-
-    if (cat.includes('shirt') || subCat.includes('shirt')) {
-        if (name.includes('full sleeve') || subCat.includes('full sleeve')) return 'mensFullSleeveShirt';
-        if (name.includes('tunic') || subCat.includes('tunic')) return 'mensTunicShirt';
-        if (name.includes('tennis') || subCat.includes('tennis')) return 'tennisCollarShirt';
-        return 'mensHalfSleeveShirt';
+    if (subCat.includes('sherara') || name.includes('sherara')) {
+      return 'womensSherara';
     }
-
-    if (cat.includes('trouser') || subCat.includes('trouser')) {
-        return 'mensRegularTrousers';
+    return 'womensKurti';
+  }
+  
+  // Check for men's products
+  if (genderLower.includes('men') || cat.includes('men') || subCat.includes('men')) {
+    if (subCat.includes('sherwani') || name.includes('sherwani')) {
+      return 'mensSherwani';
     }
-
-    if (cat.includes('shorts') || subCat.includes('shorts') || cat.includes('half pant')) {
-        if (name.includes('loose') || subCat.includes('loose')) return 'looseFitHalfPants';
-        return 'regularFitHalfPants';
-    }
-
-    if (cat.includes('pant') || cat.includes('bottom')) {
-        return 'unisexRelaxedPants';
-    }
-
-    // Default
-    return 'mensHalfSleeveShirt';
+    return 'mensKurta';
+  }
+  
+  // Fallback
+  if (cat.includes('women') || subCat.includes('kurti')) return 'womensKurti';
+  return 'mensKurta';
 };
 
-const SizeChartModal = ({ isOpen, onClose, productName, category, subCategory }) => {
-    if (!isOpen) return null;
-
-    const chartKey = getSizeChartKey(productName, category, subCategory);
-    const chart = sizeCharts[chartKey];
-
-    return (
-        <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn"
-            onClick={onClose}
-        >
-            <div
-                className="bg-white rounded-lg shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-auto border border-background animate-slideUp"
-                onClick={(e) => e.stopPropagation()}
-            >
-                {/* Header */}
-                <div className="sticky top-0 bg-gradient-to-r from-background/20 to-primary border-b border-background px-6 py-5 flex items-center justify-between z-10">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center border border-background">
-                            <Ruler size={20} className="text-secondary" />
-                        </div>
-                        <div>
-                            <h3 className="text-xl font-serif font-bold text-text">
-                                {chart.title}
-                            </h3>
-                            {chart.subtitle && (
-                                <p className="text-sm text-text/60 font-light mt-0.5">{chart.subtitle}</p>
-                            )}
-                        </div>
-                    </div>
-                    <button
-                        onClick={onClose}
-                        className="w-10 h-10 hover:bg-background/20 rounded-full flex items-center justify-center transition-colors"
-                        aria-label="Close"
-                    >
-                        <X size={20} className="text-text/60" />
-                    </button>
-                </div>
-
-                {/* Content */}
-                <div className="p-6">
-                    {/* Size Table */}
-                    <div className="overflow-x-auto rounded-lg border-2 border-background shadow-sm">
-                        <table className="w-full border-collapse">
-                            <thead>
-                                <tr className="bg-secondary text-white">
-                                    {chart.headers.map((header, index) => (
-                                        <th key={index} className="px-4 py-4 text-left text-sm font-semibold uppercase tracking-wider">
-                                            {header}
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {chart.rows.map((row, rowIndex) => (
-                                    <tr
-                                        key={rowIndex}
-                                        className={`${rowIndex % 2 === 0 ? 'bg-gradient-to-r from-background/10 to-primary' : 'bg-white'} hover:bg-background/20 transition-colors`}
-                                    >
-                                        {row.map((cell, cellIndex) => (
-                                            <td
-                                                key={cellIndex}
-                                                className={`px-4 py-3 text-sm ${cellIndex === 0 ? 'font-semibold text-text' : 'text-text/70'} border-b border-background/30`}
-                                            >
-                                                {cell}
-                                            </td>
-                                        ))}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Measurement Guide */}
-                    <div className="mt-6 space-y-4">
-                        <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-lg p-5 border-l-4 border-blue-500">
-                            <div className="flex items-start gap-3">
-                                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <Info size={16} className="text-white" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-serif font-semibold text-text mb-3">📏 How to Measure</p>
-                                    <ul className="text-sm text-text/70 space-y-2 font-light">
-                                        <li className="flex items-start gap-2">
-                                            <span className="text-blue-500 font-bold">•</span>
-                                            <span><strong className="text-text">Chest:</strong> Measure around the fullest part of your chest</span>
-                                        </li>
-                                        <li className="flex items-start gap-2">
-                                            <span className="text-blue-500 font-bold">•</span>
-                                            <span><strong className="text-text">Waist:</strong> Measure around your natural waistline</span>
-                                        </li>
-                                        <li className="flex items-start gap-2">
-                                            <span className="text-blue-500 font-bold">•</span>
-                                            <span><strong className="text-text">Hip:</strong> Measure around the fullest part of your hips</span>
-                                        </li>
-                                        <li className="flex items-start gap-2">
-                                            <span className="text-blue-500 font-bold">•</span>
-                                            <span><strong className="text-text">Shoulder:</strong> Measure from one shoulder point to the other across your back</span>
-                                        </li>
-                                        <li className="flex items-start gap-2">
-                                            <span className="text-blue-500 font-bold">•</span>
-                                            <span><strong className="text-text">Sleeve:</strong> Measure from shoulder to wrist with arm slightly bent</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 rounded-lg p-5 border-l-4 border-amber-500">
-                            <div className="flex items-start gap-3">
-                                <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <TrendingUp size={16} className="text-white" />
-                                </div>
-                                <div>
-                                    <p className="text-sm text-text/70 font-light leading-relaxed">
-                                        <span className="font-serif font-semibold text-text">💡 Sizing Tip:</span> If you're between sizes, we recommend sizing up for a more comfortable fit.
-                                        All measurements are in inches and may vary slightly due to the handcrafted nature of our products.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Footer Button */}
-                    <div className="mt-6 flex justify-end">
-                        <button
-                            onClick={onClose}
-                            className="px-8 py-3 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-all duration-300 shadow-lg"
-                        >
-                            Got It
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <style jsx>{`
-                @keyframes fadeIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                }
-                @keyframes slideUp {
-                    from { transform: translateY(20px); opacity: 0; }
-                    to { transform: translateY(0); opacity: 1; }
-                }
-                .animate-fadeIn {
-                    animation: fadeIn 0.2s ease-out;
-                }
-                .animate-slideUp {
-                    animation: slideUp 0.3s ease-out;
-                }
-            `}</style>
+/**
+ * SizeChart Component - Inline size chart display
+ * Use this for displaying size charts directly on product pages
+ */
+const SizeChart = ({ 
+  productName, 
+  category, 
+  subCategory, 
+  gender,
+  compact = false,
+  className = "" 
+}) => {
+  const chartKey = getSizeChartKey(productName, category, subCategory, gender);
+  const chart = sizeCharts[chartKey];
+  
+  if (!chart) return null;
+  
+  return (
+    <div className={`bg-white rounded-lg ${compact ? 'p-4' : 'p-6'} ${className}`}>
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-200">
+        <div className="w-10 h-10 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center border border-background">
+          <Ruler size={20} className="text-secondary" />
         </div>
-    );
-};
-
-// Demo component to test the size chart
-const SizeChartDemo = () => {
-    const [isModalOpen, setModalOpen] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState({
-        name: 'Chandra Long Kurta',
-        category: 'Men',
-        subCategory: 'Kurta'
-    });
-
-    const demoProducts = [
-        { name: 'Chandra Long Kurta', category: 'Men', subCategory: 'Long Kurta' },
-        { name: 'Rekha Trouser', category: 'Men', subCategory: 'Trousers' },
-        { name: 'Neelambar Shorts', category: 'Men', subCategory: 'Shorts' },
-        { name: 'Achal Shirt', category: 'Men', subCategory: 'Full Sleeve Shirt' },
-        { name: 'Tripundra Tunic', category: 'Men', subCategory: 'Tunic' },
-        { name: 'Prakriti Half Pant', category: 'Men', subCategory: 'Shorts' },
-        { name: 'Sudhhvasa Pant', category: 'Unisex', subCategory: 'Relaxed Pant' }
-    ];
-
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-background/20 to-primary p-8">
-            <div className="max-w-6xl mx-auto">
-                <div className="bg-white rounded-lg shadow-2xl p-8 mb-8 border border-background">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center">
-                            <Ruler size={24} className="text-secondary" />
-                        </div>
-                        <div>
-                            <h1 className="text-3xl font-serif font-bold text-text">Dynamic Size Chart System</h1>
-                            <p className="text-text/60 font-light">
-                                Select a product to view its specific size chart
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {demoProducts.map((product, index) => (
-                            <button
-                                key={index}
-                                onClick={() => {
-                                    setSelectedProduct(product);
-                                    setModalOpen(true);
-                                }}
-                                className="p-5 border-2 border-background rounded-lg hover:border-secondary hover:shadow-lg transition-all text-left group bg-gradient-to-br from-background/10 to-primary"
-                            >
-                                <h3 className="font-serif font-semibold text-lg text-text group-hover:text-secondary transition-colors">{product.name}</h3>
-                                <p className="text-sm text-text/60 font-light mb-3">{product.category} • {product.subCategory}</p>
-                                <div className="flex items-center gap-2 text-sm text-text/60 group-hover:text-secondary font-semibold">
-                                    <Ruler size={16} />
-                                    <span>View Size Chart</span>
-                                </div>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-lg shadow-2xl p-8 border border-background">
-                    <h2 className="text-2xl font-serif font-bold text-text mb-6">Integration Instructions</h2>
-                    <div className="space-y-4 text-sm">
-                        <div className="p-5 bg-gradient-to-br from-background/10 to-primary rounded-lg border-l-4 border-secondary">
-                            <h3 className="font-semibold text-text mb-2">1. Import the Component</h3>
-                            <code className="text-xs bg-white/80 p-3 block rounded font-mono text-text/70">
-                                import SizeChartModal from './components/SizeChartModal';
-                            </code>
-                        </div>
-
-                        <div className="p-5 bg-gradient-to-br from-background/10 to-primary rounded-lg border-l-4 border-secondary">
-                            <h3 className="font-semibold text-text mb-2">2. Add State Management</h3>
-                            <code className="text-xs bg-white/80 p-3 block rounded font-mono text-text/70">
-                                const [showSizeChart, setShowSizeChart] = useState(false);
-                            </code>
-                        </div>
-
-                        <div className="p-5 bg-gradient-to-br from-background/10 to-primary rounded-lg border-l-4 border-secondary">
-                            <h3 className="font-semibold text-text mb-2">3. Add the Modal</h3>
-                            <code className="text-xs bg-white/80 p-3 block rounded font-mono text-text/70 whitespace-pre-wrap">
-                                {`<SizeChartModal
-  isOpen={showSizeChart}
-  onClose={() => setShowSizeChart(false)}
-  productName={productData.name}
-  category={productData.category}
-  subCategory={productData.subCategory}
-/>`}
-                            </code>
-                        </div>
-
-                        <div className="p-5 bg-gradient-to-br from-background/10 to-primary rounded-lg border-l-4 border-secondary">
-                            <h3 className="font-semibold text-text mb-2">4. Add Trigger Button</h3>
-                            <code className="text-xs bg-white/80 p-3 block rounded font-mono text-text/70">
-                                {`<button onClick={() => setShowSizeChart(true)}>Size Guide</button>`}
-                            </code>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <SizeChartModal
-                isOpen={isModalOpen}
-                onClose={() => setModalOpen(false)}
-                productName={selectedProduct.name}
-                category={selectedProduct.category}
-                subCategory={selectedProduct.subCategory}
-            />
+        <div>
+          <h3 className="text-lg font-serif font-bold text-text">
+            {chart.title}
+          </h3>
+          <p className="text-xs text-text/60 font-light">
+            All measurements in inches
+          </p>
         </div>
-    );
+      </div>
+      
+      {/* Size Table */}
+      <div className={`overflow-x-auto rounded-lg border-2 border-background shadow-sm ${compact ? 'mb-3' : 'mb-6'}`}>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-secondary text-white">
+              {chart.headers.map((header, index) => (
+                <th 
+                  key={index} 
+                  className={`${compact ? 'px-2 py-2 text-xs' : 'px-4 py-3 text-sm'} text-left font-semibold uppercase tracking-wider whitespace-nowrap`}
+                >
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {chart.rows.map((row, rowIndex) => (
+              <tr 
+                key={rowIndex} 
+                className={`${rowIndex % 2 === 0 ? 'bg-gradient-to-r from-background/10 to-primary' : 'bg-white'} hover:bg-background/20 transition-colors`}
+              >
+                {row.map((cell, cellIndex) => (
+                  <td 
+                    key={cellIndex} 
+                    className={`${compact ? 'px-2 py-2 text-xs' : 'px-4 py-2.5 text-sm'} ${cellIndex === 0 ? 'font-bold text-secondary' : 'text-text/70'} border-b border-background/30 whitespace-nowrap`}
+                  >
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      
+      {/* Measurement Guide - Only show in non-compact mode */}
+      {!compact && (
+        <div className="space-y-3">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-lg p-4 border-l-4 border-blue-500">
+            <div className="flex items-start gap-3">
+              <div className="w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Info size={14} className="text-white" />
+              </div>
+              <div>
+                <p className="text-xs font-serif font-semibold text-text mb-2">📏 How to Measure</p>
+                <ul className="text-xs text-text/70 space-y-1.5 font-light">
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-500 font-bold">•</span>
+                    <span><strong className="text-text">Chest/Bust:</strong> Around fullest part, tape parallel to floor</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-500 font-bold">•</span>
+                    <span><strong className="text-text">Waist:</strong> Around natural waistline (narrowest part)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-500 font-bold">•</span>
+                    <span><strong className="text-text">Hip:</strong> Around fullest part of hips</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-500 font-bold">•</span>
+                    <span><strong className="text-text">Shoulder:</strong> From one shoulder point to other across back</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-500 font-bold">•</span>
+                    <span><strong className="text-text">Length:</strong> From shoulder seam to desired length</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 rounded-lg p-4 border-l-4 border-amber-500">
+            <div className="flex items-start gap-3">
+              <div className="w-7 h-7 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <TrendingUp size={14} className="text-white" />
+              </div>
+              <div>
+                <p className="text-xs text-text/70 font-light leading-relaxed">
+                  <span className="font-serif font-semibold text-text">💡 Pro Tips:</span> Measure over undergarments, keep tape snug but not tight, size up if between sizes. 
+                  Handcrafted garments may vary by ±0.5".
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
-export default SizeChartDemo;
+export default SizeChart;

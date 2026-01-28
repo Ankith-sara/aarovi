@@ -2,8 +2,8 @@ import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import { backendUrl, currency } from '../App';
 import { toast } from 'react-toastify';
-import { 
-  Upload, Package, Tag, Star, AlertCircle, 
+import {
+  Upload, Package, Tag, Star, AlertCircle,
   CheckCircle2, X, Plus, Sparkles, Image, ArrowRight, Droplet
 } from 'lucide-react';
 
@@ -24,11 +24,11 @@ const Add = ({ token }) => {
   const categoryData = {
     Women: {
       subCategories: ["", "Kurtis", "Kurti Sets", "Lehangas", "Anarkalis", "Sheraras"],
-      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
+      sizes: ['XXXS', 'XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
     },
     Men: {
       subCategories: ["", "Kurtas", "Kurta Sets", "Sherwanis"],
-      sizes: ['28', '30', '32', '34', '36', '38', '40', '42', '44', '46']
+      sizes: ['24', '26', '28', '30', '32', '34', '36', '38', '40', '42', '44', '46']
     }
   };
 
@@ -57,15 +57,15 @@ const Add = ({ token }) => {
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const newFiles = Array.from(e.dataTransfer.files).filter(file => 
+      const newFiles = Array.from(e.dataTransfer.files).filter(file =>
         file.type.startsWith('image/')
       );
-      
+
       if (images.length + newFiles.length > 6) {
         toast.error('Maximum 6 images allowed');
         return;
       }
-      
+
       setImages(prev => [...prev, ...newFiles].slice(0, 6));
       e.dataTransfer.clearData();
     }
@@ -74,12 +74,12 @@ const Add = ({ token }) => {
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const newFiles = Array.from(e.target.files);
-      
+
       if (images.length + newFiles.length > 6) {
         toast.error('Maximum 6 images allowed');
         return;
       }
-      
+
       setImages(prev => [...prev, ...newFiles].slice(0, 6));
     }
   };
@@ -204,11 +204,10 @@ const Add = ({ token }) => {
                   onDragOver={handleDrag}
                   onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`relative border-2 border-dashed rounded-2xl p-12 transition-all duration-300 cursor-pointer ${
-                    dragActive
+                  className={`relative border-2 border-dashed rounded-2xl p-12 transition-all duration-300 cursor-pointer ${dragActive
                       ? 'border-secondary bg-secondary/5 scale-[1.01]'
                       : 'border-background/40 hover:border-secondary/50 hover:bg-background/20'
-                  }`}
+                    }`}
                 >
                   <input
                     ref={fileInputRef}
@@ -218,7 +217,7 @@ const Add = ({ token }) => {
                     onChange={handleFileChange}
                     className="hidden"
                   />
-                  
+
                   <div className="text-center">
                     <div className="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
                       <Upload size={36} className="text-secondary" />
@@ -453,11 +452,10 @@ const Add = ({ token }) => {
                         key={size}
                         type="button"
                         onClick={() => toggleSize(size)}
-                        className={`px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 ${
-                          sizes.includes(size)
+                        className={`px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 ${sizes.includes(size)
                             ? 'bg-secondary text-white shadow-lg shadow-secondary/30'
                             : 'bg-background/30 text-text hover:bg-background/50'
-                        }`}
+                          }`}
                       >
                         {size}
                       </button>

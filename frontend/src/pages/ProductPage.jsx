@@ -34,7 +34,7 @@ const ProductPage = () => {
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
   const [expandedFilters, setExpandedFilters] = useState({
     price: true,
-    features: false
+    features: true
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -82,7 +82,7 @@ const ProductPage = () => {
     setShowOnSale(false);
     setShowNewArrivals(false);
     setSortOption('relevant');
-  }, [subcategory, selectedSubCategory, priceStats.min, priceStats.max]);
+  }, [subcategory, selectedSubCategory, priceStats.min, priceStats.max, categoryProducts.length]);
 
   // Count active filters
   useEffect(() => {
@@ -214,6 +214,7 @@ const ProductPage = () => {
     setShowNewArrivals(false);
   };
 
+  // FIXED: Apply filters function now properly applies tempPriceRange to priceRange
   const applyFilters = () => {
     setPriceRange(tempPriceRange);
     setShowFilters(false);
@@ -346,10 +347,10 @@ const ProductPage = () => {
             {/* Quick price filters - Dynamic based on category */}
             <div className="grid grid-cols-2 gap-2">
               {[
-                { label: `Under ${Math.floor(priceStats.max * 0.2)}`, min: priceStats.min, max: Math.floor(priceStats.max * 0.2) },
-                { label: `${Math.floor(priceStats.max * 0.2)} - ${Math.floor(priceStats.max * 0.5)}`, min: Math.floor(priceStats.max * 0.2), max: Math.floor(priceStats.max * 0.5) },
-                { label: `${Math.floor(priceStats.max * 0.5)} - ${Math.floor(priceStats.max * 0.8)}`, min: Math.floor(priceStats.max * 0.5), max: Math.floor(priceStats.max * 0.8) },
-                { label: `Above ${Math.floor(priceStats.max * 0.8)}`, min: Math.floor(priceStats.max * 0.8), max: priceStats.max }
+                { label: `Under ${currency}${Math.floor(priceStats.max * 0.2)}`, min: priceStats.min, max: Math.floor(priceStats.max * 0.2) },
+                { label: `${currency}${Math.floor(priceStats.max * 0.2)} - ${currency}${Math.floor(priceStats.max * 0.5)}`, min: Math.floor(priceStats.max * 0.2), max: Math.floor(priceStats.max * 0.5) },
+                { label: `${currency}${Math.floor(priceStats.max * 0.5)} - ${currency}${Math.floor(priceStats.max * 0.8)}`, min: Math.floor(priceStats.max * 0.5), max: Math.floor(priceStats.max * 0.8) },
+                { label: `Above ${currency}${Math.floor(priceStats.max * 0.8)}`, min: Math.floor(priceStats.max * 0.8), max: priceStats.max }
               ].map((range, index) => (
                 <button
                   key={index}
