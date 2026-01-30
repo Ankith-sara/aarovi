@@ -95,7 +95,6 @@ const Cart = () => {
   const totalAmount = cartAmount + delivery_fee;
   const totalItems = cartProducts.reduce((sum, item) => sum + item.quantity, 0) +
     customizationItems.reduce((sum, item) => sum + item.quantity, 0);
-  const freeShipping = cartAmount >= 5000;
 
   if (cartProducts.length === 0 && customizationItems.length === 0) {
     return (
@@ -148,7 +147,6 @@ const Cart = () => {
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-3 sm:space-y-4">
-            {/* Regular Products */}
             {cartProducts.map((item, index) => (
               <div
                 key={`${item._id}-${item.size}-${index}`}
@@ -156,7 +154,6 @@ const Cart = () => {
               >
                 <div className="p-3 sm:p-4 md:p-6">
                   <div className="flex gap-3 sm:gap-4">
-                    {/* Product Image */}
                     <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 flex-shrink-0 rounded-xl overflow-hidden bg-gray-50">
                       <img
                         src={item.images?.[0] || '/placeholder-image.png'}
@@ -250,7 +247,7 @@ const Cart = () => {
               return (
                 <div
                   key={`custom-${item._id}-${index}`}
-                  className="bg-gradient-to-br from-white to-secondary/5 rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border-2 border-secondary/20"
+                  className="rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border-2 border-secondary/20"
                 >
                   <div className="p-3 sm:p-4 md:p-6">
                     <div className="flex gap-3 sm:gap-4">
@@ -347,7 +344,7 @@ const Cart = () => {
             })}
           </div>
 
-          {/* Order Summary - Sticky on Desktop, Bottom on Mobile */}
+          {/* Order Summary */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 lg:sticky lg:top-24 space-y-4 sm:space-y-6">
               <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
@@ -367,11 +364,7 @@ const Cart = () => {
                     <span>Delivery</span>
                   </span>
                   <span className="font-semibold">
-                    {freeShipping ? (
-                      <span className="text-green-600 font-bold">FREE</span>
-                    ) : (
-                      `${currency}${delivery_fee}`
-                    )}
+                    {currency}{delivery_fee}
                   </span>
                 </div>
 
@@ -380,7 +373,7 @@ const Cart = () => {
                     <span className="text-base sm:text-lg font-bold text-gray-900">Total</span>
                     <div className="text-right">
                       <p className="text-xl sm:text-2xl font-bold text-secondary">
-                        {currency}{(freeShipping ? cartAmount : totalAmount).toLocaleString()}
+                        {currency}{totalAmount.toLocaleString()}
                       </p>
                       <p className="text-xs text-gray-500">Including taxes</p>
                     </div>

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
-import { Truck, Package, CheckCircle, RefreshCw, ShoppingBag, Calendar, CreditCard, Hash, ArrowRight } from 'lucide-react';
+import { Truck, Package, CheckCircle, RefreshCw, ShoppingBag, Calendar, CreditCard, Hash, ArrowRight, Sparkles } from 'lucide-react';
 
 const Orders = () => {
   const { backendUrl, token, currency } = useContext(ShopContext);
@@ -24,22 +24,39 @@ const Orders = () => {
       );
 
       if (response.data.success) {
+        // FIXED: Process ALL orders and items correctly
         let allOrdersItem = [];
+        
         response.data.orders.forEach((order) => {
           order.items.forEach((item) => {
-            const itemPrice = item.finalPrice || item.price || item.basePrice || 0;
-            const itemQuantity = item.quantity || 1;
-            item['status'] = order.status;
-            item['payment'] = order.payment;
-            item['paymentMethod'] = order.paymentMethod;
-            item['date'] = order.date;
-            item['orderId'] = order._id || `ORD-${Math.floor(Math.random() * 10000)}`;
-            item['price'] = itemPrice;
-            item['quantity'] = itemQuantity;
-            allOrdersItem.push(item);
+            // Process each item (both READY_MADE and CUSTOM)
+            const processedItem = {
+              ...item,
+              status: order.status,
+              payment: order.payment,
+              paymentMethod: order.paymentMethod,
+              date: order.date,
+              orderId: order._id,
+              // Ensure price fields are set correctly
+              price: item.finalPrice || item.basePrice || item.price || 0,
+              quantity: item.quantity || 1,
+              // For custom items, ensure we have the image
+              image: item.image || item.customization?.canvasDesign?.pngUrl || '',
+              // Custom item specific fields
+              type: item.type || 'READY_MADE',
+              productionStatus: item.productionStatus,
+              customization: item.customization
+            };
+
+            allOrdersItem.push(processedItem);
           });
         });
-        setOrderData(allOrdersItem.reverse());
+
+        // FIXED: Sort by date (newest first) before setting state
+        allOrdersItem.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        setOrderData(allOrdersItem);
+        console.log('Loaded orders:', allOrdersItem.length);
       }
     } catch (error) {
       console.error('Error loading orders:', error);
@@ -97,6 +114,25 @@ const Orders = () => {
     }
   };
 
+  const getProductionStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'designing':
+        return 'text-purple-700 bg-purple-50 border-purple-200';
+      case 'cutting':
+        return 'text-blue-700 bg-blue-50 border-blue-200';
+      case 'stitching':
+        return 'text-indigo-700 bg-indigo-50 border-indigo-200';
+      case 'finishing':
+        return 'text-amber-700 bg-amber-50 border-amber-200';
+      case 'quality_check':
+        return 'text-orange-700 bg-orange-50 border-orange-200';
+      case 'ready':
+        return 'text-green-700 bg-green-50 border-green-200';
+      default:
+        return 'text-gray-700 bg-gray-50 border-gray-200';
+    }
+  };
+
   const getFilteredOrders = () => {
     let filtered = orderData;
 
@@ -108,9 +144,9 @@ const Orders = () => {
 
     // Sort orders
     if (sortOrder === 'newest') {
-      filtered = filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+      filtered = [...filtered].sort((a, b) => new Date(b.date) - new Date(a.date));
     } else if (sortOrder === 'oldest') {
-      filtered = filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+      filtered = [...filtered].sort((a, b) => new Date(a.date) - new Date(b.date));
     }
 
     return filtered;
@@ -281,7 +317,7 @@ const Orders = () => {
             // Orders List
             <div className="space-y-6">
               {filteredOrders.map((item, index) => (
-                <div key={index} className="bg-white rounded-lg border border-background shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group">
+                <div key={`${item.orderId}-${index}`} className="bg-white rounded-lg border border-background shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group">
                   <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
                     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-wrap">
@@ -318,10 +354,10 @@ const Orders = () => {
                     <div className="flex flex-col lg:flex-row gap-6">
                       {/* Product Image */}
                       <div className="flex-shrink-0">
-                        <div className="w-full h-48 sm:w-32 sm:h-32 lg:w-40 lg:h-40 rounded-lg overflow-hidden border border-background bg-gradient-to-br from-background/20 to-primary">
+                        <div className="w-full h-48 sm:w-32 sm:h-32 lg:w-40 lg:h-40">
                           {item.image ? (
                             <img
-                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                              className="w-full h-full object-contain"
                               src={item.image}
                               alt={item.name}
                               onError={(e) => {
@@ -331,7 +367,7 @@ const Orders = () => {
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               {item.type === 'CUSTOM' ? (
-                                <Sparkles size={40} className="text-purple-400" />
+                                <Sparkles size={40} className="text-secondary/80" />
                               ) : (
                                 <Package size={40} className="text-text/30" />
                               )}
@@ -350,7 +386,7 @@ const Orders = () => {
 
                             {/* Show custom badge if it's a custom item */}
                             {item.type === 'CUSTOM' && (
-                              <span className="inline-block px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full uppercase tracking-wider">
+                              <span className="inline-block px-3 py-1 bg-secondary text-white text-xs font-bold rounded-full uppercase tracking-wider">
                                 Custom Design
                               </span>
                             )}
@@ -362,7 +398,7 @@ const Orders = () => {
                                 Price
                               </span>
                               <span className="font-bold text-text text-lg">
-                                {currency}{Number(item.finalPrice || item.basePrice || item.price || 0).toFixed(2)}
+                                {currency}{Number(item.price || 0).toFixed(2)}
                               </span>
                             </div>
 
@@ -387,23 +423,38 @@ const Orders = () => {
                                 Total
                               </span>
                               <span className="font-bold text-secondary text-lg">
-                                {currency}{(Number(item.finalPrice || item.basePrice || item.price || 0) * Number(item.quantity || 1)).toFixed(2)}
+                                {currency}{(Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2)}
                               </span>
                             </div>
                           </div>
 
                           {/* Show production status for custom items */}
                           {item.type === 'CUSTOM' && item.productionStatus && (
-                            <div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                              <div className="flex items-center gap-2">
-                                <Package size={16} className="text-purple-600" />
-                                <span className="text-xs font-semibold text-purple-900 uppercase tracking-wider">
-                                  Production Status:
+                            <div className="mt-4 p-3 bg-primary/80 border border-gray-200 rounded-lg">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <Package size={16} className="text-secondary" />
+                                <span className="text-xs font-semibold text-text uppercase tracking-wider">
+                                  Production:
                                 </span>
-                                <span className="text-sm font-bold text-purple-700">
+                                <span className={`px-3 py-1 border-2 text-xs font-bold uppercase tracking-wider rounded-md ${getProductionStatusColor(item.productionStatus)}`}>
                                   {item.productionStatus.replace('_', ' ')}
                                 </span>
                               </div>
+                              
+                              {/* Show custom details if available */}
+                              {item.customization && (
+                                <div className="mt-3 text-xs text-text/80 space-y-1">
+                                  {item.customization.fabric && (
+                                    <p><span className="font-semibold">Fabric:</span> {item.customization.fabric}</p>
+                                  )}
+                                  {item.customization.color && (
+                                    <p><span className="font-semibold">Color:</span> {item.customization.color}</p>
+                                  )}
+                                  {item.customization.sleeveStyle && (
+                                    <p><span className="font-semibold">Sleeve:</span> {item.customization.sleeveStyle}</p>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
@@ -423,6 +474,14 @@ const Orders = () => {
                   </div>
                 </div>
               ))}
+
+              {filteredOrders.length === 0 && filterStatus !== 'all' && (
+                <div className="text-center py-20 bg-white rounded-lg border border-background shadow-sm">
+                  <Package size={48} className="text-text/30 mx-auto mb-4" />
+                  <h3 className="text-xl font-serif font-semibold text-text mb-2">No {filterStatus} orders found</h3>
+                  <p className="text-text/60">Try selecting a different filter</p>
+                </div>
+              )}
 
               {/* Continue Shopping Section */}
               <div className="mt-12 bg-gradient-to-br from-background/20 to-primary rounded-lg border border-background p-8 text-center shadow-sm">

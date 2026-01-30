@@ -175,6 +175,65 @@ const Product = () => {
     setCurrentIndex(index);
   };
 
+  // Improved size sorting function
+  const sortSizes = (sizes) => {
+    return [...sizes].sort((a, b) => {
+      // Define size order for letter sizes with proper ordering
+      const sizeOrder = { 
+        'XXS': 0,
+        'XS': 1, 
+        'S': 2, 
+        'M': 3, 
+        'L': 4, 
+        'XL': 5, 
+        'XXL': 6, 
+        'XXXL': 7,
+        'XXXXL': 8,
+        'XXXXXS': 9,
+        '2XL': 6,
+        '3XL': 7,
+        '4XL': 8,
+        '5XL': 9,
+        'XXXS': -1
+      };
+      
+      // Convert to string and uppercase for comparison
+      const aUpper = a.toString().toUpperCase().trim();
+      const bUpper = b.toString().toUpperCase().trim();
+      
+      // Check if both are numeric sizes
+      const aNum = parseInt(a);
+      const bNum = parseInt(b);
+      const aIsNum = !isNaN(aNum) && aNum.toString() === a.toString().trim();
+      const bIsNum = !isNaN(bNum) && bNum.toString() === b.toString().trim();
+      
+      // If both are numbers, sort numerically (28, 30, 32, 34, etc.)
+      if (aIsNum && bIsNum) {
+        return aNum - bNum;
+      }
+      
+      // If one is number and one is letter, numbers come first
+      if (aIsNum && !bIsNum) return -1;
+      if (!aIsNum && bIsNum) return 1;
+      
+      // Both are letter sizes - use size order
+      const aOrder = sizeOrder[aUpper];
+      const bOrder = sizeOrder[bUpper];
+      
+      // If both have defined order, sort by order
+      if (aOrder !== undefined && bOrder !== undefined) {
+        return aOrder - bOrder;
+      }
+      
+      // If one has defined order and other doesn't
+      if (aOrder !== undefined) return -1;
+      if (bOrder !== undefined) return 1;
+      
+      // Fallback to alphabetical
+      return aUpper.localeCompare(bUpper);
+    });
+  };
+
   // Sticky bar scroll handler
   useEffect(() => {
     const handleScroll = () => {
@@ -394,15 +453,7 @@ const Product = () => {
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  {[...productData.sizes].sort((a, b) => {
-                    const sizeOrder = { 'XS': 1, 'S': 2, 'M': 3, 'L': 4, 'XL': 5, 'XXL': 6, 'XXXL': 7 };
-                    const aNum = parseInt(a);
-                    const bNum = parseInt(b);
-                    if (!isNaN(aNum) && !isNaN(bNum)) return aNum - bNum;
-                    const aOrder = sizeOrder[a.toUpperCase()] || 999;
-                    const bOrder = sizeOrder[b.toUpperCase()] || 999;
-                    return aOrder - bOrder;
-                  }).map((s, index) => (
+                  {sortSizes(productData.sizes).map((s, index) => (
                     <button
                       key={index}
                       onClick={() => setSize(size === s ? '' : s)}

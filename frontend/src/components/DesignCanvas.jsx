@@ -3,7 +3,6 @@ import {
   Palette, Trash2, Undo, Redo,
   Move, Info, Settings, CheckCircle2, X, Menu, MessageCircle, AlertTriangle, Lightbulb, ChevronDown, ChevronUp, Wand2
 } from 'lucide-react';
-import { assets } from '../assets/assets';
 import {
   SVG_TEMPLATES,
   EMBROIDERY_PATTERNS as IMPORTED_EMBROIDERY,
@@ -13,133 +12,7 @@ import { toast } from 'react-toastify';
 
 // EMBROIDERY PATTERNS & FABRIC PRINTS
 const EMBROIDERY_PATTERNS = IMPORTED_EMBROIDERY;
-
-const FABRIC_PRINTS = {
-  block: {
-    img: assets.block_img,
-    name: 'Block Pattern',
-    description: 'Traditional block stamp pattern',
-    createPattern: IMPORTED_PRINTS.geometric?.createPattern || ((color = '#8B0000') => {
-      const c = document.createElement('canvas');
-      c.width = c.height = 120;
-      const ctx = c.getContext('2d');
-      ctx.fillStyle = color;
-      for (let x = 10; x < 120; x += 40) {
-        for (let y = 10; y < 120; y += 40) {
-          ctx.fillRect(x, y, 22, 22);
-        }
-      }
-      return c;
-    })
-  },
-  bagru: {
-    img: assets.bagru_img,
-    name: 'Bagru Pattern',
-    description: 'Rajasthani Bagru hand-block print',
-    createPattern: IMPORTED_PRINTS.dots?.createPattern || ((color = '#5C4033') => {
-      const c = document.createElement('canvas');
-      c.width = c.height = 120;
-      const ctx = c.getContext('2d');
-      ctx.fillStyle = color;
-      for (let i = 0; i < 25; i++) {
-        const x = Math.random() * 120;
-        const y = Math.random() * 120;
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      return c;
-    })
-  },
-  floral: {
-    img: assets.floral_img,
-    name: 'Floral Pattern',
-    description: 'Soft floral motifs',
-    createPattern: IMPORTED_PRINTS.floral?.createPattern || ((color = '#E91E63') => {
-      const c = document.createElement('canvas');
-      c.width = c.height = 120;
-      const ctx = c.getContext('2d');
-      const drawFlower = (x, y) => {
-        ctx.fillStyle = color;
-        for (let i = 0; i < 6; i++) {
-          const a = (i * Math.PI) / 3;
-          ctx.beginPath();
-          ctx.arc(x + Math.cos(a) * 12, y + Math.sin(a) * 12, 6, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.fillStyle = '#FFD700';
-        ctx.beginPath();
-        ctx.arc(x, y, 5, 0, Math.PI * 2);
-        ctx.fill();
-      };
-      for (let x = 20; x < 120; x += 40) {
-        for (let y = 20; y < 120; y += 40) {
-          drawFlower(x, y);
-        }
-      }
-      return c;
-    })
-  },
-  kalamkari: {
-    img: assets.kalamkari_img,
-    name: 'Kalamkari Pattern',
-    description: 'Hand-painted kalamkari art',
-    createPattern: IMPORTED_PRINTS.paisley?.createPattern || ((color = '#3B2F2F') => {
-      const c = document.createElement('canvas');
-      c.width = c.height = 140;
-      const ctx = c.getContext('2d');
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(10, 70);
-      for (let x = 10; x < 130; x += 20) {
-        ctx.quadraticCurveTo(x + 10, 50 + Math.random() * 40, x + 20, 70);
-      }
-      ctx.stroke();
-      return c;
-    })
-  },
-  shibori: {
-    img: assets.shibori_img,
-    name: 'Shibori Pattern',
-    description: 'Indigo resist-dye pattern',
-    createPattern: ((color = '#1E3A8A') => {
-      const c = document.createElement('canvas');
-      c.width = c.height = 120;
-      const ctx = c.getContext('2d');
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 3;
-      for (let i = 0; i < 6; i++) {
-        const x = Math.random() * 120;
-        const y = Math.random() * 120;
-        ctx.beginPath();
-        ctx.arc(x, y, 15 + Math.random() * 10, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-      return c;
-    })
-  },
-  painting: {
-    img: assets.painting_img,
-    name: 'Painting Pattern',
-    description: 'Abstract modern painting',
-    createPattern: IMPORTED_PRINTS.stripes?.createPattern || ((color = '#4F46E5') => {
-      const c = document.createElement('canvas');
-      c.width = c.height = 120;
-      const ctx = c.getContext('2d');
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 6;
-      ctx.lineCap = 'round';
-      for (let i = 0; i < 6; i++) {
-        ctx.beginPath();
-        ctx.moveTo(Math.random() * 120, Math.random() * 120);
-        ctx.lineTo(Math.random() * 120, Math.random() * 120);
-        ctx.stroke();
-      }
-      return c;
-    })
-  }
-};
+const FABRIC_PRINTS = IMPORTED_PRINTS;
 
 // HELPER FUNCTIONS
 const getEssentialZones = (zones, dressType) => {
@@ -152,7 +25,7 @@ const getEssentialZones = (zones, dressType) => {
     buttons: ['button', 'buttons'],
     lehenga: ['blouse', 'skirt', 'waist', 'border'],
     sherara: ['top', 'pants', 'sharara'],
-    anarkali: ['bodice', 'waist_band', 'upper_flare', 'lower_flare', 'border']
+    anarkali: ['bodice', 'waist_band', 'upper_flare', 'lower_flare', 'border', 'skirt']
   };
 
   return zones.filter(zone => {
@@ -300,20 +173,25 @@ const DesignCanvas = ({
   const [isMobile, setIsMobile] = useState(false);
   const [currentColor, setCurrentColor] = useState(selectedColor);
   const [embroideryMetadata, setEmbroideryMetadata] = useState({});
+  const [printMetadata, setPrintMetadata] = useState({});
   const [sleeveStyle, setSleeveStyle] = useState('full');
   const [initialized, setInitialized] = useState(false);
-  
+
+  // Separate color states for embroidery and prints
+  const [selectedEmbroideryColor, setSelectedEmbroideryColor] = useState('#ec4899');
+  const [selectedPrintColor, setSelectedPrintColor] = useState('#DC2626');
+
   // AI TEXT COMMAND EDITOR STATES
   const [aiCommandMode, setAiCommandMode] = useState(false);
   const [aiCommand, setAiCommand] = useState('');
   const [commandHistory, setCommandHistory] = useState([]);
-  
+
   // AI HELPER STATES
   const [aiHelperMode, setAiHelperMode] = useState(false);
   const [aiHelperPrompt, setAiHelperPrompt] = useState('');
   const [aiHelperLoading, setAiHelperLoading] = useState(false);
   const [aiHelperResponse, setAiHelperResponse] = useState(null);
-  
+
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
@@ -372,7 +250,7 @@ const DesignCanvas = ({
 
   const parseAndExecuteCommand = (command) => {
     const lowerCommand = command.toLowerCase().trim();
-    
+
     if (!lowerCommand) {
       toast.error('Please enter a command');
       return;
@@ -383,80 +261,82 @@ const DesignCanvas = ({
     // SLEEVE STYLE COMMANDS
     if (lowerCommand.includes('full sleeve') || lowerCommand.includes('long sleeve')) {
       setSleeveStyle('full');
-      toast.success('✓ Changed to full sleeves');
+      toast.success('Changed to full sleeves');
       executed = true;
     } else if (lowerCommand.includes('half sleeve') || lowerCommand.includes('elbow') || lowerCommand.includes('3/4')) {
       setSleeveStyle('elbow');
-      toast.success('✓ Changed to elbow length sleeves');
+      toast.success('Changed to elbow length sleeves');
       executed = true;
     } else if (lowerCommand.includes('short sleeve')) {
       setSleeveStyle('short');
-      toast.success('✓ Changed to short sleeves');
+      toast.success('Changed to short sleeves');
       executed = true;
     } else if (lowerCommand.includes('sleeveless') || lowerCommand.includes('no sleeve')) {
       setSleeveStyle('sleeveless');
-      toast.success('✓ Changed to sleeveless');
+      toast.success('Changed to sleeveless');
       executed = true;
     }
 
     // COLOR COMMANDS
-    for (const [colorName, hexCode] of Object.entries(COLOR_MAP)) {
-      if (lowerCommand.includes(colorName)) {
-        
-        // Make everything [color]
-        if (lowerCommand.includes('everything') || lowerCommand.includes('all')) {
-          const updatedColors = {};
-          template.zones.forEach(zone => {
-            updatedColors[zone.id] = hexCode;
-          });
-          setZoneColors(updatedColors);
-          setCurrentColor(hexCode);
-          toast.success(`✓ Applied ${colorName} to all zones`);
-          executed = true;
-          break;
-        }
-        
-        // Zone-specific color changes
-        const zoneKeywords = {
-          body: ['body', 'bodice', 'top'],
-          sleeve: ['sleeve', 'sleeves'],
-          neck: ['neck', 'neckline', 'collar'],
-          skirt: ['skirt'],
-          blouse: ['blouse'],
-          border: ['border'],
-          waist: ['waist'],
-          flare: ['flare'],
-          pants: ['pants', 'bottom']
-        };
+    if (!executed) {
+      for (const [colorName, hexCode] of Object.entries(COLOR_MAP)) {
+        if (lowerCommand.includes(colorName)) {
 
-        for (const [zoneType, keywords] of Object.entries(zoneKeywords)) {
-          if (keywords.some(keyword => lowerCommand.includes(keyword))) {
-            // Find actual zones matching this type
-            const matchingZones = template.zones.filter(z => 
-              keywords.some(kw => z.id.toLowerCase().includes(kw))
-            );
+          // Make everything [color]
+          if (lowerCommand.includes('everything') || lowerCommand.includes('all')) {
+            const updatedColors = {};
+            template.zones.forEach(zone => {
+              updatedColors[zone.id] = hexCode;
+            });
+            setZoneColors(updatedColors);
+            setCurrentColor(hexCode);
+            toast.success(`Applied ${colorName} to all zones`);
+            executed = true;
+            break;
+          }
 
-            if (matchingZones.length > 0) {
-              const updates = {};
-              matchingZones.forEach(zone => {
-                updates[zone.id] = hexCode;
-              });
-              setZoneColors(prev => ({ ...prev, ...updates }));
-              toast.success(`✓ Changed ${zoneType} to ${colorName}`);
-              executed = true;
-              break;
+          // Zone-specific color changes
+          const zoneKeywords = {
+            body: ['body', 'bodice', 'top'],
+            sleeve: ['sleeve', 'sleeves'],
+            neck: ['neck', 'neckline', 'collar'],
+            skirt: ['skirt'],
+            blouse: ['blouse'],
+            border: ['border'],
+            waist: ['waist'],
+            flare: ['flare'],
+            pants: ['pants', 'bottom']
+          };
+
+          for (const [zoneType, keywords] of Object.entries(zoneKeywords)) {
+            if (keywords.some(keyword => lowerCommand.includes(keyword))) {
+              // Find actual zones matching this type
+              const matchingZones = template.zones.filter(z =>
+                keywords.some(kw => z.id.toLowerCase().includes(kw))
+              );
+
+              if (matchingZones.length > 0) {
+                const updates = {};
+                matchingZones.forEach(zone => {
+                  updates[zone.id] = hexCode;
+                });
+                setZoneColors(prev => ({ ...prev, ...updates }));
+                toast.success(`Changed ${zoneType} to ${colorName}`);
+                executed = true;
+                break;
+              }
             }
           }
-        }
 
-        // If no specific zone mentioned, change base color
-        if (!executed && !keywords.some(kw => lowerCommand.includes(kw))) {
-          setCurrentColor(hexCode);
-          toast.success(`✓ Changed base color to ${colorName}`);
-          executed = true;
-        }
+          // If no specific zone mentioned, change base color
+          if (!executed && !Object.values(zoneKeywords).flat().some(kw => lowerCommand.includes(kw))) {
+            setCurrentColor(hexCode);
+            toast.success(`Changed base color to ${colorName}`);
+            executed = true;
+          }
 
-        if (executed) break;
+          if (executed) break;
+        }
       }
     }
 
@@ -465,10 +345,10 @@ const DesignCanvas = ({
       const embroideryPatterns = Object.keys(EMBROIDERY_PATTERNS);
       for (const pattern of embroideryPatterns) {
         if (lowerCommand.includes(pattern.toLowerCase())) {
-          
+
           // Determine target zones
           let targetZones = [];
-          
+
           const zoneKeywords = {
             body: ['body', 'bodice', 'top'],
             sleeve: ['sleeve', 'sleeves'],
@@ -479,16 +359,16 @@ const DesignCanvas = ({
 
           for (const [zoneType, keywords] of Object.entries(zoneKeywords)) {
             if (keywords.some(keyword => lowerCommand.includes(keyword))) {
-              const matchingZones = template.zones.filter(z => 
+              const matchingZones = template.zones.filter(z =>
                 keywords.some(kw => z.id.toLowerCase().includes(kw))
               );
               targetZones.push(...matchingZones.map(z => z.id));
             }
           }
-          
+
           // If no specific zone, apply to body/bodice
           if (targetZones.length === 0) {
-            const bodyZones = template.zones.filter(z => 
+            const bodyZones = template.zones.filter(z =>
               z.id.toLowerCase().includes('body') || z.id.toLowerCase().includes('bodice')
             );
             targetZones = bodyZones.map(z => z.id);
@@ -499,7 +379,7 @@ const DesignCanvas = ({
             targetZones.forEach(zoneId => {
               const embPattern = EMBROIDERY_PATTERNS[pattern];
               if (embPattern) {
-                const patternCanvas = embPattern.createPattern(embPattern.threadColors[0]);
+                const patternCanvas = embPattern.createPattern(selectedEmbroideryColor);
                 const patternUrl = patternCanvas.toDataURL();
 
                 setZonePatterns(prev => ({
@@ -514,14 +394,14 @@ const DesignCanvas = ({
                     zone: zoneId,
                     zoneName: template.zones.find(z => z.id === zoneId)?.label,
                     density: embPattern.density,
-                    threadColor: embPattern.threadColors[0],
+                    threadColor: selectedEmbroideryColor,
                     appliedAt: new Date().toISOString()
                   }
                 }));
               }
             });
 
-            toast.success(`✓ Added ${pattern} embroidery`);
+            toast.success(`Added ${pattern} embroidery`);
             executed = true;
             break;
           }
@@ -534,9 +414,9 @@ const DesignCanvas = ({
       const printPatterns = Object.keys(FABRIC_PRINTS);
       for (const printKey of printPatterns) {
         if (lowerCommand.includes(printKey.toLowerCase())) {
-          
+
           let targetZones = [];
-          
+
           const zoneKeywords = {
             body: ['body', 'bodice', 'top'],
             sleeve: ['sleeve', 'sleeves'],
@@ -545,15 +425,15 @@ const DesignCanvas = ({
 
           for (const [zoneType, keywords] of Object.entries(zoneKeywords)) {
             if (keywords.some(keyword => lowerCommand.includes(keyword))) {
-              const matchingZones = template.zones.filter(z => 
+              const matchingZones = template.zones.filter(z =>
                 keywords.some(kw => z.id.toLowerCase().includes(kw))
               );
               targetZones.push(...matchingZones.map(z => z.id));
             }
           }
-          
+
           if (targetZones.length === 0) {
-            const bodyZones = template.zones.filter(z => 
+            const bodyZones = template.zones.filter(z =>
               z.id.toLowerCase().includes('body') || z.id.toLowerCase().includes('bodice')
             );
             targetZones = bodyZones.map(z => z.id);
@@ -562,18 +442,29 @@ const DesignCanvas = ({
           if (targetZones.length > 0) {
             targetZones.forEach(zoneId => {
               const print = FABRIC_PRINTS[printKey];
-              if (print) {
-                const patternCanvas = print.createPattern();
+              if (print && print.createPattern) {
+                const patternCanvas = print.createPattern(selectedPrintColor);
                 const patternUrl = patternCanvas.toDataURL();
 
                 setZonePatterns(prev => ({
                   ...prev,
                   [zoneId]: { type: 'print', url: patternUrl }
                 }));
+
+                setPrintMetadata(prev => ({
+                  ...prev,
+                  [zoneId]: {
+                    type: printKey,
+                    zone: zoneId,
+                    zoneName: template.zones.find(z => z.id === zoneId)?.label,
+                    printColor: selectedPrintColor,
+                    appliedAt: new Date().toISOString()
+                  }
+                }));
               }
             });
 
-            toast.success(`✓ Added ${printKey} print`);
+            toast.success(`Added ${printKey} print`);
             executed = true;
             break;
           }
@@ -594,7 +485,7 @@ const DesignCanvas = ({
           return updated;
         });
         setEmbroideryMetadata({});
-        toast.success('✓ Removed all embroidery');
+        toast.success('Removed all embroidery');
         executed = true;
       } else if (lowerCommand.includes('print')) {
         setZonePatterns(prev => {
@@ -606,12 +497,14 @@ const DesignCanvas = ({
           });
           return updated;
         });
-        toast.success('✓ Removed all prints');
+        setPrintMetadata({});
+        toast.success('Removed all prints');
         executed = true;
       } else if (lowerCommand.includes('all') || lowerCommand.includes('everything')) {
         setZonePatterns({});
         setEmbroideryMetadata({});
-        toast.success('✓ Cleared all patterns');
+        setPrintMetadata({});
+        toast.success('Cleared all patterns');
         executed = true;
       }
     }
@@ -766,8 +659,11 @@ const DesignCanvas = ({
       zoneColors: { ...zoneColors },
       zonePatterns: { ...zonePatterns },
       embroideryMetadata: { ...embroideryMetadata },
+      printMetadata: { ...printMetadata },
       currentColor,
-      sleeveStyle
+      sleeveStyle,
+      selectedEmbroideryColor,
+      selectedPrintColor
     };
 
     setHistory(prev => {
@@ -776,7 +672,7 @@ const DesignCanvas = ({
       return newHistory.slice(-50);
     });
     setHistoryIndex(prev => Math.min(prev + 1, 49));
-  }, [zoneColors, zonePatterns, embroideryMetadata, currentColor, sleeveStyle, historyIndex]);
+  }, [zoneColors, zonePatterns, embroideryMetadata, printMetadata, currentColor, sleeveStyle, selectedEmbroideryColor, selectedPrintColor, historyIndex]);
 
   const handleUndo = useCallback(() => {
     if (historyIndex > 0) {
@@ -786,8 +682,11 @@ const DesignCanvas = ({
       setZoneColors(state.zoneColors);
       setZonePatterns(state.zonePatterns);
       setEmbroideryMetadata(state.embroideryMetadata);
+      setPrintMetadata(state.printMetadata);
       setCurrentColor(state.currentColor);
       setSleeveStyle(state.sleeveStyle);
+      setSelectedEmbroideryColor(state.selectedEmbroideryColor);
+      setSelectedPrintColor(state.selectedPrintColor);
       setHistoryIndex(newIndex);
     }
   }, [history, historyIndex]);
@@ -800,8 +699,11 @@ const DesignCanvas = ({
       setZoneColors(state.zoneColors);
       setZonePatterns(state.zonePatterns);
       setEmbroideryMetadata(state.embroideryMetadata);
+      setPrintMetadata(state.printMetadata);
       setCurrentColor(state.currentColor);
       setSleeveStyle(state.sleeveStyle);
+      setSelectedEmbroideryColor(state.selectedEmbroideryColor);
+      setSelectedPrintColor(state.selectedPrintColor);
       setHistoryIndex(newIndex);
     }
   }, [history, historyIndex]);
@@ -838,7 +740,7 @@ const DesignCanvas = ({
       zone: selectedZone,
       zoneName: template.zones.find(z => z.id === selectedZone)?.label,
       density: pattern.density,
-      threadColor: pattern.threadColors[0],
+      threadColor: selectedEmbroideryColor,
       appliedAt: new Date().toISOString()
     };
 
@@ -847,7 +749,7 @@ const DesignCanvas = ({
       [selectedZone]: metadata
     }));
 
-    const patternCanvas = pattern.createPattern(pattern.threadColors[0]);
+    const patternCanvas = pattern.createPattern(selectedEmbroideryColor);
     const patternUrl = patternCanvas.toDataURL();
 
     setZonePatterns(prev => ({
@@ -863,17 +765,31 @@ const DesignCanvas = ({
     if (!selectedZone) return;
 
     const print = FABRIC_PRINTS[printKey];
-    if (!print) return;
+    if (!print || !print.createPattern) return;
 
-    // Keep the current color for this zone
-    const currentZoneColor = zoneColors[selectedZone] || currentColor;
-    
-    const patternCanvas = print.createPattern(currentZoneColor);
-    const patternUrl = patternCanvas.toDataURL();
+    // Use the selected print color instead of zone color
+    const canvas = print.createPattern(selectedPrintColor);
+    const url = canvas.toDataURL('image/png');
 
     setZonePatterns(prev => ({
       ...prev,
-      [selectedZone]: { type: 'print', url: patternUrl }
+      [selectedZone]: {
+        type: 'print',
+        key: printKey,
+        url,
+        color: selectedPrintColor
+      }
+    }));
+
+    setPrintMetadata(prev => ({
+      ...prev,
+      [selectedZone]: {
+        type: printKey,
+        zone: selectedZone,
+        zoneName: template.zones.find(z => z.id === selectedZone)?.label,
+        printColor: selectedPrintColor,
+        appliedAt: new Date().toISOString()
+      }
     }));
 
     saveToHistory();
@@ -896,6 +812,12 @@ const DesignCanvas = ({
     });
 
     setEmbroideryMetadata(prev => {
+      const updated = { ...prev };
+      delete updated[selectedZone];
+      return updated;
+    });
+
+    setPrintMetadata(prev => {
       const updated = { ...prev };
       delete updated[selectedZone];
       return updated;
@@ -979,13 +901,14 @@ const DesignCanvas = ({
           sleeveStyle,
           color: currentColor,
           baseColor: currentColor,
-          embroideryMetadata: Object.values(embroideryMetadata)
+          embroideryMetadata: Object.values(embroideryMetadata),
+          printMetadata: Object.values(printMetadata)
         });
       }
     };
 
     exportDesign();
-  }, [zoneColors, zonePatterns, currentColor, sleeveStyle, embroideryMetadata, onDesignChange, svgToPng]);
+  }, [zoneColors, zonePatterns, currentColor, sleeveStyle, embroideryMetadata, printMetadata, onDesignChange, svgToPng]);
 
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
@@ -1049,11 +972,10 @@ const DesignCanvas = ({
                   setAiCommandMode(!aiCommandMode);
                   setAiHelperMode(false);
                 }}
-                className={`p-2 rounded-lg transition-all ${
-                  aiCommandMode 
-                    ? 'bg-indigo-600 text-white shadow-lg' 
-                    : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
-                }`}
+                className={`p-2 rounded-lg transition-all ${aiCommandMode
+                  ? 'bg-indigo-600 text-white shadow-lg'
+                  : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
+                  }`}
                 title="Quick Edit Commands">
                 <Wand2 size={18} />
               </button>
@@ -1062,11 +984,10 @@ const DesignCanvas = ({
                   setAiHelperMode(!aiHelperMode);
                   setAiCommandMode(false);
                 }}
-                className={`p-2 rounded-lg transition-all ${
-                  aiHelperMode 
-                    ? 'bg-blue-600 text-white shadow-lg' 
-                    : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                }`}
+                className={`p-2 rounded-lg transition-all ${aiHelperMode
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                  }`}
                 title="AI Design Helper">
                 <MessageCircle size={18} />
               </button>
@@ -1094,7 +1015,7 @@ const DesignCanvas = ({
                   {aiCommandMode ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </button>
               </div>
-              
+
               <p className="text-xs text-indigo-700 mb-4">
                 Type commands like "make body red" or "full sleeve" for instant edits
               </p>
@@ -1170,7 +1091,7 @@ const DesignCanvas = ({
                   <ChevronUp size={20} />
                 </button>
               </div>
-              
+
               <p className="text-xs text-blue-700 mb-4 leading-relaxed">
                 Get expert advice on your design! Ask about colors, fabric suitability, or occasion appropriateness.
               </p>
@@ -1287,10 +1208,10 @@ const DesignCanvas = ({
                     id={`pattern-${zoneId}`}
                     x="0"
                     y="0"
-                    width="100"
-                    height="100"
+                    width="120"
+                    height="120"
                     patternUnits="userSpaceOnUse">
-                    <image href={pattern.url} width="100" height="100" />
+                    <image href={pattern.url} width="120" height="120" />
                   </pattern>
                 ))}
               </defs>
@@ -1298,10 +1219,10 @@ const DesignCanvas = ({
               {template.zones.map((zone) => {
                 const sleeveVis = getSleeveVisibility(zone.id);
                 const hasPattern = zonePatterns[zone.id];
-                
+
                 return sleeveVis.visible && (
                   <g key={zone.id}>
-                    {/* Base color layer - always render */}
+                    {/* Base color layer */}
                     <path
                       d={zone.path}
                       fill={getZoneColor(zone.id)}
@@ -1310,21 +1231,29 @@ const DesignCanvas = ({
                         clipPath: sleeveVis.clipPath || 'none'
                       }}
                     />
-                    
-                    {/* Pattern layer on top - only if pattern exists */}
-                    {hasPattern && (
+
+                    {/* Pattern layer on top */}
+                    {hasPattern?.type === 'print' && (
                       <path
                         d={zone.path}
                         fill={`url(#pattern-${zone.id})`}
-                        stroke="none"
+                        opacity="0.85"
                         style={{
-                          clipPath: sleeveVis.clipPath || 'none',
-                          opacity: 0.8
+                          mixBlendMode: 'multiply'
                         }}
                       />
                     )}
-                    
-                    {/* Stroke/border layer - for selection and hover */}
+
+                    {/* Embroidery overlay */}
+                    {hasPattern?.type === 'embroidery' && (
+                      <path
+                        d={zone.path}
+                        fill={`url(#pattern-${zone.id})`}
+                        opacity="0.9"
+                      />
+                    )}
+
+                    {/* Stroke/border layer */}
                     <path
                       d={zone.path}
                       fill="none"
@@ -1351,11 +1280,10 @@ const DesignCanvas = ({
                 <button
                   key={zone.id}
                   onClick={() => handleZoneClick(zone.id)}
-                  className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${
-                    selectedZone === zone.id
-                      ? 'border-secondary bg-secondary/5'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}>
+                  className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${selectedZone === zone.id
+                    ? 'border-secondary bg-secondary/5'
+                    : 'border-gray-200 hover:border-gray-300'
+                    }`}>
                   {zone.label}
                 </button>
               ))}
@@ -1383,8 +1311,29 @@ const DesignCanvas = ({
             <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-4">
               <h4 className="font-bold text-sm text-amber-900 mb-2">Applied Embroidery</h4>
               {Object.entries(embroideryMetadata).map(([zoneId, data]) => (
-                <div key={zoneId} className="text-xs text-amber-800 mb-1">
-                  {data.zoneName}: {EMBROIDERY_PATTERNS[data.type].name}
+                <div key={zoneId} className="text-xs text-amber-800 mb-1 flex items-center gap-2">
+                  <span>{data.zoneName}: {EMBROIDERY_PATTERNS[data.type].name}</span>
+                  <div
+                    className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
+                    style={{ backgroundColor: data.threadColor }}
+                    title={`Thread color: ${data.threadColor}`}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {Object.keys(printMetadata).length > 0 && (
+            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h4 className="font-bold text-sm text-blue-900 mb-2">Applied Prints</h4>
+              {Object.entries(printMetadata).map(([zoneId, data]) => (
+                <div key={zoneId} className="text-xs text-blue-800 mb-1 flex items-center gap-2">
+                  <span>{data.zoneName}: {FABRIC_PRINTS[data.type].name}</span>
+                  <div
+                    className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
+                    style={{ backgroundColor: data.printColor }}
+                    title={`Print color: ${data.printColor}`}
+                  />
                 </div>
               ))}
             </div>
@@ -1423,9 +1372,8 @@ const DesignCanvas = ({
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all capitalize ${
-                    activeTab === tab ? 'bg-secondary text-white' : 'text-gray-600'
-                  }`}>
+                  className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all capitalize ${activeTab === tab ? 'bg-secondary text-white' : 'text-gray-600'
+                    }`}>
                   {tab}
                 </button>
               ))}
@@ -1516,11 +1464,10 @@ const DesignCanvas = ({
                             }
                             saveToHistory();
                           }}
-                          className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${
-                            sleeveStyle === style.value
-                              ? 'border-secondary bg-secondary/5'
-                              : 'border-gray-200 hover:border-gray-300'
-                          }`}>
+                          className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${sleeveStyle === style.value
+                            ? 'border-secondary bg-secondary/5'
+                            : 'border-gray-200 hover:border-gray-300'
+                            }`}>
                           {style.label}
                         </button>
                       ))}
@@ -1540,9 +1487,33 @@ const DesignCanvas = ({
                         Select embroidery for {template.zones.find(z => z.id === selectedZone)?.label}
                       </p>
                     </div>
+
+                    {/* Embroidery Color Picker */}
+                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                      <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Embroidery Thread Color</h5>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="color"
+                          value={selectedEmbroideryColor}
+                          onChange={(e) => {
+                            setSelectedEmbroideryColor(e.target.value);
+                          }}
+                          className="w-12 h-12 rounded-lg cursor-pointer border-2 border-white shadow-md"
+                        />
+                        <div className="flex-1">
+                          <input
+                            type="text"
+                            value={selectedEmbroideryColor}
+                            onChange={(e) => setSelectedEmbroideryColor(e.target.value)}
+                            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-xs"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="grid grid-cols-1 gap-3">
                       {Object.entries(EMBROIDERY_PATTERNS).map(([key, config]) => {
-                        const patternCanvas = config.createPattern();
+                        const patternCanvas = config.createPattern(selectedEmbroideryColor);
                         return (
                           <button
                             key={key}
@@ -1573,23 +1544,51 @@ const DesignCanvas = ({
             {activeTab === 'prints' && (
               <div className="space-y-4">
                 {selectedZone ? (
-                  <div className="grid grid-cols-1 gap-3">
-                    {Object.entries(FABRIC_PRINTS).map(([key, config]) => (
-                      <button
-                        key={key}
-                        onClick={() => applyFabricPrint(key)}
-                        className="group p-4 rounded-lg border-2 border-gray-200 hover:border-secondary hover:shadow-md transition-all flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-lg border-2 border-gray-200 overflow-hidden bg-white">
-                          <img src={config.img} alt={config.name} className="w-full h-full object-cover" />
+                  <>
+                    {/* Print Color Picker */}
+                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                      <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Print Color</h5>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="color"
+                          value={selectedPrintColor}
+                          onChange={(e) => {
+                            setSelectedPrintColor(e.target.value);
+                          }}
+                          className="w-12 h-12 rounded-lg cursor-pointer border-2 border-white shadow-md"
+                        />
+                        <div className="flex-1">
+                          <input
+                            type="text"
+                            value={selectedPrintColor}
+                            onChange={(e) => setSelectedPrintColor(e.target.value)}
+                            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-xs"
+                          />
                         </div>
-                        <div className="text-left flex-1">
-                          <div className="text-sm font-semibold text-text">{config.name}</div>
-                          <div className="text-xs text-text/60">{config.description}</div>
-                        </div>
-                        <CheckCircle2 size={18} className="text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </button>
-                    ))}
-                  </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-3">
+                      {Object.entries(FABRIC_PRINTS).map(([key, config]) => {
+                        const previewCanvas = config.createPattern(selectedPrintColor);
+                        return (
+                          <button
+                            key={key}
+                            onClick={() => applyFabricPrint(key)}
+                            className="group p-4 rounded-lg border-2 border-gray-200 hover:border-secondary hover:shadow-md transition-all flex items-center gap-4">
+                            <div className="w-14 h-14 rounded-lg border-2 border-gray-200 overflow-hidden bg-white">
+                              <img src={config.img} alt={config.name} className="w-full h-full object-cover" />
+                            </div>
+                            <div className="text-left flex-1">
+                              <div className="text-sm font-semibold text-text">{config.name}</div>
+                              <div className="text-xs text-text/60">{config.description}</div>
+                            </div>
+                            <CheckCircle2 size={18} className="text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
                 ) : (
                   <div className="text-center py-12">
                     <Move size={40} className="mx-auto mb-3 text-gray-300" />

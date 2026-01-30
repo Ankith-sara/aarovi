@@ -130,12 +130,12 @@ const PlaceOrder = () => {
     }
 
     setIsLoading(true);
-
     const decoded = jwtDecode(token);
 
     try {
       let orderItems = [];
       for (const items in cartItems) {
+        if (items === 'customization') continue;
         for (const item in cartItems[items]) {
           if (cartItems[items][item] > 0) {
             const product = products.find((p) => p._id === items);
@@ -149,6 +149,34 @@ const PlaceOrder = () => {
                 image: product.images?.[0] || null
               });
             }
+          }
+        }
+      }
+
+      if (cartItems.customizations) {
+        for (const customId in cartItems.customizations) {
+          const custom = cartItems.customizations[customId];
+          if (custom && custom.quantity > 0) {
+            orderItems.push({
+              _id: customId,
+              type: 'customization',
+              name: `Custom ${custom.snapshot?.gender || ''} ${custom.snapshot?.dressType || 'Design'}`,
+              quantity: custom.quantity,
+              price: custom.price,
+              // Include all necessary fields
+              gender: custom.snapshot?.gender || '',
+              dressType: custom.snapshot?.dressType || '',
+              fabric: custom.snapshot?.fabric || '',
+              color: custom.snapshot?.color || '',
+              designNotes: custom.snapshot?.designNotes || '',
+              measurements: custom.snapshot?.measurements || {},
+              canvasDesign: custom.snapshot?.canvasDesign || {},
+              referenceImages: custom.snapshot?.referenceImages || [],
+              aiPrompt: custom.snapshot?.aiPrompt || '',
+              neckStyle: custom.snapshot?.neckStyle || '',
+              sleeveStyle: custom.snapshot?.sleeveStyle || '',
+              image: custom.snapshot?.canvasDesign?.pngUrl || custom.snapshot?.canvasDesign?.png || ''
+            });
           }
         }
       }
@@ -287,7 +315,7 @@ const PlaceOrder = () => {
                           value={formData.phone}
                           className="w-full pl-10 pr-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
                           type="tel"
-                          placeholder="+1 (555) 000-0000"
+                          placeholder="+91 1234567890"
                           required
                         />
                       </div>
@@ -400,7 +428,7 @@ const PlaceOrder = () => {
                             I agree to the{' '}
                             <a href="/termsconditions" target="_blank" className="text-secondary font-medium underline hover:text-secondary/80 transition-colors">Terms & Conditions</a>,{' '}
                             <a href="/privacypolicy" target="_blank" className="text-secondary font-medium underline hover:text-secondary/80 transition-colors">Privacy Policy</a>, and{' '}
-                            <a href="/shippingpolicy" target="_blank" className="text-secondary font-medium underline hover:text-secondary/80 transition-colors">Shipping Policy</a>. 
+                            <a href="/shippingpolicy" target="_blank" className="text-secondary font-medium underline hover:text-secondary/80 transition-colors">Shipping Policy</a>.
                             I understand that orders are processed within 0-7 days and Aarovi is not liable for courier delays. *
                           </label>
                         </div>
@@ -487,11 +515,10 @@ const PlaceOrder = () => {
                     <button
                       type="submit"
                       disabled={isLoading || !agreeToTerms}
-                      className={`group w-full py-4 font-bold rounded-full transition-all duration-300 flex items-center justify-center gap-3 ${
-                        !agreeToTerms
+                      className={`group w-full py-4 font-bold rounded-full transition-all duration-300 flex items-center justify-center gap-3 ${!agreeToTerms
                           ? 'bg-background/30 text-text/40 cursor-not-allowed'
                           : 'bg-secondary text-white hover:bg-secondary/90'
-                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       {isLoading ? (
                         <>
@@ -534,15 +561,13 @@ const PlaceOrder = () => {
 const PaymentOption = ({ method, setMethod, type, logo }) => (
   <div
     onClick={() => setMethod(type)}
-    className={`group flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-all duration-300 ${
-      method === type
+    className={`group flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-all duration-300 ${method === type
         ? 'border-secondary bg-secondary/5 shadow-lg'
         : 'border-background/50 hover:border-background hover:shadow-md'
-    }`}
+      }`}
   >
-    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-      method === type ? 'border-secondary' : 'border-background/50'
-    }`}>
+    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${method === type ? 'border-secondary' : 'border-background/50'
+      }`}>
       {method === type && <div className="w-2.5 h-2.5 bg-secondary rounded-full"></div>}
     </div>
 

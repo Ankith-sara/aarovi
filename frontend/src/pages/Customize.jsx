@@ -2,8 +2,8 @@ import React, { useState, useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
 import DesignCanvas from "../components/DesignCanvas";
-import { 
-  Save, ShoppingCart, Upload, CheckCircle2, Ruler, Palette, 
+import {
+  Save, ShoppingCart, Upload, CheckCircle2, Ruler, Palette,
   Shirt, ArrowRight, IndianRupee, ArrowLeft, Info, ChevronRight
 } from "lucide-react";
 
@@ -64,14 +64,14 @@ const Customize = () => {
   const dressTypes = {
     Women: [
       { value: "Kurti", label: "Kurti" },
-      { value: "Kurti Sets", label: "Kurti Sets"},
-      { value: "Lehenga", label: "Lehenga"},
-      { value: "Sheraras", label: "Sheraras"},
+      { value: "Kurti Sets", label: "Kurti Sets" },
+      { value: "Lehenga", label: "Lehenga" },
+      { value: "Sheraras", label: "Sheraras" },
       { value: "Anarkali", label: "Anarkali" }
     ],
     Men: [
       { value: "Kurta", label: "Kurta" },
-      { value: "Kurta Sets", label: "Kurta Sets"},
+      { value: "Kurta Sets", label: "Kurta Sets" },
       { value: "Sherwani", label: "Sherwani" }
     ]
   };
@@ -159,7 +159,7 @@ const Customize = () => {
 
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
@@ -263,17 +263,17 @@ Return JSON only:
       if (response.ok) {
         const data = await response.json();
         const design = JSON.parse(data.structuredDesign || '{}');
-        
+
         if (design.colorPalette && design.colorPalette[0]) {
           setForm(prev => ({ ...prev, color: design.colorPalette[0] }));
         }
-        
-        setForm(prev => ({ 
-          ...prev, 
+
+        setForm(prev => ({
+          ...prev,
           designNotes: design.tailorNotes || form.aiPrompt,
           aiGeneratedDesign: design
         }));
-        
+
         toast.success("AI design generated successfully");
       } else {
         throw new Error("AI generation failed");
@@ -304,10 +304,10 @@ Return JSON only:
   // NEW: Validate measurements before adding to cart
   const validateMeasurements = () => {
     const { bust, waist, hips, shoulder, sleeveLength, length } = form.measurements;
-    
+
     // Check if at least the primary measurements are provided
     if (!bust || !waist || !hips) {
-      toast.error("Please provide Bust, Waist, and Hips measurements");
+      toast.error("Please provide measurements");
       return false;
     }
 
@@ -422,13 +422,12 @@ Return JSON only:
               const Icon = s.icon;
               const isActive = step === s.num;
               const isCompleted = step > s.num;
-              
+
               return (
                 <React.Fragment key={s.num}>
                   <div className="flex flex-col items-center flex-1">
-                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${
-                        isActive ? "bg-secondary text-white shadow-lg" :
-                        isCompleted ? "bg-green-500 text-white shadow-md" : 
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${isActive ? "bg-secondary text-white shadow-lg" :
+                      isCompleted ? "bg-green-500 text-white shadow-md" :
                         "bg-gray-100 text-gray-400 border-2 border-gray-200"
                       }`}>
                       {isCompleted ? (
@@ -437,9 +436,8 @@ Return JSON only:
                         <Icon size={24} />
                       )}
                     </div>
-                    <span className={`text-xs sm:text-sm mt-3 font-semibold text-center transition-colors ${
-                      step >= s.num ? "text-text" : "text-text/40"
-                    }`}>
+                    <span className={`text-xs sm:text-sm mt-3 font-semibold text-center transition-colors ${step >= s.num ? "text-text" : "text-text/40"
+                      }`}>
                       {s.label}
                     </span>
                   </div>
@@ -455,7 +453,7 @@ Return JSON only:
         </div>
 
         {/* Main Content Card */}
-        <div 
+        <div
           className="bg-white rounded-2xl shadow-lg border border-background/20 overflow-hidden"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
@@ -486,11 +484,10 @@ Return JSON only:
                 <div className="grid grid-cols-2 gap-4 sm:gap-5">
                   {["Women", "Men"].map((gender) => (
                     <button key={gender} onClick={() => handleGenderChange(gender)}
-                      className={`group relative p-6 rounded-xl border-2 transition-all duration-300 ${
-                        form.gender === gender 
-                          ? "border-secondary bg-background/20 shadow-md" 
-                          : "border-gray-200 hover:border-secondary/40 hover:shadow-sm"
-                      }`}>
+                      className={`group relative p-6 rounded-xl border-2 transition-all duration-300 ${form.gender === gender
+                        ? "border-secondary bg-background/20 shadow-md"
+                        : "border-gray-200 hover:border-secondary/40 hover:shadow-sm"
+                        }`}>
                       <div className="text-center">
                         <div className="text-2xl sm:text-3xl mb-2">{gender === "Women"}</div>
                         <div className="font-bold text-lg sm:text-xl text-text">{gender}</div>
@@ -520,12 +517,11 @@ Return JSON only:
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
                     {dressTypes[form.gender].map((dress) => (
                       <button key={dress.value} onClick={() => handleDressTypeChange(dress.value)}
-                        className={`p-4 flex flex-row gap-2 justify-center items-center rounded-xl border-2 transition-all duration-300 ${
-                          form.dressType === dress.value 
-                            ? "border-secondary bg-background/20 shadow-md" 
-                            : "border-gray-200 hover:border-secondary/40 hover:shadow-sm"
-                        }`}>
-                          {form.dressType === dress.value && (
+                        className={`p-4 flex flex-row gap-2 justify-center items-center rounded-xl border-2 transition-all duration-300 ${form.dressType === dress.value
+                          ? "border-secondary bg-background/20 shadow-md"
+                          : "border-gray-200 hover:border-secondary/40 hover:shadow-sm"
+                          }`}>
+                        {form.dressType === dress.value && (
                           <div className="flex justify-center">
                             <CheckCircle2 size={16} className="text-secondary" />
                           </div>
@@ -552,11 +548,10 @@ Return JSON only:
                       const price = PRICING_MATRIX[form.dressType]?.[fabric.value] || 0;
                       return (
                         <button key={fabric.value} onClick={() => setForm({ ...form, fabric: fabric.value })}
-                          className={`p-5 rounded-xl border-2 transition-all duration-300 text-left ${
-                            form.fabric === fabric.value 
-                              ? "border-secondary bg-background/20 shadow-md" 
-                              : "border-gray-200 hover:border-secondary/40 hover:shadow-sm"
-                          }`}>
+                          className={`p-5 rounded-xl border-2 transition-all duration-300 text-left ${form.fabric === fabric.value
+                            ? "border-secondary bg-background/20 shadow-md"
+                            : "border-gray-200 hover:border-secondary/40 hover:shadow-sm"
+                            }`}>
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex-1">
                               <div className="font-bold text-base text-text mb-1">{fabric.label}</div>
@@ -627,7 +622,7 @@ Return JSON only:
                     </div>
                     <h4 className="font-bold text-base text-purple-900">AI Design Suggestions</h4>
                   </div>
-                  
+
                   {form.aiGeneratedDesign.colorPalette && (
                     <div className="mb-4 bg-white rounded-lg p-4 border border-purple-100">
                       <p className="text-sm text-purple-700 font-semibold mb-3">Recommended Color Palette</p>
@@ -643,20 +638,20 @@ Return JSON only:
                       </div>
                     </div>
                   )}
-                  
+
                   <div className="space-y-2">
                     {form.aiGeneratedDesign.embroidery && (
                       <div className="text-sm text-purple-800 bg-white rounded-lg p-3 border border-purple-100">
                         <strong>Embroidery:</strong> {form.aiGeneratedDesign.embroidery.type} on {form.aiGeneratedDesign.embroidery.zones.join(', ')}
                       </div>
                     )}
-                    
+
                     {form.aiGeneratedDesign.fabricPrint && (
                       <div className="text-sm text-purple-800 bg-white rounded-lg p-3 border border-purple-100">
                         <strong>Print:</strong> {form.aiGeneratedDesign.fabricPrint} on {form.aiGeneratedDesign.printZones?.join(', ') || 'selected zones'}
                       </div>
                     )}
-                    
+
                     {form.aiGeneratedDesign.tailorNotes && (
                       <div className="text-sm text-purple-700 bg-purple-50 rounded-lg p-4 border border-purple-200 mt-3">
                         <strong className="block mb-1">Tailor Notes:</strong>
@@ -696,26 +691,38 @@ Return JSON only:
                 </p>
               </div>
 
-              {/* Design Notes */}
+              {/* Reference Images */}
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                 <label className="flex items-center gap-3 font-bold text-base mb-4 text-text">
-                  <Info size={20} className="text-secondary" />
-                  <span>Design Notes & Special Instructions</span>
+                  <Upload size={20} className="text-secondary" />
+                  <span>Reference Images</span>
+                  <span className="text-sm text-text/50 font-normal">(Optional, Max 5)</span>
                 </label>
-                <textarea name="designNotes" value={form.designNotes}
-                  placeholder="Share your vision: embroidery preferences, color combinations, traditional or modern look, special occasions, or any specific requirements"
-                  onChange={handleChange}
-                  className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 h-32 focus:border-secondary focus:outline-none transition-all resize-none text-sm"
-                  rows="4" />
+                <p className="text-sm text-text/60 mb-4">
+                  Upload images of designs you like for inspiration
+                </p>
+                <input type="file" multiple accept="image/*" onChange={handleImageChange}
+                  className="block w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-6 focus:border-secondary transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-secondary file:text-white file:font-semibold hover:file:bg-secondary/90 cursor-pointer text-sm bg-white" />
+                {form.referenceImages.length > 0 && (
+                  <div className="mt-5 grid grid-cols-3 sm:grid-cols-5 gap-3">
+                    {form.referenceImages.map((img, idx) => (
+                      <div key={idx} className="group relative">
+                        <img src={img} alt={`Reference ${idx + 1}`}
+                          className="w-full aspect-square object-cover rounded-lg border-2 border-gray-200 group-hover:shadow-md transition-shadow" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-end justify-center pb-2">
+                          <span className="text-white text-xs font-semibold">Image {idx + 1}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {/* Measurements - NOW REQUIRED */}
-              <div className="bg-gradient-to-br from-amber-50 to-white rounded-xl p-6 border-2 border-amber-300">
+              {/* Measurements */}
+              <div className="rounded-xl p-6 border-2 border-gray-200">
                 <label className="flex items-center gap-3 font-bold text-base mb-2 text-text">
                   <Ruler size={20} className="text-secondary" />
                   <span>Measurements</span>
-                  <span className="text-red-500">*</span>
-                  <span className="text-xs font-normal text-amber-600 bg-amber-100 px-2 py-1 rounded-full">Required for Cart</span>
                 </label>
                 <p className="text-sm text-text/60 mb-5">
                   Provide your measurements in inches for a perfect fit. All measurements marked with * are required to add to cart.
@@ -735,17 +742,13 @@ Return JSON only:
                         {required && <span className="text-red-500 ml-1">*</span>}
                       </label>
                       <div className="relative">
-                        <input 
-                          name={key} 
+                        <input
+                          name={key}
                           value={form.measurements[key]}
-                          placeholder={placeholder} 
+                          placeholder={placeholder}
                           onChange={handleMeasurementChange}
-                          className={`w-full border-2 rounded-lg px-4 py-3 pr-16 focus:outline-none transition-all text-sm ${
-                            required 
-                              ? 'border-amber-300 focus:border-amber-500 bg-amber-50/50' 
-                              : 'border-gray-200 focus:border-secondary bg-white'
-                          }`}
-                          type="number" 
+                          className="w-full border-2 border-gray-200 focus:border-secondary bg-white rounded-lg px-4 py-3 pr-16 focus:outline-none transition-all text-sm"
+                          type="number"
                           step="0.5"
                           required={required}
                         />
@@ -759,17 +762,30 @@ Return JSON only:
                   onChange={handleMeasurementChange}
                   className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 mt-5 h-24 focus:border-secondary focus:outline-none transition-all resize-none text-sm"
                   rows="3" />
-                  
+
                 {/* Measurements Help */}
-                <div className="mt-4 p-4 bg-white rounded-lg border border-amber-200">
-                  <p className="text-xs text-amber-800 font-semibold mb-2">📏 Measurement Guide:</p>
-                  <ul className="text-xs text-amber-700 space-y-1">
+                <div className="mt-4 p-4 bg-white rounded-lg border border-secondary/20">
+                  <p className="text-xs text-text font-semibold mb-2">📏 Measurement Guide:</p>
+                  <ul className="text-xs text-text/70 space-y-1">
                     <li>• <strong>Bust:</strong> Measure around the fullest part of your chest</li>
                     <li>• <strong>Waist:</strong> Measure around your natural waistline</li>
                     <li>• <strong>Hips:</strong> Measure around the fullest part of your hips</li>
                     <li>• <strong>Length:</strong> Measure from shoulder to desired hem length</li>
                   </ul>
                 </div>
+              </div>
+
+              {/* Design Notes */}
+              <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                <label className="flex items-center gap-3 font-bold text-base mb-4 text-text">
+                  <Info size={20} className="text-secondary" />
+                  <span>Design Notes & Special Instructions</span>
+                </label>
+                <textarea name="designNotes" value={form.designNotes}
+                  placeholder="Share your vision: embroidery preferences, color combinations, traditional or modern look, special occasions, or any specific requirements"
+                  onChange={handleChange}
+                  className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 h-32 focus:border-secondary focus:outline-none transition-all resize-none text-sm"
+                  rows="4" />
               </div>
 
               {/* Price Estimate */}
@@ -804,33 +820,6 @@ Return JSON only:
                   </div>
                 </div>
               )}
-
-              {/* Reference Images */}
-              <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                <label className="flex items-center gap-3 font-bold text-base mb-4 text-text">
-                  <Upload size={20} className="text-secondary" />
-                  <span>Reference Images</span>
-                  <span className="text-sm text-text/50 font-normal">(Optional, Max 5)</span>
-                </label>
-                <p className="text-sm text-text/60 mb-4">
-                  Upload images of designs you like for inspiration
-                </p>
-                <input type="file" multiple accept="image/*" onChange={handleImageChange}
-                  className="block w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-6 focus:border-secondary transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-secondary file:text-white file:font-semibold hover:file:bg-secondary/90 cursor-pointer text-sm bg-white" />
-                {form.referenceImages.length > 0 && (
-                  <div className="mt-5 grid grid-cols-3 sm:grid-cols-5 gap-3">
-                    {form.referenceImages.map((img, idx) => (
-                      <div key={idx} className="group relative">
-                        <img src={img} alt={`Reference ${idx + 1}`}
-                          className="w-full aspect-square object-cover rounded-lg border-2 border-gray-200 group-hover:shadow-md transition-shadow" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-end justify-center pb-2">
-                          <span className="text-white text-xs font-semibold">Image {idx + 1}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
 
               {/* Navigation */}
               <div className="flex flex-col sm:flex-row justify-between gap-4 pt-8 border-t border-gray-200">
