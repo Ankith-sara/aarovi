@@ -75,7 +75,7 @@ const Product = () => {
       text: `Check out ${productData.name} at Aasvi`,
       url: window.location.href,
     };
-    
+
     if (navigator.share) {
       try {
         await navigator.share(shareData);
@@ -136,11 +136,11 @@ const Product = () => {
 
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
-    
+
     if (isLeftSwipe && currentIndex < productData.images.length - 1) {
       handleNext();
     }
@@ -178,58 +178,34 @@ const Product = () => {
   // Improved size sorting function
   const sortSizes = (sizes) => {
     return [...sizes].sort((a, b) => {
-      // Define size order for letter sizes with proper ordering
-      const sizeOrder = { 
-        'XXS': 0,
-        'XS': 1, 
-        'S': 2, 
-        'M': 3, 
-        'L': 4, 
-        'XL': 5, 
-        'XXL': 6, 
-        'XXXL': 7,
-        'XXXXL': 8,
-        'XXXXXS': 9,
-        '2XL': 6,
-        '3XL': 7,
-        '4XL': 8,
-        '5XL': 9,
-        'XXXS': -1
-      };
-      
-      // Convert to string and uppercase for comparison
+      const sizeOrder = { 'XS': 0, 'S': 1, 'M': 2, 'L': 3, 'XL': 4, 'XXL': 5, 'XXXL': 6, 'XXXXL': 7, '2XL': 5, '3XL': 6, };
+
       const aUpper = a.toString().toUpperCase().trim();
       const bUpper = b.toString().toUpperCase().trim();
-      
+
       // Check if both are numeric sizes
       const aNum = parseInt(a);
       const bNum = parseInt(b);
       const aIsNum = !isNaN(aNum) && aNum.toString() === a.toString().trim();
       const bIsNum = !isNaN(bNum) && bNum.toString() === b.toString().trim();
-      
-      // If both are numbers, sort numerically (28, 30, 32, 34, etc.)
+
       if (aIsNum && bIsNum) {
         return aNum - bNum;
       }
-      
-      // If one is number and one is letter, numbers come first
+
       if (aIsNum && !bIsNum) return -1;
       if (!aIsNum && bIsNum) return 1;
-      
-      // Both are letter sizes - use size order
+
       const aOrder = sizeOrder[aUpper];
       const bOrder = sizeOrder[bUpper];
-      
-      // If both have defined order, sort by order
+
       if (aOrder !== undefined && bOrder !== undefined) {
         return aOrder - bOrder;
       }
-      
-      // If one has defined order and other doesn't
+
       if (aOrder !== undefined) return -1;
       if (bOrder !== undefined) return 1;
-      
-      // Fallback to alphabetical
+
       return aUpper.localeCompare(bUpper);
     });
   };
@@ -310,6 +286,11 @@ const Product = () => {
     );
   }
 
+  // FIXED: Parse description into bullet points
+  const descriptionPoints = productData.description
+    ? productData.description.split('\n').filter(point => point.trim())
+    : ['Premium quality ethnic wear', 'Comfortable fabric', 'Perfect for all occasions'];
+
   return (
     <div className="min-h-screen bg-white mt-16 sm:mt-20 pb-20 sm:pb-0">
       {/* Product Section */}
@@ -318,7 +299,7 @@ const Product = () => {
           <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-0 sm:gap-6 lg:gap-12">
             <div className="space-y-3 sm:space-y-4 sm:px-6">
               {/* Main Image */}
-              <div 
+              <div
                 className="relative group overflow-hidden bg-gray-50"
                 onTouchStart={onTouchStart}
                 onTouchMove={onTouchMove}
@@ -336,7 +317,7 @@ const Product = () => {
                     draggable="false"
                     loading="eager"
                   />
-                  
+
                   <div className="hidden sm:flex absolute top-4 right-4 bg-white/95 text-text px-3 py-1.5 text-xs font-medium items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg pointer-events-none">
                     <Camera size={12} />
                     <span>Click to enlarge</span>
@@ -358,7 +339,7 @@ const Product = () => {
                       </button>
                     </>
                   )}
-                  
+
                   {/* Image Counter & Swipe Indicator */}
                   <div className="absolute bottom-3 left-0 right-0 flex items-center justify-between px-3">
                     <div className="bg-white/95 px-3 py-1.5 text-xs font-medium text-text shadow-lg">
@@ -382,11 +363,10 @@ const Product = () => {
                     <button
                       key={index}
                       onClick={() => handleThumbnailClick(index)}
-                      className={`flex-shrink-0 w-20 h-24 sm:w-auto sm:h-auto sm:aspect-[4/5] overflow-hidden transition-all duration-300 ${
-                        currentIndex === index 
-                          ? 'ring-2 ring-secondary shadow-lg' 
-                          : 'ring-1 ring-background/50 active:ring-secondary/50'
-                      }`}
+                      className={`flex-shrink-0 w-20 h-24 sm:w-auto sm:h-auto sm:aspect-[4/5] overflow-hidden transition-all duration-300 ${currentIndex === index
+                        ? 'ring-2 ring-secondary shadow-lg'
+                        : 'ring-1 ring-background/50 active:ring-secondary/50'
+                        }`}
                     >
                       <img
                         src={img}
@@ -410,11 +390,10 @@ const Product = () => {
                   <div className="flex gap-2 flex-shrink-0">
                     <button
                       onClick={handleWishlistToggle}
-                      className={`w-11 h-11 flex items-center justify-center transition-all duration-300 active:scale-95 ${
-                        isWishlisted 
-                          ? 'bg-secondary text-white' 
-                          : 'bg-background/50 text-text'
-                      }`}
+                      className={`w-11 h-11 flex items-center justify-center transition-all duration-300 active:scale-95 ${isWishlisted
+                        ? 'bg-secondary text-white'
+                        : 'bg-background/50 text-text'
+                        }`}
                       title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
                     >
                       <Heart
@@ -432,7 +411,7 @@ const Product = () => {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="flex items-baseline gap-3 mb-3">
                   <span className="text-4xl font-serif font-bold text-secondary">{currency}{productData.price}</span>
                   <span className="text-sm text-text/50 font-light">Incl. GST</span>
@@ -457,11 +436,10 @@ const Product = () => {
                     <button
                       key={index}
                       onClick={() => setSize(size === s ? '' : s)}
-                      className={`min-w-[3.5rem] px-4 py-3 text-sm font-semibold transition-all duration-200 active:scale-95 ${
-                        size === s
-                          ? 'bg-secondary text-white'
-                          : 'bg-background/40 text-text'
-                      }`}
+                      className={`min-w-[3.5rem] px-4 py-3 text-sm font-semibold transition-all duration-200 active:scale-95 ${size === s
+                        ? 'bg-secondary text-white'
+                        : 'bg-background/40 text-text'
+                        }`}
                     >
                       {s}
                     </button>
@@ -530,10 +508,20 @@ const Product = () => {
               <div className="border-t border-background/50 pt-5">
                 <div className="space-y-1">
                   {[
-                    { id: 'description', title: 'Product Details', content: productData.description },
-                    { 
-                      id: 'washcare', 
-                      title: 'Care Instructions', 
+                    {
+                      id: 'description',
+                      title: 'Product Details',
+                      content: (
+                        <ul className="list-disc pl-5 space-y-2">
+                          {descriptionPoints.map((point, index) => (
+                            <li key={index}>{point}</li>
+                          ))}
+                        </ul>
+                      )
+                    },
+                    {
+                      id: 'washcare',
+                      title: 'Care Instructions',
                       content: (
                         <ul className="space-y-1.5 text-sm">
                           <li>• Dry clean or hand wash with mild detergent</li>
@@ -543,19 +531,19 @@ const Product = () => {
                         </ul>
                       )
                     },
-                    { 
-                      id: 'delivery', 
-                      title: 'Shipping & Delivery', 
+                    {
+                      id: 'delivery',
+                      title: 'Shipping & Delivery',
                       content: (
                         <div className="text-sm space-y-1.5">
-                          <p>• Standard: 3-5 business days</p>
-                          <p>• Express: 1-2 business days (extra charges)</p>
+                          <p>• Standard: 7-9 business days</p>
+                          <p>• Express: 4-5 business days (extra charges)</p>
                         </div>
                       )
                     },
-                    { 
-                      id: 'returns', 
-                      title: 'Returns & Exchanges', 
+                    {
+                      id: 'returns',
+                      title: 'Returns & Exchanges',
                       content: (
                         <div className="text-sm space-y-1.5">
                           <p>• 7-day return policy from delivery</p>
@@ -588,11 +576,10 @@ const Product = () => {
       </section>
 
       {/* Mobile Sticky Bottom Bar */}
-      <div 
+      <div
         ref={stickyBarRef}
-        className={`sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-background/50 p-4 transition-transform duration-300 z-40 ${
-          showStickyBar ? 'translate-y-0' : 'translate-y-full'
-        }`}
+        className={`sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-background/50 p-4 transition-transform duration-300 z-40 ${showStickyBar ? 'translate-y-0' : 'translate-y-full'
+          }`}
       >
         <div className="flex gap-3">
           <div className="flex-1">
@@ -629,8 +616,8 @@ const Product = () => {
 
       {/* Image Modal */}
       {isModalOpen && (
-        <div 
-          className="fixed inset-0 bg-black/95 flex items-center justify-center z-50" 
+        <div
+          className="fixed inset-0 bg-black/95 flex items-center justify-center z-50"
           onClick={closeModal}
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
@@ -641,7 +628,7 @@ const Product = () => {
               src={modalImage}
               alt="Product Detail"
               className="max-w-full max-h-full object-contain transition-transform duration-200 select-none"
-              style={{ 
+              style={{
                 transform: `scale(${zoomLevel})`,
                 imageRendering: '-webkit-optimize-contrast',
               }}
@@ -656,7 +643,7 @@ const Product = () => {
           >
             <X size={20} />
           </button>
-          
+
           {/* Desktop Navigation */}
           <button
             className="hidden sm:flex absolute top-1/2 left-6 -translate-y-1/2 w-12 h-12 bg-white/95 text-text items-center justify-center active:bg-white transition-colors shadow-xl"
@@ -664,7 +651,7 @@ const Product = () => {
           >
             <ChevronLeft size={20} />
           </button>
-          
+
           <button
             className="hidden sm:flex absolute top-1/2 right-6 -translate-y-1/2 w-12 h-12 bg-white/95 text-text items-center justify-center active:bg-white transition-colors shadow-xl"
             onClick={(e) => { e.stopPropagation(); handleNext(); }}

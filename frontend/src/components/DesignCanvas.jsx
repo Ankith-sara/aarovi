@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
-  Palette, Trash2, Undo, Redo,
-  Move, Info, Settings, CheckCircle2, X, Menu, MessageCircle, AlertTriangle, Lightbulb, ChevronDown, ChevronUp, Wand2
+  Palette, Trash2, Undo, Redo, Info, CheckCircle2, X, Menu,
+  Wand2, Upload, Grid, Sparkles, Image as ImageIcon, Ruler, ShirtIcon
 } from 'lucide-react';
 import {
   SVG_TEMPLATES,
@@ -9,10 +9,6 @@ import {
   FABRIC_PRINTS as IMPORTED_PRINTS
 } from '../data/svg_templates';
 import { toast } from 'react-toastify';
-
-// EMBROIDERY PATTERNS & FABRIC PRINTS
-const EMBROIDERY_PATTERNS = IMPORTED_EMBROIDERY;
-const FABRIC_PRINTS = IMPORTED_PRINTS;
 
 // HELPER FUNCTIONS
 const getEssentialZones = (zones, dressType) => {
@@ -56,105 +52,6 @@ const getEssentialZones = (zones, dressType) => {
   });
 };
 
-// Color name to hex mapping
-const COLOR_MAP = {
-  'red': '#DC2626', 'blue': '#3B82F6', 'green': '#10B981',
-  'yellow': '#F59E0B', 'orange': '#F97316', 'purple': '#A855F7',
-  'pink': '#EC4899', 'brown': '#A52A2A', 'black': '#1F2937',
-  'white': '#FFFFFF', 'gray': '#9CA3AF', 'grey': '#9CA3AF',
-  'maroon': '#800000', 'navy': '#1E40AF', 'gold': '#D4AF37',
-  'silver': '#C0C0C0', 'beige': '#F5F5DC', 'ivory': '#FFFFF0',
-  'teal': '#14B8A6', 'turquoise': '#06B6D4', 'lavender': '#E9D5FF',
-  'magenta': '#D946EF', 'olive': '#84CC16', 'coral': '#FB7185',
-  'peach': '#FBBF24', 'mint': '#6EE7B7', 'cream': '#FEF3C7',
-  'burgundy': '#991B1B', 'mustard': '#EAB308', 'emerald': '#10B981',
-  'crimson': '#DC2626', 'indigo': '#6366F1', 'cyan': '#06B6D4'
-};
-
-// FABRIC CHARACTERISTICS DATABASE
-const FABRIC_DATABASE = {
-  'Cotton': {
-    weight: 'light',
-    drape: 'structured',
-    occasion: ['casual', 'daily'],
-    bestFor: ['summer', 'daily wear'],
-    embroideryCompatible: ['threadWork', 'chikankari'],
-    printCompatible: ['block', 'bagru', 'kalamkari'],
-    care: 'easy',
-    characteristics: 'breathable, comfortable, easy to maintain'
-  },
-  'Silk': {
-    weight: 'medium-heavy',
-    drape: 'flowing',
-    occasion: ['formal', 'wedding', 'festive'],
-    bestFor: ['special occasions', 'traditional events'],
-    embroideryCompatible: ['zardosi', 'maggam', 'threadWork'],
-    printCompatible: ['painting', 'floral'],
-    care: 'delicate',
-    characteristics: 'luxurious, rich sheen, elegant drape'
-  },
-  'Georgette': {
-    weight: 'light',
-    drape: 'flowing',
-    occasion: ['formal', 'party', 'festive'],
-    bestFor: ['evening wear', 'parties'],
-    embroideryCompatible: ['sequins', 'threadWork'],
-    printCompatible: ['floral', 'painting'],
-    care: 'moderate',
-    characteristics: 'sheer, lightweight, elegant flow'
-  },
-  'Chiffon': {
-    weight: 'very light',
-    drape: 'flowing',
-    occasion: ['formal', 'party'],
-    bestFor: ['summer events', 'light occasions'],
-    embroideryCompatible: ['sequins'],
-    printCompatible: ['floral', 'painting'],
-    care: 'delicate',
-    characteristics: 'transparent, delicate, airy'
-  },
-  'Chanderi': {
-    weight: 'light',
-    drape: 'structured',
-    occasion: ['festive', 'traditional'],
-    bestFor: ['traditional events', 'festivals'],
-    embroideryCompatible: ['threadWork', 'chikankari'],
-    printCompatible: ['block', 'kalamkari'],
-    care: 'moderate',
-    characteristics: 'glossy transparency, traditional appeal'
-  },
-  'Linen': {
-    weight: 'medium',
-    drape: 'structured',
-    occasion: ['casual', 'daily'],
-    bestFor: ['summer', 'casual wear'],
-    embroideryCompatible: ['threadWork'],
-    printCompatible: ['block', 'bagru'],
-    care: 'easy',
-    characteristics: 'crisp, breathable, wrinkle-prone'
-  },
-  'Velvet': {
-    weight: 'heavy',
-    drape: 'structured',
-    occasion: ['winter', 'wedding', 'festive'],
-    bestFor: ['winter weddings', 'royal events'],
-    embroideryCompatible: ['zardosi', 'maggam'],
-    printCompatible: [],
-    care: 'difficult',
-    characteristics: 'rich texture, warm, luxurious'
-  },
-  'Rayon': {
-    weight: 'light-medium',
-    drape: 'flowing',
-    occasion: ['casual', 'daily', 'party'],
-    bestFor: ['daily wear', 'casual events'],
-    embroideryCompatible: ['threadWork'],
-    printCompatible: ['floral', 'painting', 'block'],
-    care: 'easy',
-    characteristics: 'soft, affordable, versatile'
-  }
-};
-
 // MAIN COMPONENT
 const DesignCanvas = ({
   onDesignChange,
@@ -165,33 +62,50 @@ const DesignCanvas = ({
 }) => {
   const svgRef = useRef(null);
   const containerRef = useRef(null);
+  
+  // Primary Tab State
+  const [activeTab, setActiveTab] = useState('fabric');
+  
+  // Print Mode State
+  const [printMode, setPrintMode] = useState('browse'); // 'browse' | 'ai' | 'upload' | 'basic'
+  const [printCategory, setPrintCategory] = useState('floral');
+  
+  // Zone & Design State
   const [selectedZone, setSelectedZone] = useState(null);
   const [zoneColors, setZoneColors] = useState({});
   const [zonePatterns, setZonePatterns] = useState({});
-  const [activeTab, setActiveTab] = useState('colors');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [currentColor, setCurrentColor] = useState(selectedColor);
   const [embroideryMetadata, setEmbroideryMetadata] = useState({});
   const [printMetadata, setPrintMetadata] = useState({});
+  
+  // Embroidery State
+  const [embroideryColor, setEmbroideryColor] = useState('#ec4899');
+  
+  // Print State - DEFAULT TO BLACK
+  const [printColor, setPrintColor] = useState('#000000');
+  
+  // Fabric State
+  const [fabricColor, setFabricColor] = useState(selectedColor);
   const [sleeveStyle, setSleeveStyle] = useState('full');
+  
+  // UI State
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [initialized, setInitialized] = useState(false);
-
-  // Separate color states for embroidery and prints
-  const [selectedEmbroideryColor, setSelectedEmbroideryColor] = useState('#ec4899');
-  const [selectedPrintColor, setSelectedPrintColor] = useState('#DC2626');
-
-  // AI TEXT COMMAND EDITOR STATES
-  const [aiCommandMode, setAiCommandMode] = useState(false);
-  const [aiCommand, setAiCommand] = useState('');
-  const [commandHistory, setCommandHistory] = useState([]);
-
-  // AI HELPER STATES
-  const [aiHelperMode, setAiHelperMode] = useState(false);
-  const [aiHelperPrompt, setAiHelperPrompt] = useState('');
-  const [aiHelperLoading, setAiHelperLoading] = useState(false);
-  const [aiHelperResponse, setAiHelperResponse] = useState(null);
-
+  
+  // AI Print State
+  const [aiPrintPrompt, setAiPrintPrompt] = useState('');
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [generatedPrint, setGeneratedPrint] = useState(null);
+  const [printScale, setPrintScale] = useState(5);
+  const [printRepeat, setPrintRepeat] = useState('tile');
+  const [printRotation, setPrintRotation] = useState(0);
+  
+  // Upload Print State
+  const [uploadedPrint, setUploadedPrint] = useState(null);
+  const [uploadFitOption, setUploadFitOption] = useState('full');
+  const [uploadRepeat, setUploadRepeat] = useState('tile');
+  
+  // History State
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
@@ -202,428 +116,76 @@ const DesignCanvas = ({
     zones: getEssentialZones(rawTemplate.zones, dressType)
   };
 
-  // ===========================
-  // INTELLIGENT PRE-SUGGESTIONS
-  // ===========================
+  // Print Categories
+  const printCategories = [
+    { id: 'floral', label: 'Floral' },
+    { id: 'ethnic', label: 'Ethnic' },
+    { id: 'geometric', label: 'Geometric' },
+    { id: 'abstract', label: 'Abstract' },
+    { id: 'minimal', label: 'Minimal' }
+  ];
 
-  const getSmartSuggestions = () => {
-    const fabricInfo = FABRIC_DATABASE[fabric] || FABRIC_DATABASE['Cotton'];
-    const suggestions = [];
-
-    // Dress type specific suggestions
-    if (dressType === 'Kurta' || dressType === 'Kurti') {
-      suggestions.push('make body red', 'add chikankari to body', 'full sleeve');
-    } else if (dressType === 'Lehenga') {
-      suggestions.push('make skirt maroon', 'add zardosi to blouse', 'make border gold');
-    } else if (dressType === 'Anarkali') {
-      suggestions.push('make body burgundy', 'add maggam to bodice', 'make flare gold');
-    } else if (dressType === 'Sherara') {
-      suggestions.push('make top teal', 'add threadwork to top', 'make pants matching');
-    }
-
-    // Fabric specific embroidery
-    if (fabricInfo.embroideryCompatible) {
-      const firstCompatible = fabricInfo.embroideryCompatible[0];
-      suggestions.push(`add ${firstCompatible} to body`);
-    }
-
-    // Fabric specific prints
-    if (fabricInfo.printCompatible && fabricInfo.printCompatible.length > 0) {
-      const firstPrint = fabricInfo.printCompatible[0];
-      suggestions.push(`add ${firstPrint} print`);
-    }
-
-    // Occasion based colors
-    if (fabricInfo.occasion.includes('wedding') || fabricInfo.occasion.includes('festive')) {
-      suggestions.push('make everything maroon', 'change sleeves to gold');
-    } else if (fabricInfo.occasion.includes('casual')) {
-      suggestions.push('make everything blue', 'change sleeves to white');
-    }
-
-    // Remove duplicates and return top 6
-    return [...new Set(suggestions)].slice(0, 6);
+  // Categorized Prints
+  const categorizedPrints = {
+    floral: ['floral', 'painting'],
+    ethnic: ['kalamkari', 'block', 'bagru'],
+    geometric: [],
+    abstract: [],
+    minimal: []
   };
 
-  // ===========================
-  // TEXT COMMAND EDITOR LOGIC
-  // ===========================
+  // Basic Patterns
+  const basicPatterns = [
+    { id: 'stripes', label: 'Stripes' },
+    { id: 'checks', label: 'Checks' },
+    { id: 'polka', label: 'Polka' },
+    { id: 'ikat', label: 'Ikat' },
+    { id: 'dots', label: 'Dots' },
+    { id: 'lines', label: 'Lines' }
+  ];
 
-  const parseAndExecuteCommand = (command) => {
-    const lowerCommand = command.toLowerCase().trim();
+  // Embroidery Styles - use actual patterns from SVG template
+  const embroideryStyles = Object.keys(IMPORTED_EMBROIDERY).map(key => ({
+    id: key,
+    label: IMPORTED_EMBROIDERY[key].name,
+    pattern: key
+  }));
 
-    if (!lowerCommand) {
-      toast.error('Please enter a command');
-      return;
-    }
+  // Sleeve Options
+  const sleeveOptions = [
+    { value: 'full', label: 'Full Sleeve' },
+    { value: 'elbow', label: '3/4 Sleeve' },
+    { value: 'short', label: 'Short Sleeve' },
+    { value: 'sleeveless', label: 'Sleeveless' }
+  ];
 
-    let executed = false;
+  // Color Presets
+  const colorPresets = [
+    { name: 'Red', color: '#DC2626' },
+    { name: 'Pink', color: '#EC4899' },
+    { name: 'Purple', color: '#A855F7' },
+    { name: 'Blue', color: '#3B82F6' },
+    { name: 'Green', color: '#10B981' },
+    { name: 'Yellow', color: '#F59E0B' },
+    { name: 'Orange', color: '#F97316' },
+    { name: 'Teal', color: '#14B8A6' },
+    { name: 'Indigo', color: '#6366F1' },
+    { name: 'White', color: '#FFFFFF' },
+    { name: 'Black', color: '#1F2937' },
+    { name: 'Gold', color: '#D4AF37' }
+  ];
 
-    // SLEEVE STYLE COMMANDS
-    if (lowerCommand.includes('full sleeve') || lowerCommand.includes('long sleeve')) {
-      setSleeveStyle('full');
-      toast.success('Changed to full sleeves');
-      executed = true;
-    } else if (lowerCommand.includes('half sleeve') || lowerCommand.includes('elbow') || lowerCommand.includes('3/4')) {
-      setSleeveStyle('elbow');
-      toast.success('Changed to elbow length sleeves');
-      executed = true;
-    } else if (lowerCommand.includes('short sleeve')) {
-      setSleeveStyle('short');
-      toast.success('Changed to short sleeves');
-      executed = true;
-    } else if (lowerCommand.includes('sleeveless') || lowerCommand.includes('no sleeve')) {
-      setSleeveStyle('sleeveless');
-      toast.success('Changed to sleeveless');
-      executed = true;
-    }
-
-    // COLOR COMMANDS
-    if (!executed) {
-      for (const [colorName, hexCode] of Object.entries(COLOR_MAP)) {
-        if (lowerCommand.includes(colorName)) {
-
-          // Make everything [color]
-          if (lowerCommand.includes('everything') || lowerCommand.includes('all')) {
-            const updatedColors = {};
-            template.zones.forEach(zone => {
-              updatedColors[zone.id] = hexCode;
-            });
-            setZoneColors(updatedColors);
-            setCurrentColor(hexCode);
-            toast.success(`Applied ${colorName} to all zones`);
-            executed = true;
-            break;
-          }
-
-          // Zone-specific color changes
-          const zoneKeywords = {
-            body: ['body', 'bodice', 'top'],
-            sleeve: ['sleeve', 'sleeves'],
-            neck: ['neck', 'neckline', 'collar'],
-            skirt: ['skirt'],
-            blouse: ['blouse'],
-            border: ['border'],
-            waist: ['waist'],
-            flare: ['flare'],
-            pants: ['pants', 'bottom']
-          };
-
-          for (const [zoneType, keywords] of Object.entries(zoneKeywords)) {
-            if (keywords.some(keyword => lowerCommand.includes(keyword))) {
-              // Find actual zones matching this type
-              const matchingZones = template.zones.filter(z =>
-                keywords.some(kw => z.id.toLowerCase().includes(kw))
-              );
-
-              if (matchingZones.length > 0) {
-                const updates = {};
-                matchingZones.forEach(zone => {
-                  updates[zone.id] = hexCode;
-                });
-                setZoneColors(prev => ({ ...prev, ...updates }));
-                toast.success(`Changed ${zoneType} to ${colorName}`);
-                executed = true;
-                break;
-              }
-            }
-          }
-
-          // If no specific zone mentioned, change base color
-          if (!executed && !Object.values(zoneKeywords).flat().some(kw => lowerCommand.includes(kw))) {
-            setCurrentColor(hexCode);
-            toast.success(`Changed base color to ${colorName}`);
-            executed = true;
-          }
-
-          if (executed) break;
-        }
-      }
-    }
-
-    // EMBROIDERY COMMANDS
-    if (!executed) {
-      const embroideryPatterns = Object.keys(EMBROIDERY_PATTERNS);
-      for (const pattern of embroideryPatterns) {
-        if (lowerCommand.includes(pattern.toLowerCase())) {
-
-          // Determine target zones
-          let targetZones = [];
-
-          const zoneKeywords = {
-            body: ['body', 'bodice', 'top'],
-            sleeve: ['sleeve', 'sleeves'],
-            neck: ['neck', 'neckline', 'collar'],
-            skirt: ['skirt'],
-            blouse: ['blouse']
-          };
-
-          for (const [zoneType, keywords] of Object.entries(zoneKeywords)) {
-            if (keywords.some(keyword => lowerCommand.includes(keyword))) {
-              const matchingZones = template.zones.filter(z =>
-                keywords.some(kw => z.id.toLowerCase().includes(kw))
-              );
-              targetZones.push(...matchingZones.map(z => z.id));
-            }
-          }
-
-          // If no specific zone, apply to body/bodice
-          if (targetZones.length === 0) {
-            const bodyZones = template.zones.filter(z =>
-              z.id.toLowerCase().includes('body') || z.id.toLowerCase().includes('bodice')
-            );
-            targetZones = bodyZones.map(z => z.id);
-          }
-
-          // Apply embroidery
-          if (targetZones.length > 0) {
-            targetZones.forEach(zoneId => {
-              const embPattern = EMBROIDERY_PATTERNS[pattern];
-              if (embPattern) {
-                const patternCanvas = embPattern.createPattern(selectedEmbroideryColor);
-                const patternUrl = patternCanvas.toDataURL();
-
-                setZonePatterns(prev => ({
-                  ...prev,
-                  [zoneId]: { type: 'embroidery', url: patternUrl }
-                }));
-
-                setEmbroideryMetadata(prev => ({
-                  ...prev,
-                  [zoneId]: {
-                    type: pattern,
-                    zone: zoneId,
-                    zoneName: template.zones.find(z => z.id === zoneId)?.label,
-                    density: embPattern.density,
-                    threadColor: selectedEmbroideryColor,
-                    appliedAt: new Date().toISOString()
-                  }
-                }));
-              }
-            });
-
-            toast.success(`Added ${pattern} embroidery`);
-            executed = true;
-            break;
-          }
-        }
-      }
-    }
-
-    // PRINT COMMANDS
-    if (!executed) {
-      const printPatterns = Object.keys(FABRIC_PRINTS);
-      for (const printKey of printPatterns) {
-        if (lowerCommand.includes(printKey.toLowerCase())) {
-
-          let targetZones = [];
-
-          const zoneKeywords = {
-            body: ['body', 'bodice', 'top'],
-            sleeve: ['sleeve', 'sleeves'],
-            skirt: ['skirt']
-          };
-
-          for (const [zoneType, keywords] of Object.entries(zoneKeywords)) {
-            if (keywords.some(keyword => lowerCommand.includes(keyword))) {
-              const matchingZones = template.zones.filter(z =>
-                keywords.some(kw => z.id.toLowerCase().includes(kw))
-              );
-              targetZones.push(...matchingZones.map(z => z.id));
-            }
-          }
-
-          if (targetZones.length === 0) {
-            const bodyZones = template.zones.filter(z =>
-              z.id.toLowerCase().includes('body') || z.id.toLowerCase().includes('bodice')
-            );
-            targetZones = bodyZones.map(z => z.id);
-          }
-
-          if (targetZones.length > 0) {
-            targetZones.forEach(zoneId => {
-              const print = FABRIC_PRINTS[printKey];
-              if (print && print.createPattern) {
-                const patternCanvas = print.createPattern(selectedPrintColor);
-                const patternUrl = patternCanvas.toDataURL();
-
-                setZonePatterns(prev => ({
-                  ...prev,
-                  [zoneId]: { type: 'print', url: patternUrl }
-                }));
-
-                setPrintMetadata(prev => ({
-                  ...prev,
-                  [zoneId]: {
-                    type: printKey,
-                    zone: zoneId,
-                    zoneName: template.zones.find(z => z.id === zoneId)?.label,
-                    printColor: selectedPrintColor,
-                    appliedAt: new Date().toISOString()
-                  }
-                }));
-              }
-            });
-
-            toast.success(`Added ${printKey} print`);
-            executed = true;
-            break;
-          }
-        }
-      }
-    }
-
-    // REMOVE/CLEAR COMMANDS
-    if (!executed && (lowerCommand.includes('remove') || lowerCommand.includes('clear'))) {
-      if (lowerCommand.includes('embroidery')) {
-        setZonePatterns(prev => {
-          const updated = { ...prev };
-          Object.keys(updated).forEach(key => {
-            if (updated[key].type === 'embroidery') {
-              delete updated[key];
-            }
-          });
-          return updated;
-        });
-        setEmbroideryMetadata({});
-        toast.success('Removed all embroidery');
-        executed = true;
-      } else if (lowerCommand.includes('print')) {
-        setZonePatterns(prev => {
-          const updated = { ...prev };
-          Object.keys(updated).forEach(key => {
-            if (updated[key].type === 'print') {
-              delete updated[key];
-            }
-          });
-          return updated;
-        });
-        setPrintMetadata({});
-        toast.success('Removed all prints');
-        executed = true;
-      } else if (lowerCommand.includes('all') || lowerCommand.includes('everything')) {
-        setZonePatterns({});
-        setEmbroideryMetadata({});
-        setPrintMetadata({});
-        toast.success('Cleared all patterns');
-        executed = true;
-      }
-    }
-
-    if (executed) {
-      setCommandHistory(prev => [...prev, command].slice(-10));
-      setAiCommand('');
-      saveToHistory();
-    } else {
-      toast.warning('Command not recognized. Try: "make body red" or "full sleeve"');
-    }
-  };
-
-  // ===========================
-  // AI HELPER LOGIC
-  // ===========================
-
-  const provideFallbackAnalysis = () => {
-    const fabricInfo = FABRIC_DATABASE[fabric] || FABRIC_DATABASE['Cotton'];
-    const uniqueColors = [...new Set(Object.values(zoneColors))];
-    const embroideryTypes = Object.values(embroideryMetadata).map(e => e.type);
-
-    const issues = [];
-    const suggestions = [];
-
-    if (uniqueColors.length > 4) {
-      issues.push({
-        severity: 'medium',
-        issue: 'Too many colors may look busy',
-        zone: 'overall'
-      });
-      suggestions.push({
-        priority: 'medium',
-        suggestion: 'Limit to 3-4 complementary colors',
-        reasoning: 'Simpler palettes are more elegant'
-      });
-    }
-
-    embroideryTypes.forEach(type => {
-      if (!fabricInfo.embroideryCompatible.includes(type)) {
-        issues.push({
-          severity: 'high',
-          issue: `${type} may not work well with ${fabric}`,
-          zone: 'embroidery'
-        });
-        suggestions.push({
-          priority: 'high',
-          suggestion: `Use ${fabricInfo.embroideryCompatible[0]} instead`,
-          reasoning: `${fabric} works better with lighter embroidery`
-        });
-      }
-    });
-
-    return {
-      verdict: issues.length > 2 ? 'needs_improvement' : 'good',
-      overallScore: Math.max(60, 90 - (issues.length * 10)),
-      issues,
-      suggestions: suggestions.length > 0 ? suggestions : [{
-        priority: 'low',
-        suggestion: 'Design looks balanced',
-        reasoning: 'Good fabric and color choices'
-      }],
-      colorAnalysis: {
-        harmony: uniqueColors.length <= 3 ? 'harmonious' : 'diverse',
-        advice: ['Consider traditional color combinations']
-      },
-      fabricAdvice: {
-        compatibility: 'good',
-        recommendations: [fabricInfo.characteristics]
-      },
-      occasionMatch: {
-        suitable: fabricInfo.occasion,
-        bestTime: 'day'
-      }
-    };
-  };
-
-  const handleAIHelper = async () => {
-    if (!aiHelperPrompt.trim()) {
-      toast.error('Please describe what you need help with');
-      return;
-    }
-
-    setAiHelperLoading(true);
-    setAiHelperResponse(null);
-
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const fallbackAnalysis = provideFallbackAnalysis();
-      setAiHelperResponse(fallbackAnalysis);
-      toast.success('AI design analysis completed!');
-    } catch (error) {
-      console.error('AI Helper Error:', error);
-      const fallbackAnalysis = provideFallbackAnalysis();
-      setAiHelperResponse(fallbackAnalysis);
-      toast.warning('Using fallback analysis');
-    } finally {
-      setAiHelperLoading(false);
-    }
-  };
-
-  // ===========================
-  // REGULAR FUNCTIONS
-  // ===========================
-
-  useEffect(() => {
-    setCurrentColor(selectedColor);
-  }, [selectedColor]);
-
+  // Initialize
   useEffect(() => {
     if (!initialized && template.zones.length > 0) {
       const initialColors = {};
       template.zones.forEach(zone => {
-        initialColors[zone.id] = selectedColor;
+        initialColors[zone.id] = fabricColor;
       });
       setZoneColors(initialColors);
       setInitialized(true);
     }
-  }, [initialized, template.zones, selectedColor]);
+  }, [initialized, template.zones, fabricColor]);
 
   useEffect(() => {
     setInitialized(false);
@@ -637,6 +199,7 @@ const DesignCanvas = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Sleeve Visibility - FIXED to return proper clipPath for sleeve zones
   const getSleeveVisibility = (zoneId) => {
     if (!zoneId.includes('sleeve')) return { visible: true, clipPath: null };
 
@@ -654,16 +217,17 @@ const DesignCanvas = ({
     }
   };
 
+  // History Management
   const saveToHistory = useCallback(() => {
     const state = {
       zoneColors: { ...zoneColors },
       zonePatterns: { ...zonePatterns },
       embroideryMetadata: { ...embroideryMetadata },
       printMetadata: { ...printMetadata },
-      currentColor,
+      fabricColor,
       sleeveStyle,
-      selectedEmbroideryColor,
-      selectedPrintColor
+      printColor,
+      embroideryColor
     };
 
     setHistory(prev => {
@@ -672,7 +236,7 @@ const DesignCanvas = ({
       return newHistory.slice(-50);
     });
     setHistoryIndex(prev => Math.min(prev + 1, 49));
-  }, [zoneColors, zonePatterns, embroideryMetadata, printMetadata, currentColor, sleeveStyle, selectedEmbroideryColor, selectedPrintColor, historyIndex]);
+  }, [zoneColors, zonePatterns, embroideryMetadata, printMetadata, fabricColor, sleeveStyle, printColor, embroideryColor, historyIndex]);
 
   const handleUndo = useCallback(() => {
     if (historyIndex > 0) {
@@ -683,10 +247,10 @@ const DesignCanvas = ({
       setZonePatterns(state.zonePatterns);
       setEmbroideryMetadata(state.embroideryMetadata);
       setPrintMetadata(state.printMetadata);
-      setCurrentColor(state.currentColor);
+      setFabricColor(state.fabricColor);
       setSleeveStyle(state.sleeveStyle);
-      setSelectedEmbroideryColor(state.selectedEmbroideryColor);
-      setSelectedPrintColor(state.selectedPrintColor);
+      setPrintColor(state.printColor || '#000000');
+      setEmbroideryColor(state.embroideryColor || '#ec4899');
       setHistoryIndex(newIndex);
     }
   }, [history, historyIndex]);
@@ -700,10 +264,10 @@ const DesignCanvas = ({
       setZonePatterns(state.zonePatterns);
       setEmbroideryMetadata(state.embroideryMetadata);
       setPrintMetadata(state.printMetadata);
-      setCurrentColor(state.currentColor);
+      setFabricColor(state.fabricColor);
       setSleeveStyle(state.sleeveStyle);
-      setSelectedEmbroideryColor(state.selectedEmbroideryColor);
-      setSelectedPrintColor(state.selectedPrintColor);
+      setPrintColor(state.printColor || '#000000');
+      setEmbroideryColor(state.embroideryColor || '#ec4899');
       setHistoryIndex(newIndex);
     }
   }, [history, historyIndex]);
@@ -714,25 +278,258 @@ const DesignCanvas = ({
     }
   }, []);
 
-  const sleeveOptions = [
-    { value: 'full', label: 'Full Sleeve' },
-    { value: 'elbow', label: '3/4 Sleeve' },
-    { value: 'short', label: 'Short Sleeve' },
-    { value: 'sleeveless', label: 'Sleeveless' }
-  ];
-
+  // Zone Interaction
   const handleZoneClick = (zoneId) => {
     setSelectedZone(zoneId);
   };
 
   const getZoneColor = (zoneId) => {
-    return zoneColors[zoneId] || currentColor;
+    return zoneColors[zoneId] || fabricColor;
   };
 
-  const applyEmbroidery = (patternKey) => {
-    if (!selectedZone) return;
+  // Fabric Tab Functions
+  const applyFabricColor = (color) => {
+    setFabricColor(color);
+    const updatedColors = {};
+    template.zones.forEach(zone => {
+      updatedColors[zone.id] = color;
+    });
+    setZoneColors(updatedColors);
+    saveToHistory();
+  };
 
-    const pattern = EMBROIDERY_PATTERNS[patternKey];
+  // Print Tab Functions - FIXED to use printColor instead of fabricColor
+  const applyBrowsePrint = (printKey) => {
+    if (!selectedZone) {
+      toast.warning('Please select a zone first');
+      return;
+    }
+
+    const print = IMPORTED_PRINTS[printKey];
+    if (!print || !print.createPattern) return;
+
+    const canvas = print.createPattern(printColor);
+    const url = canvas.toDataURL('image/png');
+
+    setZonePatterns(prev => ({
+      ...prev,
+      [selectedZone]: {
+        type: 'print',
+        key: printKey,
+        url,
+        color: printColor
+      }
+    }));
+
+    setPrintMetadata(prev => ({
+      ...prev,
+      [selectedZone]: {
+        type: printKey,
+        zone: selectedZone,
+        zoneName: template.zones.find(z => z.id === selectedZone)?.label,
+        printColor: printColor,
+        appliedAt: new Date().toISOString()
+      }
+    }));
+
+    saveToHistory();
+  };
+
+  const handleAIGeneratePrint = async () => {
+    if (!aiPrintPrompt.trim()) {
+      toast.error('Please describe your desired print');
+      return;
+    }
+
+    setAiGenerating(true);
+    try {
+      // Simulate AI generation (replace with actual API call)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // For demo, use a random existing print
+      const printKeys = Object.keys(IMPORTED_PRINTS);
+      const randomPrint = printKeys[Math.floor(Math.random() * printKeys.length)];
+      const print = IMPORTED_PRINTS[randomPrint];
+      
+      const canvas = print.createPattern(printColor);
+      setGeneratedPrint({
+        url: canvas.toDataURL('image/png'),
+        key: randomPrint
+      });
+    } catch (error) {
+      console.error('AI generation error:', error);
+      toast.error('Failed to generate print');
+    } finally {
+      setAiGenerating(false);
+    }
+  };
+
+  const applyGeneratedPrint = () => {
+    if (!selectedZone || !generatedPrint) {
+      toast.warning('Please select a zone and generate a print first');
+      return;
+    }
+
+    setZonePatterns(prev => ({
+      ...prev,
+      [selectedZone]: {
+        type: 'print',
+        key: 'ai-generated',
+        url: generatedPrint.url,
+        color: printColor,
+        scale: printScale,
+        repeat: printRepeat,
+        rotation: printRotation
+      }
+    }));
+
+    setPrintMetadata(prev => ({
+      ...prev,
+      [selectedZone]: {
+        type: 'AI Generated',
+        zone: selectedZone,
+        zoneName: template.zones.find(z => z.id === selectedZone)?.label,
+        printColor: printColor,
+        scale: printScale,
+        repeat: printRepeat,
+        rotation: printRotation,
+        appliedAt: new Date().toISOString()
+      }
+    }));
+
+    saveToHistory();
+  };
+
+  const handleUploadPrint = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setUploadedPrint(event.target.result);
+      toast.success('Design uploaded successfully');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const applyUploadedPrint = () => {
+    if (!selectedZone || !uploadedPrint) {
+      toast.warning('Please select a zone and upload a design first');
+      return;
+    }
+
+    setZonePatterns(prev => ({
+      ...prev,
+      [selectedZone]: {
+        type: 'print',
+        key: 'uploaded',
+        url: uploadedPrint,
+        fitOption: uploadFitOption,
+        repeat: uploadRepeat
+      }
+    }));
+
+    setPrintMetadata(prev => ({
+      ...prev,
+      [selectedZone]: {
+        type: 'Uploaded Design',
+        zone: selectedZone,
+        zoneName: template.zones.find(z => z.id === selectedZone)?.label,
+        fitOption: uploadFitOption,
+        repeat: uploadRepeat,
+        appliedAt: new Date().toISOString()
+      }
+    }));
+
+    saveToHistory();
+    toast.success('Uploaded design applied!');
+  };
+
+  const applyBasicPattern = (patternId) => {
+    if (!selectedZone) {
+      toast.warning('Please select a zone first');
+      return;
+    }
+
+    // Create a simple pattern based on ID
+    const canvas = document.createElement('canvas');
+    canvas.width = 100;
+    canvas.height = 100;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.fillStyle = fabricColor;
+    ctx.fillRect(0, 0, 100, 100);
+    
+    // Simple pattern rendering - FIXED to use printColor
+    ctx.strokeStyle = printColor;
+    ctx.fillStyle = printColor;
+    ctx.lineWidth = 2;
+    
+    switch(patternId) {
+      case 'stripes':
+        for(let i = 0; i < 100; i += 10) {
+          ctx.beginPath();
+          ctx.moveTo(0, i);
+          ctx.lineTo(100, i);
+          ctx.stroke();
+        }
+        break;
+      case 'checks':
+        for(let i = 0; i < 100; i += 20) {
+          for(let j = 0; j < 100; j += 20) {
+            if ((i + j) % 40 === 0) {
+              ctx.fillRect(i, j, 20, 20);
+            }
+          }
+        }
+        break;
+      case 'polka':
+        for(let i = 10; i < 100; i += 20) {
+          for(let j = 10; j < 100; j += 20) {
+            ctx.beginPath();
+            ctx.arc(i, j, 3, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        break;
+      default:
+        break;
+    }
+    
+    const url = canvas.toDataURL('image/png');
+
+    setZonePatterns(prev => ({
+      ...prev,
+      [selectedZone]: {
+        type: 'print',
+        key: patternId,
+        url,
+        color: printColor
+      }
+    }));
+
+    setPrintMetadata(prev => ({
+      ...prev,
+      [selectedZone]: {
+        type: patternId,
+        zone: selectedZone,
+        zoneName: template.zones.find(z => z.id === selectedZone)?.label,
+        printColor: printColor,
+        appliedAt: new Date().toISOString()
+      }
+    }));
+
+    saveToHistory();
+  };
+
+  // Embroidery Tab Functions
+  const applyEmbroidery = (patternKey) => {
+    if (!selectedZone) {
+      toast.warning('Please select a zone first');
+      return;
+    }
+
+    const pattern = IMPORTED_EMBROIDERY[patternKey];
     if (!pattern) return;
 
     const metadata = {
@@ -740,7 +537,7 @@ const DesignCanvas = ({
       zone: selectedZone,
       zoneName: template.zones.find(z => z.id === selectedZone)?.label,
       density: pattern.density,
-      threadColor: selectedEmbroideryColor,
+      threadColor: embroideryColor,
       appliedAt: new Date().toISOString()
     };
 
@@ -749,7 +546,7 @@ const DesignCanvas = ({
       [selectedZone]: metadata
     }));
 
-    const patternCanvas = pattern.createPattern(selectedEmbroideryColor);
+    const patternCanvas = pattern.createPattern(embroideryColor);
     const patternUrl = patternCanvas.toDataURL();
 
     setZonePatterns(prev => ({
@@ -761,49 +558,9 @@ const DesignCanvas = ({
     if (isMobile) setSidebarOpen(false);
   };
 
-  const applyFabricPrint = (printKey) => {
-    if (!selectedZone) return;
-
-    const print = FABRIC_PRINTS[printKey];
-    if (!print || !print.createPattern) return;
-
-    // Use the selected print color instead of zone color
-    const canvas = print.createPattern(selectedPrintColor);
-    const url = canvas.toDataURL('image/png');
-
-    setZonePatterns(prev => ({
-      ...prev,
-      [selectedZone]: {
-        type: 'print',
-        key: printKey,
-        url,
-        color: selectedPrintColor
-      }
-    }));
-
-    setPrintMetadata(prev => ({
-      ...prev,
-      [selectedZone]: {
-        type: printKey,
-        zone: selectedZone,
-        zoneName: template.zones.find(z => z.id === selectedZone)?.label,
-        printColor: selectedPrintColor,
-        appliedAt: new Date().toISOString()
-      }
-    }));
-
-    saveToHistory();
-    if (isMobile) setSidebarOpen(false);
-  };
-
+  // Clear Functions
   const clearZone = () => {
     if (!selectedZone) return;
-
-    setZoneColors(prev => {
-      const updated = { ...prev };
-      delete updated[selectedZone];
-      return updated;
-    });
 
     setZonePatterns(prev => {
       const updated = { ...prev };
@@ -824,39 +581,10 @@ const DesignCanvas = ({
     });
 
     saveToHistory();
+    toast.success('Zone cleared');
   };
 
-  const applyColorToZone = (color) => {
-    if (!selectedZone) return;
-    setZoneColors(prev => ({ ...prev, [selectedZone]: color }));
-    saveToHistory();
-  };
-
-  const applyColorToAllZones = (color) => {
-    const updatedColors = {};
-    template.zones.forEach(zone => {
-      updatedColors[zone.id] = color;
-    });
-    setZoneColors(updatedColors);
-    saveToHistory();
-  };
-
-  const optimizePngSize = (canvas, maxWidth = 800) => {
-    if (canvas.width > maxWidth) {
-      const ratio = maxWidth / canvas.width;
-      const optimizedCanvas = document.createElement('canvas');
-      optimizedCanvas.width = maxWidth;
-      optimizedCanvas.height = canvas.height * ratio;
-
-      const ctx = optimizedCanvas.getContext('2d');
-      ctx.drawImage(canvas, 0, 0, optimizedCanvas.width, optimizedCanvas.height);
-
-      return optimizedCanvas.toDataURL('image/png', 0.8);
-    }
-
-    return canvas.toDataURL('image/png', 0.8);
-  };
-
+  // Export Design
   const svgToPng = useCallback(() => {
     return new Promise((resolve) => {
       if (!svgRef.current) {
@@ -878,8 +606,7 @@ const DesignCanvas = ({
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0);
 
-        const optimizedPng = optimizePngSize(canvas, 600);
-        resolve(optimizedPng);
+        resolve(canvas.toDataURL('image/png', 0.8));
       };
 
       img.onerror = () => resolve('');
@@ -899,8 +626,8 @@ const DesignCanvas = ({
           zoneColors,
           zonePatterns,
           sleeveStyle,
-          color: currentColor,
-          baseColor: currentColor,
+          color: fabricColor,
+          baseColor: fabricColor,
           embroideryMetadata: Object.values(embroideryMetadata),
           printMetadata: Object.values(printMetadata)
         });
@@ -908,696 +635,743 @@ const DesignCanvas = ({
     };
 
     exportDesign();
-  }, [zoneColors, zonePatterns, currentColor, sleeveStyle, embroideryMetadata, printMetadata, onDesignChange, svgToPng]);
+  }, [zoneColors, zonePatterns, fabricColor, sleeveStyle, embroideryMetadata, printMetadata, onDesignChange, svgToPng]);
 
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
 
-  const colorPresets = [
-    { name: 'Red', color: '#DC2626' },
-    { name: 'Pink', color: '#EC4899' },
-    { name: 'Purple', color: '#A855F7' },
-    { name: 'Blue', color: '#3B82F6' },
-    { name: 'Green', color: '#10B981' },
-    { name: 'Yellow', color: '#F59E0B' },
-    { name: 'Orange', color: '#F97316' },
-    { name: 'Teal', color: '#14B8A6' },
-    { name: 'Indigo', color: '#6366F1' },
-    { name: 'White', color: '#FFFFFF' },
-    { name: 'Black', color: '#1F2937' },
-    { name: 'Gold', color: '#D4AF37' }
-  ];
-
-  const getSeverityBadge = (severity) => {
-    const colors = {
-      high: 'bg-red-100 text-red-800',
-      medium: 'bg-yellow-100 text-yellow-800',
-      low: 'bg-blue-100 text-blue-800'
-    };
-    return colors[severity] || colors.low;
-  };
-
   return (
-    <div className="space-y-6">
-      <div className="grid lg:grid-cols-[1fr_360px] gap-6">
-        <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-          <div className="mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
-                <Palette size={20} className="text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-text">Design Canvas</h3>
-                <p className="text-sm text-text/60">{dressType}</p>
-              </div>
+    <div className="grid lg:grid-cols-[70fr_30fr] gap-6">
+      {/* LEFT PANEL - PREVIEW */}
+      <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
+              <Palette size={20} className="text-white" />
             </div>
-
-            <div className="flex gap-2">
-              <button
-                onClick={handleUndo}
-                disabled={!canUndo}
-                className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                title="Undo">
-                <Undo size={18} />
-              </button>
-              <button
-                onClick={handleRedo}
-                disabled={!canRedo}
-                className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                title="Redo">
-                <Redo size={18} />
-              </button>
-              <button
-                onClick={() => {
-                  setAiCommandMode(!aiCommandMode);
-                  setAiHelperMode(false);
-                }}
-                className={`p-2 rounded-lg transition-all ${aiCommandMode
-                  ? 'bg-indigo-600 text-white shadow-lg'
-                  : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
-                  }`}
-                title="Quick Edit Commands">
-                <Wand2 size={18} />
-              </button>
-              <button
-                onClick={() => {
-                  setAiHelperMode(!aiHelperMode);
-                  setAiCommandMode(false);
-                }}
-                className={`p-2 rounded-lg transition-all ${aiHelperMode
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                  }`}
-                title="AI Design Helper">
-                <MessageCircle size={18} />
-              </button>
-              {isMobile && (
-                <button
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="p-2 bg-secondary text-white rounded-lg">
-                  <Menu size={18} />
-                </button>
-              )}
+            <div>
+              <h3 className="text-xl font-bold text-text">Live Preview</h3>
+              <p className="text-sm text-text/60">{dressType}</p>
             </div>
           </div>
 
-          {/* COLLAPSIBLE TEXT COMMAND EDITOR */}
-          {aiCommandMode && (
-            <div className="mb-6 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg p-5 border-2 border-indigo-300 shadow-md animate-fadeIn">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Wand2 size={20} className="text-indigo-600" />
-                  <h4 className="font-bold text-indigo-900 text-lg">Quick Edit Commands</h4>
-                </div>
-                <button
-                  onClick={() => setAiCommandMode(false)}
-                  className="p-1 hover:bg-indigo-100 rounded transition-colors">
-                  {aiCommandMode ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                </button>
-              </div>
+          <div className="flex gap-2">
+            <button
+              onClick={handleUndo}
+              disabled={!canUndo}
+              className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              title="Undo">
+              <Undo size={18} />
+            </button>
+            <button
+              onClick={handleRedo}
+              disabled={!canRedo}
+              className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              title="Redo">
+              <Redo size={18} />
+            </button>
+            {isMobile && (
+              <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="p-2 bg-secondary text-white rounded-lg">
+                <Menu size={18} />
+              </button>
+            )}
+          </div>
+        </div>
 
-              <p className="text-xs text-indigo-700 mb-4">
-                Type commands like "make body red" or "full sleeve" for instant edits
-              </p>
-
-              <div className="space-y-3">
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={aiCommand}
-                    onChange={(e) => setAiCommand(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter' && aiCommand.trim()) {
-                        parseAndExecuteCommand(aiCommand);
-                      }
-                    }}
-                    placeholder='Type: "make body red" or "full sleeve"'
-                    className="w-full px-4 py-3 border-2 border-indigo-200 rounded-lg focus:border-indigo-400 focus:outline-none text-sm pr-20"
-                  />
-                  <button
-                    onClick={() => parseAndExecuteCommand(aiCommand)}
-                    disabled={!aiCommand.trim()}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold">
-                    Apply
-                  </button>
-                </div>
-
-                {/* Smart Suggestions Based on Dress Type & Fabric */}
-                <div>
-                  <p className="text-xs font-semibold text-indigo-800 mb-2">💡 Suggested for {dressType} in {fabric}:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {getSmartSuggestions().map((suggestion, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => parseAndExecuteCommand(suggestion)}
-                        className="px-3 py-1.5 bg-white border-2 border-indigo-200 rounded-full text-xs text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 transition-all font-medium">
-                        {suggestion}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Command History */}
-                {commandHistory.length > 0 && (
-                  <div>
-                    <p className="text-xs text-indigo-600 mb-1">Recent commands:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {commandHistory.slice(-5).reverse().map((cmd, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => parseAndExecuteCommand(cmd)}
-                          className="px-2 py-0.5 bg-indigo-100 rounded text-xs text-indigo-700 hover:bg-indigo-200">
-                          {cmd}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* AI HELPER MODE */}
-          {aiHelperMode && (
-            <div className="mb-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-5 border-2 border-blue-300 shadow-md animate-fadeIn">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <MessageCircle size={20} className="text-blue-600" />
-                  <h4 className="font-bold text-blue-900 text-lg">AI Design Helper</h4>
-                </div>
-                <button
-                  onClick={() => setAiHelperMode(false)}
-                  className="p-1 hover:bg-blue-100 rounded transition-colors">
-                  <ChevronUp size={20} />
-                </button>
-              </div>
-
-              <p className="text-xs text-blue-700 mb-4 leading-relaxed">
-                Get expert advice on your design! Ask about colors, fabric suitability, or occasion appropriateness.
-              </p>
-
-              <div className="space-y-3">
-                <textarea
-                  value={aiHelperPrompt}
-                  onChange={(e) => setAiHelperPrompt(e.target.value)}
-                  placeholder="Examples:
-• Is this design suitable for a wedding?
-• Does this color scheme work well?
-• Any suggestions to make this more elegant?"
-                  className="w-full px-4 py-3 border-2 border-blue-200 rounded-lg focus:border-blue-400 focus:outline-none text-sm resize-none"
-                  rows="4"
-                  disabled={aiHelperLoading}
-                />
-
-                <button
-                  onClick={handleAIHelper}
-                  disabled={aiHelperLoading || !aiHelperPrompt.trim()}
-                  className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm flex items-center justify-center gap-2 transition-all">
-                  {aiHelperLoading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      <span>Analyzing Design...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Lightbulb size={18} />
-                      <span>Get AI Advice</span>
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* AI HELPER RESPONSE DISPLAY */}
-              {aiHelperResponse && (
-                <div className="mt-5 bg-white rounded-lg p-5 border-2 border-blue-100 shadow-sm space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-gray-200">
-                    <div>
-                      <h5 className="font-bold text-gray-900 text-base">Overall Assessment</h5>
-                      <p className="text-sm text-gray-600 capitalize mt-1">{aiHelperResponse.verdict}</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-3xl font-bold text-blue-600">{aiHelperResponse.overallScore}</div>
-                      <div className="text-xs text-gray-500">Score</div>
-                    </div>
-                  </div>
-
-                  {aiHelperResponse.issues && aiHelperResponse.issues.length > 0 && (
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <AlertTriangle size={16} className="text-orange-600" />
-                        <h6 className="font-bold text-gray-800 text-sm">Issues to Address</h6>
-                      </div>
-                      <div className="space-y-2">
-                        {aiHelperResponse.issues.map((issue, idx) => (
-                          <div key={idx} className="flex gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                            <span className={`px-2 py-1 rounded text-xs font-semibold ${getSeverityBadge(issue.severity)} h-fit`}>
-                              {issue.severity}
-                            </span>
-                            <div className="flex-1">
-                              <p className="text-sm text-gray-800">{issue.issue}</p>
-                              {issue.zone && (
-                                <p className="text-xs text-gray-500 mt-1">Zone: {issue.zone}</p>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {aiHelperResponse.suggestions && aiHelperResponse.suggestions.length > 0 && (
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Lightbulb size={16} className="text-green-600" />
-                        <h6 className="font-bold text-gray-800 text-sm">Recommendations</h6>
-                      </div>
-                      <div className="space-y-2">
-                        {aiHelperResponse.suggestions.map((suggestion, idx) => (
-                          <div key={idx} className="p-3 bg-green-50 rounded-lg border border-green-200">
-                            <div className="flex items-start gap-2">
-                              <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-semibold">
-                                {suggestion.priority}
-                              </span>
-                              <div className="flex-1">
-                                <p className="text-sm text-gray-800 font-medium">{suggestion.suggestion}</p>
-                                {suggestion.reasoning && (
-                                  <p className="text-xs text-gray-600 mt-1 italic">{suggestion.reasoning}</p>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          <div ref={containerRef} className="flex justify-center bg-gray-100 rounded-xl p-8">
-            <svg
-              ref={svgRef}
-              viewBox={template.viewBox}
-              className="w-full max-w-md"
-              style={{ maxHeight: '600px' }}>
-              <defs>
-                {Object.entries(zonePatterns).map(([zoneId, pattern]) => (
-                  <pattern
-                    key={zoneId}
-                    id={`pattern-${zoneId}`}
-                    x="0"
-                    y="0"
-                    width="120"
-                    height="120"
-                    patternUnits="userSpaceOnUse">
-                    <image href={pattern.url} width="120" height="120" />
-                  </pattern>
-                ))}
-              </defs>
-
-              {template.zones.map((zone) => {
-                const sleeveVis = getSleeveVisibility(zone.id);
-                const hasPattern = zonePatterns[zone.id];
-
-                return sleeveVis.visible && (
-                  <g key={zone.id}>
-                    {/* Base color layer */}
-                    <path
-                      d={zone.path}
-                      fill={getZoneColor(zone.id)}
-                      stroke="none"
-                      style={{
-                        clipPath: sleeveVis.clipPath || 'none'
-                      }}
-                    />
-
-                    {/* Pattern layer on top */}
-                    {hasPattern?.type === 'print' && (
-                      <path
-                        d={zone.path}
-                        fill={`url(#pattern-${zone.id})`}
-                        opacity="0.85"
-                        style={{
-                          mixBlendMode: 'multiply'
-                        }}
-                      />
+        <div ref={containerRef} className="flex justify-center bg-gray-100 rounded-xl p-8">
+          <svg
+            ref={svgRef}
+            viewBox={template.viewBox}
+            className="w-full max-w-md"
+            style={{ maxHeight: '600px' }}>
+            <defs>
+              {Object.entries(zonePatterns).map(([zoneId, pattern]) => {
+                const sleeveVis = getSleeveVisibility(zoneId);
+                return (
+                  <React.Fragment key={zoneId}>
+                    <pattern
+                      id={`pattern-${zoneId}`}
+                      x="0"
+                      y="0"
+                      width="120"
+                      height="120"
+                      patternUnits="userSpaceOnUse">
+                      <image href={pattern.url} width="120" height="120" />
+                    </pattern>
+                    {/* FIXED: Add clipPath definition for sleeve zones */}
+                    {sleeveVis.clipPath && (
+                      <clipPath id={`clip-${zoneId}`}>
+                        <rect x="0" y="0" width="100%" height={sleeveVis.clipPath === 'inset(0 0 25% 0)' ? '75%' : '50%'} />
+                      </clipPath>
                     )}
-
-                    {/* Embroidery overlay */}
-                    {hasPattern?.type === 'embroidery' && (
-                      <path
-                        d={zone.path}
-                        fill={`url(#pattern-${zone.id})`}
-                        opacity="0.9"
-                      />
-                    )}
-
-                    {/* Stroke/border layer */}
-                    <path
-                      d={zone.path}
-                      fill="none"
-                      stroke={selectedZone === zone.id ? '#ec4899' : 'rgba(0,0,0,0.1)'}
-                      strokeWidth={selectedZone === zone.id ? 3 : 1}
-                      onClick={() => handleZoneClick(zone.id)}
-                      style={{
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        clipPath: sleeveVis.clipPath || 'none',
-                        pointerEvents: 'all'
-                      }}
-                      className="hover:stroke-2"
-                    />
-                  </g>
+                  </React.Fragment>
                 );
               })}
-            </svg>
-          </div>
+            </defs>
 
-          <div className="mt-6">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {template.zones.filter(zone => getSleeveVisibility(zone.id).visible).map(zone => (
-                <button
-                  key={zone.id}
-                  onClick={() => handleZoneClick(zone.id)}
-                  className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${selectedZone === zone.id
+            {template.zones.map((zone) => {
+              const sleeveVis = getSleeveVisibility(zone.id);
+              const hasPattern = zonePatterns[zone.id];
+
+              return sleeveVis.visible && (
+                <g key={zone.id}>
+                  {/* Base color layer */}
+                  <path
+                    d={zone.path}
+                    fill={getZoneColor(zone.id)}
+                    stroke="none"
+                    clipPath={sleeveVis.clipPath && hasPattern ? `url(#clip-${zone.id})` : 'none'}
+                  />
+
+                  {/* Pattern layer on top - FIXED: Apply clipPath here too */}
+                  {hasPattern?.type === 'print' && (
+                    <path
+                      d={zone.path}
+                      fill={`url(#pattern-${zone.id})`}
+                      opacity="0.85"
+                      clipPath={sleeveVis.clipPath ? `url(#clip-${zone.id})` : 'none'}
+                      style={{
+                        mixBlendMode: 'multiply'
+                      }}
+                    />
+                  )}
+
+                  {/* Embroidery overlay - FIXED: Apply clipPath here too */}
+                  {hasPattern?.type === 'embroidery' && (
+                    <path
+                      d={zone.path}
+                      fill={`url(#pattern-${zone.id})`}
+                      opacity="0.9"
+                      clipPath={sleeveVis.clipPath ? `url(#clip-${zone.id})` : 'none'}
+                    />
+                  )}
+
+                  {/* Stroke/border layer */}
+                  <path
+                    d={zone.path}
+                    fill="none"
+                    stroke={selectedZone === zone.id ? '#ec4899' : 'rgba(0,0,0,0.1)'}
+                    strokeWidth={selectedZone === zone.id ? 3 : 1}
+                    onClick={() => handleZoneClick(zone.id)}
+                    clipPath={sleeveVis.clipPath ? `url(#clip-${zone.id})` : 'none'}
+                    style={{
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      pointerEvents: 'all'
+                    }}
+                    className="hover:stroke-2"
+                  />
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+
+        <div className="mt-6">
+          <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Select Zone</h4>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {template.zones.filter(zone => getSleeveVisibility(zone.id).visible).map(zone => (
+              <button
+                key={zone.id}
+                onClick={() => handleZoneClick(zone.id)}
+                className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${
+                  selectedZone === zone.id
                     ? 'border-secondary bg-secondary/5'
                     : 'border-gray-200 hover:border-gray-300'
-                    }`}>
-                  {zone.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {selectedZone && (
-            <div className="mt-4 p-4 bg-secondary/5 rounded-lg border border-secondary/20 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 size={18} className="text-secondary" />
-                <span className="text-sm font-semibold text-text">
-                  Editing: {template.zones.find(z => z.id === selectedZone)?.label}
-                </span>
-              </div>
-              <button
-                onClick={clearZone}
-                className="px-3 py-1.5 bg-white text-red-600 rounded-lg hover:bg-red-50 transition-all text-xs font-semibold flex items-center gap-1">
-                <Trash2 size={14} />
-                <span>Clear</span>
+                }`}>
+                {zone.label}
               </button>
-            </div>
-          )}
+            ))}
+          </div>
+        </div>
 
-          {Object.keys(embroideryMetadata).length > 0 && (
-            <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-4">
-              <h4 className="font-bold text-sm text-amber-900 mb-2">Applied Embroidery</h4>
-              {Object.entries(embroideryMetadata).map(([zoneId, data]) => (
-                <div key={zoneId} className="text-xs text-amber-800 mb-1 flex items-center gap-2">
-                  <span>{data.zoneName}: {EMBROIDERY_PATTERNS[data.type].name}</span>
-                  <div
-                    className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
-                    style={{ backgroundColor: data.threadColor }}
-                    title={`Thread color: ${data.threadColor}`}
-                  />
-                </div>
-              ))}
+        {selectedZone && (
+          <div className="mt-4 p-4 bg-secondary/5 rounded-lg border border-secondary/20 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 size={18} className="text-secondary" />
+              <span className="text-sm font-semibold text-text">
+                Editing: {template.zones.find(z => z.id === selectedZone)?.label}
+              </span>
             </div>
-          )}
+            <button
+              onClick={clearZone}
+              className="px-3 py-1.5 bg-white text-red-600 rounded-lg hover:bg-red-50 transition-all text-xs font-semibold flex items-center gap-1">
+              <Trash2 size={14} />
+              <span>Clear</span>
+            </button>
+          </div>
+        )}
 
-          {Object.keys(printMetadata).length > 0 && (
-            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h4 className="font-bold text-sm text-blue-900 mb-2">Applied Prints</h4>
-              {Object.entries(printMetadata).map(([zoneId, data]) => (
-                <div key={zoneId} className="text-xs text-blue-800 mb-1 flex items-center gap-2">
-                  <span>{data.zoneName}: {FABRIC_PRINTS[data.type].name}</span>
+        {/* Applied Metadata Display */}
+        {Object.keys(embroideryMetadata).length > 0 && (
+          <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <h4 className="font-bold text-sm text-amber-900 mb-2">Applied Embroidery</h4>
+            {Object.entries(embroideryMetadata).map(([zoneId, data]) => (
+              <div key={zoneId} className="text-xs text-amber-800 mb-1 flex items-center gap-2">
+                <span>{data.zoneName}: {data.type}</span>
+                <div
+                  className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
+                  style={{ backgroundColor: data.threadColor }}
+                  title={`Thread color: ${data.threadColor}`}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {Object.keys(printMetadata).length > 0 && (
+          <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 className="font-bold text-sm text-blue-900 mb-2">Applied Prints</h4>
+            {Object.entries(printMetadata).map(([zoneId, data]) => (
+              <div key={zoneId} className="text-xs text-blue-800 mb-1 flex items-center gap-2">
+                <span>{data.zoneName}: {data.type}</span>
+                {data.printColor && (
                   <div
                     className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
                     style={{ backgroundColor: data.printColor }}
                     title={`Print color: ${data.printColor}`}
                   />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Tools Sidebar */}
-        <div className={`
-          ${isMobile ? 'fixed inset-x-0 bottom-0 z-50 transform transition-transform duration-300' : 'relative'}
-          ${isMobile && !sidebarOpen ? 'translate-y-full' : 'translate-y-0'}
-          bg-white rounded-t-2xl lg:rounded-xl shadow-xl border border-gray-200 
-          ${isMobile ? 'max-h-[80vh] overflow-y-auto' : 'p-6'}
-        `}>
-          {isMobile && (
-            <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between rounded-t-2xl">
-              <div className="flex items-center gap-3">
-                <Settings className="text-secondary" size={20} />
-                <h3 className="text-lg font-bold">Design Tools</h3>
+                )}
               </div>
-              <button onClick={() => setSidebarOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
-                <X size={20} />
-              </button>
-            </div>
-          )}
+            ))}
+          </div>
+        )}
+      </div>
 
-          {!isMobile && (
-            <div className="flex items-center gap-3 pb-5 border-b">
-              <Settings className="text-secondary" size={24} />
-              <h3 className="text-xl font-bold">Design Tools</h3>
-            </div>
-          )}
+      {/* RIGHT PANEL - CONTROLS */}
+      <div className={`
+        ${isMobile ? 'fixed inset-x-0 bottom-0 z-50 transform transition-transform duration-300' : 'relative'}
+        ${isMobile && !sidebarOpen ? 'translate-y-full' : 'translate-y-0'}
+        bg-white rounded-t-2xl lg:rounded-xl shadow-xl border border-gray-200 
+        ${isMobile ? 'max-h-[80vh] overflow-y-auto' : 'p-6'}
+      `}>
+        {isMobile && (
+          <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between rounded-t-2xl z-10">
+            <h3 className="text-lg font-bold">Design Controls</h3>
+            <button onClick={() => setSidebarOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+              <X size={20} />
+            </button>
+          </div>
+        )}
 
-          <div className={isMobile ? 'p-4 space-y-6' : 'space-y-6 mt-6'}>
-            <div className="flex gap-2 p-1 bg-gray-100 rounded-lg text-xs">
-              {['colors', 'styles', 'embroidery', 'prints'].map(tab => (
+        <div className={isMobile ? 'p-4' : ''}>
+          {/* PRIMARY TABS */}
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+            {[
+              { id: 'fabric', label: 'Fabric', icon: Palette },
+              { id: 'print', label: 'Print', icon: Grid },
+              { id: 'embroidery', label: 'Embroidery', icon: Sparkles },
+              { id: 'fit', label: 'Fit & Size', icon: Ruler }
+            ].map(tab => {
+              const Icon = tab.icon;
+              return (
                 <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-all capitalize ${activeTab === tab ? 'bg-secondary text-white' : 'text-gray-600'
-                    }`}>
-                  {tab}
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold transition-all whitespace-nowrap ${
+                    activeTab === tab.id
+                      ? 'bg-secondary text-white shadow-md'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}>
+                  <Icon size={18} />
+                  <span className="text-sm">{tab.label}</span>
                 </button>
-              ))}
-            </div>
+              );
+            })}
+          </div>
 
-            {activeTab === 'colors' && (
-              <div className="space-y-6">
-                <div>
-                  <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Base Color</h4>
-                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center gap-4 mb-4">
+          {/* FABRIC TAB */}
+          {activeTab === 'fabric' && (
+            <div className="space-y-6">
+              <div>
+                <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Base Fabric Color</h4>
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <div className="flex items-center gap-4 mb-4">
+                    <input
+                      type="color"
+                      value={fabricColor}
+                      onChange={(e) => applyFabricColor(e.target.value)}
+                      className="w-16 h-16 rounded-lg cursor-pointer border-2 border-white shadow-md"
+                    />
+                    <div className="flex-1">
+                      <label className="block text-xs font-semibold text-gray-600 mb-1.5">Hex Code</label>
                       <input
-                        type="color"
-                        value={currentColor}
-                        onChange={(e) => {
-                          setCurrentColor(e.target.value);
-                          saveToHistory();
-                        }}
-                        className="w-16 h-16 rounded-lg cursor-pointer border-2 border-white shadow-md"
+                        type="text"
+                        value={fabricColor}
+                        onChange={(e) => applyFabricColor(e.target.value)}
+                        className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-sm"
                       />
-                      <div className="flex-1">
-                        <label className="block text-xs font-semibold text-gray-600 mb-1.5">Hex Code</label>
-                        <input
-                          type="text"
-                          value={currentColor}
-                          onChange={(e) => {
-                            setCurrentColor(e.target.value);
-                            saveToHistory();
-                          }}
-                          className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-sm"
-                        />
-                      </div>
                     </div>
-
-                    <button
-                      onClick={() => applyColorToAllZones(currentColor)}
-                      className="w-full px-4 py-2.5 bg-secondary text-white rounded-lg hover:shadow-md transition-all font-semibold text-sm flex items-center justify-center gap-2">
-                      <Palette size={16} />
-                      Apply to All Zones
-                    </button>
-
-                    {selectedZone && (
-                      <button
-                        onClick={() => applyColorToZone(currentColor)}
-                        className="w-full mt-2 px-4 py-2 bg-white border-2 border-secondary text-secondary rounded-lg hover:bg-secondary hover:text-white transition-all font-semibold text-sm">
-                        Apply to {template.zones.find(z => z.id === selectedZone)?.label}
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Color Presets</h4>
-                  <div className="grid grid-cols-6 gap-2">
-                    {colorPresets.map(preset => (
-                      <button
-                        key={preset.color}
-                        onClick={() => {
-                          setCurrentColor(preset.color);
-                          if (selectedZone) {
-                            applyColorToZone(preset.color);
-                          }
-                          saveToHistory();
-                        }}
-                        className="aspect-square rounded-lg border-2 border-gray-200 hover:border-secondary hover:scale-110 transition-all shadow-sm"
-                        style={{ backgroundColor: preset.color }}
-                        title={preset.name}
-                      />
-                    ))}
                   </div>
                 </div>
               </div>
-            )}
 
-            {activeTab === 'styles' && (
-              <div className="space-y-6">
-                {template.zones.some(z => z.id.includes('sleeve')) && (
-                  <div>
-                    <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Sleeve Length</h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      {sleeveOptions.map(style => (
-                        <button
-                          key={style.value}
-                          onClick={() => {
-                            setSleeveStyle(style.value);
-                            if (style.value === 'sleeveless' && selectedZone && selectedZone.includes('sleeve')) {
-                              setSelectedZone(null);
-                            }
-                            saveToHistory();
-                          }}
-                          className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${sleeveStyle === style.value
+              <div>
+                <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Color Presets</h4>
+                <div className="grid grid-cols-6 gap-2">
+                  {colorPresets.map(preset => (
+                    <button
+                      key={preset.color}
+                      onClick={() => applyFabricColor(preset.color)}
+                      className="aspect-square rounded-lg border-2 border-gray-200 hover:border-secondary hover:scale-110 transition-all shadow-sm"
+                      style={{ backgroundColor: preset.color }}
+                      title={preset.name}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* PRINT TAB */}
+          {activeTab === 'print' && (
+            <div className="space-y-6">
+              {/* PRINT COLOR PICKER - NEW */}
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Print Color</h5>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={printColor}
+                    onChange={(e) => setPrintColor(e.target.value)}
+                    className="w-12 h-12 rounded-lg cursor-pointer border-2 border-white shadow-md"
+                  />
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={printColor}
+                      onChange={(e) => setPrintColor(e.target.value)}
+                      className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-xs"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-6 gap-2 mt-3">
+                  {[
+                    '#000000', // Black (default)
+                    '#DC2626', // Red
+                    '#3B82F6', // Blue
+                    '#10B981', // Green
+                    '#F59E0B', // Yellow
+                    '#8B4513'  // Brown
+                  ].map(color => (
+                    <button
+                      key={color}
+                      onClick={() => setPrintColor(color)}
+                      className="aspect-square rounded-lg border-2 border-gray-200 hover:border-secondary hover:scale-110 transition-all shadow-sm"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* PRINT MODE SELECTOR */}
+              <div>
+                <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Print Type</h4>
+                <div className="space-y-2">
+                  {[
+                    { id: 'browse', label: 'Browse Prints', icon: Grid },
+                    { id: 'ai', label: 'AI Generate', icon: Sparkles },
+                    { id: 'upload', label: 'Upload Design', icon: Upload },
+                    { id: 'basic', label: 'Basic Patterns', icon: Grid }
+                  ].map(mode => {
+                    const Icon = mode.icon;
+                    return (
+                      <button
+                        key={mode.id}
+                        onClick={() => setPrintMode(mode.id)}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-all ${
+                          printMode === mode.id
                             ? 'border-secondary bg-secondary/5'
                             : 'border-gray-200 hover:border-gray-300'
-                            }`}>
-                          {style.label}
+                        }`}>
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          printMode === mode.id ? 'border-secondary' : 'border-gray-300'
+                        }`}>
+                          {printMode === mode.id && (
+                            <div className="w-3 h-3 rounded-full bg-secondary" />
+                          )}
+                        </div>
+                        <Icon size={18} className={printMode === mode.id ? 'text-secondary' : 'text-gray-500'} />
+                        <span className="font-semibold text-sm">{mode.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Selected Zone Info */}
+              {selectedZone && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-xs text-blue-800 font-semibold flex items-center gap-2">
+                    <Info size={14} />
+                    Applying to: {template.zones.find(z => z.id === selectedZone)?.label}
+                  </p>
+                </div>
+              )}
+
+              {/* BROWSE PRINTS MODE */}
+              {printMode === 'browse' && (
+                <div className="space-y-4">
+                  <div>
+                    <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Category</h5>
+                    <div className="flex flex-wrap gap-2">
+                      {printCategories.map(cat => (
+                        <button
+                          key={cat.id}
+                          onClick={() => setPrintCategory(cat.id)}
+                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                            printCategory === cat.id
+                              ? 'bg-secondary text-white'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}>
+                          {cat.label}
                         </button>
                       ))}
                     </div>
                   </div>
-                )}
-              </div>
-            )}
 
-            {activeTab === 'embroidery' && (
-              <div className="space-y-4">
-                {selectedZone ? (
-                  <>
-                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                      <p className="text-xs text-amber-800 font-semibold flex items-center gap-2">
-                        <Info size={14} />
-                        Select embroidery for {template.zones.find(z => z.id === selectedZone)?.label}
-                      </p>
+                  <div>
+                    <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Available Prints</h5>
+                    <div className="grid grid-cols-3 gap-3">
+                      {categorizedPrints[printCategory]?.map(printKey => {
+                        const print = IMPORTED_PRINTS[printKey];
+                        if (!print) return null;
+                        return (
+                          <button
+                            key={printKey}
+                            onClick={() => applyBrowsePrint(printKey)}
+                            className="group aspect-square rounded-lg border-2 border-gray-200 hover:border-secondary hover:shadow-md transition-all overflow-hidden bg-white">
+                            <img src={print.img} alt={print.name} className="w-full h-full object-cover" />
+                          </button>
+                        );
+                      })}
                     </div>
+                    {(!categorizedPrints[printCategory] || categorizedPrints[printCategory].length === 0) && (
+                      <p className="text-sm text-gray-500 text-center py-8">More styles coming soon</p>
+                    )}
+                  </div>
+                </div>
+              )}
 
-                    {/* Embroidery Color Picker */}
+              {/* AI GENERATE MODE */}
+              {printMode === 'ai' && (
+                <div className="space-y-4">
+                  <div>
+                    <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Describe Your Print</h5>
+                    <textarea
+                      value={aiPrintPrompt}
+                      onChange={(e) => setAiPrintPrompt(e.target.value)}
+                      placeholder="Example: Kalamkari inspired floral print in earthy tones"
+                      className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 h-24 focus:border-secondary focus:outline-none transition-all resize-none text-sm"
+                      rows="3"
+                    />
+                    <button
+                      onClick={handleAIGeneratePrint}
+                      disabled={aiGenerating || !aiPrintPrompt.trim()}
+                      className="w-full mt-3 px-4 py-3 bg-secondary text-white rounded-lg hover:shadow-lg transition-all font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                      {aiGenerating ? (
+                        <>
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                          <span>Generating...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Wand2 size={18} />
+                          <span>Generate Print</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {generatedPrint && (
                     <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                      <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Embroidery Thread Color</h5>
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="color"
-                          value={selectedEmbroideryColor}
-                          onChange={(e) => {
-                            setSelectedEmbroideryColor(e.target.value);
-                          }}
-                          className="w-12 h-12 rounded-lg cursor-pointer border-2 border-white shadow-md"
-                        />
-                        <div className="flex-1">
+                      <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Generated Preview</h5>
+                      <div className="aspect-square rounded-lg border-2 border-gray-200 overflow-hidden mb-3 bg-white">
+                        <img src={generatedPrint.url} alt="Generated Print" className="w-full h-full object-cover" />
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-600 mb-2">Scale</label>
                           <input
-                            type="text"
-                            value={selectedEmbroideryColor}
-                            onChange={(e) => setSelectedEmbroideryColor(e.target.value)}
-                            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-xs"
+                            type="range"
+                            min="1"
+                            max="10"
+                            value={printScale}
+                            onChange={(e) => setPrintScale(parseInt(e.target.value))}
+                            className="w-full"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-600 mb-2">Repeat</label>
+                          <div className="flex gap-2">
+                            {['tile', 'mirror', 'center'].map(opt => (
+                              <button
+                                key={opt}
+                                onClick={() => setPrintRepeat(opt)}
+                                className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all capitalize ${
+                                  printRepeat === opt
+                                    ? 'bg-secondary text-white'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                }`}>
+                                {opt}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-600 mb-2">Rotation: {printRotation}°</label>
+                          <input
+                            type="range"
+                            min="0"
+                            max="360"
+                            step="45"
+                            value={printRotation}
+                            onChange={(e) => setPrintRotation(parseInt(e.target.value))}
+                            className="w-full"
                           />
                         </div>
                       </div>
-                    </div>
 
+                      <div className="flex gap-2 mt-4">
+                        <button
+                          onClick={applyGeneratedPrint}
+                          className="flex-1 px-4 py-2 bg-secondary text-white rounded-lg hover:shadow-md transition-all font-semibold text-sm">
+                          Apply
+                        </button>
+                        <button
+                          onClick={handleAIGeneratePrint}
+                          className="flex-1 px-4 py-2 bg-white border-2 border-secondary text-secondary rounded-lg hover:bg-secondary/5 transition-all font-semibold text-sm">
+                          Regenerate
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* UPLOAD MODE */}
+              {printMode === 'upload' && (
+                <div className="space-y-4">
+                  <div>
+                    <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Upload Your Design</h5>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/svg+xml"
+                      onChange={handleUploadPrint}
+                      className="block w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-6 focus:border-secondary transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-secondary file:text-white file:font-semibold hover:file:bg-secondary/90 cursor-pointer text-sm bg-white"
+                    />
+                    <p className="text-xs text-gray-500 mt-2">Supported: JPG, PNG, SVG</p>
+                  </div>
+
+                  {uploadedPrint && (
+                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                      <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Preview</h5>
+                      <div className="aspect-square rounded-lg border-2 border-gray-200 overflow-hidden mb-3 bg-white">
+                        <img src={uploadedPrint} alt="Uploaded Design" className="w-full h-full object-contain" />
+                      </div>
+
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-600 mb-2">Fit Options</label>
+                          <div className="space-y-2">
+                            {[
+                              { id: 'full', label: 'Full Fabric' },
+                              { id: 'center', label: 'Center Motif' },
+                              { id: 'border', label: 'Border Print' }
+                            ].map(opt => (
+                              <button
+                                key={opt.id}
+                                onClick={() => setUploadFitOption(opt.id)}
+                                className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg border-2 transition-all ${
+                                  uploadFitOption === opt.id
+                                    ? 'border-secondary bg-secondary/5'
+                                    : 'border-gray-200 hover:border-gray-300'
+                                }`}>
+                                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                                  uploadFitOption === opt.id ? 'border-secondary' : 'border-gray-300'
+                                }`}>
+                                  {uploadFitOption === opt.id && (
+                                    <div className="w-2.5 h-2.5 rounded-full bg-secondary" />
+                                  )}
+                                </div>
+                                <span className="font-semibold text-sm">{opt.label}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-600 mb-2">Repeat</label>
+                          <div className="flex gap-2">
+                            {['tile', 'mirror', 'no-repeat'].map(opt => (
+                              <button
+                                key={opt}
+                                onClick={() => setUploadRepeat(opt)}
+                                className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                                  uploadRepeat === opt
+                                    ? 'bg-secondary text-white'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                }`}>
+                                {opt === 'no-repeat' ? 'No Repeat' : opt}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={applyUploadedPrint}
+                        className="w-full mt-4 px-4 py-2 bg-secondary text-white rounded-lg hover:shadow-md transition-all font-semibold text-sm">
+                        Apply Design
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* BASIC PATTERNS MODE */}
+              {printMode === 'basic' && (
+                <div className="space-y-4">
+                  <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Pattern Library</h5>
+                  <div className="grid grid-cols-3 gap-3">
+                    {basicPatterns.map(pattern => (
+                      <button
+                        key={pattern.id}
+                        onClick={() => applyBasicPattern(pattern.id)}
+                        className="aspect-square rounded-lg border-2 border-gray-200 hover:border-secondary hover:shadow-md transition-all flex flex-col items-center justify-center gap-2 bg-white">
+                        <Grid size={24} className="text-gray-600" />
+                        <span className="text-xs font-semibold text-gray-700">{pattern.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* EMBROIDERY TAB */}
+          {activeTab === 'embroidery' && (
+            <div className="space-y-6">
+              {selectedZone ? (
+                <>
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    <p className="text-xs text-amber-800 font-semibold flex items-center gap-2">
+                      <Info size={14} />
+                      Select embroidery for {template.zones.find(z => z.id === selectedZone)?.label}
+                    </p>
+                  </div>
+
+                  {/* Embroidery Color Picker */}
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Embroidery Thread Color</h5>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={embroideryColor}
+                        onChange={(e) => setEmbroideryColor(e.target.value)}
+                        className="w-12 h-12 rounded-lg cursor-pointer border-2 border-white shadow-md"
+                      />
+                      <div className="flex-1">
+                        <input
+                          type="text"
+                          value={embroideryColor}
+                          onChange={(e) => setEmbroideryColor(e.target.value)}
+                          className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-xs"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-6 gap-2 mt-3">
+                      {[
+                        '#FFD700', // Gold
+                        '#C0C0C0', // Silver
+                        '#DC2626', // Red
+                        '#EC4899', // Pink
+                        '#FFFFFF', // White
+                        '#1F2937'  // Black
+                      ].map(color => (
+                        <button
+                          key={color}
+                          onClick={() => setEmbroideryColor(color)}
+                          className="aspect-square rounded-lg border-2 border-gray-200 hover:border-secondary hover:scale-110 transition-all shadow-sm"
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Select Embroidery Style</h5>
                     <div className="grid grid-cols-1 gap-3">
-                      {Object.entries(EMBROIDERY_PATTERNS).map(([key, config]) => {
-                        const patternCanvas = config.createPattern(selectedEmbroideryColor);
+                      {embroideryStyles.map((style) => {
+                        const pattern = IMPORTED_EMBROIDERY[style.pattern];
+                        if (!pattern) return null;
+                        
+                        const patternCanvas = pattern.createPattern(embroideryColor);
                         return (
                           <button
-                            key={key}
-                            onClick={() => applyEmbroidery(key)}
+                            key={style.id}
+                            onClick={() => applyEmbroidery(style.pattern)}
                             className="group p-4 rounded-lg border-2 border-gray-200 hover:border-secondary hover:shadow-md transition-all flex items-center gap-4">
                             <div className="w-14 h-14 rounded-lg border-2 border-gray-200 overflow-hidden bg-white">
-                              <img src={patternCanvas.toDataURL()} alt={config.name} className="w-full h-full object-cover" />
+                              <img src={patternCanvas.toDataURL()} alt={style.label} className="w-full h-full object-cover" />
                             </div>
                             <div className="text-left flex-1">
-                              <div className="text-sm font-semibold text-text mb-1">{config.name}</div>
-                              <div className="text-xs text-text/60">{config.note}</div>
+                              <div className="text-sm font-semibold text-text mb-1">{style.label}</div>
+                              <div className="text-xs text-text/60">{pattern.note}</div>
                             </div>
                             <CheckCircle2 size={18} className="text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
                           </button>
                         );
                       })}
                     </div>
-                  </>
-                ) : (
-                  <div className="text-center py-12">
-                    <Move size={40} className="mx-auto mb-3 text-gray-300" />
-                    <p className="text-sm text-gray-500">Select a zone first</p>
                   </div>
-                )}
-              </div>
-            )}
+                </>
+              ) : (
+                <div className="text-center py-12">
+                  <Sparkles size={40} className="mx-auto mb-3 text-gray-300" />
+                  <p className="text-sm text-gray-500">Select a zone first</p>
+                </div>
+              )}
+            </div>
+          )}
 
-            {activeTab === 'prints' && (
-              <div className="space-y-4">
-                {selectedZone ? (
-                  <>
-                    {/* Print Color Picker */}
-                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                      <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Print Color</h5>
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="color"
-                          value={selectedPrintColor}
-                          onChange={(e) => {
-                            setSelectedPrintColor(e.target.value);
-                          }}
-                          className="w-12 h-12 rounded-lg cursor-pointer border-2 border-white shadow-md"
-                        />
-                        <div className="flex-1">
-                          <input
-                            type="text"
-                            value={selectedPrintColor}
-                            onChange={(e) => setSelectedPrintColor(e.target.value)}
-                            className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-xs"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-3">
-                      {Object.entries(FABRIC_PRINTS).map(([key, config]) => {
-                        const previewCanvas = config.createPattern(selectedPrintColor);
-                        return (
-                          <button
-                            key={key}
-                            onClick={() => applyFabricPrint(key)}
-                            className="group p-4 rounded-lg border-2 border-gray-200 hover:border-secondary hover:shadow-md transition-all flex items-center gap-4">
-                            <div className="w-14 h-14 rounded-lg border-2 border-gray-200 overflow-hidden bg-white">
-                              <img src={config.img} alt={config.name} className="w-full h-full object-cover" />
-                            </div>
-                            <div className="text-left flex-1">
-                              <div className="text-sm font-semibold text-text">{config.name}</div>
-                              <div className="text-xs text-text/60">{config.description}</div>
-                            </div>
-                            <CheckCircle2 size={18} className="text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center py-12">
-                    <Move size={40} className="mx-auto mb-3 text-gray-300" />
-                    <p className="text-sm text-gray-500">Select a zone first</p>
+          {/* FIT & SIZE TAB */}
+          {activeTab === 'fit' && (
+            <div className="space-y-6">
+              {template.zones.some(z => z.id.includes('sleeve')) && (
+                <div>
+                  <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Sleeve Length</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {sleeveOptions.map(style => (
+                      <button
+                        key={style.value}
+                        onClick={() => {
+                          setSleeveStyle(style.value);
+                          if (style.value === 'sleeveless' && selectedZone && selectedZone.includes('sleeve')) {
+                            setSelectedZone(null);
+                          }
+                          saveToHistory();
+                        }}
+                        className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${
+                          sleeveStyle === style.value
+                            ? 'border-secondary bg-secondary/5'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}>
+                        {style.label}
+                      </button>
+                    ))}
                   </div>
-                )}
-              </div>
-            )}
-          </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
