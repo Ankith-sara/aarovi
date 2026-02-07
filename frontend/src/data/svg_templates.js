@@ -2061,63 +2061,33 @@ export const EMBROIDERY_PATTERNS = {
 // ============================================================================
 
 export const FABRIC_PRINTS = {
-  block: {
-    img: assets.block_img,
-    name: 'Block Pattern',
-    description: 'Traditional block stamp pattern',
-    createPattern: (color = '#8B0000') => {
-      const c = document.createElement('canvas');
-      c.width = c.height = 120;
-      const ctx = c.getContext('2d');
-      ctx.fillStyle = color;
-      for (let x = 10; x < 120; x += 40) {
-        for (let y = 10; y < 120; y += 40) {
-          ctx.fillRect(x, y, 22, 22);
-        }
-      }
-      return c;
-    }
-  },
-  bagru: {
-    img: assets.bagru_img,
-    name: 'Bagru Pattern',
-    description: 'Rajasthani Bagru hand-block print',
-    createPattern: (color = '#5C4033') => {
-      const c = document.createElement('canvas');
-      c.width = c.height = 120;
-      const ctx = c.getContext('2d');
-      ctx.fillStyle = color;
-      for (let i = 0; i < 25; i++) {
-        const x = Math.random() * 120;
-        const y = Math.random() * 120;
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      return c;
-    }
-  },
+  // ==================== FLORAL CATEGORY ====================
   floral: {
+    name: 'Floral Garden',
+    description: 'Delicate floral motifs',
+    category: 'floral',
     img: assets.floral_img,
-    name: 'Floral Pattern',
-    description: 'Soft floral motifs',
     createPattern: (color = '#E91E63') => {
       const c = document.createElement('canvas');
       c.width = c.height = 120;
       const ctx = c.getContext('2d');
-      const drawFlower = (x, y) => {
+      
+      const drawFlower = (x, y, size = 1) => {
+        // Petals
         ctx.fillStyle = color;
         for (let i = 0; i < 6; i++) {
           const a = (i * Math.PI) / 3;
           ctx.beginPath();
-          ctx.arc(x + Math.cos(a) * 12, y + Math.sin(a) * 12, 6, 0, Math.PI * 2);
+          ctx.arc(x + Math.cos(a) * 12 * size, y + Math.sin(a) * 12 * size, 6 * size, 0, Math.PI * 2);
           ctx.fill();
         }
+        // Center
         ctx.fillStyle = '#FFD700';
         ctx.beginPath();
-        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.arc(x, y, 5 * size, 0, Math.PI * 2);
         ctx.fill();
       };
+      
       for (let x = 20; x < 120; x += 40) {
         for (let y = 20; y < 120; y += 40) {
           drawFlower(x, y);
@@ -2126,14 +2096,93 @@ export const FABRIC_PRINTS = {
       return c;
     }
   },
+
+  rose: {
+    name: 'Rose Pattern',
+    description: 'Elegant rose motifs',
+    category: 'floral',
+    img: "https://i.pinimg.com/736x/9e/0b/f0/9e0bf0bf11def1ac0669b3e1be753d9d.jpg",
+    createPattern: (color = '#DC2626') => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 120;
+      const ctx = c.getContext('2d');
+      
+      const drawRose = (x, y) => {
+        ctx.fillStyle = color;
+        // Spiral rose petals
+        for (let i = 0; i < 5; i++) {
+          const radius = 8 - i * 1.5;
+          const angle = i * 0.8;
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(angle);
+          ctx.beginPath();
+          ctx.ellipse(0, 0, radius, radius * 1.5, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      };
+      
+      for (let x = 25; x < 120; x += 50) {
+        for (let y = 25; y < 120; y += 50) {
+          drawRose(x, y);
+        }
+      }
+      return c;
+    }
+  },
+
+  lotus: {
+    name: 'Lotus Bloom',
+    description: 'Sacred lotus flowers',
+    category: 'floral',
+    img: "https://media.istockphoto.com/id/1302833437/vector/gold-lotus-line-pattern-golden-lotus-flower.jpg?s=612x612&w=0&k=20&c=r7Hm3ty8SS9EtXTSddcJAb8RYvnkDtUbPklc3Zlmoog=",
+    createPattern: (color = '#EC4899') => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 120;
+      const ctx = c.getContext('2d');
+      
+      const drawLotus = (x, y) => {
+        // Outer petals
+        ctx.fillStyle = color;
+        for (let i = 0; i < 8; i++) {
+          const a = (i * Math.PI * 2) / 8;
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(a);
+          ctx.beginPath();
+          ctx.ellipse(0, -10, 5, 12, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+        // Center
+        ctx.fillStyle = '#FBBF24';
+        ctx.beginPath();
+        ctx.arc(x, y, 6, 0, Math.PI * 2);
+        ctx.fill();
+      };
+      
+      for (let x = 30; x < 120; x += 60) {
+        for (let y = 30; y < 120; y += 60) {
+          drawLotus(x, y);
+        }
+      }
+      return c;
+    }
+  },
+
+  // ==================== ETHNIC CATEGORY ====================
   kalamkari: {
+    name: 'Kalamkari Art',
+    description: 'Hand-painted traditional art',
+    category: 'ethnic',
     img: assets.kalamkari_img,
-    name: 'Kalamkari Pattern',
-    description: 'Hand-painted kalamkari art',
     createPattern: (color = '#3B2F2F') => {
       const c = document.createElement('canvas');
       c.width = c.height = 140;
       const ctx = c.getContext('2d');
+      
+      // Vine pattern
       ctx.strokeStyle = color;
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -2142,49 +2191,409 @@ export const FABRIC_PRINTS = {
         ctx.quadraticCurveTo(x + 10, 50 + Math.random() * 40, x + 20, 70);
       }
       ctx.stroke();
+      
+      // Leaf motifs
+      ctx.fillStyle = color;
+      for (let x = 20; x < 130; x += 30) {
+        ctx.beginPath();
+        ctx.ellipse(x, 60, 5, 10, Math.random() * Math.PI, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
       return c;
     }
   },
-  shibori: {
-    img: assets.shibori_img,
-    name: 'Shibori Pattern',
-    description: 'Indigo resist-dye pattern',
-    createPattern: (color = '#1E3A8A') => {
+
+  block: {
+    name: 'Block Print',
+    description: 'Traditional block stamp',
+    category: 'ethnic',
+    img: assets.block_img,
+    createPattern: (color = '#8B0000') => {
       const c = document.createElement('canvas');
       c.width = c.height = 120;
       const ctx = c.getContext('2d');
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 3;
-      for (let i = 0; i < 6; i++) {
-        const x = Math.random() * 120;
-        const y = Math.random() * 120;
+      
+      const drawBlock = (x, y) => {
+        ctx.fillStyle = color;
+        // Square base
+        ctx.fillRect(x, y, 22, 22);
+        // Inner diamond
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
         ctx.beginPath();
-        ctx.arc(x, y, 15 + Math.random() * 10, 0, Math.PI * 2);
-        ctx.stroke();
+        ctx.moveTo(x + 11, y + 3);
+        ctx.lineTo(x + 19, y + 11);
+        ctx.lineTo(x + 11, y + 19);
+        ctx.lineTo(x + 3, y + 11);
+        ctx.closePath();
+        ctx.fill();
+      };
+      
+      for (let x = 10; x < 120; x += 40) {
+        for (let y = 10; y < 120; y += 40) {
+          drawBlock(x, y);
+        }
       }
       return c;
     }
   },
+
+  bagru: {
+    name: 'Bagru Print',
+    description: 'Rajasthani hand-block',
+    category: 'ethnic',
+    img: assets.bagru_img,
+    createPattern: (color = '#5C4033') => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 120;
+      const ctx = c.getContext('2d');
+      
+      // Random dots pattern
+      ctx.fillStyle = color;
+      for (let i = 0; i < 30; i++) {
+        const x = Math.random() * 120;
+        const y = Math.random() * 120;
+        ctx.beginPath();
+        ctx.arc(x, y, 3 + Math.random() * 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
+      // Cross motifs
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      for (let x = 20; x < 120; x += 40) {
+        for (let y = 20; y < 120; y += 40) {
+          ctx.beginPath();
+          ctx.moveTo(x - 5, y);
+          ctx.lineTo(x + 5, y);
+          ctx.moveTo(x, y - 5);
+          ctx.lineTo(x, y + 5);
+          ctx.stroke();
+        }
+      }
+      
+      return c;
+    }
+  },
+
+  // ==================== GEOMETRIC CATEGORY ====================
+  chevron: {
+    name: 'Chevron Pattern',
+    description: 'Zigzag chevron design',
+    category: 'geometric',
+    img: assets.chevron_img,
+    createPattern: (color = '#059669') => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 120;
+      const ctx = c.getContext('2d');
+      
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 4;
+      ctx.lineJoin = 'miter';
+      
+      for (let y = 10; y < 120; y += 25) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        for (let x = 0; x < 120; x += 20) {
+          ctx.lineTo(x + 10, y - 10);
+          ctx.lineTo(x + 20, y);
+        }
+        ctx.stroke();
+      }
+      
+      return c;
+    }
+  },
+
+  hexagon: {
+    name: 'Hexagon Grid',
+    description: 'Honeycomb pattern',
+    category: 'geometric',
+    img: assets.hexagon_img,
+    createPattern: (color = '#2563EB') => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 120;
+      const ctx = c.getContext('2d');
+      
+      const drawHexagon = (x, y, size) => {
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+          const angle = (Math.PI / 3) * i;
+          const hx = x + size * Math.cos(angle);
+          const hy = y + size * Math.sin(angle);
+          if (i === 0) ctx.moveTo(hx, hy);
+          else ctx.lineTo(hx, hy);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      };
+      
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      
+      const size = 15;
+      const dx = size * 1.5;
+      const dy = size * Math.sqrt(3);
+      
+      for (let row = 0; row < 5; row++) {
+        for (let col = 0; col < 4; col++) {
+          const x = col * dx * 2 + (row % 2 ? dx : 0) + 20;
+          const y = row * dy + 20;
+          drawHexagon(x, y, size);
+        }
+      }
+      
+      return c;
+    }
+  },
+
+  triangle: {
+    name: 'Triangle Mosaic',
+    description: 'Geometric triangles',
+    category: 'geometric',
+    img: assets.triangle_img,
+    createPattern: (color = '#7C3AED') => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 120;
+      const ctx = c.getContext('2d');
+      
+      ctx.fillStyle = color;
+      const size = 30;
+      
+      for (let y = 0; y < 120; y += size) {
+        for (let x = 0; x < 120; x += size) {
+          ctx.beginPath();
+          if ((x + y) % (size * 2) === 0) {
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + size, y);
+            ctx.lineTo(x, y + size);
+          } else {
+            ctx.moveTo(x + size, y);
+            ctx.lineTo(x + size, y + size);
+            ctx.lineTo(x, y + size);
+          }
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+      
+      return c;
+    }
+  },
+
+  // ==================== ABSTRACT CATEGORY ====================
   painting: {
+    name: 'Abstract Paint',
+    description: 'Modern brush strokes',
+    category: 'abstract',
     img: assets.painting_img,
-    name: 'Painting Pattern',
-    description: 'Abstract modern painting',
     createPattern: (color = '#4F46E5') => {
       const c = document.createElement('canvas');
       c.width = c.height = 120;
       const ctx = c.getContext('2d');
+      
       ctx.strokeStyle = color;
-      ctx.lineWidth = 6;
+      ctx.lineWidth = 8;
       ctx.lineCap = 'round';
-      for (let i = 0; i < 6; i++) {
+      
+      for (let i = 0; i < 8; i++) {
+        ctx.globalAlpha = 0.3 + Math.random() * 0.4;
         ctx.beginPath();
         ctx.moveTo(Math.random() * 120, Math.random() * 120);
         ctx.lineTo(Math.random() * 120, Math.random() * 120);
         ctx.stroke();
       }
+      
+      ctx.globalAlpha = 1;
       return c;
     }
-  }
+  },
+
+  // ==================== MINIMAL CATEGORY ====================
+  dots: {
+    name: 'Polka Dots',
+    description: 'Classic polka dots',
+    category: 'minimal',
+    img: "https://img.freepik.com/free-vector/abstract-doodle-polka-dot-background_78370-4307.jpg?semt=ais_hybrid&w=740&q=80",
+    createPattern: (color = '#DC2626') => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 120;
+      const ctx = c.getContext('2d');
+      
+      ctx.fillStyle = color;
+      for (let x = 15; x < 120; x += 30) {
+        for (let y = 15; y < 120; y += 30) {
+          ctx.beginPath();
+          ctx.arc(x, y, 6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      
+      return c;
+    }
+  },
+
+  minimal_lines: {
+    name: 'Minimal Lines',
+    description: 'Simple line pattern',
+    category: 'minimal',
+    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9L8y2clJccDstMdyEsXKfMNBgoYAJAB5w7w&s",
+    createPattern: (color = '#64748B') => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 120;
+      const ctx = c.getContext('2d');
+      
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1;
+      
+      for (let y = 10; y < 120; y += 15) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(120, y);
+        ctx.stroke();
+      }
+      
+      return c;
+    }
+  },
+
+  // ==================== STRIPES CATEGORY ====================
+  stripes: {
+    name: 'Classic Stripes',
+    description: 'Horizontal stripes',
+    category: 'stripes',
+    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfT2uliXENbP4VfDxGSRmtK9IF9MtkFo0tHw&s",
+    createPattern: (color = '#2563EB') => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 120;
+      const ctx = c.getContext('2d');
+      
+      ctx.fillStyle = color;
+      for (let y = 0; y < 120; y += 20) {
+        ctx.fillRect(0, y, 120, 10);
+      }
+      
+      return c;
+    }
+  },
+
+  // ==================== CHECKS CATEGORY ====================
+  checks: {
+    name: 'Checkered',
+    description: 'Classic checkerboard',
+    category: 'checks',
+    img: "https://img.freepik.com/free-vector/flat-design-chess-background_23-2151086495.jpg?semt=ais_hybrid&w=740&q=80",
+    createPattern: (color = '#7C3AED') => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 120;
+      const ctx = c.getContext('2d');
+      
+      ctx.fillStyle = color;
+      for (let x = 0; x < 120; x += 30) {
+        for (let y = 0; y < 120; y += 30) {
+          if ((x + y) % 60 === 0) {
+            ctx.fillRect(x, y, 30, 30);
+          }
+        }
+      }
+      
+      return c;
+    }
+  },
+
+  gingham: {
+    name: 'Gingham Check',
+    description: 'Woven gingham pattern',
+    category: 'checks',
+    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-OIRVct0hRd8oqbSdHXG0UyGEh5PGDLhZuA&s",
+    createPattern: (color = '#DC2626') => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 120;
+      const ctx = c.getContext('2d');
+      
+      // Horizontal stripes
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.3;
+      for (let y = 0; y < 120; y += 40) {
+        ctx.fillRect(0, y, 120, 20);
+      }
+      
+      // Vertical stripes
+      for (let x = 0; x < 120; x += 40) {
+        ctx.fillRect(x, 0, 20, 120);
+      }
+      
+      // Intersections (darker)
+      ctx.globalAlpha = 0.6;
+      for (let x = 0; x < 120; x += 40) {
+        for (let y = 0; y < 120; y += 40) {
+          ctx.fillRect(x, y, 20, 20);
+        }
+      }
+      
+      ctx.globalAlpha = 1;
+      return c;
+    }
+  },
+
+  // ==================== IKAT CATEGORY ====================
+  ikat: {
+    name: 'Ikat Pattern',
+    description: 'Traditional ikat weave',
+    category: 'ikat',
+    img: "https://media.istockphoto.com/id/905304292/vector/tie-a-seamless-pattern-fashion-wallpaper.jpg?s=612x612&w=0&k=20&c=47GjIafDkX36geBCpj2DqwAkTLSCD0qFHKNGCuZF88o=",
+    createPattern: (color = '#8B5CF6') => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 120;
+      const ctx = c.getContext('2d');
+      
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      
+      // Blurred zigzag effect
+      for (let y = 10; y < 120; y += 20) {
+        ctx.globalAlpha = 0.3 + Math.random() * 0.4;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        for (let x = 0; x < 120; x += 15) {
+          ctx.lineTo(x, y + (Math.random() - 0.5) * 10);
+        }
+        ctx.stroke();
+      }
+      
+      ctx.globalAlpha = 1;
+      return c;
+    }
+  },
+};
+
+// Category mapping for organized display
+export const PRINT_CATEGORIES = {
+  floral: ['floral', 'rose', 'lotus'],
+  ethnic: ['kalamkari', 'block', 'bagru'],
+  abstract: ['painting'],
+  minimal: ['dots', 'minimal_lines'],
+  stripes: ['stripes'],
+  checks: ['checks', 'gingham'],
+  ikat: ['ikat']
+};
+
+// Helper function to get prints by category
+export const getPrintsByCategory = (category) => {
+  const printKeys = PRINT_CATEGORIES[category] || [];
+  return printKeys.map(key => ({
+    key,
+    ...FABRIC_PRINTS[key]
+  }));
+};
+
+// Generate preview image for a print
+export const generatePrintPreview = (printKey, color = null) => {
+  const print = FABRIC_PRINTS[printKey];
+  if (!print) return null;
+  
+  const canvas = print.createPattern(color);
+  return canvas.toDataURL('image/png');
 };
 
 // ============================================================================

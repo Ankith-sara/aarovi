@@ -331,7 +331,7 @@ const Orders = ({ token }) => {
       );
 
       if (response.data.success) {
-        const ordersData = response.data.orders.reverse();
+        const ordersData = [...response.data.orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setOrders(ordersData);
         setFilteredOrders(ordersData);
       } else {
@@ -784,7 +784,7 @@ const Orders = ({ token }) => {
                                       Order #{indexOfFirstItem + index + 1}
                                     </h3>
                                     {hasCustomItems && (
-                                      <span className="px-2 py-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-xs font-bold">
+                                      <span className="px-2 py-1 bg-secondary text-white rounded-full text-xs font-bold">
                                         CUSTOM
                                       </span>
                                     )}
@@ -852,8 +852,7 @@ const Orders = ({ token }) => {
                                       {/* Custom Badge */}
                                       {item.type === 'CUSTOM' && (
                                         <div className="flex items-center gap-2 mb-2">
-                                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full text-xs font-bold">
-                                            <Sparkles size={10} />
+                                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-secondary text-white rounded-full text-xs font-bold">
                                             CUSTOM
                                           </span>
                                           <ProductionStatusBadge status={item.productionStatus} />

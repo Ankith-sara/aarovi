@@ -77,8 +77,8 @@ const Footer = () => {
                     </a>
                   </li>
                   <li>
-                    <a href='/shop/new-arrivals' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
-                      <span className="group-hover:translate-x-1 transition-transform duration-300">New Arrivals</span>
+                    <a href='/customize' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">Customize</span>
                     </a>
                   </li>
                 </ul>

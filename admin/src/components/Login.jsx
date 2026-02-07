@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { Shield, Mail, Lock, User, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { Shield, Mail, Lock, User, Eye, EyeOff, ArrowRight, Sparkles } from 'lucide-react';
 import { backendUrl } from '../App';
 
 const Login = ({ setToken }) => {
@@ -42,7 +42,6 @@ const Login = ({ setToken }) => {
 
     setLoading(true);
     try {
-      // ✅ FIXED: Use admin endpoint instead of regular user endpoint
       const res = await axios.post(`${backendUrl}/api/user/send-admin-otp`, {
         email,
         name,
@@ -69,7 +68,6 @@ const Login = ({ setToken }) => {
 
     setLoading(true);
     try {
-      // ✅ FIXED: Use admin OTP verification endpoint
       const res = await axios.post(`${backendUrl}/api/user/verify-admin-otp`, {
         email,
         otp
@@ -126,36 +124,41 @@ const Login = ({ setToken }) => {
   }, [otpTimer]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header Card */}
-        <div className="bg-white rounded-t-xl shadow-sm border border-gray-200 p-8 text-center">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-            Admin {isRegistering ? 'Registration' : 'Login'}
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8 mb-6">
+          <div className="flex items-center justify-center mb-4">
+            <div className="w-14 h-14 bg-gradient-to-br from-secondary to-pink-600 rounded-xl flex items-center justify-center shadow-md">
+              <Shield className="text-white" size={28} />
+            </div>
+          </div>
+          <h1 className="text-3xl font-serif font-bold text-text text-center mb-2">
+            Admin {isRegistering ? 'Registration' : 'Portal'}
           </h1>
-          <p className="text-sm text-gray-600">
-            {isRegistering ? 'Create your admin account' : 'Welcome back! Sign in to continue'}
+          <p className="text-sm text-text/60 text-center font-light">
+            {isRegistering ? 'Create your admin account with verified access' : 'Welcome back! Sign in to manage your platform'}
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-b-xl shadow-sm border-x border-b border-gray-200 p-8">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
           {!otpSent ? (
-            <form onSubmit={isRegistering ? (e) => handleSendOtp(e) : handleLogin} className="space-y-6">
+            <form onSubmit={isRegistering ? handleSendOtp : handleLogin} className="space-y-5">
               {/* Name Field (Registration only) */}
               {isRegistering && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-bold text-text uppercase tracking-wider mb-2">
                     Full Name
                   </label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text/40" size={18} />
                     <input
                       type="text"
                       placeholder="Enter your full name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
+                      className="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-secondary transition-all font-medium text-text"
                       required
                     />
                   </div>
@@ -164,17 +167,17 @@ const Login = ({ setToken }) => {
 
               {/* Email Field */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-bold text-text uppercase tracking-wider mb-2">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text/40" size={18} />
                   <input
                     type="email"
-                    placeholder="Enter your email address"
+                    placeholder="admin@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
+                    className="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-secondary transition-all font-medium text-text"
                     required
                   />
                 </div>
@@ -182,41 +185,44 @@ const Login = ({ setToken }) => {
 
               {/* Password Field */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-bold text-text uppercase tracking-wider mb-2">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                  <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text/40" size={18} />
                   <input
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
+                    placeholder="Enter secure password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
+                    className="w-full pl-12 pr-12 py-3.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-secondary transition-all font-medium text-text"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-text/40 hover:text-secondary transition-colors"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                {isRegistering && (
+                  <p className="text-xs text-text/50 mt-1.5 ml-1">Must be at least 8 characters</p>
+                )}
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 transition-all duration-200 flex items-center justify-center gap-2 shadow-md transform hover:scale-[1.02] disabled:hover:scale-100"
+                className="w-full bg-secondary text-white py-4 px-4 rounded-lg font-bold uppercase tracking-wider hover:bg-secondary/90 disabled:opacity-50 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:hover:scale-100 mt-6"
               >
                 {loading ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                 ) : (
                   <>
                     {isRegistering ? 'Send Verification Code' : 'Sign In'}
-                    <ArrowRight size={18} />
+                    <ArrowRight size={20} />
                   </>
                 )}
               </button>
@@ -225,18 +231,18 @@ const Login = ({ setToken }) => {
             /* OTP Verification Form */
             <form onSubmit={handleVerifyOtp} className="space-y-6">
               <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Mail className="text-green-600" size={24} />
+                <div className="w-20 h-20 bg-gradient-to-br from-secondary to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <Sparkles className="text-white" size={32} />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Verify Your Email</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="text-2xl font-serif font-bold text-text mb-2">Verify Your Email</h3>
+                <p className="text-sm text-text/60 font-light">
                   We've sent a 6-digit verification code to<br />
-                  <span className="font-medium text-gray-900">{email}</span>
+                  <span className="font-semibold text-secondary">{email}</span>
                 </p>
               </div>
 
               {/* OTP Input Grid */}
-              <div className="flex justify-center gap-3 mb-6">
+              <div className="flex justify-center gap-2.5 mb-6">
                 {otpDigits.map((digit, i) => (
                   <input
                     key={i}
@@ -246,19 +252,19 @@ const Login = ({ setToken }) => {
                     value={digit}
                     onChange={(e) => handleOtpChange(i, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                    className="w-12 h-14 text-center border border-gray-300 rounded-lg text-xl font-semibold focus:outline-none focus:border-black transition-colors"
+                    className="w-12 h-14 text-center border-2 border-gray-200 rounded-lg text-xl font-bold focus:outline-none focus:border-secondary transition-all shadow-sm"
                   />
                 ))}
               </div>
 
               {/* Resend OTP */}
-              <div className="text-center mb-6">
-                <p className="text-sm text-gray-600 mb-2">Didn't receive the code?</p>
+              <div className="text-center mb-6 bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <p className="text-xs font-semibold text-text/60 mb-2 uppercase tracking-wide">Didn't receive the code?</p>
                 <button
                   type="button"
                   onClick={handleSendOtp}
                   disabled={otpTimer > 0 || loading}
-                  className="text-sm text-black hover:text-gray-600 font-medium disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+                  className="text-sm text-secondary hover:text-secondary/80 font-bold disabled:text-text/30 disabled:cursor-not-allowed transition-colors uppercase tracking-wide"
                 >
                   {otpTimer > 0 ? `Resend in ${otpTimer}s` : 'Resend Code'}
                 </button>
@@ -268,14 +274,14 @@ const Login = ({ setToken }) => {
               <button
                 type="submit"
                 disabled={loading || otp.length < 6}
-                className="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 transition-all duration-200 flex items-center justify-center gap-2 shadow-md transform hover:scale-[1.02] disabled:hover:scale-100"
+                className="w-full bg-secondary text-white py-4 px-4 rounded-lg font-bold uppercase tracking-wider hover:bg-secondary/90 disabled:opacity-50 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:hover:scale-100"
               >
                 {loading ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                 ) : (
                   <>
                     Verify & Create Account
-                    <ArrowRight size={18} />
+                    <ArrowRight size={20} />
                   </>
                 )}
               </button>
@@ -284,9 +290,9 @@ const Login = ({ setToken }) => {
               <button
                 type="button"
                 onClick={() => setOtpSent(false)}
-                className="w-full text-gray-600 hover:text-gray-900 py-2 text-sm font-medium transition-colors"
+                className="w-full text-text/60 hover:text-text py-3 text-sm font-semibold transition-colors uppercase tracking-wide"
               >
-                Back to Registration
+                ← Back to Registration
               </button>
             </form>
           )}
@@ -294,12 +300,12 @@ const Login = ({ setToken }) => {
           {/* Toggle Form Mode */}
           {!otpSent && (
             <div className="mt-8 pt-6 border-t border-gray-200 text-center">
-              <p className="text-sm text-gray-600 mb-3">
+              <p className="text-sm text-text/60 mb-3 font-light">
                 {isRegistering ? 'Already have an admin account?' : 'Need to create an admin account?'}
               </p>
               <button
                 onClick={toggleFormMode}
-                className="text-black font-medium hover:text-gray-600 transition-colors text-sm"
+                className="text-secondary font-bold hover:text-secondary/80 transition-colors text-sm uppercase tracking-wide"
               >
                 {isRegistering ? 'Sign In Instead' : 'Create New Account'}
               </button>
@@ -308,12 +314,27 @@ const Login = ({ setToken }) => {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-xs text-gray-500">
-            Secure admin access powered by your platform
+        <div className="text-center mt-6">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Shield size={14} className="text-text/40" />
+            <p className="text-xs text-text/50 font-medium uppercase tracking-wide">
+              Secure Admin Access
+            </p>
+          </div>
+          <p className="text-xs text-text/40 font-light">
+            Powered by advanced verification system
           </p>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+          animation: spin 1s linear infinite;
+        }
+      `}</style>
     </div>
   );
 };

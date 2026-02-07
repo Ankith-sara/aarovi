@@ -25,7 +25,7 @@ const uploadToCloudinary = async (base64Data, folder = 'customizations') => {
   }
 };
 
-// SAVE CUSTOMIZATION - WITH IMAGE UPLOAD
+// SAVE CUSTOMIZATION
 const saveCustomization = async (req, res) => {
   try {
     const {
@@ -95,17 +95,74 @@ const saveCustomization = async (req, res) => {
       console.log(`Uploaded ${uploadedReferenceImages.length}/${referenceImages.length} reference images`);
     }
 
+    // NEW: Process uploaded prints
+    let uploadedPrintsUrls = [];
+    if (Array.isArray(canvasDesign?.uploadedPrints) && canvasDesign.uploadedPrints.length > 0) {
+      console.log(`Uploading ${canvasDesign.uploadedPrints.length} custom prints...`);
+
+      const printUploadPromises = canvasDesign.uploadedPrints.map(async (print) => {
+        const url = await uploadToCloudinary(
+          print.base64,
+          `customizations/${userId}/prints`
+        );
+        return {
+          id: print.id,
+          url: url,
+          zoneName: print.zoneName,
+          zone: print.zone,
+          fitOption: print.fitOption,
+          repeat: print.repeat,
+          uploadedAt: print.uploadedAt
+        };
+      });
+
+      const results = await Promise.all(printUploadPromises);
+      uploadedPrintsUrls = results.filter(item => item.url !== null);
+      console.log(`Uploaded ${uploadedPrintsUrls.length}/${canvasDesign.uploadedPrints.length} custom prints`);
+    }
+
+    // NEW: Process uploaded embroidery
+    let uploadedEmbroideryUrls = [];
+    if (Array.isArray(canvasDesign?.uploadedEmbroidery) && canvasDesign.uploadedEmbroidery.length > 0) {
+      console.log(`Uploading ${canvasDesign.uploadedEmbroidery.length} custom embroidery designs...`);
+
+      const embroideryUploadPromises = canvasDesign.uploadedEmbroidery.map(async (embroidery) => {
+        const url = await uploadToCloudinary(
+          embroidery.base64,
+          `customizations/${userId}/embroidery`
+        );
+        return {
+          id: embroidery.id,
+          url: url,
+          zoneName: embroidery.zoneName,
+          zone: embroidery.zone,
+          threadColor: embroidery.threadColor,
+          uploadedAt: embroidery.uploadedAt
+        };
+      });
+
+      const results = await Promise.all(embroideryUploadPromises);
+      uploadedEmbroideryUrls = results.filter(item => item.url !== null);
+      console.log(`Uploaded ${uploadedEmbroideryUrls.length}/${canvasDesign.uploadedEmbroidery.length} custom embroidery designs`);
+    }
+
     // Process canvas design data
     const processedCanvasDesign = {
       svg: canvasDesign?.svg || "",
-      pngUrl: designImageUrl || "", 
+      pngUrl: designImageUrl || "",
       zoneColors: canvasDesign?.zoneColors || {},
       zonePatterns: canvasDesign?.zonePatterns || {},
       sleeveStyle: canvasDesign?.sleeveStyle || "full",
       baseColor: canvasDesign?.baseColor || color,
       embroideryMetadata: Array.isArray(canvasDesign?.embroideryMetadata)
         ? canvasDesign.embroideryMetadata
-        : []
+        : [],
+      printMetadata: Array.isArray(canvasDesign?.printMetadata)
+        ? canvasDesign.printMetadata
+        : [],
+      // NEW: Add uploaded assets
+      uploadedPrints: uploadedPrintsUrls,
+      uploadedEmbroidery: uploadedEmbroideryUrls
     };
 
     // Create customization document
@@ -141,7 +198,13 @@ const saveCustomization = async (req, res) => {
       success: true,
       message: "Customization saved successfully",
       customization: customization,
-      _id: customization._id
+      _id: customization._id,
+      uploadStats: {
+        designImage: designImageUrl ? 'uploaded' : 'none',
+        referenceImages: uploadedReferenceImages.length,
+        customPrints: uploadedPrintsUrls.length,
+        customEmbroidery: uploadedEmbroideryUrls.length
+      }
     });
 
   } catch (error) {
@@ -253,7 +316,7 @@ const getUserCustomizations = async (req, res) => {
   }
 };
 
-// UPDATE CUSTOMIZATION
+// UPDATE CUSTOMIZATION - WITH UPLOADED ASSETS
 const updateCustomization = async (req, res) => {
   try {
     const { id } = req.params;
@@ -311,6 +374,65 @@ const updateCustomization = async (req, res) => {
         }
       }
 
+      // NEW: Handle uploaded prints update
+      let uploadedPrintsUrls = customization.canvasDesign?.uploadedPrints || [];
+      if (Array.isArray(updateData.canvasDesign.uploadedPrints)) {
+        const newPrints = updateData.canvasDesign.uploadedPrints.filter(
+          p => !uploadedPrintsUrls.find(existing => existing.id === p.id)
+        );
+
+        if (newPrints.length > 0) {
+          const printUploadPromises = newPrints.map(async (print) => {
+            const url = await uploadToCloudinary(
+              print.base64,
+              `customizations/${userId}/prints`
+            );
+            return {
+              id: print.id,
+              url: url,
+              zoneName: print.zoneName,
+              zone: print.zone,
+              fitOption: print.fitOption,
+              repeat: print.repeat,
+              uploadedAt: print.uploadedAt
+            };
+          });
+
+          const results = await Promise.all(printUploadPromises);
+          const validResults = results.filter(item => item.url !== null);
+          uploadedPrintsUrls = [...uploadedPrintsUrls, ...validResults];
+        }
+      }
+
+      // NEW: Handle uploaded embroidery update
+      let uploadedEmbroideryUrls = customization.canvasDesign?.uploadedEmbroidery || [];
+      if (Array.isArray(updateData.canvasDesign.uploadedEmbroidery)) {
+        const newEmbroidery = updateData.canvasDesign.uploadedEmbroidery.filter(
+          e => !uploadedEmbroideryUrls.find(existing => existing.id === e.id)
+        );
+
+        if (newEmbroidery.length > 0) {
+          const embroideryUploadPromises = newEmbroidery.map(async (embroidery) => {
+            const url = await uploadToCloudinary(
+              embroidery.base64,
+              `customizations/${userId}/embroidery`
+            );
+            return {
+              id: embroidery.id,
+              url: url,
+              zoneName: embroidery.zoneName,
+              zone: embroidery.zone,
+              threadColor: embroidery.threadColor,
+              uploadedAt: embroidery.uploadedAt
+            };
+          });
+
+          const results = await Promise.all(embroideryUploadPromises);
+          const validResults = results.filter(item => item.url !== null);
+          uploadedEmbroideryUrls = [...uploadedEmbroideryUrls, ...validResults];
+        }
+      }
+
       updateData.canvasDesign = {
         svg: updateData.canvasDesign.svg || customization.canvasDesign.svg,
         pngUrl: designImageUrl,
@@ -318,7 +440,10 @@ const updateCustomization = async (req, res) => {
         zonePatterns: updateData.canvasDesign.zonePatterns || customization.canvasDesign.zonePatterns,
         sleeveStyle: updateData.canvasDesign.sleeveStyle || customization.canvasDesign.sleeveStyle,
         baseColor: updateData.canvasDesign.baseColor || customization.canvasDesign.baseColor,
-        embroideryMetadata: updateData.canvasDesign.embroideryMetadata || customization.canvasDesign.embroideryMetadata
+        embroideryMetadata: updateData.canvasDesign.embroideryMetadata || customization.canvasDesign.embroideryMetadata,
+        printMetadata: updateData.canvasDesign.printMetadata || customization.canvasDesign.printMetadata,
+        uploadedPrints: uploadedPrintsUrls,
+        uploadedEmbroidery: uploadedEmbroideryUrls
       };
     }
 

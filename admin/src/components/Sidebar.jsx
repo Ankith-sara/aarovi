@@ -181,7 +181,7 @@ const Sidebar = ({ token, setToken }) => {
                 <Shield className="text-white" size={24} />
               </div>
               <div>
-                <h1 className="text-lg font-serif font-bold text-text">Aharyas Admin</h1>
+                <h1 className="text-lg font-serif font-bold text-text">Aarovi Admin</h1>
                 <p className="text-xs text-text/50 font-light">Management Panel</p>
               </div>
             </div>
