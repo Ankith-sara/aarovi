@@ -253,7 +253,7 @@ const ShippingDeliveryPolicy = () => {
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
               <Phone className="w-10 h-10 text-secondary mx-auto mb-4" />
               <h4 className="font-serif font-semibold text-text mb-3">Phone Support</h4>
-              <p className="text-xl text-text mb-2">+91 9399336666</p>
+              <p className="text-xl text-text mb-2">+91 7416964805</p>
               <p className="text-sm text-text/60">Mon-Sat: 9 AM - 6 PM</p>
             </div>
             

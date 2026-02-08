@@ -424,7 +424,7 @@ const CancellationRefundPolicy = () => {
                 <Phone className="w-8 h-8 text-secondary" />
               </div>
               <h4 className="font-serif font-bold text-text mb-3 text-lg">Phone Support</h4>
-              <p className="text-xl font-bold text-text mb-2">+91 9399336666</p>
+              <p className="text-xl font-bold text-text mb-2">+91 7416964805</p>
               <p className="text-sm text-text/60">Mon–Sat: 9 AM – 6 PM IST</p>
             </div>
             

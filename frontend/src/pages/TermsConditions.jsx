@@ -38,7 +38,7 @@ const TermsConditions = () => {
                 <p className="font-medium text-text">AAROVI FASHIONS</p>
                 <p className="text-sm text-text/70 mt-3">
                   Registered / Operational Address:<br />
-                  Hyderabad, Telangana - 502345, India
+                  Hyderabad, Telangana, India
                 </p>
               </div>
             </div>
@@ -295,7 +295,7 @@ const TermsConditions = () => {
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
               <Phone className="w-10 h-10 text-secondary mx-auto mb-4" />
               <h4 className="font-serif font-semibold text-text mb-2">Phone Support</h4>
-              <p className="text-xl text-text mb-1">+91 9399336666</p>
+              <p className="text-xl text-text mb-1">+91 7416964805</p>
               <p className="text-sm text-text/60">Mon–Sat: 9 AM – 6 PM</p>
             </div>
 

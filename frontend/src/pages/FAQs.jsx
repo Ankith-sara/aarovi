@@ -62,7 +62,7 @@ const FAQs = () => {
         { question: "How do I create an account?", answer: "Click 'Sign Up' on top of any page or create one during checkout — quick and easy." },
         { question: "I forgot my password. How do I reset it?", answer: "Click 'Forgot Password', enter your email, and follow the reset link we send you." },
         { question: "Is my personal information secure?", answer: "Yes. All data is encrypted and protected — we never share it without consent." },
-        { question: "How can I contact customer support?", answer: "Email aaroviofficial@gmail.com or call +91 9399336666 (Mon–Sat, 9AM–6PM)." }
+        { question: "How can I contact customer support?", answer: "Email aaroviofficial@gmail.com or call +91 7416964805 (Mon–Sat, 9AM–6PM)." }
       ]
     }
   ];
@@ -165,7 +165,7 @@ const FAQs = () => {
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center hover:shadow-md transition-shadow">
               <Phone className="w-10 h-10 text-secondary mx-auto mb-4" />
               <h4 className="font-serif font-semibold text-text mb-3">Helpdesk Phone</h4>
-              <p className="text-lg text-text mb-1">+91 9399336666</p>
+              <p className="text-lg text-text mb-1">+91 7416964805</p>
               <p className="text-sm text-text/60 mt-2">Mon–Sat: 9 AM – 6 PM IST</p>
             </div>
           </div>

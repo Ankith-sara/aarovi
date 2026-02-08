@@ -32,8 +32,8 @@ const Contact = () => {
               </div>
               <h3 className="text-xl font-serif font-bold text-text mb-1">Call Us</h3>
               <p className="text-sm text-text/50 font-light mb-4">Mon - Sat: 9 AM - 6 PM</p>
-              <a href="tel:+919399336666" className="text-lg font-semibold text-secondary hover:text-secondary/80 transition-colors flex items-center gap-2 group">
-                +91 9399336666
+              <a href="tel:+917416964805" className="text-lg font-semibold text-secondary hover:text-secondary/80 transition-colors flex items-center gap-2 group">
+                +91 7416964805
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </a>
             </div>
@@ -56,7 +56,6 @@ const Contact = () => {
               <p className="text-sm text-text/50 font-light mb-4">Our Studio</p>
               <p className="text-text/70 font-light">
                 Hyderabad, Telangana<br />
-                <span className="text-secondary font-semibold">PIN: 502345</span>
               </p>
             </div>
           </div>
