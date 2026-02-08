@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Main Pages -->
+  <url><loc>https://aarovi.in/</loc><priority>1.0</priority></url>
+  <url><loc>https://aarovi.in/about</loc></url>
+  <url><loc>https://aarovi.in/contact</loc></url>
+  <url><loc>https://aarovi.in/blog</loc></url>
+
+  <!-- Shopping -->
+  <url><loc>https://aarovi.in/shop/collection</loc></url>
+  <url><loc>https://aarovi.in/categories</loc></url>
+  <url><loc>https://aarovi.in/new-arrivals</loc></url>
+  <url><loc>https://aarovi.in/best-sellers</loc></url>
+
+  <!-- User -->
+  <url><loc>https://aarovi.in/account</loc></url>
+  <url><loc>https://aarovi.in/orders</loc></url>
+  <url><loc>https://aarovi.in/wishlist</loc></url>
+
+  <!-- Policies -->
+  <url><loc>https://aarovi.in/privacypolicy</loc></url>
+  <url><loc>https://aarovi.in/termsconditions</loc></url>
+  <url><loc>https://aarovi.in/refundpolicy</loc></url>
+  <url><loc>https://aarovi.in/shippingpolicy</loc></url>
+
+</urlset>
