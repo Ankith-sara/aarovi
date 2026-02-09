@@ -1,3 +1,4 @@
+import logo from './logo.png'
 import cart_icon from './cart_icon.png'
 import razorpay_logo from './razorpay_logo.png'
 import cross_icon from './cross_icon.png'
@@ -17,6 +18,7 @@ import painting_img from './painting_print.jpeg'
 import shibori_img from './shibori_print.jpeg'
 
 export const assets = {
+    logo,
     cart_icon,
     razorpay_logo,
     cross_icon,

@@ -135,9 +135,7 @@ const Navbar = () => {
               onClick={() => window.location.href = '/'}
               className="flex items-center group"
             >
-              <div className="font-serif text-text">
-                <h1 className="text-3xl font-bold tracking-tight">AAROVI</h1>
-              </div>
+              <img src={assets.logo} alt="Aarovi Logo" className="h-auto w-32" />
             </Link>
 
             {/* Desktop Navigation */}
@@ -299,7 +297,7 @@ const Navbar = () => {
             </div>
 
             {/* Action Icons */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => { setShowSearch(true); navigate('/shop/collection') }}
                 className="p-2.5 transition-all duration-300 rounded-full hover:bg-background/30 text-text/70 hover:text-text"
