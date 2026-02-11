@@ -150,6 +150,92 @@ const placeOrder = async (req, res) => {
   }
 };
 
+// Placing orders using QR Payment Method
+const placeOrderQR = async (req, res) => {
+  try {
+    const { userId, items, amount, address, transactionId } = req.body;
+
+    if (!userId || !items || !amount || !address) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields: userId, items, amount, or address'
+      });
+    }
+
+    if (!transactionId || transactionId.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: 'Transaction ID is required for QR payment'
+      });
+    }
+
+    // Check if transaction ID already exists
+    const existingOrder = await orderModel.findOne({
+      paymentMethod: "QR",
+      transactionId: transactionId.trim()
+    });
+
+    if (existingOrder) {
+      return res.status(400).json({
+        success: false,
+        message: 'This transaction ID has already been used. Please verify your payment.'
+      });
+    }
+
+    // Process items (handle both regular and custom items with canvas)
+    const processedItems = processOrderItems(items);
+
+    const orderData = {
+      userId,
+      items: processedItems,
+      amount,
+      address,
+      paymentMethod: "QR",
+      payment: true, // Set to true as payment is made via QR
+      transactionId: transactionId.trim(),
+      date: Date.now()
+    }
+
+    const newOrder = new orderModel(orderData);
+    await newOrder.save();
+
+    // Update customization status to "In Production" for custom items
+    for (const item of items) {
+      if (item.type === 'customization' && item._id) {
+        try {
+          await customizationModel.findByIdAndUpdate(
+            item._id,
+            { status: 'In Production' }
+          );
+        } catch (err) {
+          console.error('Failed to update customization status:', err);
+        }
+      }
+    }
+
+    // Clear cart after order
+    await userModel.findByIdAndUpdate(userId, { cartData: {} });
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      console.error('User not found for notifications');
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    await sendOrderNotifications(newOrder, user);
+
+    res.status(201).json({
+      success: true,
+      message: "Order placed successfully with QR payment",
+      orderId: newOrder._id
+    });
+
+  } catch (error) {
+    console.error('QR Order Error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Verify COD Order
 const verifyCOD = async (req, res) => {
   try {
@@ -509,4 +595,7 @@ const orderStatus = async (req, res) => {
   }
 };
 
-export { verifyRazorpay, verifyCOD, placeOrder, placeOrderRazorpay, allOrders, userOrders, updateStatus, updateProductionStatus, orderStatus };
+export {
+  verifyRazorpay, verifyCOD, placeOrder, placeOrderQR, placeOrderRazorpay, allOrders, userOrders, 
+  updateStatus, updateProductionStatus, orderStatus
+};

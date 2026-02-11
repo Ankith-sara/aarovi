@@ -12,7 +12,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           <div className="lg:col-span-4 space-y-6">
             <div>
-              <h2 className="text-3xl font-serif font-bold text-white mb-4">Aarovi</h2>
+              <h2 className="text-3xl font-serif font-bold text-white mb-2">Aarovi</h2>
               <p className="text-white/60 leading-relaxed font-light text-sm">
                 Bringing you the finest curated handcrafted fashion with a commitment to quality,
                 authenticity, and exceptional service. Each piece tells a story of artisan craftsmanship

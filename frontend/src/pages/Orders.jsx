@@ -352,7 +352,6 @@ const Orders = () => {
                   {/* Order Content */}
                   <div className="p-6">
                     <div className="flex flex-col lg:flex-row gap-6">
-                      {/* Product Image */}
                       <div className="flex-shrink-0">
                         <div className="w-full h-48 sm:w-32 sm:h-32 lg:w-40 lg:h-40">
                           {item.image ? (

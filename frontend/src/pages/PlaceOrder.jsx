@@ -6,7 +6,7 @@ import { assets } from '../assets/assets';
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { CreditCard, Home, Shield, ArrowLeft, MapPin, Phone, Mail, User, Package, CheckCircle } from 'lucide-react';
+import { CreditCard, Home, Shield, ArrowLeft, MapPin, Phone, Mail, User, Package, CheckCircle, QrCode, X } from 'lucide-react';
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState('cod');
@@ -23,6 +23,8 @@ const PlaceOrder = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [transactionId, setTransactionId] = useState('');
 
   function loadRazorpayScript(src) {
     return new Promise((resolve) => {
@@ -121,11 +123,9 @@ const PlaceOrder = () => {
     rzp.open();
   };
 
-  const onSubmitHandler = async (event) => {
-    event.preventDefault();
-
-    if (!agreeToTerms) {
-      toast.error('Please agree to our Terms & Conditions and Privacy Policy to proceed.');
+  const handleQRSubmit = async () => {
+    if (!transactionId.trim()) {
+      toast.error('Please enter the transaction ID');
       return;
     }
 
@@ -163,7 +163,100 @@ const PlaceOrder = () => {
               name: `Custom ${custom.snapshot?.gender || ''} ${custom.snapshot?.dressType || 'Design'}`,
               quantity: custom.quantity,
               price: custom.price,
-              // Include all necessary fields
+              gender: custom.snapshot?.gender || '',
+              dressType: custom.snapshot?.dressType || '',
+              fabric: custom.snapshot?.fabric || '',
+              color: custom.snapshot?.color || '',
+              designNotes: custom.snapshot?.designNotes || '',
+              measurements: custom.snapshot?.measurements || {},
+              canvasDesign: custom.snapshot?.canvasDesign || {},
+              referenceImages: custom.snapshot?.referenceImages || [],
+              aiPrompt: custom.snapshot?.aiPrompt || '',
+              neckStyle: custom.snapshot?.neckStyle || '',
+              sleeveStyle: custom.snapshot?.sleeveStyle || '',
+              image: custom.snapshot?.canvasDesign?.pngUrl || custom.snapshot?.canvasDesign?.png || ''
+            });
+          }
+        }
+      }
+
+      let orderData = {
+        userId: decoded.id,
+        address: formData,
+        items: orderItems,
+        amount: getCartAmount() + delivery_fee,
+        transactionId: transactionId.trim()
+      };
+
+      const response = await axios.post(`${backendUrl}/api/order/qr`, orderData, { 
+        headers: { Authorization: `Bearer ${token}` } 
+      });
+
+      if (response.data.success) {
+        setCartItems({});
+        setShowQRModal(false);
+        setTransactionId('');
+        toast.success('Order placed successfully');
+        navigate('/orders');
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
+
+    if (!agreeToTerms) {
+      toast.error('Please agree to our Terms & Conditions and Privacy Policy to proceed.');
+      return;
+    }
+
+    // If QR payment is selected, show the QR modal
+    if (method === 'qr') {
+      setShowQRModal(true);
+      return;
+    }
+
+    setIsLoading(true);
+    const decoded = jwtDecode(token);
+
+    try {
+      let orderItems = [];
+      for (const items in cartItems) {
+        if (items === 'customization') continue;
+        for (const item in cartItems[items]) {
+          if (cartItems[items][item] > 0) {
+            const product = products.find((p) => p._id === items);
+            if (product) {
+              orderItems.push({
+                productId: product._id,
+                name: product.name,
+                price: product.price,
+                quantity: cartItems[items][item],
+                size: item,
+                image: product.images?.[0] || null
+              });
+            }
+          }
+        }
+      }
+
+      if (cartItems.customizations) {
+        for (const customId in cartItems.customizations) {
+          const custom = cartItems.customizations[customId];
+          if (custom && custom.quantity > 0) {
+            orderItems.push({
+              _id: customId,
+              type: 'customization',
+              name: `Custom ${custom.snapshot?.gender || ''} ${custom.snapshot?.dressType || 'Design'}`,
+              quantity: custom.quantity,
+              price: custom.price,
               gender: custom.snapshot?.gender || '',
               dressType: custom.snapshot?.dressType || '',
               fabric: custom.snapshot?.fabric || '',
@@ -240,6 +333,102 @@ const PlaceOrder = () => {
           </div>
         </div>
       </section>
+
+      {/* QR Payment Modal */}
+      {showQRModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl my-8">
+            <div className="p-4 sm:p-6 border-b border-background/30 flex items-center justify-between">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                  <QrCode size={18} className="text-secondary" />
+                </div>
+                <h2 className="text-lg sm:text-xl font-serif font-bold text-text">Scan QR to Pay</h2>
+              </div>
+              <button
+                onClick={() => {
+                  setShowQRModal(false);
+                  setTransactionId('');
+                }}
+                className="text-text/50 hover:text-text transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-4 sm:p-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-gradient-to-br from-background/10 to-background/5 rounded-xl p-4 flex flex-col items-center justify-center">
+                  <div className="bg-white p-3 rounded-lg shadow-lg mb-3">
+                    <img 
+                      src={assets.Qr_img} 
+                      alt="Payment QR Code" 
+                      className="w-40 h-40 sm:w-48 sm:h-48 object-contain"
+                    />
+                  </div>
+                  <p className="text-xs sm:text-sm text-text/70 text-center font-light mb-2">
+                    Scan with any UPI app
+                  </p>
+                  <p className="text-xl sm:text-2xl font-bold text-secondary">
+                    ₹{getCartAmount() + delivery_fee}
+                  </p>
+                </div>
+
+                {/* Form Section */}
+                <div className="flex flex-col justify-center space-y-4">
+                  {/* Info */}
+                  <div className="bg-blue-50 rounded-lg p-3">
+                    <p className="text-xs text-blue-800 font-medium">
+                      ℹ️ Complete payment via UPI, then enter the transaction ID below
+                    </p>
+                  </div>
+
+                  {/* Transaction ID Input */}
+                  <div className="space-y-2">
+                    <label className="block text-xs sm:text-sm font-medium text-text/70 uppercase tracking-wider">
+                      Transaction ID *
+                    </label>
+                    <input
+                      type="text"
+                      value={transactionId}
+                      onChange={(e) => setTransactionId(e.target.value)}
+                      placeholder="Enter UPI transaction/reference ID"
+                      className="w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light text-sm"
+                      required
+                    />
+                    <p className="text-xs text-text/50 font-light">
+                      Found in your payment app after completing the transaction
+                    </p>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    onClick={handleQRSubmit}
+                    disabled={isLoading || !transactionId.trim()}
+                    className={`w-full py-3 sm:py-3.5 font-bold rounded-full transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base ${
+                      !transactionId.trim()
+                        ? 'bg-background/30 text-text/40 cursor-not-allowed'
+                        : 'bg-secondary text-white hover:bg-secondary/90'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    {isLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>Processing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle size={18} />
+                        <span>Confirm & Place Order</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Checkout Content */}
       <section className="px-4 sm:px-6 lg:px-8 pb-20">
@@ -487,6 +676,7 @@ const PlaceOrder = () => {
                 </div>
 
                 <div className="p-6 space-y-3">
+                  <PaymentOption method={method} setMethod={setMethod} type="qr" />
                   {/* <PaymentOption method={method} setMethod={setMethod} type="razorpay" logo={assets.razorpay_logo} /> */}
                   <PaymentOption method={method} setMethod={setMethod} type="cod" />
                 </div>
@@ -527,7 +717,7 @@ const PlaceOrder = () => {
                         </>
                       ) : (
                         <>
-                          <span>Place Order</span>
+                          <span>{method === 'qr' ? 'Proceed to Payment' : 'Place Order'}</span>
                         </>
                       )}
                     </button>
@@ -571,7 +761,17 @@ const PaymentOption = ({ method, setMethod, type, logo }) => (
       {method === type && <div className="w-2.5 h-2.5 bg-secondary rounded-full"></div>}
     </div>
 
-    {logo ? (
+    {type === 'qr' ? (
+      <div className="flex items-center gap-3 flex-1">
+        <div className="bg-background/20 p-2 rounded-lg group-hover:bg-background/30 transition-colors">
+          <QrCode size={18} className="text-text" />
+        </div>
+        <div className="flex flex-col">
+          <span className="font-semibold text-text">QR Code Payment</span>
+          <span className="text-xs text-text/50 font-light">Pay via UPI by scanning QR code</span>
+        </div>
+      </div>
+    ) : logo ? (
       <div className="flex items-center gap-3 flex-1">
         <img className="h-6 object-contain" src={logo} alt={`${type} payment`} />
         <div className="flex flex-col">

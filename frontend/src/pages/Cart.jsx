@@ -253,7 +253,7 @@ const Cart = () => {
                     <div className="flex gap-3 sm:gap-4">
                       <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 flex-shrink-0 bg-white rounded-xl overflow-hidden border-2 border-secondary/30">
                         <img
-                          src={item.images?.[0] || productImage}
+                          src={item.image?.[0] || productImage}
                           alt={`Custom ${snapshot.dressType}`}
                           className="w-full h-full object-contain"
                           onError={(e) => {
