@@ -8,7 +8,6 @@ const ShippingDeliveryPolicy = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
       <div className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6">
@@ -20,7 +19,6 @@ const ShippingDeliveryPolicy = () => {
         </div>
       </div>
 
-      {/* Shipping Methods */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -32,7 +30,6 @@ const ShippingDeliveryPolicy = () => {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {/* International Shipping */}
             <div className="bg-white rounded-lg shadow-sm border border-background overflow-hidden hover:shadow-md transition-shadow">
               <div className="bg-gradient-to-r from-background/20 to-primary p-6 border-b border-background">
                 <div className="flex items-center gap-4">
@@ -81,7 +78,6 @@ const ShippingDeliveryPolicy = () => {
               </div>
             </div>
 
-            {/* Domestic Shipping */}
             <div className="bg-white rounded-lg shadow-sm border border-background overflow-hidden hover:shadow-md transition-shadow">
               <div className="bg-gradient-to-r from-background/20 to-primary p-6 border-b border-background">
                 <div className="flex items-center gap-4">
@@ -133,7 +129,6 @@ const ShippingDeliveryPolicy = () => {
         </div>
       </section>
 
-      {/* Processing Timeline */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-primary">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -188,7 +183,6 @@ const ShippingDeliveryPolicy = () => {
         </div>
       </section>
 
-      {/* Important Information */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -239,7 +233,6 @@ const ShippingDeliveryPolicy = () => {
         </div>
       </section>
 
-      {/* Contact Support */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-background">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">

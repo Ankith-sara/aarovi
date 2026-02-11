@@ -197,7 +197,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-stone-50">
-      {/* Fashion Model Background */}
       <div className="hidden lg:block absolute left-0 top-0 bottom-0 w-[55%]">
         <div className="relative w-full h-full">
           <img 
@@ -228,14 +227,11 @@ const Login = () => {
       {/* Form Container */}
       <div className="min-h-screen lg:ml-[55%] flex items-center justify-center p-6 relative">
         <div className="w-full max-w-md">
-          
-          {/* Mobile Header */}
           <div className="lg:hidden mb-8 text-center">
             <div className="w-12 h-px bg-stone-300 mx-auto mb-4"></div>
             <h2 className="text-3xl font-light tracking-tight text-stone-900">AAROVI</h2>
           </div>
 
-          {/* Form Card */}
           <div className="bg-white/80 backdrop-blur-sm border border-stone-200 p-8 lg:p-10">
             <div className="mb-8">
               <h1 className="text-2xl lg:text-3xl font-light tracking-tight text-stone-900 mb-2">
@@ -244,7 +240,6 @@ const Login = () => {
               <div className="w-12 h-px bg-secondary mt-4"></div>
             </div>
 
-            {/* LOGIN FORM */}
             {currentState === 'Login' && (
               <form onSubmit={handleLogin} className="space-y-6">
                 <div>

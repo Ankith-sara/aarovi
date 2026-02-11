@@ -305,7 +305,6 @@ Return JSON only:
   const validateMeasurements = () => {
     const { bust, waist, hips, shoulder, sleeveLength, length } = form.measurements;
 
-    // Check if at least the primary measurements are provided
     if (!bust || !waist || !hips) {
       toast.error("Please provide measurements");
       return false;
@@ -326,7 +325,6 @@ Return JSON only:
       }
     }
 
-    // Optional measurements validation if provided
     if (shoulder && (parseFloat(shoulder) <= 0 || parseFloat(shoulder) > 30)) {
       toast.error("Shoulder measurement should be between 1-30 inches");
       return false;
@@ -366,7 +364,6 @@ Return JSON only:
       return;
     }
 
-    // Validate measurements before adding to cart
     if (!validateMeasurements()) {
       return;
     }
@@ -395,7 +392,6 @@ Return JSON only:
 
   return (
     <div className="mt-12 sm:mt-16 min-h-screen bg-gradient-to-b from-white via-background/5 to-white pb-8">
-      {/* Hero Section */}
       <section className="relative py-12 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-background/10 via-primary/5 to-transparent"></div>
         <div className="max-w-7xl mx-auto relative z-10">
@@ -411,7 +407,6 @@ Return JSON only:
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Progress Steps */}
         <div className="mb-8 sm:mb-12 bg-white rounded-xl shadow-md border border-background/20 p-5 sm:p-6">
           <div className="flex items-center justify-between">
             {[
@@ -452,14 +447,12 @@ Return JSON only:
           </div>
         </div>
 
-        {/* Main Content Card */}
         <div
           className="bg-white rounded-2xl shadow-lg border border-background/20 overflow-hidden"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
         >
-          {/* Step 1: Basic Details */}
           {step === 1 && (
             <div className="p-6 sm:p-10 lg:p-12 space-y-8 sm:space-y-10">
               <div className="text-center mb-8">
@@ -472,7 +465,6 @@ Return JSON only:
                 </p>
               </div>
 
-              {/* Gender Selection */}
               <div>
                 <label className="flex items-center gap-3 font-bold text-base sm:text-lg mb-5 text-text">
                   <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center">
@@ -504,7 +496,6 @@ Return JSON only:
                 </div>
               </div>
 
-              {/* Dress Type Selection */}
               {form.gender && (
                 <div className="animate-fadeIn">
                   <label className="flex items-center gap-3 font-bold text-base sm:text-lg mb-5 text-text">
@@ -533,7 +524,6 @@ Return JSON only:
                 </div>
               )}
 
-              {/* Fabric Selection */}
               {form.dressType && (
                 <div className="animate-fadeIn">
                   <label className="flex items-center gap-3 font-bold text-base sm:text-lg mb-5 text-text">
@@ -575,7 +565,6 @@ Return JSON only:
                 </div>
               )}
 
-              {/* Navigation */}
               <div className="flex justify-end items-center pt-8 border-t border-gray-200">
                 <button onClick={() => { if (validateStep(1)) setStep(2); }}
                   disabled={!form.gender || !form.dressType || !form.fabric}
@@ -613,7 +602,6 @@ Return JSON only:
                 aiGenerating={aiGenerating}
               />
 
-              {/* AI Design Suggestions */}
               {form.aiGeneratedDesign && (
                 <div className="mt-8 bg-gradient-to-br from-purple-50 to-white rounded-xl p-6 border border-purple-200">
                   <div className="flex items-center gap-3 mb-4">
@@ -662,7 +650,6 @@ Return JSON only:
                 </div>
               )}
 
-              {/* Navigation */}
               <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
                 <button onClick={() => setStep(1)}
                   className="px-6 sm:px-8 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-secondary/5 transition-all font-semibold flex items-center gap-2">
@@ -691,7 +678,6 @@ Return JSON only:
                 </p>
               </div>
 
-              {/* Reference Images */}
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                 <label className="flex items-center gap-3 font-bold text-base mb-4 text-text">
                   <Upload size={20} className="text-secondary" />
@@ -718,7 +704,6 @@ Return JSON only:
                 )}
               </div>
 
-              {/* Measurements */}
               <div className="rounded-xl p-6 border-2 border-gray-200">
                 <label className="flex items-center gap-3 font-bold text-base mb-2 text-text">
                   <Ruler size={20} className="text-secondary" />
@@ -763,7 +748,6 @@ Return JSON only:
                   className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 mt-5 h-24 focus:border-secondary focus:outline-none transition-all resize-none text-sm"
                   rows="3" />
 
-                {/* Measurements Help */}
                 <div className="mt-4 p-4 bg-white rounded-lg border border-secondary/20">
                   <p className="text-xs text-text font-semibold mb-2">📏 Measurement Guide:</p>
                   <ul className="text-xs text-text/70 space-y-1">
@@ -775,7 +759,6 @@ Return JSON only:
                 </div>
               </div>
 
-              {/* Design Notes */}
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                 <label className="flex items-center gap-3 font-bold text-base mb-4 text-text">
                   <Info size={20} className="text-secondary" />
@@ -788,7 +771,6 @@ Return JSON only:
                   rows="4" />
               </div>
 
-              {/* Price Estimate */}
               {estimatedPrice > 0 && (
                 <div className="rounded-xl p-6 border-2 border-secondary/30 bg-gradient-to-br from-background/10 to-white">
                   <div className="flex items-center gap-3 mb-4">
@@ -821,7 +803,6 @@ Return JSON only:
                 </div>
               )}
 
-              {/* Navigation */}
               <div className="flex flex-col sm:flex-row justify-between gap-4 pt-8 border-t border-gray-200">
                 <button onClick={() => setStep(2)}
                   className="w-full sm:w-auto px-8 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-secondary/5 transition-all font-semibold flex items-center justify-center gap-2">

@@ -80,7 +80,6 @@ const FAQs = () => {
         </div>
       </div>
 
-      {/* FAQ Categories */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto space-y-16">
           {faqCategories.map((category, categoryIndex) => {
@@ -137,7 +136,6 @@ const FAQs = () => {
         </div>
       </section>
 
-      {/* Still Have Questions */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-primary">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
@@ -172,7 +170,6 @@ const FAQs = () => {
         </div>
       </section>
 
-      {/* Quick Support */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-primary to-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">

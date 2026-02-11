@@ -265,7 +265,6 @@ const DesignCanvas = ({
           icon: '🔴',
           action: () => {
             applyFabricColor('#DC2626');
-            toast.success('Applied red color');
           }
         },
         {
@@ -274,7 +273,6 @@ const DesignCanvas = ({
           icon: '✨',
           action: () => {
             setEmbroideryColor('#FFD700');
-            toast.success('Gold embroidery set');
             saveToHistory();
           }
         },
@@ -298,7 +296,6 @@ const DesignCanvas = ({
           icon: '👔',
           action: () => {
             setSleeveStyle('full');
-            toast.success('Changed to full sleeves');
             saveToHistory();
           }
         },
@@ -309,7 +306,6 @@ const DesignCanvas = ({
           action: () => {
             applyFabricColor('#DC2626');
             setEmbroideryColor('#FFD700');
-            toast.success('Festive design applied');
             setTimeout(() => {
               toast.info('Select zones to add embroidery');
               setActiveTab('prints-embroidery');
@@ -458,7 +454,6 @@ const DesignCanvas = ({
     return zoneColors[zoneId] || fabricColor;
   };
 
-  // Fabric Tab Functions - MODIFIED TO SUPPORT BOTH MODES
   const applyFabricColor = (color) => {
     setFabricColor(color);
     
@@ -469,14 +464,11 @@ const DesignCanvas = ({
         updatedColors[zone.id] = color;
       });
       setZoneColors(updatedColors);
-      toast.success('Color applied to full garment');
     } else if (colorMode === 'zone' && selectedZone) {
-      // Apply to selected zone only
       setZoneColors(prev => ({
         ...prev,
         [selectedZone]: color
       }));
-      toast.success(`Color applied to ${template.zones.find(z => z.id === selectedZone)?.label}`);
     } else if (colorMode === 'zone' && !selectedZone) {
       toast.warning('Please select a zone first');
       return;
@@ -550,7 +542,6 @@ const DesignCanvas = ({
         key: randomPrint
       });
 
-      toast.success('Print generated!');
     } catch (error) {
       console.error('AI generation error:', error);
       toast.error('Failed to generate print');
@@ -602,7 +593,6 @@ const DesignCanvas = ({
     const reader = new FileReader();
     reader.onload = (event) => {
       setUploadedPrint(event.target.result);
-      toast.success('Design uploaded');
     };
     reader.readAsDataURL(file);
   };
@@ -637,7 +627,6 @@ const DesignCanvas = ({
     }));
 
     saveToHistory();
-    toast.success('Design applied!');
   };
 
   // Embroidery Functions

@@ -130,13 +130,8 @@ const Footer = () => {
                     </a>
                   </li>
                   <li>
-                    <a href='/track-order' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
-                      <span className="group-hover:translate-x-1 transition-transform duration-300">Track Order</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href='/size-guide' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
-                      <span className="group-hover:translate-x-1 transition-transform duration-300">Size Guide</span>
+                    <a href='/orders' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                      <span className="group-hover:translate-x-1 transition-transform duration-300">Orders</span>
                     </a>
                   </li>
                 </ul>
@@ -190,13 +185,9 @@ const Footer = () => {
               <a href="/faqs" className="text-white/60 hover:text-white transition-colors duration-300 font-light">
                 FAQs
               </a>
-              <span className="text-white/20">•</span>
+              <span className="text-white/40">|</span>
               <a href="/support" className="text-white/60 hover:text-white transition-colors duration-300 font-light">
                 Support
-              </a>
-              <span className="text-white/20">•</span>
-              <a href="/sitemap" className="text-white/60 hover:text-white transition-colors duration-300 font-light">
-                Sitemap
               </a>
             </div>
           </div>

@@ -8,7 +8,6 @@ const CancellationRefundPolicy = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
       <div className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6">
@@ -20,7 +19,6 @@ const CancellationRefundPolicy = () => {
         </div>
       </div>
 
-      {/* Quick Stats */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background/10 to-white">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -48,7 +46,6 @@ const CancellationRefundPolicy = () => {
         </div>
       </section>
 
-      {/* Important Notice */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="bg-gradient-to-br from-secondary/5 to-primary rounded-2xl p-8 border border-secondary/20">
@@ -63,13 +60,13 @@ const CancellationRefundPolicy = () => {
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <span className="px-4 py-2 bg-white rounded-full text-sm font-semibold text-text border border-background/50">
-                    ✓ No Refunds
+                    No Refunds
                   </span>
                   <span className="px-4 py-2 bg-white rounded-full text-sm font-semibold text-text border border-background/50">
-                    ✓ Exchange Only
+                    Exchange Only
                   </span>
                   <span className="px-4 py-2 bg-white rounded-full text-sm font-semibold text-text border border-background/50">
-                    ✓ Handcrafted Quality
+                    Handcrafted Quality
                   </span>
                 </div>
               </div>
@@ -78,7 +75,6 @@ const CancellationRefundPolicy = () => {
         </div>
       </section>
 
-      {/* Policy Points */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-background/10">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -89,107 +85,89 @@ const CancellationRefundPolicy = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Policy 1 */}
             <div className="group bg-white rounded-2xl p-6 border border-background/50 hover:shadow-xl transition-all">
               <div className="flex gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
-                  1
-                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform"> 1 </div>
                 <div className="flex-1">
                   <h3 className="font-serif font-bold text-text text-lg mb-2 flex items-center gap-2">
                     <Clock className="w-5 h-5 text-secondary" />
                     Order Cancellation Window
                   </h3>
                   <p className="text-text/70 text-sm leading-relaxed">
-                    Orders may be cancelled within <strong>6 hours of placement</strong> by emailing <strong>aaroiviofficial@gmail.com</strong>. 
+                    Orders may be cancelled within <strong>6 hours of placement</strong> by emailing <strong>aaroiviofficial@gmail.com</strong>.
                     After this window, orders are processed and cannot be cancelled.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Policy 2 */}
             <div className="group bg-white rounded-2xl p-6 border border-background/50 hover:shadow-xl transition-all">
               <div className="flex gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
-                  2
-                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform"> 2 </div>
                 <div className="flex-1">
                   <h3 className="font-serif font-bold text-text text-lg mb-2 flex items-center gap-2">
                     <XCircle className="w-5 h-5 text-secondary" />
                     No Refunds Policy
                   </h3>
                   <p className="text-text/70 text-sm leading-relaxed">
-                    Refunds are <strong>not offered</strong> under any circumstances. We provide replacements or exchanges for eligible cases only. 
+                    Refunds are <strong>not offered</strong> under any circumstances. We provide replacements or exchanges for eligible cases only.
                     This policy supports our commitment to handcrafted quality.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Policy 3 */}
             <div className="group bg-white rounded-2xl p-6 border border-background/50 hover:shadow-xl transition-all">
               <div className="flex gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
-                  3
-                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform"> 3 </div>
                 <div className="flex-1">
                   <h3 className="font-serif font-bold text-text text-lg mb-2 flex items-center gap-2">
                     <Shield className="w-5 h-5 text-secondary" />
                     Handcrafted Nature
                   </h3>
                   <p className="text-text/70 text-sm leading-relaxed">
-                    Minor irregularities in color, embroidery, print, or fabric texture reflect the handcrafted nature of our products. 
+                    Minor irregularities in color, embroidery, print, or fabric texture reflect the handcrafted nature of our products.
                     These variations are characteristics of authentic handmade ethnic wear, not defects.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Policy 4 */}
             <div className="group bg-white rounded-2xl p-6 border border-background/50 hover:shadow-xl transition-all">
               <div className="flex gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
-                  4
-                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform"> 4 </div>
                 <div className="flex-1">
                   <h3 className="font-serif font-bold text-text text-lg mb-2 flex items-center gap-2">
                     <AlertCircle className="w-5 h-5 text-secondary" />
                     Report Damage Immediately
                   </h3>
                   <p className="text-text/70 text-sm leading-relaxed">
-                    Any damage or defect must be reported within <strong>2 working days</strong> of receiving the order. 
+                    Any damage or defect must be reported within <strong>2 working days</strong> of receiving the order.
                     Include clear photos and your order number when contacting us.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Policy 5 */}
             <div className="group bg-white rounded-2xl p-6 border border-background/50 hover:shadow-xl transition-all">
               <div className="flex gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
-                  5
-                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform"> 5 </div>
                 <div className="flex-1">
                   <h3 className="font-serif font-bold text-text text-lg mb-2 flex items-center gap-2">
                     <Package className="w-5 h-5 text-secondary" />
                     Return Conditions
                   </h3>
                   <p className="text-text/70 text-sm leading-relaxed">
-                    Items must be <strong>unused, unwashed</strong>, and in <strong>original packaging with tags intact</strong> for exchange. 
+                    Items must be <strong>unused, unwashed</strong>, and in <strong>original packaging with tags intact</strong> for exchange.
                     Any alterations or signs of use will void exchange eligibility.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Policy 6 */}
             <div className="group bg-white rounded-2xl p-6 border border-background/50 hover:shadow-xl transition-all">
               <div className="flex gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
-                  6
-                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform"> 6 </div>
                 <div className="flex-1">
                   <h3 className="font-serif font-bold text-text text-lg mb-2">Non-Returnable Items</h3>
                   <p className="text-text/70 text-sm leading-relaxed mb-3">
@@ -217,76 +195,64 @@ const CancellationRefundPolicy = () => {
               </div>
             </div>
 
-            {/* Policy 7 */}
             <div className="group bg-white rounded-2xl p-6 border border-background/50 hover:shadow-xl transition-all">
               <div className="flex gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
-                  7
-                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform"> 7 </div>
                 <div className="flex-1">
                   <h3 className="font-serif font-bold text-text text-lg mb-2 flex items-center gap-2">
                     <RotateCcw className="w-5 h-5 text-secondary" />
                     Size Exchanges
                   </h3>
                   <p className="text-text/70 text-sm leading-relaxed">
-                    Size exchanges are accepted <strong>only if the incorrect size was delivered</strong>. 
+                    Size exchanges are accepted <strong>only if the incorrect size was delivered</strong>.
                     If you ordered the wrong size, exchanges are subject to availability and approval.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Policy 8 */}
             <div className="group bg-white rounded-2xl p-6 border border-background/50 hover:shadow-xl transition-all">
               <div className="flex gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
-                  8
-                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform"> 8 </div>
                 <div className="flex-1">
                   <h3 className="font-serif font-bold text-text text-lg mb-2 flex items-center gap-2">
                     <CheckCircle className="w-5 h-5 text-secondary" />
                     Replacement Process
                   </h3>
                   <p className="text-text/70 text-sm leading-relaxed">
-                    Verified defective or damaged items will be <strong>replaced at the earliest</strong>. 
+                    Verified defective or damaged items will be <strong>replaced at the earliest</strong>.
                     Our team will verify the issue and process replacement within 5-7 business days.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Policy 9 */}
             <div className="group bg-white rounded-2xl p-6 border border-background/50 hover:shadow-xl transition-all">
               <div className="flex gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
-                  9
-                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform"> 9 </div>
                 <div className="flex-1">
                   <h3 className="font-serif font-bold text-text text-lg mb-2 flex items-center gap-2">
                     <AlertCircle className="w-5 h-5 text-secondary" />
                     Do Not Self-Ship
                   </h3>
                   <p className="text-text/70 text-sm leading-relaxed">
-                    Please <strong>do not self-ship returns</strong> without confirmation from our support team. 
+                    Please <strong>do not self-ship returns</strong> without confirmation from our support team.
                     Unauthorized returns will not be processed, and shipping costs will not be reimbursed.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Policy 10 */}
             <div className="group bg-white rounded-2xl p-6 border border-background/50 hover:shadow-xl transition-all">
               <div className="flex gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
-                  10
-                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-secondary to-secondary/80 text-white rounded-xl flex items-center justify-center font-bold text-lg flex-shrink-0 group-hover:scale-110 transition-transform"> 10 </div>
                 <div className="flex-1">
                   <h3 className="font-serif font-bold text-text text-lg mb-2 flex items-center gap-2">
                     <Clock className="w-5 h-5 text-secondary" />
                     Contact Deadline
                   </h3>
                   <p className="text-text/70 text-sm leading-relaxed">
-                    For all order-related concerns, contact us at <strong>aaroiviofficial@gmail.com</strong> within <strong>7 days of delivery</strong>. 
+                    For all order-related concerns, contact us at <strong>aaroiviofficial@gmail.com</strong> within <strong>7 days of delivery</strong>.
                     After this period, we cannot process any return or exchange requests.
                   </p>
                 </div>
@@ -296,7 +262,6 @@ const CancellationRefundPolicy = () => {
         </div>
       </section>
 
-      {/* Exchange Process */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -317,7 +282,7 @@ const CancellationRefundPolicy = () => {
               <div className="mt-6">
                 <h3 className="font-serif font-bold text-text text-xl mb-3">Contact Support</h3>
                 <p className="text-text/70 text-sm leading-relaxed">
-                  Email <strong>aaroiviofficial@gmail.com</strong> within 2 working days of receiving your order. 
+                  Email <strong>aaroiviofficial@gmail.com</strong> within 2 working days of receiving your order.
                   Include your order number, photos of the issue, and a detailed description.
                 </p>
               </div>
@@ -332,7 +297,7 @@ const CancellationRefundPolicy = () => {
               <div className="mt-6">
                 <h3 className="font-serif font-bold text-text text-xl mb-3">Verification</h3>
                 <p className="text-text/70 text-sm leading-relaxed">
-                  Our team will review your case and verify the issue. Keep the item unused and in original packaging 
+                  Our team will review your case and verify the issue. Keep the item unused and in original packaging
                   with all tags attached during this process.
                 </p>
               </div>
@@ -347,7 +312,7 @@ const CancellationRefundPolicy = () => {
               <div className="mt-6">
                 <h3 className="font-serif font-bold text-text text-xl mb-3">Resolution</h3>
                 <p className="text-text/70 text-sm leading-relaxed">
-                  Once approved, we'll arrange pickup and send a replacement. The entire process typically 
+                  Once approved, we'll arrange pickup and send a replacement. The entire process typically
                   takes 5-7 business days from verification.
                 </p>
               </div>
@@ -356,7 +321,6 @@ const CancellationRefundPolicy = () => {
         </div>
       </section>
 
-      {/* What We Don't Accept */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background/10 to-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -366,7 +330,7 @@ const CancellationRefundPolicy = () => {
               Understanding what falls outside our exchange policy
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               {
@@ -408,7 +372,6 @@ const CancellationRefundPolicy = () => {
         </div>
       </section>
 
-      {/* Contact Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -417,7 +380,7 @@ const CancellationRefundPolicy = () => {
               Our customer service team is here to assist you with any return or exchange queries
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             <div className="bg-white rounded-2xl p-8 text-center border border-background/50 hover:shadow-xl transition-all">
               <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -427,7 +390,7 @@ const CancellationRefundPolicy = () => {
               <p className="text-xl font-bold text-text mb-2">+91 7416964805</p>
               <p className="text-sm text-text/60">Mon–Sat: 9 AM – 6 PM IST</p>
             </div>
-            
+
             <div className="bg-white rounded-2xl p-8 text-center border border-background/50 hover:shadow-xl transition-all">
               <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Mail className="w-8 h-8 text-secondary" />

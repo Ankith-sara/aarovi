@@ -8,7 +8,6 @@ const PrivacyPolicy = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
       <div className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6">
@@ -20,7 +19,6 @@ const PrivacyPolicy = () => {
         </div>
       </div>
 
-      {/* Privacy Commitment */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -55,7 +53,6 @@ const PrivacyPolicy = () => {
         </div>
       </section>
 
-      {/* Information We Collect */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-primary">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -130,7 +127,6 @@ const PrivacyPolicy = () => {
         </div>
       </section>
 
-      {/* How We Use Your Information */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -187,7 +183,6 @@ const PrivacyPolicy = () => {
         </div>
       </section>
 
-      {/* Cookie Policy */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-primary">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -249,7 +244,6 @@ const PrivacyPolicy = () => {
         </div>
       </section>
 
-      {/* Controlling Your Information */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -318,7 +312,6 @@ const PrivacyPolicy = () => {
         </div>
       </section>
 
-      {/* Marketing Communications */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-primary">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -366,7 +359,6 @@ const PrivacyPolicy = () => {
         </div>
       </section>
 
-      {/* Contact Information */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">

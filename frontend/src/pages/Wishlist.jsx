@@ -177,8 +177,7 @@ const Wishlist = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 pb-12">
-      {/* Delete Confirmation Modal */}
+    <div className="min-h-screen bg-gray-50 p-20 ">
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
           <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full animate-slideUp">
@@ -210,7 +209,6 @@ const Wishlist = () => {
         </div>
       )}
 
-      {/* Share Modal */}
       {showShareModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn" onClick={() => setShowShareModal(false)}>
           <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full animate-slideUp" onClick={(e) => e.stopPropagation()}>
@@ -233,8 +231,7 @@ const Wishlist = () => {
         </div>
       )}
 
-      {/* Header Section */}
-      <div className="px-4 sm:px-6 lg:px-8 mb-8">
+      <div className="px-4 sm:px-6 lg:px-8 my-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -265,7 +262,6 @@ const Wishlist = () => {
                   <Share2 size={20} className="text-gray-700" />
                 </button>
                 
-                {/* View Mode Toggle */}
                 <div className="flex bg-white rounded-full shadow-md p-1">
                   <button
                     onClick={() => setViewMode('grid')}
@@ -281,7 +277,6 @@ const Wishlist = () => {
                   </button>
                 </div>
 
-                {/* Sort Dropdown */}
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
@@ -330,7 +325,6 @@ const Wishlist = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {wishlistProducts.map((product) => (
                     <div key={product._id} className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
-                      {/* Product Image */}
                       <Link to={`/product/${product._id}`} className="block relative overflow-hidden aspect-square">
                         <img
                           className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-4"
@@ -348,7 +342,6 @@ const Wishlist = () => {
                         </button>
                       </Link>
 
-                      {/* Product Details */}
                       <div className="p-5">
                         <Link to={`/product/${product._id}`}>
                           <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-secondary transition-colors">
@@ -362,7 +355,6 @@ const Wishlist = () => {
                           </span>
                         </div>
 
-                        {/* Available Sizes */}
                         {product.sizes && product.sizes.length > 0 && (
                           <div className="mb-4">
                             <span className="text-xs text-gray-500 font-medium">Available Sizes:</span>
@@ -384,7 +376,6 @@ const Wishlist = () => {
                           </div>
                         )}
 
-                        {/* Action Button */}
                         <button
                           onClick={() => openSizeModal(product)}
                           className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-secondary text-white font-semibold rounded-xl hover:bg-secondary/90 transition-all shadow-lg"
@@ -404,7 +395,6 @@ const Wishlist = () => {
                   {wishlistProducts.map((product) => (
                     <div key={product._id} className="group bg-white rounded-2xl p-4 sm:p-6 hover:shadow-xl transition-all duration-300 shadow-lg">
                       <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-                        {/* Product Image */}
                         <div className="flex-shrink-0">
                           <Link to={`/product/${product._id}`}>
                             <div className="relative w-full sm:w-32 h-40 sm:h-32">
@@ -417,7 +407,6 @@ const Wishlist = () => {
                           </Link>
                         </div>
 
-                        {/* Product Details */}
                         <div className="flex-grow flex flex-col justify-between min-w-0">
                           <div>
                             <Link to={`/product/${product._id}`}>
@@ -432,7 +421,6 @@ const Wishlist = () => {
                               </span>
                             </div>
 
-                            {/* Available Sizes */}
                             {product.sizes && product.sizes.length > 0 && (
                               <div className="mb-4">
                                 <span className="text-xs text-gray-500 font-medium">Available:</span>
@@ -454,7 +442,6 @@ const Wishlist = () => {
                               </div>
                             )}
 
-                            {/* Action Buttons */}
                             <div className="flex flex-wrap gap-2 sm:gap-3">
                               <button
                                 onClick={() => openSizeModal(product)}
@@ -473,7 +460,6 @@ const Wishlist = () => {
                           </div>
                         </div>
 
-                        {/* Delete Button */}
                         <div className="flex sm:flex-col items-start justify-end">
                           <button
                             onClick={() => handleDeleteClick(product._id)}
@@ -488,7 +474,6 @@ const Wishlist = () => {
                 </div>
               )}
 
-              {/* Bottom Actions */}
               <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <button
                   onClick={() => navigate('/shop/collection')}
@@ -512,7 +497,6 @@ const Wishlist = () => {
             className="bg-white max-w-md w-full rounded-3xl shadow-2xl overflow-hidden animate-slideUp"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
               <h3 className="text-xl font-bold text-gray-900">Select Size & Quantity</h3>
               <button
@@ -523,9 +507,7 @@ const Wishlist = () => {
               </button>
             </div>
 
-            {/* Modal Content */}
             <div className="p-6 space-y-6">
-              {/* Product Info */}
               <div className="flex gap-4">
                 <div className="w-20 h-20 bg-gray-50 rounded-xl p-2">
                   <img
@@ -540,7 +522,6 @@ const Wishlist = () => {
                 </div>
               </div>
 
-              {/* Size Selection */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-3">
                   Choose Size *
@@ -568,7 +549,6 @@ const Wishlist = () => {
                 </div>
               </div>
 
-              {/* Quantity Selection */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-3">
                   Quantity
@@ -600,7 +580,6 @@ const Wishlist = () => {
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={closeSizeModal}

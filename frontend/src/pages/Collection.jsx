@@ -4,7 +4,7 @@ import Title from '../components/Title';
 import ProductItem from '../components/ProductItem';
 import RecentlyViewed from '../components/RecentlyViewed';
 import {
-  ChevronLeft, ChevronRight, ChevronDown, ChevronUp, X, ShoppingBag, Grid3x3, List, Check, Gift, DollarSign, Star, Heart, Sparkles, Tag, SlidersHorizontal, Package, Filter, ArrowUp
+   ChevronDown, ChevronUp, X, ShoppingBag, Grid3x3, List, Check,  Star, Sparkles, Tag, SlidersHorizontal, Package, Filter, ArrowUp
 } from 'lucide-react';
 
 const Collection = () => {
@@ -51,11 +51,11 @@ const Collection = () => {
 
   const calculatePriceStats = () => {
     let relevantProducts = [...products];
-    
+
     if (category.length > 0) {
       relevantProducts = relevantProducts.filter(item => category.includes(item.category));
     }
-    
+
     if (subCategory.length > 0) {
       relevantProducts = relevantProducts.filter(item => subCategory.includes(item.subCategory));
     }
@@ -73,7 +73,6 @@ const Collection = () => {
 
   const priceStats = calculatePriceStats();
 
-  // Initialize price range when categories change
   useEffect(() => {
     if (products.length > 0) {
       const stats = calculatePriceStats();
@@ -145,12 +144,10 @@ const Collection = () => {
   };
 
   const applyFilters = () => {
-    // Apply the temporary price range to the actual price range
     setPriceRange({ min: tempPriceRange.min, max: tempPriceRange.max });
     setShowFilter(false);
   };
 
-  // Scroll to top button
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 400);
@@ -244,12 +241,12 @@ const Collection = () => {
   // Load more products
   const loadMoreProducts = useCallback(() => {
     if (isLoading || !hasMore) return;
-    
+
     const nextPage = page + 1;
     const startIndex = page * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
     const newProducts = filterProducts.slice(startIndex, endIndex);
-    
+
     if (newProducts.length > 0) {
       setDisplayedProducts(prev => [...prev, ...newProducts]);
       setPage(nextPage);
@@ -397,7 +394,7 @@ const Collection = () => {
             {/* Range Slider Visual */}
             <div className="px-2">
               <div className="h-1 bg-background rounded-full relative">
-                <div 
+                <div
                   className="absolute h-full bg-secondary rounded-full"
                   style={{
                     left: `${((isMobile ? tempPriceRange.min : priceRange.min) - priceStats.min) / (priceStats.max - priceStats.min) * 100}%`,
@@ -424,12 +421,11 @@ const Collection = () => {
                       setPriceRange({ min: range.min, max: range.max });
                     }
                   }}
-                  className={`px-3 py-2 border-2 text-xs font-medium transition-all duration-300 active:scale-95 ${
-                    (isMobile ? tempPriceRange.min : priceRange.min) === range.min && 
+                  className={`px-3 py-2 border-2 text-xs font-medium transition-all duration-300 active:scale-95 ${(isMobile ? tempPriceRange.min : priceRange.min) === range.min &&
                     (isMobile ? tempPriceRange.max : priceRange.max) === range.max
-                      ? 'border-secondary bg-secondary/10 text-secondary'
-                      : 'border-background hover:border-secondary'
-                  }`}
+                    ? 'border-secondary bg-secondary/10 text-secondary'
+                    : 'border-background hover:border-secondary'
+                    }`}
                 >
                   {range.label}
                 </button>
@@ -456,8 +452,8 @@ const Collection = () => {
                     className="sr-only"
                   />
                   <div className={`w-5 h-5 border-2 transition-all duration-300 ${category.includes(item)
-                      ? 'bg-secondary border-secondary'
-                      : 'border-background group-hover:border-secondary'
+                    ? 'bg-secondary border-secondary'
+                    : 'border-background group-hover:border-secondary'
                     }`}>
                     {category.includes(item) && (
                       <Check size={14} className="text-white absolute top-0.5 left-0.5" />
@@ -491,8 +487,8 @@ const Collection = () => {
                       className="sr-only"
                     />
                     <div className={`w-5 h-5 border-2 transition-all duration-300 ${subCategory.includes(item)
-                        ? 'bg-secondary border-secondary'
-                        : 'border-background group-hover:border-secondary'
+                      ? 'bg-secondary border-secondary'
+                      : 'border-background group-hover:border-secondary'
                       }`}>
                       {subCategory.includes(item) && (
                         <Check size={14} className="text-white absolute top-0.5 left-0.5" />
@@ -525,8 +521,8 @@ const Collection = () => {
                   className="sr-only"
                 />
                 <div className={`w-5 h-5 border-2 transition-all duration-300 ${giftingIdea
-                    ? 'bg-secondary border-secondary'
-                    : 'border-background group-hover:border-secondary'
+                  ? 'bg-secondary border-secondary'
+                  : 'border-background group-hover:border-secondary'
                   }`}>
                   {giftingIdea && (
                     <Check size={14} className="text-white absolute top-0.5 left-0.5" />
@@ -547,8 +543,8 @@ const Collection = () => {
                   className="sr-only"
                 />
                 <div className={`w-5 h-5 border-2 transition-all duration-300 ${budgetFriendly
-                    ? 'bg-secondary border-secondary'
-                    : 'border-background group-hover:border-secondary'
+                  ? 'bg-secondary border-secondary'
+                  : 'border-background group-hover:border-secondary'
                   }`}>
                   {budgetFriendly && (
                     <Check size={14} className="text-white absolute top-0.5 left-0.5" />
@@ -569,8 +565,8 @@ const Collection = () => {
                   className="sr-only"
                 />
                 <div className={`w-5 h-5 border-2 transition-all duration-300 ${rareItems
-                    ? 'bg-secondary border-secondary'
-                    : 'border-background group-hover:border-secondary'
+                  ? 'bg-secondary border-secondary'
+                  : 'border-background group-hover:border-secondary'
                   }`}>
                   {rareItems && (
                     <Check size={14} className="text-white absolute top-0.5 left-0.5" />
@@ -589,7 +585,6 @@ const Collection = () => {
 
   return (
     <div className="min-h-screen bg-white mt-16 sm:mt-20">
-      {/* Header Section */}
       <section className="py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8 border-b border-background/30">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-6 sm:mb-8">
@@ -604,7 +599,6 @@ const Collection = () => {
             )}
           </div>
 
-          {/* Desktop Controls Bar */}
           <div className="hidden sm:flex justify-between items-center gap-4 p-5 bg-white border border-background shadow-sm">
             <div className="flex items-center gap-3">
               <div className="flex items-center border-2 border-background overflow-hidden">
@@ -645,7 +639,6 @@ const Collection = () => {
         </div>
       </section>
 
-      {/* Mobile Sticky Controls */}
       <div className="sm:hidden sticky top-16 z-30 bg-white border-b border-background/30 shadow-sm">
         <div className="flex items-center p-3 gap-2">
           <button
@@ -728,11 +721,10 @@ const Collection = () => {
                     setSortType(option.value);
                     setShowSortModal(false);
                   }}
-                  className={`w-full text-left px-5 py-4 transition-all duration-300 active:scale-[0.99] border-b border-background/30 last:border-b-0 ${
-                    sortType === option.value
-                      ? 'bg-secondary text-white font-semibold'
-                      : 'bg-white text-text hover:bg-background/20'
-                  }`}
+                  className={`w-full text-left px-5 py-4 transition-all duration-300 active:scale-[0.99] border-b border-background/30 last:border-b-0 ${sortType === option.value
+                    ? 'bg-secondary text-white font-semibold'
+                    : 'bg-white text-text hover:bg-background/20'
+                    }`}
                 >
                   {option.label}
                 </button>
@@ -746,14 +738,12 @@ const Collection = () => {
       <section className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         <div className="max-w-7xl mx-auto">
           <div className="flex gap-8">
-            {/* Desktop Sidebar Filters */}
             <div className="hidden lg:block w-80 flex-shrink-0">
               <div className="sticky top-24">
                 <FilterPanel />
               </div>
             </div>
 
-            {/* Products Grid/List */}
             <div className="flex-1 min-w-0">
               {isLoading && page === 1 ? (
                 <div className="flex items-center justify-center py-20">

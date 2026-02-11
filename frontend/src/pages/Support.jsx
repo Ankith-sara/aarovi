@@ -35,7 +35,6 @@ const Support = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
       <div className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6">
@@ -47,7 +46,6 @@ const Support = () => {
         </div>
       </div>
 
-      {/* Contact Methods */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -59,8 +57,7 @@ const Support = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Phone Support */}
-            <div className="bg-white p-8 rounded-lg shadow-sm border border-[#E8DCC4] hover:shadow-md transition-shadow">
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-background hover:shadow-md transition-shadow">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-14 h-14 bg-gradient-to-br from-background/30 to-primary rounded-xl flex items-center justify-center">
                   <Phone className="text-secondary" size={28} />
@@ -83,8 +80,7 @@ const Support = () => {
               </div>
             </div>
 
-            {/* Email Support */}
-            <div className="bg-white p-8 rounded-lg shadow-sm border border-[#E8DCC4] hover:shadow-md transition-shadow">
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-background hover:shadow-md transition-shadow">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-14 h-14 bg-gradient-to-br from-background/30 to-primary rounded-xl flex items-center justify-center">
                   <Mail className="text-secondary" size={28} />
@@ -107,7 +103,6 @@ const Support = () => {
         </div>
       </section>
 
-      {/* Support Categories */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-primary">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -154,7 +149,6 @@ const Support = () => {
         </div>
       </section>
 
-      {/* Quick Tips */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-5xl mx-auto">
@@ -208,7 +202,6 @@ const Support = () => {
         </div>
       </section>
 
-      {/* Contact Details Footer */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-background">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -244,7 +237,7 @@ const Support = () => {
             </div>
           </div>
 
-          <div className="max-w-3xl mx-auto bg-gradient-to-r from-background to-primary p-10 rounded-lg text-center shadow-lg">
+          <div className="max-w-3xl mx-auto text-center">
             <h3 className="font-serif text-2xl font-semibold text-text mb-4">Always Here to Help</h3>
             <p className="text-text/90 leading-relaxed">
               Whether you have questions about our handcrafted collection, need help with an order,

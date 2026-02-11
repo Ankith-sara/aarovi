@@ -91,7 +91,6 @@ const Product = () => {
 
   const fallbackCopyLink = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
-      // Show toast notification
       const toast = document.createElement('div');
       toast.className = 'fixed top-24 left-1/2 -translate-x-1/2 bg-text text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slideDown';
       toast.textContent = 'Link copied to clipboard!';
