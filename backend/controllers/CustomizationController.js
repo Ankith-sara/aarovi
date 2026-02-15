@@ -10,7 +10,6 @@ const uploadToCloudinary = async (base64Data, folder = 'customizations') => {
       return null;
     }
 
-    // Upload to Cloudinary
     const result = await cloudinary.uploader.upload(base64Data, {
       folder: folder,
       resource_type: 'auto',
@@ -29,17 +28,8 @@ const uploadToCloudinary = async (base64Data, folder = 'customizations') => {
 const saveCustomization = async (req, res) => {
   try {
     const {
-      gender,
-      dressType,
-      fabric,
-      color,
-      designNotes,
-      referenceImages,
-      measurements,
-      aiPrompt,
-      canvasDesign,
-      estimatedPrice,
-      aiGeneratedDesign
+      gender, dressType, fabric, color, designNotes, referenceImages,
+      measurements, aiPrompt, canvasDesign, estimatedPrice, aiGeneratedDesign
     } = req.body;
 
     const userId = req.body.userId;
@@ -51,7 +41,6 @@ const saveCustomization = async (req, res) => {
       });
     }
 
-    // Validate required fields
     if (!gender || !dressType || !fabric || !color) {
       return res.status(400).json({
         success: false,
@@ -66,7 +55,6 @@ const saveCustomization = async (req, res) => {
       });
     }
 
-    // Upload PNG design to Cloudinary if exists
     let designImageUrl = null;
     if (canvasDesign?.png) {
       console.log('Uploading design PNG to Cloudinary...');
@@ -77,7 +65,6 @@ const saveCustomization = async (req, res) => {
       console.log('Design image uploaded:', designImageUrl ? 'Success' : 'Failed');
     }
 
-    // Upload reference images to Cloudinary
     let uploadedReferenceImages = [];
     if (Array.isArray(referenceImages) && referenceImages.length > 0) {
       console.log(`Uploading ${referenceImages.length} reference images...`);
@@ -95,7 +82,6 @@ const saveCustomization = async (req, res) => {
       console.log(`Uploaded ${uploadedReferenceImages.length}/${referenceImages.length} reference images`);
     }
 
-    // NEW: Process uploaded prints
     let uploadedPrintsUrls = [];
     if (Array.isArray(canvasDesign?.uploadedPrints) && canvasDesign.uploadedPrints.length > 0) {
       console.log(`Uploading ${canvasDesign.uploadedPrints.length} custom prints...`);
@@ -121,7 +107,6 @@ const saveCustomization = async (req, res) => {
       console.log(`Uploaded ${uploadedPrintsUrls.length}/${canvasDesign.uploadedPrints.length} custom prints`);
     }
 
-    // NEW: Process uploaded embroidery
     let uploadedEmbroideryUrls = [];
     if (Array.isArray(canvasDesign?.uploadedEmbroidery) && canvasDesign.uploadedEmbroidery.length > 0) {
       console.log(`Uploading ${canvasDesign.uploadedEmbroidery.length} custom embroidery designs...`);
@@ -146,7 +131,6 @@ const saveCustomization = async (req, res) => {
       console.log(`Uploaded ${uploadedEmbroideryUrls.length}/${canvasDesign.uploadedEmbroidery.length} custom embroidery designs`);
     }
 
-    // Process canvas design data
     const processedCanvasDesign = {
       svg: canvasDesign?.svg || "",
       pngUrl: designImageUrl || "",
@@ -160,12 +144,10 @@ const saveCustomization = async (req, res) => {
       printMetadata: Array.isArray(canvasDesign?.printMetadata)
         ? canvasDesign.printMetadata
         : [],
-      // NEW: Add uploaded assets
       uploadedPrints: uploadedPrintsUrls,
       uploadedEmbroidery: uploadedEmbroideryUrls
     };
 
-    // Create customization document
     const customization = new customizationModel({
       userId,
       gender,
@@ -316,7 +298,7 @@ const getUserCustomizations = async (req, res) => {
   }
 };
 
-// UPDATE CUSTOMIZATION - WITH UPLOADED ASSETS
+// UPDATE CUSTOMIZATION
 const updateCustomization = async (req, res) => {
   try {
     const { id } = req.params;
@@ -358,11 +340,9 @@ const updateCustomization = async (req, res) => {
     delete updateData.createdAt;
     delete updateData.__v;
 
-    // Handle canvas design update with new PNG
     if (updateData.canvasDesign) {
       let designImageUrl = customization.canvasDesign?.pngUrl;
 
-      // Upload new PNG if provided
       if (updateData.canvasDesign.png) {
         console.log('Uploading updated design PNG...');
         const newUrl = await uploadToCloudinary(
@@ -374,7 +354,6 @@ const updateCustomization = async (req, res) => {
         }
       }
 
-      // NEW: Handle uploaded prints update
       let uploadedPrintsUrls = customization.canvasDesign?.uploadedPrints || [];
       if (Array.isArray(updateData.canvasDesign.uploadedPrints)) {
         const newPrints = updateData.canvasDesign.uploadedPrints.filter(
@@ -404,7 +383,6 @@ const updateCustomization = async (req, res) => {
         }
       }
 
-      // NEW: Handle uploaded embroidery update
       let uploadedEmbroideryUrls = customization.canvasDesign?.uploadedEmbroidery || [];
       if (Array.isArray(updateData.canvasDesign.uploadedEmbroidery)) {
         const newEmbroidery = updateData.canvasDesign.uploadedEmbroidery.filter(
@@ -447,16 +425,13 @@ const updateCustomization = async (req, res) => {
       };
     }
 
-    // Handle reference images update
     if (updateData.referenceImages && Array.isArray(updateData.referenceImages)) {
       const uploadedRefs = [];
 
       for (const img of updateData.referenceImages) {
-        // If it's already a URL, keep it
         if (img.startsWith('http')) {
           uploadedRefs.push(img);
         } else {
-          // Upload new base64 image
           const url = await uploadToCloudinary(img, `customizations/${userId}/references`);
           if (url) {
             uploadedRefs.push(url);

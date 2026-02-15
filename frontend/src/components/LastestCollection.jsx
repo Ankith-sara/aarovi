@@ -10,7 +10,6 @@ function LatestCollection() {
   const [latestProducts, setLatestProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  // Helper function to get products by category/subcategory
   const getProductsByCategory = (products, categoryName, subcategories) => {
     return products.filter(item => {
       const itemCategory = item.category?.toLowerCase();
@@ -23,7 +22,6 @@ function LatestCollection() {
     });
   };
 
-  // Helper function to select at least minCount products from each subcategory
   const selectBalancedProducts = (products, categories, minPerCategory = 2) => {
     const selectedProducts = [];
     const usedProductIds = new Set();
@@ -31,7 +29,6 @@ function LatestCollection() {
     categories.forEach(({ name, subcategories }) => {
       const categoryProducts = getProductsByCategory(products, name, subcategories);
 
-      // Group by subcategory for more balanced selection
       const productsBySubcategory = {};
       subcategories.forEach(sub => {
         productsBySubcategory[sub] = categoryProducts.filter(item =>
@@ -40,7 +37,6 @@ function LatestCollection() {
         );
       });
 
-      // Select at least minPerCategory from each subcategory if available
       Object.values(productsBySubcategory).forEach(subProducts => {
         const availableProducts = subProducts.filter(p => !usedProductIds.has(p._id));
         const toSelect = Math.min(minPerCategory, availableProducts.length);
@@ -65,7 +61,6 @@ function LatestCollection() {
   useEffect(() => {
     if (products && products.length > 0) {
       if (selectedCategory === 'All') {
-        // Define all categories and their subcategories
         const allCategories = [
           {
             name: 'Women',
@@ -104,7 +99,7 @@ function LatestCollection() {
   return (
     <section className="bg-gradient-to-b from-white to-background/20 py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-12 gap-6">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-12 gap-4">
           <div>
             <h2 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-3">
               Latest Collection
@@ -113,9 +108,9 @@ function LatestCollection() {
               Discover our newest handcrafted pieces, carefully curated to celebrate heritage and style
             </p>
           </div>
-          
-          <NavLink 
-            to="/shop/collection" 
+
+          <NavLink
+            to="/shop/collection"
             className="group inline-flex items-center gap-2 bg-secondary text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary/90 transition-all duration-300 shadow-md hover:shadow-lg self-start lg:self-auto"
           >
             <span>View All Collection</span>
@@ -124,13 +119,13 @@ function LatestCollection() {
         </div>
 
         {latestProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
             {latestProducts.map((item, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="group relative"
-                style={{ 
-                  animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both` 
+                style={{
+                  animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
                 }}
               >
                 <div className="relative overflow-hidden rounded-xl bg-white shadow-md hover:shadow-2xl transition-all duration-500 border border-background">
@@ -141,8 +136,7 @@ function LatestCollection() {
                     price={item.price}
                     company={item.company}
                   />
-                  
-                  {/* New Badge */}
+
                   {index < 1 && (
                     <div className="absolute top-3 right-3 z-10">
                       <div className="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wide shadow-lg flex items-center gap-1">
@@ -152,8 +146,6 @@ function LatestCollection() {
                     </div>
                   )}
                 </div>
-                
-                <div className="absolute -bottom-2 -right-2 w-12 h-12 border-2 border-secondary/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 -z-10"></div>
               </div>
             ))}
           </div>
@@ -168,7 +160,7 @@ function LatestCollection() {
             <p className="text-text/60 font-light text-lg mb-6">
               New arrivals coming soon
             </p>
-            <NavLink 
+            <NavLink
               to="/shop/collection"
               className="inline-flex items-center gap-2 border-2 border-secondary text-secondary px-6 py-3 rounded-lg font-semibold hover:bg-secondary hover:text-white transition-all duration-300"
             >
@@ -178,11 +170,10 @@ function LatestCollection() {
           </div>
         )}
 
-        {/* View More Link */}
         {latestProducts.length > 0 && (
           <div className="mt-12 text-center lg:hidden">
-            <NavLink 
-              to="/shop/collection" 
+            <NavLink
+              to="/shop/collection"
               className="inline-flex items-center gap-2 text-secondary font-semibold hover:text-secondary/80 transition-colors group"
             >
               <span>View All Products</span>

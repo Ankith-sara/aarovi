@@ -21,9 +21,10 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // CORS Configuration
 app.use(cors({
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+    origin: '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // API Endpoints
@@ -41,14 +42,14 @@ app.get('/', (req, res) => {
 // Error Handling Middleware
 app.use((err, req, res, next) => {
     console.error('Server Error:', err.message);
-    
+
     if (err.type === 'entity.too.large') {
         return res.status(413).json({
             success: false,
             message: 'Request payload too large. Please reduce image sizes.'
         });
     }
-    
+
     res.status(500).json({
         success: false,
         message: "Something went wrong!",

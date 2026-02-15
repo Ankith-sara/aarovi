@@ -2,21 +2,17 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { Eye, EyeOff, Mail, User, Lock, ArrowRight, X } from 'lucide-react';
+import { Eye, EyeOff, ArrowRight, X } from 'lucide-react';
 
 const Login = () => {
   const [currentState, setCurrentState] = useState('Login');
   const { token, setToken, navigate, backendUrl } = useContext(ShopContext);
-
-  // Form fields
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  // OTP
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
   const [otpLoading, setOtpLoading] = useState(false);
@@ -45,7 +41,6 @@ const Login = () => {
     }
   };
 
-  // OTP Timer effect
   useEffect(() => {
     if (otpTimer > 0) {
       const timer = setTimeout(() => setOtpTimer(otpTimer - 1), 1000);
@@ -53,7 +48,6 @@ const Login = () => {
     }
   }, [otpTimer]);
 
-  // Handle redirect after login
   const handlePostLoginRedirect = () => {
     const returnUrl = sessionStorage.getItem('returnUrl');
     if (returnUrl) {
@@ -64,7 +58,6 @@ const Login = () => {
     }
   };
 
-  // Redirect if logged in
   useEffect(() => {
     if (token) {
       handlePostLoginRedirect();
@@ -75,7 +68,6 @@ const Login = () => {
     document.title = 'Login | Aarovi';
   }, []);
 
-  // Reset form when switching between Login/SignUp
   const resetForm = () => {
     setName('');
     setPassword('');
@@ -88,7 +80,6 @@ const Login = () => {
     setOtpDigits(Array(6).fill(''));
   };
 
-  // SEND OTP
   const handleSendOtp = async () => {
     setOtpError('');
     setErrors({});
@@ -124,7 +115,6 @@ const Login = () => {
     setOtpLoading(false);
   };
 
-  // VERIFY OTP & CREATE ACCOUNT
   const handleVerifyOtp = async (event) => {
     event.preventDefault();
     setOtpError('');
@@ -156,7 +146,6 @@ const Login = () => {
     setIsLoading(false);
   };
 
-  // LOGIN HANDLER
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -224,7 +213,6 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Form Container */}
       <div className="min-h-screen lg:ml-[55%] flex items-center justify-center p-6 relative">
         <div className="w-full max-w-md">
           <div className="lg:hidden mb-8 text-center">
@@ -309,7 +297,6 @@ const Login = () => {
               </form>
             )}
 
-            {/* SIGNUP FORM */}
             {currentState === 'Sign Up' && (
               <div className="space-y-6">
                 <div>
@@ -461,7 +448,6 @@ const Login = () => {
               </div>
             )}
 
-            {/* Switch State */}
             <div className="mt-8 pt-8 border-t border-stone-200 text-center">
               <p className="text-sm text-stone-600">
                 {currentState === 'Login' ? (

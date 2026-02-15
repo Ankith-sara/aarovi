@@ -9,8 +9,6 @@ const ShopContextProvider = (props) => {
     const currency = '₹';
     const delivery_fee = 50;
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-    // ============= STATE MANAGEMENT =============
     const [search, setSearch] = useState('');
     const [showSearch, setShowSearch] = useState(false);
     const [cartItems, setCartItems] = useState({});
@@ -35,15 +33,31 @@ const ShopContextProvider = (props) => {
         }
     }, [token]);
 
+    // ============= HELPER FUNCTIONS =============
+    const handleAuthError = useCallback((error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem('token');
+            setToken('');
+            setCartItems({});
+            setWishlistItems([]);
+            setUserProfile(null);
+            setCustomizations([]);
+            setActiveCustomization(null);
+            navigate('/login');
+            return true;
+        }
+        return false;
+    }, [navigate]);
+
     // ============= CART FUNCTIONS =============
     const addToCart = useCallback(async (itemId, size, quantity = 1) => {
         if (!size) {
-            toast.error('Please select a product size');
+            toast.error('Please select a size');
             return false;
         }
 
         try {
-            let cartData = structuredClone(cartItems);
+            const cartData = structuredClone(cartItems);
 
             if (cartData[itemId]) {
                 cartData[itemId][size] = (cartData[itemId][size] || 0) + quantity;
@@ -52,7 +66,7 @@ const ShopContextProvider = (props) => {
             }
 
             setCartItems(cartData);
-            toast.success('Added to cart successfully');
+            toast.success('Added to cart');
 
             if (token) {
                 await axios.post(`${backendUrl}/api/cart/add`, { itemId, size, quantity });
@@ -60,17 +74,18 @@ const ShopContextProvider = (props) => {
 
             return true;
         } catch (error) {
-            console.error('Add to cart error:', error);
-            toast.error(error.response?.data?.message || 'Failed to add to cart');
+            if (!handleAuthError(error)) {
+                toast.error(error.response?.data?.message || 'Unable to add item');
+            }
             return false;
         }
-    }, [cartItems, token, backendUrl]);
+    }, [cartItems, token, backendUrl, handleAuthError]);
 
     const updateQuantity = useCallback(async (itemId, size, quantity) => {
         if (quantity < 0) return;
 
         try {
-            let cartData = structuredClone(cartItems);
+            const cartData = structuredClone(cartItems);
 
             if (quantity === 0) {
                 delete cartData[itemId][size];
@@ -87,14 +102,15 @@ const ShopContextProvider = (props) => {
                 await axios.post(`${backendUrl}/api/cart/update`, { itemId, size, quantity });
             }
         } catch (error) {
-            console.error('Update quantity error:', error);
-            toast.error(error.response?.data?.message || 'Failed to update quantity');
+            if (!handleAuthError(error)) {
+                toast.error('Unable to update quantity');
+            }
         }
-    }, [cartItems, token, backendUrl]);
+    }, [cartItems, token, backendUrl, handleAuthError]);
 
     const removeFromCart = useCallback(async (itemId, size) => {
         try {
-            let cartData = structuredClone(cartItems);
+            const cartData = structuredClone(cartItems);
 
             if (cartData[itemId]) {
                 delete cartData[itemId][size];
@@ -104,16 +120,17 @@ const ShopContextProvider = (props) => {
             }
 
             setCartItems(cartData);
-            toast.success('Item removed from cart');
+            toast.success('Item removed');
 
             if (token) {
                 await axios.post(`${backendUrl}/api/cart/remove`, { itemId, size });
             }
         } catch (error) {
-            console.error('Remove from cart error:', error);
-            toast.error(error.response?.data?.message || 'Failed to remove item');
+            if (!handleAuthError(error)) {
+                toast.error('Unable to remove item');
+            }
         }
-    }, [cartItems, token, backendUrl]);
+    }, [cartItems, token, backendUrl, handleAuthError]);
 
     const clearCart = useCallback(async () => {
         try {
@@ -125,10 +142,9 @@ const ShopContextProvider = (props) => {
 
             toast.success('Cart cleared');
         } catch (error) {
-            console.error('Clear cart error:', error);
-            toast.error('Failed to clear cart');
+            handleAuthError(error);
         }
-    }, [token, backendUrl]);
+    }, [token, backendUrl, handleAuthError]);
 
     const getCartCount = useCallback(() => {
         let totalCount = 0;
@@ -136,23 +152,15 @@ const ShopContextProvider = (props) => {
         for (const items in cartItems) {
             if (items === 'customizations') {
                 for (const customId in cartItems.customizations) {
-                    try {
-                        const customItem = cartItems.customizations[customId];
-                        if (customItem && customItem.quantity > 0) {
-                            totalCount += customItem.quantity;
-                        }
-                    } catch (error) {
-                        console.error('Customization count error:', error);
+                    const customItem = cartItems.customizations[customId];
+                    if (customItem?.quantity > 0) {
+                        totalCount += customItem.quantity;
                     }
                 }
             } else {
                 for (const item in cartItems[items]) {
-                    try {
-                        if (cartItems[items][item] > 0) {
-                            totalCount += cartItems[items][item];
-                        }
-                    } catch (error) {
-                        console.error('Cart count error:', error);
+                    if (cartItems[items][item] > 0) {
+                        totalCount += cartItems[items][item];
                     }
                 }
             }
@@ -165,11 +173,10 @@ const ShopContextProvider = (props) => {
 
         let totalAmount = 0;
 
-        // Calculate regular products
         for (const items in cartItems) {
             if (items === 'customizations') continue;
 
-            let itemInfo = products.find((product) => product._id === items);
+            const itemInfo = products.find((product) => product._id === items);
 
             if (itemInfo) {
                 for (const item in cartItems[items]) {
@@ -180,16 +187,11 @@ const ShopContextProvider = (props) => {
             }
         }
 
-        // Add customizations amount
         if (cartItems.customizations) {
             for (const customId in cartItems.customizations) {
-                try {
-                    const custom = cartItems.customizations[customId];
-                    if (custom && custom.price && custom.quantity) {
-                        totalAmount += custom.price * custom.quantity;
-                    }
-                } catch (error) {
-                    console.error('Customization amount error:', error);
+                const custom = cartItems.customizations[customId];
+                if (custom?.price && custom?.quantity) {
+                    totalAmount += custom.price * custom.quantity;
                 }
             }
         }
@@ -200,7 +202,6 @@ const ShopContextProvider = (props) => {
     const getCartItems = useCallback(() => {
         const items = [];
 
-        // Get regular products
         for (const itemId in cartItems) {
             if (itemId === 'customizations') continue;
 
@@ -219,31 +220,30 @@ const ShopContextProvider = (props) => {
             }
         }
 
-        // Get customizations - FIXED
         if (cartItems.customizations) {
             for (const customId in cartItems.customizations) {
                 const custom = cartItems.customizations[customId];
-                if (custom && custom.quantity > 0) {
+                if (custom?.quantity > 0) {
+                    const snapshot = custom.snapshot || {};
                     items.push({
                         _id: customId,
                         type: 'customization',
-                        name: `Custom ${custom.snapshot?.gender || ''} ${custom.snapshot?.dressType || 'Design'}`,
+                        name: `Custom ${snapshot.gender || ''} ${snapshot.dressType || 'Design'}`.trim(),
                         quantity: custom.quantity,
                         price: custom.price,
-                        // Include all necessary fields for order processing
-                        gender: custom.snapshot?.gender || '',
-                        dressType: custom.snapshot?.dressType || '',
-                        fabric: custom.snapshot?.fabric || '',
-                        color: custom.snapshot?.color || '',
-                        designNotes: custom.snapshot?.designNotes || '',
-                        measurements: custom.snapshot?.measurements || {},
-                        canvasDesign: custom.snapshot?.canvasDesign || {},
-                        referenceImages: custom.snapshot?.referenceImages || [],
-                        aiPrompt: custom.snapshot?.aiPrompt || '',
-                        neckStyle: custom.snapshot?.neckStyle || '',
-                        sleeveStyle: custom.snapshot?.sleeveStyle || '',
-                        image: custom.snapshot?.canvasDesign?.png || '',
-                        images: [custom.snapshot?.canvasDesign?.png || '']
+                        gender: snapshot.gender || '',
+                        dressType: snapshot.dressType || '',
+                        fabric: snapshot.fabric || '',
+                        color: snapshot.color || '',
+                        designNotes: snapshot.designNotes || '',
+                        measurements: snapshot.measurements || {},
+                        canvasDesign: snapshot.canvasDesign || {},
+                        referenceImages: snapshot.referenceImages || [],
+                        aiPrompt: snapshot.aiPrompt || '',
+                        neckStyle: snapshot.neckStyle || '',
+                        sleeveStyle: snapshot.sleeveStyle || '',
+                        image: snapshot.canvasDesign?.png || '',
+                        images: [snapshot.canvasDesign?.png || ''].filter(Boolean)
                     });
                 }
             }
@@ -264,28 +264,20 @@ const ShopContextProvider = (props) => {
                 setCartItems(response.data.cartData);
             }
         } catch (error) {
-            console.error('Get user cart error:', error);
-            if (error.response?.status === 401) {
-                toast.error("Session expired. Please login again");
-                localStorage.removeItem('token');
-                setToken('');
-            }
+            handleAuthError(error);
         }
-    }, [backendUrl]);
+    }, [backendUrl, handleAuthError]);
 
     // ============= WISHLIST FUNCTIONS =============
     const addToWishlist = useCallback(async (itemId) => {
         if (!token) {
-            toast.error('Please login to add items to wishlist');
+            toast.error('Please login to save items');
             navigate('/login');
             return false;
         }
 
         try {
-            const response = await axios.post(
-                `${backendUrl}/api/wishlist/add`,
-                { itemId }
-            );
+            const response = await axios.post(`${backendUrl}/api/wishlist/add`, { itemId });
 
             if (response.data.success) {
                 setWishlistItems(response.data.wishlist);
@@ -293,15 +285,16 @@ const ShopContextProvider = (props) => {
                 return true;
             }
         } catch (error) {
-            console.error('Add to wishlist error:', error);
-            if (error.response?.data?.message === "Item already in wishlist") {
-                toast.info('Item already in wishlist');
-            } else {
-                toast.error(error.response?.data?.message || 'Failed to add to wishlist');
+            if (!handleAuthError(error)) {
+                if (error.response?.data?.message === "Item already in wishlist") {
+                    toast.info('Already in wishlist');
+                } else {
+                    toast.error('Unable to add to wishlist');
+                }
             }
             return false;
         }
-    }, [token, backendUrl, navigate]);
+    }, [token, backendUrl, navigate, handleAuthError]);
 
     const removeFromWishlist = useCallback(async (itemId) => {
         if (!token) {
@@ -310,10 +303,7 @@ const ShopContextProvider = (props) => {
         }
 
         try {
-            const response = await axios.post(
-                `${backendUrl}/api/wishlist/remove`,
-                { itemId }
-            );
+            const response = await axios.post(`${backendUrl}/api/wishlist/remove`, { itemId });
 
             if (response.data.success) {
                 setWishlistItems(response.data.wishlist);
@@ -321,24 +311,22 @@ const ShopContextProvider = (props) => {
                 return true;
             }
         } catch (error) {
-            console.error('Remove from wishlist error:', error);
-            toast.error(error.response?.data?.message || 'Failed to remove from wishlist');
+            if (!handleAuthError(error)) {
+                toast.error('Unable to remove from wishlist');
+            }
             return false;
         }
-    }, [token, backendUrl]);
+    }, [token, backendUrl, handleAuthError]);
 
     const toggleWishlist = useCallback(async (itemId) => {
         if (!token) {
-            toast.error('Please login to manage wishlist');
+            toast.error('Please login to save items');
             navigate('/login');
             return false;
         }
 
         try {
-            const response = await axios.post(
-                `${backendUrl}/api/wishlist/toggle`,
-                { itemId }
-            );
+            const response = await axios.post(`${backendUrl}/api/wishlist/toggle`, { itemId });
 
             if (response.data.success) {
                 setWishlistItems(response.data.wishlist);
@@ -346,11 +334,12 @@ const ShopContextProvider = (props) => {
                 return response.data.isAdded;
             }
         } catch (error) {
-            console.error('Toggle wishlist error:', error);
-            toast.error(error.response?.data?.message || 'Failed to update wishlist');
+            if (!handleAuthError(error)) {
+                toast.error('Unable to update wishlist');
+            }
             return false;
         }
-    }, [token, backendUrl, navigate]);
+    }, [token, backendUrl, navigate, handleAuthError]);
 
     const isInWishlist = useCallback((itemId) => {
         return wishlistItems.includes(itemId);
@@ -376,9 +365,9 @@ const ShopContextProvider = (props) => {
                 setWishlistItems(response.data.wishlist);
             }
         } catch (error) {
-            console.error('Get user wishlist error:', error);
+            handleAuthError(error);
         }
-    }, [backendUrl]);
+    }, [backendUrl, handleAuthError]);
 
     // ============= PRODUCT FUNCTIONS =============
     const getProductsData = useCallback(async () => {
@@ -388,13 +377,9 @@ const ShopContextProvider = (props) => {
 
             if (response.data.success) {
                 setProducts(response.data.products);
-            } else {
-                toast.error('Failed to load products');
             }
-        } catch (error) {
-            console.error('Get products error:', error);
-            toast.error(error.response?.data?.message || 'Failed to load products');
-        } finally {
+        } catch (error) { }
+        finally {
             setIsLoading(false);
         }
     }, [backendUrl]);
@@ -404,7 +389,7 @@ const ShopContextProvider = (props) => {
     }, [products]);
 
     const searchProducts = useCallback((query) => {
-        if (!query.trim()) return products;
+        if (!query?.trim()) return products;
 
         const lowercaseQuery = query.toLowerCase();
         return products.filter(product =>
@@ -418,13 +403,13 @@ const ShopContextProvider = (props) => {
     const filterProducts = useCallback((filters) => {
         let filtered = [...products];
 
-        if (filters.category && filters.category.length > 0) {
+        if (filters.category?.length > 0) {
             filtered = filtered.filter(product =>
                 filters.category.includes(product.category)
             );
         }
 
-        if (filters.subCategory && filters.subCategory.length > 0) {
+        if (filters.subCategory?.length > 0) {
             filtered = filtered.filter(product =>
                 filters.subCategory.includes(product.subCategory)
             );
@@ -447,7 +432,7 @@ const ShopContextProvider = (props) => {
     // ============= CUSTOMIZATION FUNCTIONS =============
     const submitCustomization = useCallback(async (customizationId) => {
         if (!token) {
-            toast.error("Please login to submit customization");
+            toast.error("Please login to continue");
             return false;
         }
 
@@ -474,36 +459,33 @@ const ShopContextProvider = (props) => {
             }
             return false;
         } catch (err) {
-            console.error('Submit customization error:', err);
-            toast.error(err.response?.data?.message || "Submission failed");
+            if (!handleAuthError(err)) {
+                toast.error(err.response?.data?.message || "Unable to submit");
+            }
             return false;
         } finally {
             setCustomizationLoading(false);
         }
-    }, [token, backendUrl]);
+    }, [token, backendUrl, handleAuthError]);
 
     const saveCustomization = useCallback(async (data) => {
         if (!token) {
-            toast.error("Please login to save customization");
+            toast.error("Please login to save");
             navigate("/login");
+            return null;
+        }
+
+        if (!userProfile?._id) {
+            toast.error("Please login again");
             return null;
         }
 
         try {
             setCustomizationLoading(true);
 
-            // Get userId from userProfile or decode token
-            const userId = userProfile?._id;
-
-            if (!userId) {
-                toast.error("User ID not found. Please login again.");
-                return null;
-            }
-
-            // FIXED: Include userId in the request body
             const res = await axios.post(
                 `${backendUrl}/api/customization/save`,
-                { ...data, userId }, // Add userId to the data
+                { ...data, userId: userProfile._id },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -511,7 +493,6 @@ const ShopContextProvider = (props) => {
                 const savedCustomization = res.data.customization;
                 setActiveCustomization(savedCustomization);
 
-                // Update customizations array
                 setCustomizations(prev => {
                     const index = prev.findIndex(c => c._id === savedCustomization._id);
                     if (index >= 0) {
@@ -522,77 +503,66 @@ const ShopContextProvider = (props) => {
                     return [savedCustomization, ...prev];
                 });
 
-                toast.success("Customization saved successfully");
+                toast.success("Saved successfully");
                 return savedCustomization;
             }
         } catch (err) {
-            console.error('Save customization error:', err);
-            toast.error(err.response?.data?.message || "Failed to save customization");
+            if (!handleAuthError(err)) {
+                toast.error(err.response?.data?.message || "Unable to save");
+            }
             return null;
         } finally {
             setCustomizationLoading(false);
         }
-    }, [token, backendUrl, navigate, userProfile]);
+    }, [token, backendUrl, navigate, userProfile, handleAuthError]);
 
     const updateCustomization = useCallback(async (customizationId, data) => {
         if (!token) {
-            toast.error("Please login to update customization");
+            toast.error("Please login to continue");
+            return null;
+        }
+
+        if (!userProfile?._id) {
+            toast.error("Please login again");
             return null;
         }
 
         try {
             setCustomizationLoading(true);
 
-            const userId = userProfile?._id;
-
-            if (!userId) {
-                toast.error("User ID not found. Please login again.");
-                return null;
-            }
-
-            // FIXED: Include userId
             const res = await axios.put(
                 `${backendUrl}/api/customization/update/${customizationId}`,
-                { ...data, userId },
+                { ...data, userId: userProfile._id },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
             if (res.data.success) {
                 const updatedCustomization = res.data.customization;
 
-                // Update in array
                 setCustomizations(prev =>
                     prev.map(c => c._id === customizationId ? updatedCustomization : c)
                 );
 
-                toast.success("Customization updated");
+                toast.success("Updated successfully");
                 return updatedCustomization;
             }
         } catch (err) {
-            console.error('Update customization error:', err);
-            toast.error(err.response?.data?.message || "Failed to update customization");
+            if (!handleAuthError(err)) {
+                toast.error(err.response?.data?.message || "Unable to update");
+            }
             return null;
         } finally {
             setCustomizationLoading(false);
         }
-    }, [token, backendUrl, userProfile]);
+    }, [token, backendUrl, userProfile, handleAuthError]);
 
     const getCustomizationById = useCallback(async (customizationId) => {
-        if (!token) {
-            return null;
-        }
+        if (!token || !userProfile?._id) return null;
 
         try {
-            const userId = userProfile?._id;
-
-            if (!userId) {
-                return null;
-            }
-
-            // FIXED: Send as POST with userId in body (matching your backend pattern)
             const res = await axios.post(
                 `${backendUrl}/api/customization/${customizationId}`,
-                { userId },
+                { userId: userProfile._id },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -601,62 +571,54 @@ const ShopContextProvider = (props) => {
             }
             return null;
         } catch (err) {
-            console.error('Get customization error:', err);
-            toast.error(err.response?.data?.message || "Failed to fetch customization");
+            handleAuthError(err);
             return null;
         }
-    }, [backendUrl, token, userProfile]);
+    }, [backendUrl, token, userProfile, handleAuthError]);
 
     const deleteCustomization = useCallback(async (customizationId) => {
         if (!token) {
-            toast.error("Please login to delete customization");
+            toast.error("Please login to continue");
+            return false;
+        }
+
+        if (!userProfile?._id) {
+            toast.error("Please login again");
             return false;
         }
 
         try {
-            const userId = userProfile?._id;
-
-            if (!userId) {
-                toast.error("User ID not found. Please login again.");
-                return false;
-            }
-
-            // FIXED: Send DELETE with userId in body via data parameter
             const res = await axios.delete(
                 `${backendUrl}/api/customization/${customizationId}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
-                    data: { userId } // DELETE requests use 'data' not 'body'
+                    data: { userId: userProfile._id }
                 }
             );
 
             if (res.data.success) {
                 setCustomizations(prev => prev.filter(c => c._id !== customizationId));
-                toast.success("Customization deleted");
+                toast.success("Deleted successfully");
                 return true;
             }
             return false;
         } catch (err) {
-            console.error('Delete customization error:', err);
-            toast.error(err.response?.data?.message || "Failed to delete");
+            if (!handleAuthError(err)) {
+                toast.error("Unable to delete");
+            }
             return false;
         }
-    }, [token, backendUrl, userProfile]);
+    }, [token, backendUrl, userProfile, handleAuthError]);
 
     const getUserCustomizations = useCallback(async (userToken) => {
+        if (!userProfile?._id) return;
+
         try {
             setCustomizationLoading(true);
 
-            const userId = userProfile?._id;
-
-            if (!userId) {
-                return;
-            }
-
-            // Send as POST with userId in body to match your auth pattern
             const res = await axios.post(
                 `${backendUrl}/api/customization/my`,
-                { userId },
+                { userId: userProfile._id },
                 { headers: { Authorization: `Bearer ${userToken}` } }
             );
 
@@ -664,31 +626,26 @@ const ShopContextProvider = (props) => {
                 setCustomizations(res.data.customizations);
             }
         } catch (err) {
-            console.error('Get customizations error:', err);
-
-            if (err.response?.status !== 401) {
-                toast.error('Failed to load customizations');
-            }
+            handleAuthError(err);
         } finally {
             setCustomizationLoading(false);
         }
-    }, [backendUrl, userProfile]);
+    }, [backendUrl, userProfile, handleAuthError]);
 
     // ============= CUSTOMIZATION CART FUNCTIONS =============
     const addCustomizationToCart = useCallback(async (customization) => {
-        if (!customization || !customization._id) {
+        if (!customization?._id) {
             toast.error("Invalid customization");
             return false;
         }
 
         try {
-            let updatedCart = structuredClone(cartItems);
+            const updatedCart = structuredClone(cartItems);
 
             if (!updatedCart.customizations) {
                 updatedCart.customizations = {};
             }
 
-            // Check if already in cart
             if (updatedCart.customizations[customization._id]) {
                 updatedCart.customizations[customization._id].quantity += 1;
             } else {
@@ -702,7 +659,7 @@ const ShopContextProvider = (props) => {
                         color: customization.color,
                         designNotes: customization.designNotes,
                         measurements: customization.measurements,
-                        canvasDesign: customization.canvasDesign, // Include full canvas design
+                        canvasDesign: customization.canvasDesign,
                         referenceImages: customization.referenceImages,
                         aiPrompt: customization.aiPrompt,
                         neckStyle: customization.canvasDesign?.neckStyle || '',
@@ -713,7 +670,7 @@ const ShopContextProvider = (props) => {
             }
 
             setCartItems(updatedCart);
-            toast.success("Customization added to cart");
+            toast.success("Added to cart");
 
             if (token) {
                 await axios.post(`${backendUrl}/api/cart/add-custom`, {
@@ -725,28 +682,27 @@ const ShopContextProvider = (props) => {
 
             return true;
         } catch (err) {
-            console.error('Add customization to cart error:', err);
-            toast.error(err.response?.data?.message || "Failed to add customization");
+            if (!handleAuthError(err)) {
+                toast.error(err.response?.data?.message || "Unable to add");
+            }
             return false;
         }
-    }, [cartItems, token, backendUrl]);
+    }, [cartItems, token, backendUrl, handleAuthError]);
 
     const updateCustomizationQuantity = useCallback(async (customizationId, quantity) => {
         if (quantity < 0) return;
 
         try {
-            let updatedCart = structuredClone(cartItems);
+            const updatedCart = structuredClone(cartItems);
 
-            if (!updatedCart.customizations || !updatedCart.customizations[customizationId]) {
-                return;
-            }
+            if (!updatedCart.customizations?.[customizationId]) return;
 
             if (quantity === 0) {
                 delete updatedCart.customizations[customizationId];
                 if (Object.keys(updatedCart.customizations).length === 0) {
                     delete updatedCart.customizations;
                 }
-                toast.success("Customization removed from cart");
+                toast.success("Item removed");
             } else {
                 updatedCart.customizations[customizationId].quantity = quantity;
             }
@@ -760,16 +716,15 @@ const ShopContextProvider = (props) => {
                 });
             }
         } catch (err) {
-            console.error('Update customization quantity error:', err);
-            toast.error("Failed to update quantity");
+            handleAuthError(err);
         }
-    }, [cartItems, token, backendUrl]);
+    }, [cartItems, token, backendUrl, handleAuthError]);
 
     const removeCustomizationFromCart = useCallback(async (customizationId) => {
         try {
-            let updatedCart = structuredClone(cartItems);
+            const updatedCart = structuredClone(cartItems);
 
-            if (updatedCart.customizations && updatedCart.customizations[customizationId]) {
+            if (updatedCart.customizations?.[customizationId]) {
                 delete updatedCart.customizations[customizationId];
 
                 if (Object.keys(updatedCart.customizations).length === 0) {
@@ -778,7 +733,7 @@ const ShopContextProvider = (props) => {
             }
 
             setCartItems(updatedCart);
-            toast.success("Customization removed from cart");
+            toast.success("Item removed");
 
             if (token) {
                 await axios.post(`${backendUrl}/api/cart/remove-custom`, {
@@ -786,10 +741,9 @@ const ShopContextProvider = (props) => {
                 });
             }
         } catch (err) {
-            console.error('Remove customization from cart error:', err);
-            toast.error("Failed to remove customization");
+            handleAuthError(err);
         }
-    }, [cartItems, token, backendUrl]);
+    }, [cartItems, token, backendUrl, handleAuthError]);
 
     // ============= RECENTLY VIEWED =============
     const addProductToRecentlyViewed = useCallback((product) => {
@@ -810,9 +764,7 @@ const ShopContextProvider = (props) => {
 
             viewedProducts = viewedProducts.slice(0, 5);
             localStorage.setItem('recentlyViewed', JSON.stringify(viewedProducts));
-        } catch (error) {
-            console.error('Add to recently viewed error:', error);
-        }
+        } catch (error) { }
     }, []);
 
     const getRecentlyViewed = useCallback((allProducts = []) => {
@@ -840,7 +792,6 @@ const ShopContextProvider = (props) => {
 
             return viewedProducts;
         } catch (error) {
-            console.error('Get recently viewed error:', error);
             return [];
         }
     }, []);
@@ -848,10 +799,8 @@ const ShopContextProvider = (props) => {
     const clearRecentlyViewed = useCallback(() => {
         try {
             localStorage.removeItem('recentlyViewed');
-            toast.success('Recently viewed cleared');
-        } catch (error) {
-            console.error('Clear recently viewed error:', error);
-        }
+            toast.success('History cleared');
+        } catch (error) { }
     }, []);
 
     // ============= AUTH & USER FUNCTIONS =============
@@ -878,14 +827,9 @@ const ShopContextProvider = (props) => {
                 setUserProfile(response.data.user);
             }
         } catch (error) {
-            console.error('Get user profile error:', error);
-            if (error.response?.status === 401) {
-                toast.error("Session expired. Please login again");
-                localStorage.removeItem('token');
-                setToken('');
-            }
+            handleAuthError(error);
         }
-    }, [backendUrl]);
+    }, [backendUrl, handleAuthError]);
 
     // ============= CATEGORY MANAGEMENT =============
     const setCategory = useCallback((category) => {
@@ -931,72 +875,16 @@ const ShopContextProvider = (props) => {
 
     // ============= MEMOIZED CONTEXT VALUE =============
     const contextValue = useMemo(() => ({
-        // State 
-        products,
-        currency,
-        delivery_fee,
-        search,
-        showSearch,
-        cartItems,
-        wishlistItems,
-        token,
-        selectedSubCategory,
-        isLoading,
-        userProfile,
-        customizations,
-        activeCustomization,
-        customizationLoading,
-
-        // Setters
-        setSearch,
-        setShowSearch,
-        setCartItems,
-        setToken,
-        setSelectedSubCategory: setCategory,
-
-        // Cart functions
-        addToCart,
-        updateQuantity,
-        removeFromCart,
-        clearCart,
-        getCartCount,
-        getCartAmount,
-        getCartItems,
-
-        // Wishlist functions
-        addToWishlist,
-        removeFromWishlist,
-        toggleWishlist,
-        isInWishlist,
-        getWishlistCount,
-        getWishlistProducts,
-
-        // Product functions
-        getProductById,
-        searchProducts,
-        filterProducts,
-
-        // Customization CRUD
-        saveCustomization,
-        updateCustomization,
-        submitCustomization,
-        getCustomizationById,
-        deleteCustomization,
-
-        // Customization Cart
-        addCustomizationToCart,
-        updateCustomizationQuantity,
-        removeCustomizationFromCart,
-
-        // Recently viewed
-        addProductToRecentlyViewed,
-        getRecentlyViewed,
-        clearRecentlyViewed,
-
-        // Auth & Navigation
-        logout,
-        navigate,
-        backendUrl
+        products, currency, delivery_fee, search, showSearch, cartItems, wishlistItems,
+        token, selectedSubCategory, isLoading, userProfile, customizations, activeCustomization, customizationLoading,
+        setSearch, setShowSearch, setCartItems, setToken, setSelectedSubCategory: setCategory,
+        addToCart, updateQuantity, removeFromCart, clearCart, getCartCount, getCartAmount, getCartItems,
+        addToWishlist, removeFromWishlist, toggleWishlist, isInWishlist, getWishlistCount, getWishlistProducts,
+        getProductById, searchProducts, filterProducts,
+        saveCustomization, updateCustomization, submitCustomization, getCustomizationById, deleteCustomization,
+        addCustomizationToCart, updateCustomizationQuantity, removeCustomizationFromCart,
+        addProductToRecentlyViewed, getRecentlyViewed, clearRecentlyViewed,
+        logout, navigate, backendUrl
     }), [
         products, currency, delivery_fee, search, showSearch, cartItems,
         wishlistItems, token, selectedSubCategory, isLoading, userProfile,
@@ -1005,10 +893,8 @@ const ShopContextProvider = (props) => {
         getCartAmount, getCartItems, addToWishlist, removeFromWishlist,
         toggleWishlist, isInWishlist, getWishlistCount, getWishlistProducts,
         getProductById, searchProducts, filterProducts,
-        saveCustomization, updateCustomization, submitCustomization,
-        getCustomizationById, deleteCustomization,
-        addCustomizationToCart, updateCustomizationQuantity,
-        removeCustomizationFromCart,
+        saveCustomization, updateCustomization, submitCustomization, getCustomizationById, deleteCustomization,
+        addCustomizationToCart, updateCustomizationQuantity, removeCustomizationFromCart,
         addProductToRecentlyViewed, getRecentlyViewed, clearRecentlyViewed,
         logout, navigate, backendUrl, setCategory
     ]);

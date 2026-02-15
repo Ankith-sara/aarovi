@@ -22,9 +22,7 @@ const Product = () => {
   const [expandedSection, setExpandedSection] = useState('description');
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
-  const [showStickyBar, setShowStickyBar] = useState(false);
   const minSwipeDistance = 50;
-  const stickyBarRef = useRef(null);
 
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section);
@@ -40,11 +38,9 @@ const Product = () => {
 
   const handleAddToCart = () => {
     if (!size) {
-      // Scroll to size selection on mobile
       const sizeSection = document.getElementById('size-selection');
       if (sizeSection) {
         sizeSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // Add a shake animation to highlight size selection
         sizeSection.classList.add('animate-shake');
         setTimeout(() => sizeSection.classList.remove('animate-shake'), 500);
       }
@@ -72,7 +68,7 @@ const Product = () => {
   const handleShare = async () => {
     const shareData = {
       title: productData.name,
-      text: `Check out ${productData.name} at Aasvi`,
+      text: `Check out ${productData.name} at Aarovi`,
       url: window.location.href,
     };
 
@@ -123,7 +119,6 @@ const Product = () => {
     }
   };
 
-  // Touch handlers for swiping
   const onTouchStart = (e) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
@@ -174,7 +169,6 @@ const Product = () => {
     setCurrentIndex(index);
   };
 
-  // Improved size sorting function
   const sortSizes = (sizes) => {
     return [...sizes].sort((a, b) => {
       const sizeOrder = { 'XS': 0, 'S': 1, 'M': 2, 'L': 3, 'XL': 4, 'XXL': 5, 'XXXL': 6, 'XXXXL': 7, '2XL': 5, '3XL': 6, };
@@ -182,7 +176,6 @@ const Product = () => {
       const aUpper = a.toString().toUpperCase().trim();
       const bUpper = b.toString().toUpperCase().trim();
 
-      // Check if both are numeric sizes
       const aNum = parseInt(a);
       const bNum = parseInt(b);
       const aIsNum = !isNaN(aNum) && aNum.toString() === a.toString().trim();
@@ -208,20 +201,6 @@ const Product = () => {
       return aUpper.localeCompare(bUpper);
     });
   };
-
-  // Sticky bar scroll handler
-  useEffect(() => {
-    const handleScroll = () => {
-      const detailsSection = document.getElementById('product-details');
-      if (detailsSection) {
-        const rect = detailsSection.getBoundingClientRect();
-        setShowStickyBar(rect.bottom < 0);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -258,7 +237,7 @@ const Product = () => {
 
   useEffect(() => {
     if (productData?.name) {
-      document.title = `${productData.name} | Aasvi`;
+      document.title = `${productData.name} | Aarovi`;
     }
   }, [productData?.name]);
 
@@ -285,18 +264,18 @@ const Product = () => {
     );
   }
 
-  // FIXED: Parse description into bullet points
   const descriptionPoints = productData.description
     ? productData.description.split('\n').filter(point => point.trim())
     : ['Premium quality ethnic wear', 'Comfortable fabric', 'Perfect for all occasions'];
 
   return (
-    <div className="min-h-screen bg-white mt-16 sm:mt-20 pb-20 sm:pb-0">
+    <div className="min-h-screen bg-white mt-16 sm:mt-20">
       {/* Product Section */}
-      <section className="py-0 sm:py-8 lg:py-12">
+      <section className="py-0 sm:py-6 lg:py-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-0 sm:gap-6 lg:gap-12">
-            <div className="space-y-3 sm:space-y-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-0 sm:gap-6 lg:gap-10">
+            {/* Image Gallery */}
+            <div className="space-y-2 sm:space-y-4 sm:px-4 lg:px-6">
               {/* Main Image */}
               <div
                 className="relative group overflow-hidden bg-gray-50"
@@ -305,14 +284,12 @@ const Product = () => {
                 onTouchEnd={onTouchEnd}
                 onClick={handleImageClick}
               >
-                <div className="relative h-[85vh] flex items-center justify-center overflow-hidden">
+                <div className="relative h-[60vh] sm:h-[70vh] lg:h-[80vh] flex items-center justify-center overflow-hidden">
                   <img
                     src={productData.images[currentIndex]}
                     alt={productData.name}
                     className="w-full h-full object-contain select-none"
-                    style={{
-                      imageRendering: '-webkit-optimize-contrast',
-                    }}
+                    style={{ imageRendering: '-webkit-optimize-contrast' }}
                     draggable="false"
                     loading="eager"
                   />
@@ -339,7 +316,7 @@ const Product = () => {
                     </>
                   )}
 
-                  {/* Image Counter & Swipe Indicator */}
+                  {/* Image Counter */}
                   <div className="absolute bottom-3 left-0 right-0 flex items-center justify-between px-3">
                     <div className="bg-white/95 px-3 py-1.5 text-xs font-medium text-text shadow-lg">
                       {currentIndex + 1} / {productData.images.length}
@@ -356,16 +333,17 @@ const Product = () => {
               </div>
 
               {/* Thumbnails */}
-              <div className="overflow-x-auto scrollbar-hide px-4 sm:px-0 -mx-4 sm:mx-0">
+              <div className="overflow-x-auto scrollbar-hide px-3 sm:px-0">
                 <div className="flex sm:grid sm:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3 bg-primary p-2 min-w-min sm:min-w-0">
                   {productData.images.map((img, index) => (
                     <button
                       key={index}
                       onClick={() => handleThumbnailClick(index)}
-                      className={`flex-shrink-0 w-20 h-24 sm:w-auto sm:h-auto sm:aspect-[4/5] overflow-hidden transition-all duration-300 ${currentIndex === index
-                        ? 'ring-2 ring-secondary shadow-lg'
-                        : 'ring-1 ring-background/50 active:ring-secondary/50'
-                        }`}
+                      className={`flex-shrink-0 w-16 h-20 sm:w-auto sm:h-auto sm:aspect-[4/5] overflow-hidden transition-all duration-300 ${
+                        currentIndex === index
+                          ? 'ring-2 ring-secondary shadow-lg'
+                          : 'ring-1 ring-background/50 active:ring-secondary/50'
+                      }`}
                     >
                       <img
                         src={img}
@@ -379,41 +357,42 @@ const Product = () => {
             </div>
 
             {/* Product Details */}
-            <div id="product-details" className="lg:sticky lg:top-24 lg:self-start space-y-5 sm:space-y-6 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-0">
+            <div id="product-details" className="lg:sticky lg:top-24 lg:self-start space-y-4 sm:space-y-5 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-0 pb-6 sm:pb-8">
               {/* Header */}
-              <div className="border-b border-background/50 pb-5">
+              <div className="border-b border-background/50 pb-4 sm:pb-5">
                 <div className="flex items-start justify-between gap-3 mb-3">
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-text leading-tight flex-1">
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-serif font-bold text-text leading-tight flex-1 break-words">
                     {productData.name}
                   </h1>
                   <div className="flex gap-2 flex-shrink-0">
                     <button
                       onClick={handleWishlistToggle}
-                      className={`w-11 h-11 flex items-center justify-center transition-all duration-300 active:scale-95 ${isWishlisted
-                        ? 'bg-secondary text-white'
-                        : 'bg-background/50 text-text'
-                        }`}
+                      className={`w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center transition-all duration-300 active:scale-95 ${
+                        isWishlisted
+                          ? 'bg-secondary text-white'
+                          : 'bg-background/50 text-text'
+                      }`}
                       title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
                     >
                       <Heart
-                        size={17}
+                        size={16}
                         fill={isWishlisted ? 'currentColor' : 'none'}
                         stroke="currentColor"
                       />
                     </button>
                     <button
                       onClick={handleShare}
-                      className="w-11 h-11 bg-background/50 text-text flex items-center justify-center transition-all duration-300 active:scale-95"
+                      className="w-10 h-10 sm:w-11 sm:h-11 bg-background/50 text-text flex items-center justify-center transition-all duration-300 active:scale-95"
                       title="Share"
                     >
-                      <Share2 size={17} />
+                      <Share2 size={16} />
                     </button>
                   </div>
                 </div>
 
-                <div className="flex items-baseline gap-3 mb-3">
-                  <span className="text-4xl font-serif font-bold text-secondary">{currency}{productData.price}</span>
-                  <span className="text-sm text-text/50 font-light">Incl. GST</span>
+                <div className="flex items-baseline gap-2 sm:gap-3 mb-2">
+                  <span className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-secondary">{currency}{productData.price}</span>
+                  <span className="text-xs sm:text-sm text-text/50 font-light">Incl. GST</span>
                 </div>
               </div>
 
@@ -435,10 +414,11 @@ const Product = () => {
                     <button
                       key={index}
                       onClick={() => setSize(size === s ? '' : s)}
-                      className={`min-w-[3.5rem] px-4 py-3 text-sm font-semibold transition-all duration-200 active:scale-95 ${size === s
-                        ? 'bg-secondary text-white'
-                        : 'bg-background/40 text-text'
-                        }`}
+                      className={`min-w-[3rem] sm:min-w-[3.5rem] px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-semibold transition-all duration-200 active:scale-95 ${
+                        size === s
+                          ? 'bg-secondary text-white'
+                          : 'bg-background/40 text-text'
+                      }`}
                     >
                       {s}
                     </button>
@@ -452,21 +432,21 @@ const Product = () => {
                 <div className="inline-flex items-center border border-background/50">
                   <button
                     onClick={() => handleQuantityChange('decrease')}
-                    className="w-12 h-12 flex items-center justify-center active:bg-background/40 transition-colors"
+                    className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center active:bg-background/40 transition-colors"
                     disabled={quantity <= 1}
                   >
                     <Minus size={16} className={quantity <= 1 ? "text-text/30" : "text-text"} />
                   </button>
                   <input
                     type="number"
-                    className="w-16 h-12 text-center focus:outline-none bg-transparent font-semibold text-text"
+                    className="w-14 sm:w-16 h-11 sm:h-12 text-center focus:outline-none bg-transparent font-semibold text-text text-sm sm:text-base"
                     value={quantity}
                     min="1"
                     readOnly
                   />
                   <button
                     onClick={() => handleQuantityChange('increase')}
-                    className="w-12 h-12 flex items-center justify-center active:bg-background/40 transition-colors"
+                    className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center active:bg-background/40 transition-colors"
                   >
                     <Plus size={16} />
                   </button>
@@ -478,7 +458,7 @@ const Product = () => {
                 {!isAddedToCart ? (
                   <button
                     onClick={handleAddToCart}
-                    className="w-full py-4 bg-secondary text-white font-semibold uppercase tracking-wider hover:bg-secondary/90 transition-all duration-300 flex items-center justify-center gap-2"
+                    className="w-full py-3.5 sm:py-4 bg-secondary text-white font-semibold uppercase tracking-wider hover:bg-secondary/90 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
                   >
                     {!size ? (
                       <>
@@ -495,7 +475,37 @@ const Product = () => {
                 ) : (
                   <button
                     onClick={handleViewCart}
-                    className="w-full py-4 bg-text text-white font-semibold uppercase tracking-wider hover:bg-text/90 transition-all duration-300 flex items-center justify-center gap-2"
+                    className="w-full py-3.5 sm:py-4 bg-text text-white font-semibold uppercase tracking-wider hover:bg-text/90 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
+                  >
+                    <Check size={18} />
+                    <span>View Cart</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Action Buttons - Mobile */}
+              <div className="sm:hidden space-y-3 pt-2">
+                {!isAddedToCart ? (
+                  <button
+                    onClick={handleAddToCart}
+                    className="w-full py-3.5 bg-secondary text-white font-semibold uppercase tracking-wider active:bg-secondary/90 transition-all duration-300 flex items-center justify-center gap-2 text-sm active:scale-95"
+                  >
+                    {!size ? (
+                      <>
+                        <Info size={16} />
+                        <span>Please select a size</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart size={18} />
+                        <span>Add to Cart</span>
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleViewCart}
+                    className="w-full py-3.5 bg-text text-white font-semibold uppercase tracking-wider active:bg-text/90 transition-all duration-300 flex items-center justify-center gap-2 text-sm active:scale-95"
                   >
                     <Check size={18} />
                     <span>View Cart</span>
@@ -504,16 +514,16 @@ const Product = () => {
               </div>
 
               {/* Product Information */}
-              <div className="border-t border-background/50 pt-5">
+              <div className="border-t border-background/50 pt-4 sm:pt-5">
                 <div className="space-y-1">
                   {[
                     {
                       id: 'description',
                       title: 'Product Details',
                       content: (
-                        <ul className="list-disc pl-5 space-y-2">
+                        <ul className="list-disc pl-5 space-y-1.5 sm:space-y-2">
                           {descriptionPoints.map((point, index) => (
-                            <li key={index}>{point}</li>
+                            <li key={index} className="text-sm">{point}</li>
                           ))}
                         </ul>
                       )
@@ -522,7 +532,7 @@ const Product = () => {
                       id: 'washcare',
                       title: 'Care Instructions',
                       content: (
-                        <ul className="space-y-1.5 text-sm">
+                        <ul className="space-y-1.5 text-xs sm:text-sm">
                           <li>• Dry clean or hand wash with mild detergent</li>
                           <li>• Do not machine wash or soak</li>
                           <li>• Wash separately, dry inside out in shade</li>
@@ -534,7 +544,7 @@ const Product = () => {
                       id: 'delivery',
                       title: 'Shipping & Delivery',
                       content: (
-                        <div className="text-sm space-y-1.5">
+                        <div className="text-xs sm:text-sm space-y-1.5">
                           <p>• Standard: 7-9 business days</p>
                           <p>• Express: 4-5 business days (extra charges)</p>
                         </div>
@@ -544,7 +554,7 @@ const Product = () => {
                       id: 'returns',
                       title: 'Returns & Exchanges',
                       content: (
-                        <div className="text-sm space-y-1.5">
+                        <div className="text-xs sm:text-sm space-y-1.5">
                           <p>• 7-day return policy from delivery</p>
                           <p>• Items must be unused in original packaging</p>
                           <p>• Refunds processed in 5-7 business days</p>
@@ -555,14 +565,14 @@ const Product = () => {
                     <div key={section.id} className="border-b border-background/30 last:border-b-0">
                       <button
                         onClick={() => toggleSection(section.id)}
-                        className="w-full py-4 flex justify-between items-center text-left font-semibold text-text active:text-secondary transition-colors"
+                        className="w-full py-3 sm:py-4 flex justify-between items-center text-left font-semibold text-text active:text-secondary transition-colors"
                       >
-                        <span className="text-sm uppercase tracking-wider">{section.title}</span>
+                        <span className="text-xs sm:text-sm uppercase tracking-wider">{section.title}</span>
                         {expandedSection === section.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                       </button>
                       {expandedSection === section.id && (
-                        <div className="pb-4 text-text/70 font-light leading-relaxed">
-                          {typeof section.content === 'string' ? <p className="text-sm">{section.content}</p> : section.content}
+                        <div className="pb-3 sm:pb-4 text-text/70 font-light leading-relaxed">
+                          {typeof section.content === 'string' ? <p className="text-xs sm:text-sm">{section.content}</p> : section.content}
                         </div>
                       )}
                     </div>
@@ -573,36 +583,6 @@ const Product = () => {
           </div>
         </div>
       </section>
-
-      {/* Mobile Sticky Bottom Bar */}
-      <div
-        ref={stickyBarRef}
-        className={`sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-background/50 p-4 transition-transform duration-300 z-40 ${showStickyBar ? 'translate-y-0' : 'translate-y-full'
-          }`}
-      >
-        <div className="flex gap-3">
-          <div className="flex-1">
-            <div className="text-xs text-text/50 font-medium mb-1">Price</div>
-            <div className="text-xl font-serif font-bold text-secondary">{currency}{productData.price}</div>
-          </div>
-          {!isAddedToCart ? (
-            <button
-              onClick={handleAddToCart}
-              className="flex-1 py-3 bg-secondary text-white font-semibold uppercase tracking-wider active:bg-secondary/90 transition-all duration-200 flex items-center justify-center gap-2 active:scale-95"
-            >
-              <ShoppingCart size={18} />
-              <span className="text-sm">Add to Cart</span>
-            </button>
-          ) : (
-            <button
-              onClick={handleViewCart}
-              className="flex-1 py-3 bg-text text-white font-semibold uppercase tracking-wider active:bg-text/90 transition-all duration-200 flex items-center justify-center gap-2 active:scale-95"
-            >
-              <span className="text-sm">View Cart</span>
-            </button>
-          )}
-        </div>
-      </div>
 
       {/* Size Chart Modal */}
       <SizeChartModal
@@ -616,7 +596,7 @@ const Product = () => {
       {/* Image Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 bg-black/95 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 overflow-hidden"
           onClick={closeModal}
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
@@ -637,10 +617,10 @@ const Product = () => {
 
           {/* Close Button */}
           <button
-            className="absolute top-4 right-4 w-11 h-11 bg-white/95 text-text flex items-center justify-center active:bg-white transition-colors shadow-xl z-10"
+            className="absolute top-4 right-4 w-10 h-10 sm:w-11 sm:h-11 bg-white/95 text-text flex items-center justify-center active:bg-white transition-colors shadow-xl z-10"
             onClick={closeModal}
           >
-            <X size={20} />
+            <X size={18} sm:size={20} />
           </button>
 
           {/* Desktop Navigation */}
@@ -691,12 +671,12 @@ const Product = () => {
       )}
 
       {/* Related Products */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-8 sm:pb-12 pt-8">
+      <section className="px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-6 sm:pb-10">
         <RelatedProducts category={productData.category} subCategory={productData.subCategory} currentProductId={productId} />
       </section>
 
       {/* Recently Viewed */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-12 sm:pb-20">
+      <section className="px-4 sm:px-6 lg:px-8 pb-10 sm:pb-16">
         <RecentlyViewed />
       </section>
 
@@ -744,12 +724,10 @@ const Product = () => {
           animation: shake 0.5s ease-in-out;
         }
 
-        /* Prevent pull-to-refresh on mobile */
         body {
           overscroll-behavior-y: contain;
         }
 
-        /* Better touch targets */
         @media (hover: none) {
           button, a {
             min-height: 44px;
@@ -757,10 +735,14 @@ const Product = () => {
           }
         }
 
-        /* Improve image quality */
         img {
           image-rendering: -webkit-optimize-contrast;
           image-rendering: crisp-edges;
+        }
+
+        /* Prevent modal overflow */
+        body:has(.z-50) {
+          overflow: hidden;
         }
       `}</style>
     </div>

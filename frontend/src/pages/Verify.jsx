@@ -111,18 +111,15 @@ const Verify = () => {
     return (
         <div className='min-h-screen bg-gradient-to-b from-white to-background/20 flex items-center justify-center px-4'>
             <div className='max-w-lg w-full'>
-                {/* Verification Card */}
                 <div className='bg-white border border-background/20 rounded-xl shadow-lg overflow-hidden'>
                     {loading && verificationStatus === 'verifying' ? (
                         <div className="p-12">
                             <div className="flex flex-col items-center gap-6">
-                                {/* Animated Badge */}
                                 <div className="inline-flex items-center gap-2 bg-gradient-to-r from-secondary to-[#8B6F47] text-white text-xs px-4 py-2 rounded-full font-bold uppercase tracking-wide shadow-lg animate-pulse">
                                     <Sparkles size={14} />
                                     <span>Processing</span>
                                 </div>
 
-                                {/* Animated Icon */}
                                 <div className="relative">
                                     <div className="w-20 h-20 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center">
                                         {paymentMethod === 'cod' ? (
@@ -131,11 +128,9 @@ const Verify = () => {
                                             <CreditCard size={32} className="text-secondary animate-bounce" />
                                         )}
                                     </div>
-                                    {/* Spinning Border */}
                                     <div className="absolute inset-0 border-4 border-secondary border-t-transparent rounded-full animate-spin"></div>
                                 </div>
 
-                                {/* Status Text */}
                                 <div className="text-center space-y-2">
                                     <h2 className="text-2xl font-serif font-bold text-text">
                                         {paymentMethod === 'cod' 
@@ -150,7 +145,6 @@ const Verify = () => {
                                     </p>
                                 </div>
 
-                                {/* Order ID Display */}
                                 {orderId && (
                                     <div className="w-full mt-4 p-4 bg-gradient-to-r from-background/10 to-primary/5 rounded-lg border border-background/20">
                                         <div className="flex items-center justify-between">
@@ -164,22 +158,18 @@ const Verify = () => {
                     ) : verificationStatus === 'success' ? (
                         <div className="p-12">
                             <div className="flex flex-col items-center gap-6">
-                                {/* Success Badge */}
                                 <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs px-4 py-2 rounded-full font-bold uppercase tracking-wide shadow-lg">
                                     <CheckCircle size={14} />
                                     <span>Verified</span>
                                 </div>
 
-                                {/* Success Icon */}
                                 <div className="relative">
                                     <div className="w-24 h-24 bg-gradient-to-br from-green-50 to-green-100 rounded-full flex items-center justify-center animate-scale-in">
                                         <CheckCircle size={48} className="text-green-600" />
                                     </div>
-                                    {/* Success Ring */}
                                     <div className="absolute inset-0 border-4 border-green-200 rounded-full animate-ping opacity-75"></div>
                                 </div>
 
-                                {/* Success Text */}
                                 <div className="text-center space-y-2">
                                     <h2 className="text-2xl font-serif font-bold text-text">
                                         Verification Complete!
@@ -194,7 +184,6 @@ const Verify = () => {
                                     </p>
                                 </div>
 
-                                {/* Progress Bar */}
                                 <div className="w-full mt-4">
                                     <div className="w-full bg-background/30 h-2 rounded-full overflow-hidden">
                                         <div className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full animate-progress"></div>
@@ -205,18 +194,15 @@ const Verify = () => {
                     ) : verificationStatus === 'error' ? (
                         <div className="p-12">
                             <div className="flex flex-col items-center gap-6">
-                                {/* Error Badge */}
                                 <div className="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs px-4 py-2 rounded-full font-bold uppercase tracking-wide shadow-lg">
                                     <AlertCircle size={14} />
                                     <span>Failed</span>
                                 </div>
 
-                                {/* Error Icon */}
                                 <div className="w-24 h-24 bg-gradient-to-br from-red-50 to-red-100 rounded-full flex items-center justify-center">
                                     <AlertCircle size={48} className="text-red-600" />
                                 </div>
 
-                                {/* Error Text */}
                                 <div className="text-center space-y-2">
                                     <h2 className="text-2xl font-serif font-bold text-text">
                                         Verification Failed
@@ -233,7 +219,6 @@ const Verify = () => {
                     ) : null}
                 </div>
 
-                {/* Help Text */}
                 <div className="mt-6 text-center">
                     <p className="text-text/40 text-sm font-light">
                         Having trouble? <button onClick={() => navigate('/contact')} className="text-secondary hover:text-[#8B6F47] font-medium underline">Contact Support</button>

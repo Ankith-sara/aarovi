@@ -16,7 +16,6 @@ const razorpayInstance = new Razorpay({
   key_secret: process.env.RAZORPAY_SECRET_KEY,
 });
 
-// Helper function to send notifications
 const sendOrderNotifications = async (order, user) => {
   try {
     await sendOrderEmails(order, user);
@@ -25,11 +24,37 @@ const sendOrderNotifications = async (order, user) => {
   }
 };
 
+const validateTransactionId = (transactionId) => {
+  if (!transactionId || typeof transactionId !== 'string') {
+    return { valid: false, error: 'Transaction ID is required' };
+  }
+
+  const trimmedId = transactionId.trim();
+
+  if (trimmedId.length === 0) {
+    return { valid: false, error: 'Transaction ID cannot be empty' };
+  }
+
+  if (trimmedId.length < 8) {
+    return { valid: false, error: 'Transaction ID must be at least 8 characters long' };
+  }
+
+  if (trimmedId.length > 50) {
+    return { valid: false, error: 'Transaction ID is too long (max 50 characters)' };
+  }
+
+  const validPattern = /^[A-Za-z0-9\-_./]+$/;
+  if (!validPattern.test(trimmedId)) {
+    return { valid: false, error: 'Transaction ID contains invalid characters. Only letters, numbers, and -_. are allowed' };
+  }
+
+  return { valid: true, transactionId: trimmedId };
+};
+
 // Helper function to process order items
 const processOrderItems = (items) => {
   return items.map(item => {
     if (item.type === 'customization') {
-      // Custom order item - includes full canvas design
       return {
         type: 'CUSTOM',
         name: `Custom ${item.gender || ''}'s ${item.dressType || 'Design'}`,
@@ -70,7 +95,6 @@ const processOrderItems = (items) => {
         image: item.canvasDesign?.pngUrl || item.canvasDesign?.png || item.image || ''
       };
     } else {
-      // Regular product item
       return {
         productId: item._id,
         type: 'READY_MADE',
@@ -97,7 +121,6 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    // Process items (handle both regular and custom items with canvas)
     const processedItems = processOrderItems(items);
 
     const orderData = {
@@ -113,7 +136,6 @@ const placeOrder = async (req, res) => {
     const newOrder = new orderModel(orderData);
     await newOrder.save();
 
-    // Update customization status to "In Production" for custom items
     for (const item of items) {
       if (item.type === 'customization' && item._id) {
         try {
@@ -162,27 +184,30 @@ const placeOrderQR = async (req, res) => {
       });
     }
 
-    if (!transactionId || transactionId.trim() === '') {
+    // Validate transaction ID
+    const validation = validateTransactionId(transactionId);
+    if (!validation.valid) {
       return res.status(400).json({
         success: false,
-        message: 'Transaction ID is required for QR payment'
+        message: validation.error
       });
     }
 
-    // Check if transaction ID already exists
+    const validTransactionId = validation.transactionId;
+
     const existingOrder = await orderModel.findOne({
       paymentMethod: "QR",
-      transactionId: transactionId.trim()
+      transactionId: validTransactionId
     });
 
     if (existingOrder) {
       return res.status(400).json({
         success: false,
-        message: 'This transaction ID has already been used. Please verify your payment.'
+        message: 'This transaction ID has already been used. Please verify your payment and ensure you entered the correct transaction ID.'
       });
     }
 
-    // Process items (handle both regular and custom items with canvas)
+    // Process items
     const processedItems = processOrderItems(items);
 
     const orderData = {
@@ -191,15 +216,14 @@ const placeOrderQR = async (req, res) => {
       amount,
       address,
       paymentMethod: "QR",
-      payment: true, // Set to true as payment is made via QR
-      transactionId: transactionId.trim(),
+      payment: true,
+      transactionId: validTransactionId,
       date: Date.now()
     }
 
     const newOrder = new orderModel(orderData);
     await newOrder.save();
 
-    // Update customization status to "In Production" for custom items
     for (const item of items) {
       if (item.type === 'customization' && item._id) {
         try {
@@ -236,7 +260,6 @@ const placeOrderQR = async (req, res) => {
   }
 };
 
-// Verify COD Order
 const verifyCOD = async (req, res) => {
   try {
     const { orderId } = req.body;
@@ -276,7 +299,6 @@ const verifyCOD = async (req, res) => {
   }
 };
 
-// Placing orders using Razorpay Method
 const placeOrderRazorpay = async (req, res) => {
   try {
     const { userId, items, amount, address } = req.body;
@@ -288,7 +310,7 @@ const placeOrderRazorpay = async (req, res) => {
       });
     }
 
-    // Process items (handle both regular and custom items with canvas)
+    // Process items
     const processedItems = processOrderItems(items);
 
     const orderData = {
@@ -521,7 +543,6 @@ const updateProductionStatus = async (req, res) => {
     order.items[itemIndex].productionStatus = productionStatus;
     await order.save();
 
-    // Update customization model status as well
     if (order.items[itemIndex].customization?.customizationId) {
       try {
         let customStatus = 'In Production';
@@ -564,7 +585,6 @@ const orderStatus = async (req, res) => {
       });
     }
 
-    // Validate MongoDB ObjectId format
     if (!orderId.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(400).json({
         success: false,

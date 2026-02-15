@@ -6,7 +6,7 @@ import { assets } from '../assets/assets';
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { CreditCard, Home, Shield, ArrowLeft, MapPin, Phone, Mail, User, Package, CheckCircle, QrCode, X } from 'lucide-react';
+import { CreditCard, Home, Shield, ArrowLeft, MapPin, Phone, Mail, User, Package, CheckCircle, QrCode, X, AlertCircle } from 'lucide-react';
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState('cod');
@@ -25,6 +25,7 @@ const PlaceOrder = () => {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
   const [transactionId, setTransactionId] = useState('');
+  const [transactionIdError, setTransactionIdError] = useState('');
 
   function loadRazorpayScript(src) {
     return new Promise((resolve) => {
@@ -81,6 +82,48 @@ const PlaceOrder = () => {
     setFormData((data) => ({ ...data, [name]: value }));
   };
 
+  // Validate transaction ID
+  const validateTransactionId = (value) => {
+    const trimmedValue = value.trim();
+    
+    if (!trimmedValue) {
+      setTransactionIdError('Transaction ID is required');
+      return false;
+    }
+    
+    // Minimum length validation (most UPI transaction IDs are at least 12 characters)
+    if (trimmedValue.length < 8) {
+      setTransactionIdError('Transaction ID must be at least 8 characters long');
+      return false;
+    }
+    
+    // Maximum length validation
+    if (trimmedValue.length > 50) {
+      setTransactionIdError('Transaction ID is too long (max 50 characters)');
+      return false;
+    }
+    
+    // Allow alphanumeric and common special characters used in transaction IDs
+    const validPattern = /^[A-Za-z0-9\-_./]+$/;
+    if (!validPattern.test(trimmedValue)) {
+      setTransactionIdError('Transaction ID contains invalid characters');
+      return false;
+    }
+    
+    setTransactionIdError('');
+    return true;
+  };
+
+  const handleTransactionIdChange = (e) => {
+    const value = e.target.value;
+    setTransactionId(value);
+    
+    // Clear error when user starts typing
+    if (transactionIdError && value.trim()) {
+      setTransactionIdError('');
+    }
+  };
+
   const initPay = async (order, userId, orderItems, totalAmount) => {
     await loadRazorpayScript("https://checkout.razorpay.com/v1/checkout.js");
 
@@ -124,8 +167,9 @@ const PlaceOrder = () => {
   };
 
   const handleQRSubmit = async () => {
-    if (!transactionId.trim()) {
-      toast.error('Please enter the transaction ID');
+    // Validate transaction ID before submission
+    if (!validateTransactionId(transactionId)) {
+      toast.error(transactionIdError || 'Please enter a valid transaction ID');
       return;
     }
 
@@ -196,6 +240,7 @@ const PlaceOrder = () => {
         setCartItems({});
         setShowQRModal(false);
         setTransactionId('');
+        setTransactionIdError('');
         toast.success('Order placed successfully');
         navigate('/orders');
       } else {
@@ -349,6 +394,7 @@ const PlaceOrder = () => {
                 onClick={() => {
                   setShowQRModal(false);
                   setTransactionId('');
+                  setTransactionIdError('');
                 }}
                 className="text-text/50 hover:text-text transition-colors"
               >
@@ -386,27 +432,38 @@ const PlaceOrder = () => {
                   {/* Transaction ID Input */}
                   <div className="space-y-2">
                     <label className="block text-xs sm:text-sm font-medium text-text/70 uppercase tracking-wider">
-                      Transaction ID *
+                      Transaction ID / UTR Number *
                     </label>
                     <input
                       type="text"
                       value={transactionId}
-                      onChange={(e) => setTransactionId(e.target.value)}
+                      onChange={handleTransactionIdChange}
+                      onBlur={() => validateTransactionId(transactionId)}
                       placeholder="Enter UPI transaction/reference ID"
-                      className="w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light text-sm"
+                      className={`w-full px-3 py-2.5 sm:px-4 sm:py-3 border rounded-lg bg-white focus:outline-none focus:ring-2 transition-all font-light text-sm ${
+                        transactionIdError 
+                          ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
+                          : 'border-background/50 focus:border-secondary focus:ring-secondary/20'
+                      }`}
                       required
                     />
+                    {transactionIdError && (
+                      <div className="flex items-start gap-2 text-red-600 text-xs">
+                        <AlertCircle size={14} className="mt-0.5 flex-shrink-0" />
+                        <span>{transactionIdError}</span>
+                      </div>
+                    )}
                     <p className="text-xs text-text/50 font-light">
-                      Found in your payment app after completing the transaction
+                      Found in your payment app after completing the transaction (e.g., 312345678901)
                     </p>
                   </div>
 
                   {/* Submit Button */}
                   <button
                     onClick={handleQRSubmit}
-                    disabled={isLoading || !transactionId.trim()}
+                    disabled={isLoading || !transactionId.trim() || transactionIdError}
                     className={`w-full py-3 sm:py-3.5 font-bold rounded-full transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base ${
-                      !transactionId.trim()
+                      !transactionId.trim() || transactionIdError
                         ? 'bg-background/30 text-text/40 cursor-not-allowed'
                         : 'bg-secondary text-white hover:bg-secondary/90'
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -430,7 +487,7 @@ const PlaceOrder = () => {
         </div>
       )}
 
-      {/* Checkout Content */}
+      {/* Checkout Content - Rest of the component remains the same */}
       <section className="px-4 sm:px-6 lg:px-8 pb-20">
         <div className="max-w-7xl mx-auto">
           <form onSubmit={onSubmitHandler} className="grid xl:grid-cols-[1.5fr_1fr] gap-10 mt-12">

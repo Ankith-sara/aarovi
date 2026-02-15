@@ -7,17 +7,7 @@ import { jwtDecode } from "jwt-decode";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const {
-    setShowSearch,
-    getWishlistCount,
-    getCartCount,
-    navigate,
-    token,
-    setToken,
-    setCartItems,
-    setSelectedSubCategory
-  } = useContext(ShopContext);
-
+  const { setShowSearch, getWishlistCount, getCartCount, navigate, token, setToken, setCartItems, setSelectedSubCategory } = useContext(ShopContext);
   const [menuVisible, setMenuVisible] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState(null);
   const [showWomenDropdown, setShowWomenDropdown] = useState(false);
@@ -54,7 +44,6 @@ const Navbar = () => {
     };
   }, []);
 
-  // Handle click outside dropdowns
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -77,7 +66,6 @@ const Navbar = () => {
     };
   }, []);
 
-  // Control body scroll when menu is open
   useEffect(() => {
     if (menuVisible) {
       document.body.style.overflow = 'hidden';
@@ -128,8 +116,6 @@ const Navbar = () => {
       <nav className={`fixed top-0 left-0 right-0 z-50 bg-white border-b transition-all duration-300 ${isScrolled ? 'border-background/50 shadow-md' : 'border-background/30'}`}>
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
-
-            {/* Logo */}
             <Link
               to='/'
               onClick={() => window.location.href = '/'}
@@ -155,7 +141,6 @@ const Navbar = () => {
                 )}
               </NavLink>
 
-              {/* Women Dropdown */}
               <div ref={womenDropdownRef} className="relative">
                 <button
                   onClick={() => {
@@ -171,7 +156,6 @@ const Navbar = () => {
                   />
                 </button>
 
-                {/* Women Dropdown Menu */}
                 <div className={`absolute top-full left-0 mt-3 w-56 transition-all duration-300 transform origin-top ${showWomenDropdown ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'}`}>
                   <div className="bg-white backdrop-blur-xl rounded-lg shadow-xl border border-background/30 overflow-hidden">
                     <div className="bg-gradient-to-r from-background/20 to-primary px-4 py-3 border-b border-background/30">
@@ -203,7 +187,6 @@ const Navbar = () => {
                 </div>
               </div>
 
-              {/* Men Dropdown */}
               <div ref={menDropdownRef} className="relative">
                 <button
                   onClick={() => {
@@ -219,7 +202,6 @@ const Navbar = () => {
                   />
                 </button>
 
-                {/* Men Dropdown Menu */}
                 <div className={`absolute top-full left-0 mt-3 w-56 transition-all duration-300 transform origin-top ${showMenDropdown ? 'opacity-100 scale-y-100 translate-y-0' : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'}`}>
                   <div className="bg-white backdrop-blur-xl rounded-lg shadow-xl border border-background/30 overflow-hidden">
                     <div className="bg-gradient-to-r from-background/20 to-primary px-4 py-3 border-b border-background/30">
@@ -296,7 +278,6 @@ const Navbar = () => {
               </NavLink>
             </div>
 
-            {/* Action Icons */}
             <div className="flex items-center gap-2">
               <button
                 onClick={() => { setShowSearch(true); navigate('/shop/collection') }}
@@ -306,7 +287,6 @@ const Navbar = () => {
                 <Search size={19} />
               </button>
 
-              {/* Profile Dropdown */}
               <div ref={profileDropdownRef} className="relative hidden lg:block">
                 <button
                   onClick={() => token ? setShowProfileDropdown(!showProfileDropdown) : navigate('/login')}
@@ -385,7 +365,6 @@ const Navbar = () => {
                 </button>
               </Link>
 
-              {/* Mobile Menu Button */}
               <button
                 onClick={() => setMenuVisible(true)}
                 className="lg:hidden p-2.5 transition-all duration-300 rounded-full hover:bg-background/30 text-text/70 hover:text-text"
@@ -405,10 +384,8 @@ const Navbar = () => {
       {/* Mobile Sidebar Menu */}
       <div
         ref={menuRef}
-        className={`fixed top-0 right-0 bottom-0 h-full w-full sm:w-96 bg-white shadow-2xl overflow-y-auto transition-transform duration-500 z-50 ${menuVisible ? 'translate-x-0' : 'translate-x-full'
-          }`}
+        className={`fixed top-0 right-0 bottom-0 h-full w-full sm:w-96 bg-white shadow-2xl overflow-y-auto transition-transform duration-500 z-50 ${menuVisible ? 'translate-x-0' : 'translate-x-full'}`}
       >
-        {/* Header */}
         <div className="bg-background p-6 sticky top-0 z-10 border-b border-background/30">
           <div className="flex items-center justify-between">
             <div>
@@ -425,7 +402,6 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Menu Content */}
         <div className="p-6 space-y-6">
           <div className="space-y-2">
             <NavLink
@@ -442,7 +418,6 @@ const Navbar = () => {
               HOME
             </NavLink>
 
-            {/* Categories */}
             <div className="pt-4">
               <div className="flex items-center gap-2 px-4 py-2 mb-3">
                 <div className="h-px flex-1 bg-background"></div>
@@ -472,10 +447,7 @@ const Navbar = () => {
                           onClick={() => handleCategoryClick(subcategory.name)}
                           className={({ isActive }) => `
                             block px-4 py-2.5 rounded-lg text-sm transition-all duration-200 border-l-2
-                            ${isActive
-                              ? 'bg-background text-secondary font-medium border-secondary'
-                              : 'text-text/70 hover:bg-background/30 border-transparent hover:border-text/30'
-                            }
+                            ${isActive ? 'bg-background text-secondary font-medium border-secondary' : 'text-text/70 hover:bg-background/30 border-transparent hover:border-text/30'}
                           `}
                         >
                           {subcategory.name}
@@ -496,10 +468,7 @@ const Navbar = () => {
               onClick={() => setMenuVisible(false)}
               className={({ isActive }) => `
                 block px-4 py-3 rounded-lg transition-all duration-300 font-medium text-sm tracking-wide
-                ${isActive
-                  ? 'bg-secondary text-white shadow-md'
-                  : 'text-text hover:bg-background/50'
-                }
+                ${isActive ? 'bg-secondary text-white shadow-md' : 'text-text hover:bg-background/50'}
               `}
             >
               ABOUT
@@ -510,10 +479,7 @@ const Navbar = () => {
               onClick={() => setMenuVisible(false)}
               className={({ isActive }) => `
                 block px-4 py-3 rounded-lg transition-all duration-300 font-medium text-sm tracking-wide
-                ${isActive
-                  ? 'bg-secondary text-white shadow-md'
-                  : 'text-text hover:bg-background/50'
-                }
+                ${isActive ? 'bg-secondary text-white shadow-md' : 'text-text hover:bg-background/50'}
               `}
             >
               CUSTOMIZE
@@ -524,17 +490,13 @@ const Navbar = () => {
               onClick={() => setMenuVisible(false)}
               className={({ isActive }) => `
                 block px-4 py-3 rounded-lg transition-all duration-300 font-medium text-sm tracking-wide
-                ${isActive
-                  ? 'bg-secondary text-white shadow-md'
-                  : 'text-text hover:bg-background/50'
-                }
+                ${isActive ? 'bg-secondary text-white shadow-md' : 'text-text hover:bg-background/50'}
               `}
             >
               CONTACT
             </NavLink>
           </div>
 
-          {/* Account Section */}
           <div>
             <div className="flex items-center gap-2 px-4 py-2 mb-3">
               <div className="h-px flex-1 bg-background"></div>

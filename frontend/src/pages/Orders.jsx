@@ -24,12 +24,10 @@ const Orders = () => {
       );
 
       if (response.data.success) {
-        // FIXED: Process ALL orders and items correctly
         let allOrdersItem = [];
         
         response.data.orders.forEach((order) => {
           order.items.forEach((item) => {
-            // Process each item (both READY_MADE and CUSTOM)
             const processedItem = {
               ...item,
               status: order.status,
@@ -37,12 +35,9 @@ const Orders = () => {
               paymentMethod: order.paymentMethod,
               date: order.date,
               orderId: order._id,
-              // Ensure price fields are set correctly
               price: item.finalPrice || item.basePrice || item.price || 0,
               quantity: item.quantity || 1,
-              // For custom items, ensure we have the image
               image: item.image || item.customization?.canvasDesign?.pngUrl || '',
-              // Custom item specific fields
               type: item.type || 'READY_MADE',
               productionStatus: item.productionStatus,
               customization: item.customization
@@ -52,7 +47,6 @@ const Orders = () => {
           });
         });
 
-        // FIXED: Sort by date (newest first) before setting state
         allOrdersItem.sort((a, b) => new Date(b.date) - new Date(a.date));
         
         setOrderData(allOrdersItem);
@@ -219,7 +213,6 @@ const Orders = () => {
         <div className="max-w-7xl mx-auto">
           {orderData.length > 0 && (
             <>
-              {/* Order Stats */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <div className="bg-gradient-to-br from-background/30 to-primary rounded-lg p-6 border border-background">
                   <div className="flex items-center gap-3 mb-2">
@@ -254,7 +247,6 @@ const Orders = () => {
                 </div>
               </div>
 
-              {/* Filters and Sort */}
               <div className="bg-white rounded-lg border border-background shadow-sm p-6 mb-8">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div className="flex flex-wrap gap-3">
@@ -294,7 +286,6 @@ const Orders = () => {
           )}
 
           {orderData.length === 0 ? (
-            // Empty State
             <div className="flex flex-col items-center justify-center py-20 bg-white rounded-lg border border-background shadow-sm">
               <div className="w-20 h-20 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mb-6">
                 <ShoppingBag size={40} className="text-secondary" />
@@ -314,7 +305,6 @@ const Orders = () => {
               </button>
             </div>
           ) : (
-            // Orders List
             <div className="space-y-6">
               {filteredOrders.map((item, index) => (
                 <div key={`${item.orderId}-${index}`} className="bg-white rounded-lg border border-background shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group">
@@ -383,7 +373,6 @@ const Orders = () => {
                               {item.name}
                             </h3>
 
-                            {/* Show custom badge if it's a custom item */}
                             {item.type === 'CUSTOM' && (
                               <span className="inline-block px-3 py-1 bg-secondary text-white text-xs font-bold rounded-full uppercase tracking-wider">
                                 Custom Design
@@ -427,7 +416,6 @@ const Orders = () => {
                             </div>
                           </div>
 
-                          {/* Show production status for custom items */}
                           {item.type === 'CUSTOM' && item.productionStatus && (
                             <div className="mt-4 p-3 bg-primary/80 border border-gray-200 rounded-lg">
                               <div className="flex items-center gap-2 flex-wrap">
@@ -440,7 +428,6 @@ const Orders = () => {
                                 </span>
                               </div>
                               
-                              {/* Show custom details if available */}
                               {item.customization && (
                                 <div className="mt-3 text-xs text-text/80 space-y-1">
                                   {item.customization.fabric && (
@@ -458,7 +445,6 @@ const Orders = () => {
                           )}
                         </div>
 
-                        {/* Action Buttons */}
                         <div className="flex lg:flex-col items-center lg:items-end justify-start lg:justify-center gap-3">
                           <button
                             className="flex items-center justify-center gap-2 px-6 py-3 bg-secondary text-white font-semibold tracking-wide rounded-lg hover:bg-secondary/80 transition-all duration-300 shadow-md hover:shadow-lg"
@@ -482,7 +468,6 @@ const Orders = () => {
                 </div>
               )}
 
-              {/* Continue Shopping Section */}
               <div className="mt-12 bg-gradient-to-br from-background/20 to-primary rounded-lg border border-background p-8 text-center shadow-sm">
                 <h3 className="text-2xl font-serif font-semibold text-text mb-3 tracking-wide">Want to Order More?</h3>
                 <p className="text-text/70 font-light leading-relaxed mb-6 max-w-md mx-auto">

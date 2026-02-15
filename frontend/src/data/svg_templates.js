@@ -1,8 +1,3 @@
-// ============================================================================
-// SVG GARMENT TEMPLATES
-// This file contains all SVG path data for different garment types
-// Extracted from actual SVG files for accurate rendering
-// ============================================================================
 import { assets } from '../assets/assets';
 
 export const SVG_TEMPLATES = {
@@ -2073,7 +2068,6 @@ export const FABRIC_PRINTS = {
       const ctx = c.getContext('2d');
       
       const drawFlower = (x, y, size = 1) => {
-        // Petals
         ctx.fillStyle = color;
         for (let i = 0; i < 6; i++) {
           const a = (i * Math.PI) / 3;
@@ -2081,7 +2075,6 @@ export const FABRIC_PRINTS = {
           ctx.arc(x + Math.cos(a) * 12 * size, y + Math.sin(a) * 12 * size, 6 * size, 0, Math.PI * 2);
           ctx.fill();
         }
-        // Center
         ctx.fillStyle = '#FFD700';
         ctx.beginPath();
         ctx.arc(x, y, 5 * size, 0, Math.PI * 2);
@@ -2109,7 +2102,6 @@ export const FABRIC_PRINTS = {
       
       const drawRose = (x, y) => {
         ctx.fillStyle = color;
-        // Spiral rose petals
         for (let i = 0; i < 5; i++) {
           const radius = 8 - i * 1.5;
           const angle = i * 0.8;
@@ -2143,7 +2135,6 @@ export const FABRIC_PRINTS = {
       const ctx = c.getContext('2d');
       
       const drawLotus = (x, y) => {
-        // Outer petals
         ctx.fillStyle = color;
         for (let i = 0; i < 8; i++) {
           const a = (i * Math.PI * 2) / 8;
@@ -2155,7 +2146,6 @@ export const FABRIC_PRINTS = {
           ctx.fill();
           ctx.restore();
         }
-        // Center
         ctx.fillStyle = '#FBBF24';
         ctx.beginPath();
         ctx.arc(x, y, 6, 0, Math.PI * 2);
@@ -2182,7 +2172,6 @@ export const FABRIC_PRINTS = {
       c.width = c.height = 140;
       const ctx = c.getContext('2d');
       
-      // Vine pattern
       ctx.strokeStyle = color;
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -2192,7 +2181,6 @@ export const FABRIC_PRINTS = {
       }
       ctx.stroke();
       
-      // Leaf motifs
       ctx.fillStyle = color;
       for (let x = 20; x < 130; x += 30) {
         ctx.beginPath();
@@ -2216,9 +2204,7 @@ export const FABRIC_PRINTS = {
       
       const drawBlock = (x, y) => {
         ctx.fillStyle = color;
-        // Square base
         ctx.fillRect(x, y, 22, 22);
-        // Inner diamond
         ctx.fillStyle = 'rgba(255,255,255,0.3)';
         ctx.beginPath();
         ctx.moveTo(x + 11, y + 3);
@@ -2248,7 +2234,6 @@ export const FABRIC_PRINTS = {
       c.width = c.height = 120;
       const ctx = c.getContext('2d');
       
-      // Random dots pattern
       ctx.fillStyle = color;
       for (let i = 0; i < 30; i++) {
         const x = Math.random() * 120;
@@ -2258,7 +2243,6 @@ export const FABRIC_PRINTS = {
         ctx.fill();
       }
       
-      // Cross motifs
       ctx.strokeStyle = color;
       ctx.lineWidth = 2;
       for (let x = 20; x < 120; x += 40) {

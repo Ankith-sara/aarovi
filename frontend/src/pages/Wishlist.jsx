@@ -22,8 +22,8 @@ const Wishlist = () => {
   const [quantity, setQuantity] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
-  const [sortBy, setSortBy] = useState('recent'); // 'recent', 'price-low', 'price-high', 'name'
+  const [viewMode, setViewMode] = useState('grid');
+  const [sortBy, setSortBy] = useState('recent');
   const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {

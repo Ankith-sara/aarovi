@@ -44,7 +44,7 @@ const ProductPage = () => {
   const observerRef = useRef();
   const loadMoreRef = useRef();
 
-  // Get current category products - memoized to prevent recalculation
+  // Get current category products
   const categoryProducts = useMemo(() => {
     let relevantProducts = [...products];
     

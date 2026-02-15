@@ -27,7 +27,6 @@ const RelatedProducts = ({ category, subCategory, currentProductId }) => {
         </div>
       </div>
 
-      {/* Products Grid or Empty State */}
       <div className="p-6">
         {related.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12">

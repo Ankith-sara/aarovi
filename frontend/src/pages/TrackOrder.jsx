@@ -16,7 +16,6 @@ const TrackOrder = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // FIXED: Match these statuses with your actual database statuses
   const allStatuses = [
     'Order Placed',
     'Processing',
@@ -101,7 +100,6 @@ const TrackOrder = () => {
     return 'text-text/70 bg-background/5 border-background/30';
   };
 
-  // FIXED: Better status matching logic
   const normalizeStatus = (status) => {
     if (!status) return '';
     const statusLower = status.toLowerCase();
@@ -112,7 +110,7 @@ const TrackOrder = () => {
     if (statusLower.includes('out') && statusLower.includes('delivery')) return 'Out for Delivery';
     if (statusLower.includes('delivered')) return 'Delivered';
     
-    return status; // Return original if no match
+    return status;
   };
 
   const getStatusState = (status) => {
@@ -217,7 +215,6 @@ const TrackOrder = () => {
     );
   }
 
-  // Create tracking history with normalized statuses
   const trackingHistory = order.trackingHistory || [
     {
       status: normalizeStatus(order.status) || 'Order Placed',
@@ -242,7 +239,6 @@ const TrackOrder = () => {
         </div>
       </section>
 
-      {/* Order Status Section */}
       <section className="px-4 sm:px-6 lg:px-8 pb-20">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="bg-white border border-background/20 rounded-xl shadow-md overflow-hidden">
@@ -291,14 +287,10 @@ const TrackOrder = () => {
               </div>
             </div>
 
-            {/* Tracking Timeline */}
             <div className="p-6">
               <h3 className="text-xl font-serif font-semibold mb-8 text-text tracking-wide">Tracking Timeline</h3>
-              
-              {/* Desktop Timeline */}
               <div className="hidden lg:block">
                 <div className="relative">
-                  {/* Progress Line */}
                   <div className="absolute top-8 left-0 w-full h-1 bg-background/30 rounded-full"></div>
                   <div 
                     className="absolute top-8 left-0 h-1 bg-gradient-to-r from-secondary to-[#8B6F47] transition-all duration-1000 rounded-full"
@@ -313,7 +305,6 @@ const TrackOrder = () => {
                       return (
                         <div key={index} className="flex-1 relative">
                           <div className="flex flex-col items-center">
-                            {/* Status Circle */}
                             <div
                               className={`relative z-10 flex items-center justify-center w-16 h-16 rounded-full border-4 transition-all duration-300 shadow-md ${
                                 state === 'completed'
@@ -326,7 +317,6 @@ const TrackOrder = () => {
                               {getStatusIcon(status)}
                             </div>
 
-                            {/* Status Details */}
                             <div className="mt-6 text-center max-w-32">
                               <h4
                                 className={`font-semibold text-sm uppercase tracking-wide ${
@@ -379,7 +369,6 @@ const TrackOrder = () => {
                   
                   return (
                     <div key={index} className="flex items-start gap-4">
-                      {/* Status Circle */}
                       <div
                         className={`flex items-center justify-center w-12 h-12 rounded-full border-4 transition-all shadow-md flex-shrink-0 ${
                           state === 'completed'
@@ -392,7 +381,6 @@ const TrackOrder = () => {
                         {getStatusIcon(status)}
                       </div>
 
-                      {/* Status Info */}
                       <div className="flex-1 min-w-0">
                         <h4
                           className={`font-semibold uppercase tracking-wide ${
@@ -438,7 +426,6 @@ const TrackOrder = () => {
             </div>
           </div>
 
-          {/* Order Details Section */}
           <div className="bg-white border border-background/20 rounded-xl shadow-md overflow-hidden">
             <button
               className="w-full p-6 flex justify-between items-center hover:bg-background/5 transition-colors border-b border-background/20"
@@ -451,7 +438,6 @@ const TrackOrder = () => {
             {showDetails && (
               <div className="p-6">
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                  {/* Order Items */}
                   <div className="space-y-6">
                     <h4 className="text-sm font-semibold text-text/60 uppercase tracking-wider">
                       Order Items ({order.items?.length || 0})
@@ -528,7 +514,6 @@ const TrackOrder = () => {
 
                   {/* Order Information */}
                   <div className="space-y-6">
-                    {/* Shipping Address */}
                     <div>
                       <h4 className="text-sm font-semibold text-text/60 uppercase tracking-wider mb-4">
                         Shipping Address
@@ -554,7 +539,6 @@ const TrackOrder = () => {
                       </div>
                     </div>
 
-                    {/* Order Summary */}
                     <div>
                       <h4 className="text-sm font-semibold text-text/60 uppercase tracking-wider mb-4">
                         Order Summary
@@ -586,7 +570,6 @@ const TrackOrder = () => {
                       </div>
                     </div>
 
-                    {/* Payment Method */}
                     <div>
                       <h4 className="text-sm font-semibold text-text/60 uppercase tracking-wider mb-4">
                         Payment Method
@@ -610,7 +593,6 @@ const TrackOrder = () => {
             )}
           </div>
 
-          {/* Action Buttons */}
           <div className="flex justify-center items-center pt-8">
             <button
               onClick={() => navigate('/orders')}

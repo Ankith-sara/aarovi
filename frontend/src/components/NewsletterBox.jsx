@@ -9,16 +9,14 @@ const NewsletterBox = () => {
   const onSubmitHandler = (event) => {
     event.preventDefault();
     if (!email) return;
-    
+
     setIsSubmitting(true);
 
-    // Simulate API call
     setTimeout(() => {
       setIsSuccess(true);
       setEmail("");
       setIsSubmitting(false);
-      
-      // Reset success message after 5 seconds
+
       setTimeout(() => {
         setIsSuccess(false);
       }, 5000);
@@ -56,15 +54,11 @@ const NewsletterBox = () => {
                   </div>
                 </div>
               ) : (
-                // Form
                 <div className="space-y-4">
                   <div className="flex flex-col sm:flex-row gap-3">
                     <div className="flex-1 relative group">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                        <Mail
-                          size={18}
-                          className="text-text/40 group-focus-within:text-secondary transition-colors duration-300"
-                        />
+                        <Mail size={18} className="text-text/40 group-focus-within:text-secondary transition-colors duration-300" />
                       </div>
                       <input
                         type="email"
@@ -98,7 +92,6 @@ const NewsletterBox = () => {
                 </div>
               )}
 
-              {/* Privacy Section */}
               <div className="mt-8 pt-6 border-t border-background/30 text-center">
                 <p className="text-text/60 font-light text-sm leading-relaxed">
                   We respect your privacy. By subscribing, you agree to our{" "}

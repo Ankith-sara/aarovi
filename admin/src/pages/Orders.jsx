@@ -63,13 +63,22 @@ const ProductionStatusBadge = ({ status }) => {
   );
 };
 
-const PaymentBadge = ({ payment, paymentMethod }) => (
+const PaymentBadge = ({ payment, paymentMethod, transactionId }) => (
   <div className="space-y-1">
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border ${payment ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border ${payment ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'
+      }`}>
       {payment ? <CheckCircle size={12} /> : <AlertCircle size={12} />}
       {payment ? 'Paid' : 'Pending'}
     </span>
-    <p className="text-xs text-text/60 font-medium">{paymentMethod}</p>
+    <div className="flex items-center gap-1">
+      <p className="text-xs text-text/60 font-medium">{paymentMethod}</p>
+      {paymentMethod === 'QR' && <QrCode size={12} className="text-green-600" />}
+    </div>
+    {transactionId && (
+      <p className="text-xs text-green-600 font-mono truncate" title={transactionId}>
+        ID: {transactionId.substring(0, 12)}...
+      </p>
+    )}
   </div>
 );
 
@@ -99,6 +108,42 @@ const CanvasModal = ({ item, onClose }) => {
       link.click();
       URL.revokeObjectURL(url);
     }
+  };
+
+  const TransactionIdDisplay = ({ transactionId }) => {
+    const [copied, setCopied] = useState(false);
+
+    const copyToClipboard = () => {
+      navigator.clipboard.writeText(transactionId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
+      <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+        <h4 className="text-sm font-semibold text-text/70 flex items-center gap-2 mb-3">
+          <QrCode size={16} className="text-green-600" />
+          Transaction ID
+        </h4>
+        <div className="flex items-center gap-2">
+          <div className="flex-1 bg-white px-3 py-2 rounded-lg border border-green-200">
+            <p className="text-sm font-mono font-semibold text-green-700 break-all">
+              {transactionId}
+            </p>
+          </div>
+          <button
+            onClick={copyToClipboard}
+            className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-1"
+            title="Copy transaction ID"
+          >
+            {copied ? <Check size={16} /> : <Copy size={16} />}
+          </button>
+        </div>
+        <p className="text-xs text-green-600 font-medium mt-2">
+          ✓ Payment verified via QR code
+        </p>
+      </div>
+    );
   };
 
   return (
@@ -966,7 +1011,11 @@ const Orders = ({ token }) => {
                             </div>
 
                             {/* Payment, Amount & Status Update */}
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <div className={`grid grid-cols-1 gap-4 ${order.paymentMethod === 'QR' && order.transactionId
+                              ? 'lg:grid-cols-4'
+                              : 'lg:grid-cols-3'
+                              }`}>
+                              {/* Payment Status */}
                               <div className="bg-background/20 rounded-xl p-4 border border-background/30">
                                 <h4 className="text-sm font-semibold text-text/70 flex items-center gap-2 mb-3">
                                   <CreditCard size={16} />
@@ -975,6 +1024,12 @@ const Orders = ({ token }) => {
                                 <PaymentBadge payment={order.payment} paymentMethod={order.paymentMethod} />
                               </div>
 
+                              {/* Transaction ID - Only show for QR payments */}
+                              {order.paymentMethod === 'QR' && order.transactionId && (
+                                <TransactionIdDisplay transactionId={order.transactionId} />
+                              )}
+
+                              {/* Total Amount */}
                               <div className="bg-background/20 rounded-xl p-4 border border-background/30">
                                 <h4 className="text-sm font-semibold text-text/70 flex items-center gap-2 mb-3">
                                   <IndianRupee size={16} />
@@ -986,6 +1041,7 @@ const Orders = ({ token }) => {
                                 </div>
                               </div>
 
+                              {/* Update Status */}
                               <div className="bg-background/20 rounded-xl p-4 border border-background/30">
                                 <h4 className="text-sm font-semibold text-text/70 flex items-center gap-2 mb-3">
                                   <Package2 size={16} />

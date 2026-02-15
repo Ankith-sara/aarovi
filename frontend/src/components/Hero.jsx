@@ -23,7 +23,6 @@ const Hero = () => {
                 </div>
               </div>
               <div className="header-spacer pt-6" data-text-exist="true" data-action-exist="false"></div>
-              {/* Call To Action */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to='/customize' className="inline-flex items-center justify-center gap-2 bg-secondary text-white px-6 py-3 rounded-md font-medium hover:bg-secondary/90 transition-all w-full sm:w-auto">
                   Start Designing
@@ -36,7 +35,6 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Features Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <Sparkles className="w-12 h-12 mx-auto mb-4 text-secondary" />
