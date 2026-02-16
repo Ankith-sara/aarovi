@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   Palette, Trash2, Undo, Redo, Info, CheckCircle2, X, Menu,
   Wand2, Upload, Grid, Sparkles, Image as ImageIcon, Ruler, ShirtIcon, Move,
-  MessageSquare, Lightbulb, Send, Bot, Zap
+  Send, Bot, Lightbulb
 } from 'lucide-react';
 import {
   SVG_TEMPLATES,
   EMBROIDERY_PATTERNS as IMPORTED_EMBROIDERY,
   FABRIC_PRINTS as IMPORTED_PRINTS,
-  PRINT_CATEGORIES, getPrintsByCategory
+  getPrintsByCategory
 } from '../data/svg_templates';
 import { toast } from 'react-toastify';
 
@@ -76,7 +76,7 @@ const DesignCanvas = ({
   const [embroideryColor, setEmbroideryColor] = useState('#000000');
   const [printColor, setPrintColor] = useState('#000000');
   const [fabricColor, setFabricColor] = useState(selectedColor);
-  const [colorMode, setColorMode] = useState('full'); // 'full' or 'zone'
+  const [colorMode, setColorMode] = useState('full');
   const [sleeveStyle, setSleeveStyle] = useState('full');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -88,13 +88,11 @@ const DesignCanvas = ({
   const [printRepeat, setPrintRepeat] = useState('tile');
   const [printRotation, setPrintRotation] = useState(0);
   const [uploadedPrint, setUploadedPrint] = useState(null);
-  const [uploadFitOption, setUploadFitOption] = useState('full');
   const [uploadRepeat, setUploadRepeat] = useState('tile');
   const [aiImagePrompt, setAiImagePrompt] = useState('');
   const [aiImageGenerating, setAiImageGenerating] = useState(false);
   const [generatedReferenceImages, setGeneratedReferenceImages] = useState([]);
   const [aiHelperExpanded, setAiHelperExpanded] = useState(false);
-  const [aiSuggestions, setAiSuggestions] = useState([]);
   const [aiLoading, setAiLoading] = useState(false);
   const [userQuery, setUserQuery] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
@@ -128,9 +126,9 @@ const DesignCanvas = ({
 
   // Sleeve Options
   const sleeveOptions = [
-    { value: 'full', label: 'Full Sleeve' },
-    { value: 'elbow', label: '3/4 Sleeve' },
-    { value: 'short', label: 'Short Sleeve' },
+    { value: 'full', label: 'Full' },
+    { value: 'elbow', label: '3/4' },
+    { value: 'short', label: 'Short' },
     { value: 'sleeveless', label: 'Sleeveless' }
   ];
 
@@ -252,78 +250,6 @@ const DesignCanvas = ({
     }
   }, []);
 
-  // AI HELPER FUNCTIONS
-  const getAiSuggestions = async () => {
-    setAiLoading(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      const suggestions = [
-        {
-          type: 'color',
-          title: 'Bold Red',
-          icon: '🔴',
-          action: () => {
-            applyFabricColor('#DC2626');
-          }
-        },
-        {
-          type: 'color',
-          title: 'Gold Thread',
-          icon: '✨',
-          action: () => {
-            setEmbroideryColor('#FFD700');
-            saveToHistory();
-          }
-        },
-        {
-          type: 'pattern',
-          title: 'Neckline Embroidery',
-          icon: '💫',
-          action: () => {
-            const necklineZone = template.zones.find(z => z.id.includes('neckline') || z.id.includes('neck'));
-            if (necklineZone) {
-              setSelectedZone(necklineZone.id);
-              setActiveTab('prints-embroidery');
-              setPrintMode('embroidery');
-              toast.info('Neckline selected');
-            }
-          }
-        },
-        {
-          type: 'style',
-          title: 'Full Sleeves',
-          icon: '👔',
-          action: () => {
-            setSleeveStyle('full');
-            saveToHistory();
-          }
-        },
-        {
-          type: 'combination',
-          title: 'Festive Look',
-          icon: '🎉',
-          action: () => {
-            applyFabricColor('#DC2626');
-            setEmbroideryColor('#FFD700');
-            setTimeout(() => {
-              toast.info('Select zones to add embroidery');
-              setActiveTab('prints-embroidery');
-              setPrintMode('embroidery');
-            }, 1000);
-          }
-        }
-      ];
-
-      setAiSuggestions(suggestions);
-    } catch (error) {
-      console.error('AI suggestion error:', error);
-      toast.error('Failed to get suggestions');
-    } finally {
-      setAiLoading(false);
-    }
-  };
-
   const handleAiQuery = async () => {
     if (!userQuery.trim()) return;
 
@@ -339,88 +265,106 @@ const DesignCanvas = ({
     setAiLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 800));
 
       let response = '';
       const query = currentQuery.toLowerCase();
 
-      // COLOR CHANGE COMMANDS
-      if (query.includes('change') && query.includes('color')) {
-        if (query.includes('red')) {
-          applyFabricColor('#DC2626');
-          response = `I've changed your fabric color to red (#DC2626). Red is perfect for festive occasions.`;
-          saveToHistory();
-        } else if (query.includes('blue')) {
-          applyFabricColor('#3B82F6');
-          response = `I've changed your fabric color to blue (#3B82F6). Blue creates an elegant look.`;
-          saveToHistory();
-        } else if (query.includes('green')) {
-          applyFabricColor('#10B981');
-          response = `I've changed your fabric color to green (#10B981). Green is refreshing and versatile.`;
-          saveToHistory();
-        } else if (query.includes('pink')) {
-          applyFabricColor('#EC4899');
-          response = `I've changed your fabric color to pink (#EC4899). Pink is feminine and elegant.`;
-          saveToHistory();
-        } else if (query.includes('yellow') || query.includes('gold')) {
-          applyFabricColor('#F59E0B');
-          response = `I've changed your fabric color to golden yellow (#F59E0B). This creates a regal look.`;
-          saveToHistory();
-        } else if (query.includes('white')) {
-          applyFabricColor('#FFFFFF');
-          response = `I've changed your fabric color to white (#FFFFFF). White is classic and versatile.`;
-          saveToHistory();
-        } else if (query.includes('black')) {
-          applyFabricColor('#1F2937');
-          response = `I've changed your fabric color to black (#1F2937). Black is sophisticated and timeless.`;
-          saveToHistory();
-        } else {
-          response = `I can change colors! Try: "change color to red", "change color to blue", etc.`;
+      // COLOR COMMANDS
+      if (query.includes('color')) {
+        const colorMap = {
+          'red': '#DC2626',
+          'blue': '#3B82F6',
+          'green': '#10B981',
+          'pink': '#EC4899',
+          'yellow': '#F59E0B',
+          'gold': '#F59E0B',
+          'white': '#FFFFFF',
+          'black': '#1F2937'
+        };
+
+        let applied = false;
+        for (const [colorName, colorValue] of Object.entries(colorMap)) {
+          if (query.includes(colorName)) {
+            applyFabricColor(colorValue);
+            response = `Changed to ${colorName}!`;
+            saveToHistory();
+            applied = true;
+            break;
+          }
+        }
+
+        if (!applied) {
+          response = `Try: "change to red", "make it blue", etc.`;
         }
       }
-      // MAKE IT RED COMMAND
-      else if ((query.includes('make') || query.includes('set')) && query.includes('red')) {
-        applyFabricColor('#DC2626');
-        response = `Done! I've made your ${dressType} red. This vibrant color is perfect for celebrations.`;
-        saveToHistory();
-      }
-      // ADD EMBROIDERY
-      else if ((query.includes('add') || query.includes('apply')) && query.includes('embroidery')) {
+      // EMBROIDERY
+      else if (query.includes('embroidery')) {
         const necklineZone = template.zones.find(z => z.id.includes('neckline') || z.id.includes('neck'));
         if (necklineZone) {
           setSelectedZone(necklineZone.id);
-          response = `I've selected the neckline. Go to "Prints & Embroidery" tab to choose embroidery style.`;
+          response = `Neckline selected. Choose embroidery style from the tab.`;
           setActiveTab('prints-embroidery');
           setPrintMode('embroidery');
         } else {
-          response = `Please select a zone first, then I can help you apply embroidery.`;
+          response = `Select a zone first.`;
         }
       }
-      // SLEEVE COMMANDS
+      // SLEEVES
       else if (query.includes('sleeve')) {
         if (query.includes('full') || query.includes('long')) {
           setSleeveStyle('full');
-          response = `Changed to full sleeves - traditional and elegant.`;
+          response = `Changed to full sleeves.`;
           saveToHistory();
         } else if (query.includes('short')) {
           setSleeveStyle('short');
-          response = `Changed to short sleeves - modern and casual.`;
+          response = `Changed to short sleeves.`;
           saveToHistory();
         } else if (query.includes('3/4') || query.includes('elbow')) {
           setSleeveStyle('elbow');
-          response = `Changed to 3/4 sleeves - versatile and flattering.`;
+          response = `Changed to 3/4 sleeves.`;
           saveToHistory();
         } else if (query.includes('sleeveless')) {
           setSleeveStyle('sleeveless');
-          response = `Changed to sleeveless - contemporary and bold.`;
+          response = `Changed to sleeveless.`;
           saveToHistory();
         } else {
-          response = `Available sleeve options: full, short, 3/4, or sleeveless.`;
+          response = `Options: full, short, 3/4, or sleeveless.`;
+        }
+      }
+      // PRINT COMMANDS
+      else if (query.includes('print') || query.includes('pattern')) {
+        setActiveTab('prints-embroidery');
+        setPrintMode('browse');
+        response = `Opened prints tab. Select a zone and choose a print design.`;
+      }
+      // ZONE SELECTION
+      else if (query.includes('select') || query.includes('zone')) {
+        if (query.includes('neck')) {
+          const neckZone = template.zones.find(z => z.id.includes('neckline') || z.id.includes('neck'));
+          if (neckZone) {
+            setSelectedZone(neckZone.id);
+            response = `Neckline zone selected.`;
+          }
+        } else if (query.includes('sleeve')) {
+          const sleeveZone = template.zones.find(z => z.id.includes('sleeve'));
+          if (sleeveZone) {
+            setSelectedZone(sleeveZone.id);
+            response = `Sleeve zone selected.`;
+          }
+        } else if (query.includes('body') || query.includes('bodice')) {
+          const bodyZone = template.zones.find(z => z.id.includes('body') || z.id.includes('bodice'));
+          if (bodyZone) {
+            setSelectedZone(bodyZone.id);
+            response = `Body zone selected.`;
+          }
+        } else {
+          response = `Available zones: neck, sleeve, body. Try "select neck".`;
         }
       }
       // DEFAULT
       else {
-        response = `I can help with:\n• Colors - "change color to red"\n• Embroidery - "add gold embroidery"\n• Sleeves - "change to full sleeves"\n• Designs - "suggest a festive look"`;
+        response = `I can help with:\n• Colors: "change to red"\n• Embroidery: "add embroidery"\n• Sleeves: "full sleeves"\n• Prints: "show prints"\n• Zones: "select neck"`;
       }
 
       const aiMessage = {
@@ -432,18 +376,10 @@ const DesignCanvas = ({
       setChatHistory(prev => [...prev, aiMessage]);
     } catch (error) {
       console.error('AI query error:', error);
-      toast.error('Failed to get AI response');
     } finally {
       setAiLoading(false);
     }
   };
-
-  // Auto-generate suggestions
-  useEffect(() => {
-    if (Object.keys(zoneColors).length > 0 && aiSuggestions.length === 0) {
-      getAiSuggestions();
-    }
-  }, [dressType, fabricColor]);
 
   // Zone Interaction
   const handleZoneClick = (zoneId) => {
@@ -458,7 +394,6 @@ const DesignCanvas = ({
     setFabricColor(color);
     
     if (colorMode === 'full') {
-      // Apply to all zones
       const updatedColors = {};
       template.zones.forEach(zone => {
         updatedColors[zone.id] = color;
@@ -470,23 +405,23 @@ const DesignCanvas = ({
         [selectedZone]: color
       }));
     } else if (colorMode === 'zone' && !selectedZone) {
-      toast.warning('Please select a zone first');
+      toast.warning('Select a zone first');
       return;
     }
     
     saveToHistory();
   };
 
-  // Print Tab Functions
+  // Print Functions
   const applyBrowsePrint = (printKey) => {
     if (!selectedZone) {
-      toast.warning('Please select a zone first');
+      toast.warning('Select a zone first');
       return;
     }
 
     const print = IMPORTED_PRINTS[printKey];
     if (!print || !print.createPattern) {
-      toast.error('Print pattern not available');
+      toast.error('Print not available');
       return;
     }
 
@@ -516,6 +451,7 @@ const DesignCanvas = ({
       }));
 
       saveToHistory();
+      if (isMobile) setSidebarOpen(false);
     } catch (error) {
       console.error('Error applying print:', error);
       toast.error('Failed to apply print');
@@ -524,13 +460,13 @@ const DesignCanvas = ({
 
   const handleAIGeneratePrint = async () => {
     if (!aiPrintPrompt.trim()) {
-      toast.error('Please describe your desired print');
+      toast.error('Describe your print first');
       return;
     }
 
     setAiGenerating(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       const printKeys = Object.keys(IMPORTED_PRINTS);
       const randomPrint = printKeys[Math.floor(Math.random() * printKeys.length)];
@@ -542,9 +478,10 @@ const DesignCanvas = ({
         key: randomPrint
       });
 
+      toast.success('Print generated!');
     } catch (error) {
       console.error('AI generation error:', error);
-      toast.error('Failed to generate print');
+      toast.error('Generation failed');
     } finally {
       setAiGenerating(false);
     }
@@ -552,7 +489,7 @@ const DesignCanvas = ({
 
   const applyGeneratedPrint = () => {
     if (!selectedZone || !generatedPrint) {
-      toast.warning('Select zone and generate print first');
+      toast.warning('Select zone first');
       return;
     }
 
@@ -576,14 +513,13 @@ const DesignCanvas = ({
         zone: selectedZone,
         zoneName: template.zones.find(z => z.id === selectedZone)?.label,
         printColor: printColor,
-        scale: printScale,
-        repeat: printRepeat,
-        rotation: printRotation,
         appliedAt: new Date().toISOString()
       }
     }));
 
     saveToHistory();
+    if (isMobile) setSidebarOpen(false);
+    toast.success('Applied!');
   };
 
   const handleUploadPrint = (e) => {
@@ -609,7 +545,6 @@ const DesignCanvas = ({
         type: 'print',
         key: 'uploaded',
         url: uploadedPrint,
-        fitOption: uploadFitOption,
         repeat: uploadRepeat
       }
     }));
@@ -617,28 +552,28 @@ const DesignCanvas = ({
     setPrintMetadata(prev => ({
       ...prev,
       [selectedZone]: {
-        type: 'Uploaded Design',
+        type: 'Uploaded',
         zone: selectedZone,
         zoneName: template.zones.find(z => z.id === selectedZone)?.label,
-        fitOption: uploadFitOption,
-        repeat: uploadRepeat,
         appliedAt: new Date().toISOString()
       }
     }));
 
     saveToHistory();
+    if (isMobile) setSidebarOpen(false);
+    toast.success('Design applied!');
   };
 
   // Embroidery Functions
   const applyEmbroidery = (patternKey) => {
     if (!selectedZone) {
-      toast.warning('Please select a zone first');
+      toast.warning('Select a zone first');
       return;
     }
 
     const pattern = IMPORTED_EMBROIDERY[patternKey];
     if (!pattern || !pattern.createPattern) {
-      toast.error('Embroidery pattern not available');
+      toast.error('Pattern not available');
       return;
     }
 
@@ -667,6 +602,7 @@ const DesignCanvas = ({
 
       saveToHistory();
       if (isMobile) setSidebarOpen(false);
+      toast.success('Embroidery applied!');
     } catch (error) {
       console.error('Error applying embroidery:', error);
       toast.error('Failed to apply embroidery');
@@ -676,14 +612,14 @@ const DesignCanvas = ({
   // AI Image Generation
   const handleGenerateReferenceImages = async () => {
     if (!aiImagePrompt.trim()) {
-      toast.error('Please describe the image');
+      toast.error('Describe the design first');
       return;
     }
 
     setAiImageGenerating(true);
 
     try {
-      toast.info('Generating AI designs...');
+      toast.info('Generating designs...');
 
       const response = await fetch('/api/generate-design-image', {
         method: 'POST',
@@ -700,29 +636,15 @@ const DesignCanvas = ({
         })
       });
 
-      // Check if endpoint exists
       if (response.status === 404) {
-        throw new Error('AI image generation endpoint not configured. Please set up the /api/generate-design-image endpoint.');
+        throw new Error('Feature not available');
       }
 
       if (!response.ok) {
-        let errorMessage = 'Failed to generate images';
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || errorMessage;
-        } catch (e) {
-          // If response is not JSON, use default error message
-          errorMessage = `Server error: ${response.status} ${response.statusText}`;
-        }
-        throw new Error(errorMessage);
+        throw new Error('Generation failed');
       }
 
-      let data;
-      try {
-        data = await response.json();
-      } catch (e) {
-        throw new Error('Invalid response from server. Please check API endpoint.');
-      }
+      const data = await response.json();
 
       if (!data.success) {
         throw new Error(data.error || 'Generation failed');
@@ -739,17 +661,7 @@ const DesignCanvas = ({
 
     } catch (error) {
       console.error('AI image error:', error);
-
-      // User-friendly error messages
-      if (error.message.includes('endpoint not configured') || error.message.includes('404')) {
-        toast.error('AI Image Generation feature requires backend setup', {
-          autoClose: 5000
-        });
-      } else if (error.message.includes('Invalid response')) {
-        toast.error('API configuration error. Please check the endpoint setup.');
-      } else {
-        toast.error(error.message || 'Failed to generate images');
-      }
+      toast.error(error.message || 'Generation failed');
     } finally {
       setAiImageGenerating(false);
     }
@@ -757,7 +669,7 @@ const DesignCanvas = ({
 
   const applyReferenceImageAsPrint = (imageUrl) => {
     if (!selectedZone) {
-      toast.warning('Please select a zone first');
+      toast.warning('Select a zone first');
       return;
     }
 
@@ -774,17 +686,16 @@ const DesignCanvas = ({
     setPrintMetadata(prev => ({
       ...prev,
       [selectedZone]: {
-        type: 'AI Generated Design',
+        type: 'AI Design',
         zone: selectedZone,
         zoneName: template.zones.find(z => z.id === selectedZone)?.label,
-        printColor: printColor,
-        source: 'aigurulab-ai',
         appliedAt: new Date().toISOString()
       }
     }));
 
     saveToHistory();
-    toast.success('AI image applied!');
+    if (isMobile) setSidebarOpen(false);
+    toast.success('Applied!');
   };
 
   // Clear Functions
@@ -810,6 +721,7 @@ const DesignCanvas = ({
     });
 
     saveToHistory();
+    toast.success('Zone cleared');
   };
 
   // Export Design
@@ -872,61 +784,61 @@ const DesignCanvas = ({
   const currentCategoryPrints = getPrintsByCategory(printCategory);
 
   return (
-    <div className="grid lg:grid-cols-[70fr_30fr] gap-6">
+    <div className="grid lg:grid-cols-[65fr_35fr] gap-4 lg:gap-6">
       {/* LEFT PANEL - PREVIEW */}
-      <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-secondary rounded-lg flex items-center justify-center">
-              <Palette size={20} className="text-white" />
+      <div className="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
+        <div className="mb-4 lg:mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-2 lg:gap-3">
+            <div className="w-8 h-8 lg:w-10 lg:h-10 bg-secondary rounded-lg flex items-center justify-center">
+              <Palette size={isMobile ? 16 : 20} className="text-white" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-text">Live Preview</h3>
-              <p className="text-sm text-text/60">{dressType}</p>
+              <h3 className="text-lg lg:text-xl font-bold text-text">Live Preview</h3>
+              <p className="text-xs lg:text-sm text-text/60">{dressType}</p>
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-1.5 lg:gap-2">
             <button
               onClick={handleUndo}
               disabled={!canUndo}
-              className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="p-1.5 lg:p-2 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all"
               title="Undo">
-              <Undo size={18} />
+              <Undo size={isMobile ? 16 : 18} />
             </button>
             <button
               onClick={handleRedo}
               disabled={!canRedo}
-              className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="p-1.5 lg:p-2 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all"
               title="Redo">
-              <Redo size={18} />
+              <Redo size={isMobile ? 16 : 18} />
             </button>
             <button
               onClick={() => setAiHelperExpanded(!aiHelperExpanded)}
-              className={`p-2 rounded-lg transition-all ${aiHelperExpanded
+              className={`p-1.5 lg:p-2 rounded-lg transition-all ${aiHelperExpanded
                 ? 'bg-secondary text-white'
                 : 'bg-gray-100 hover:bg-gray-200 text-secondary'
                 }`}
               title="AI Assistant">
-              <Lightbulb size={18} />
+              <Lightbulb size={isMobile ? 16 : 18} />
             </button>
             {isMobile && (
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2 bg-secondary text-white rounded-lg">
-                <Menu size={18} />
+                className="p-1.5 bg-secondary text-white rounded-lg">
+                <Menu size={16} />
               </button>
             )}
           </div>
         </div>
 
-        {/* AI HELPER - EXPANDED PANEL */}
+        {/* AI HELPER */}
         {aiHelperExpanded && (
-          <div className="mb-6 bg-gradient-to-br from-secondary/5 to-primary/5 rounded-xl p-4 border-2 border-secondary/20">
+          <div className="mb-4 lg:mb-6 bg-gradient-to-br from-secondary/5 to-primary/5 rounded-xl p-3 lg:p-4 border-2 border-secondary/20">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Lightbulb size={20} className="text-secondary" />
-                <h4 className="font-bold text-text">AI Assistant</h4>
+                <Lightbulb size={18} className="text-secondary" />
+                <h4 className="font-bold text-sm lg:text-base text-text">AI Assistant</h4>
               </div>
               <button
                 onClick={() => setAiHelperExpanded(false)}
@@ -935,30 +847,16 @@ const DesignCanvas = ({
               </button>
             </div>
 
-            {/* SUGGESTION BUTTONS */}
-            {aiSuggestions.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-3">
-                {aiSuggestions.map((suggestion, idx) => (
-                  <button
-                    key={idx}
-                    onClick={suggestion.action}
-                    className="px-3 py-1.5 bg-white hover:bg-secondary/5 border-2 border-secondary/20 hover:border-secondary rounded-lg transition-all text-xs font-semibold text-text flex items-center gap-1.5">
-                    <span>{suggestion.icon}</span>
-                    <span>{suggestion.title}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Chat Messages */}
-            <div className="bg-white rounded-lg p-3 max-h-64 overflow-y-auto space-y-2 border border-secondary/20 mb-3">
+            {/* Chat */}
+            <div className="bg-white rounded-lg p-2 lg:p-3 max-h-48 lg:max-h-64 overflow-y-auto space-y-2 border border-secondary/20 mb-2 lg:mb-3">
               {chatHistory.length === 0 ? (
-                <div className="text-center py-4">
-                  <p className="text-xs text-secondary mb-2">💬 Try these:</p>
+                <div className="text-center py-3 lg:py-4">
+                  <p className="text-xs text-secondary mb-2">💬 Try:</p>
                   <div className="text-xs text-text/60 space-y-1">
-                    <p>"Change color to red"</p>
-                    <p>"Add gold embroidery"</p>
-                    <p>"Make it festive"</p>
+                    <p>"Change to red"</p>
+                    <p>"Add embroidery"</p>
+                    <p>"Full sleeves"</p>
+                    <p>"Show prints"</p>
                   </div>
                 </div>
               ) : (
@@ -967,16 +865,21 @@ const DesignCanvas = ({
                     key={idx}
                     className={`flex gap-2 ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                     {msg.type === 'ai' && (
-                      <div className="w-6 h-6 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0">
-                        <Bot size={12} className="text-secondary" />
+                      <div className="w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0">
+                        <Bot size={10} className="text-secondary" />
                       </div>
                     )}
                     <div
-                      className={`max-w-[80%] px-3 py-1.5 rounded-lg text-xs ${msg.type === 'user'
+                      className={`max-w-[80%] px-2.5 lg:px-3 py-1.5 rounded-lg text-xs ${msg.type === 'user'
                         ? 'bg-secondary text-white'
                         : 'bg-gray-100 text-text'
                         }`}>
-                      {msg.text}
+                      {msg.text.split('\n').map((line, i) => (
+                        <React.Fragment key={i}>
+                          {line}
+                          {i < msg.text.split('\n').length - 1 && <br />}
+                        </React.Fragment>
+                      ))}
                     </div>
                   </div>
                 ))
@@ -984,10 +887,10 @@ const DesignCanvas = ({
 
               {aiLoading && (
                 <div className="flex gap-2 justify-start">
-                  <div className="w-6 h-6 rounded-full bg-secondary/10 flex items-center justify-center">
-                    <Bot size={12} className="text-secondary" />
+                  <div className="w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-secondary/10 flex items-center justify-center">
+                    <Bot size={10} className="text-secondary" />
                   </div>
-                  <div className="bg-gray-100 px-3 py-1.5 rounded-lg">
+                  <div className="bg-gray-100 px-2.5 lg:px-3 py-1.5 rounded-lg">
                     <div className="flex gap-1">
                       <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
                       <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -1005,26 +908,27 @@ const DesignCanvas = ({
                 value={userQuery}
                 onChange={(e) => setUserQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleAiQuery()}
-                placeholder="Ask me anything..."
-                className="flex-1 px-3 py-2 border-2 border-secondary/20 rounded-lg focus:border-secondary focus:outline-none text-sm"
+                placeholder="Ask me..."
+                className="flex-1 px-3 py-2 border-2 border-secondary/20 rounded-lg focus:border-secondary focus:outline-none text-xs lg:text-sm"
                 disabled={aiLoading}
               />
               <button
                 onClick={handleAiQuery}
                 disabled={aiLoading || !userQuery.trim()}
-                className="px-3 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-all disabled:opacity-50">
-                <Send size={16} />
+                className="px-2.5 lg:px-3 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-all disabled:opacity-50">
+                <Send size={14} />
               </button>
             </div>
           </div>
         )}
 
-        <div ref={containerRef} className="flex justify-center bg-gray-100 rounded-xl p-8 mb-6">
+        {/* SVG Preview */}
+        <div ref={containerRef} className="flex justify-center bg-gray-100 rounded-xl p-4 lg:p-8 mb-4 lg:mb-6">
           <svg
             ref={svgRef}
             viewBox={template.viewBox}
             className="w-full max-w-md"
-            style={{ maxHeight: '600px' }}>
+            style={{ maxHeight: isMobile ? '400px' : '600px' }}>
             <defs>
               {Object.entries(zonePatterns).map(([zoneId, pattern]) => (
                 <pattern
@@ -1088,14 +992,14 @@ const DesignCanvas = ({
         </div>
 
         {/* Zone Selection */}
-        <div className="mb-6">
-          <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Select Zone</h4>
+        <div className="mb-4 lg:mb-6">
+          <h4 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Select Zone</h4>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {template.zones.filter(zone => getSleeveVisibility(zone.id).visible).map(zone => (
               <button
                 key={zone.id}
                 onClick={() => handleZoneClick(zone.id)}
-                className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${selectedZone === zone.id
+                className={`p-2 lg:p-3 rounded-lg border-2 transition-all text-xs font-semibold ${selectedZone === zone.id
                   ? 'border-secondary bg-secondary/5'
                   : 'border-gray-200 hover:border-gray-300'
                   }`}>
@@ -1105,60 +1009,29 @@ const DesignCanvas = ({
           </div>
         </div>
 
+        {/* Selected Zone Info */}
         {selectedZone && (
-          <div className="mb-6 p-4 bg-secondary/5 rounded-lg border border-secondary/20 flex items-center justify-between">
+          <div className="mb-4 lg:mb-6 p-3 lg:p-4 bg-secondary/5 rounded-lg border border-secondary/20 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <CheckCircle2 size={18} className="text-secondary" />
-              <span className="text-sm font-semibold text-text">
-                Editing: {template.zones.find(z => z.id === selectedZone)?.label}
+              <CheckCircle2 size={16} className="text-secondary" />
+              <span className="text-xs lg:text-sm font-semibold text-text">
+                {template.zones.find(z => z.id === selectedZone)?.label}
               </span>
             </div>
             <button
               onClick={clearZone}
-              className="px-3 py-1.5 bg-white text-red-600 rounded-lg hover:bg-red-50 transition-all text-xs font-semibold flex items-center gap-1">
-              <Trash2 size={14} />
+              className="px-2.5 lg:px-3 py-1.5 bg-white text-red-600 rounded-lg hover:bg-red-50 transition-all text-xs font-semibold flex items-center gap-1">
+              <Trash2 size={12} />
               <span>Clear</span>
             </button>
           </div>
         )}
 
-        {/* Applied Metadata */}
-        {Object.keys(embroideryMetadata).length > 0 && (
-          <div className="mb-4 bg-amber-50 border border-amber-200 rounded-lg p-4">
-            <h4 className="font-bold text-sm text-amber-900 mb-2">Applied Embroidery</h4>
-            {Object.entries(embroideryMetadata).map(([zoneId, data]) => (
-              <div key={zoneId} className="text-xs text-amber-800 mb-1 flex items-center gap-2">
-                <span>{data.zoneName}: {IMPORTED_EMBROIDERY[data.type]?.name || data.type}</span>
-                <div
-                  className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
-                  style={{ backgroundColor: data.threadColor }}
-                />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {Object.keys(printMetadata).length > 0 && (
-          <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-bold text-sm text-blue-900 mb-2">Applied Prints</h4>
-            {Object.entries(printMetadata).map(([zoneId, data]) => (
-              <div key={zoneId} className="text-xs text-blue-800 mb-1 flex items-center gap-2">
-                <span>{data.zoneName}: {data.type}</span>
-                {data.printColor && (
-                  <div
-                    className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
-                    style={{ backgroundColor: data.printColor }}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
+        {/* Reference Images */}
         {generatedReferenceImages.length > 0 && (
-          <div className="bg-secondary/5 border border-secondary/20 rounded-lg p-4">
-            <h4 className="font-bold text-sm text-text mb-2">AI Reference Images</h4>
-            <div className="grid grid-cols-2 gap-2">
+          <div className="bg-secondary/5 border border-secondary/20 rounded-lg p-3 lg:p-4">
+            <h4 className="font-bold text-xs lg:text-sm text-text mb-2">AI Reference Images</h4>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {generatedReferenceImages.map((img, idx) => (
                 <div key={idx} className="relative group">
                   <img
@@ -1166,9 +1039,6 @@ const DesignCanvas = ({
                     alt={`Reference ${idx + 1}`}
                     className="w-full aspect-square object-cover rounded-lg border-2 border-secondary/20"
                   />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center p-2">
-                    <p className="text-white text-xs text-center">{img.description}</p>
-                  </div>
                 </div>
               ))}
             </div>
@@ -1181,36 +1051,36 @@ const DesignCanvas = ({
         ${isMobile ? 'fixed inset-x-0 bottom-0 z-50 transform transition-transform duration-300' : 'relative'}
         ${isMobile && !sidebarOpen ? 'translate-y-full' : 'translate-y-0'}
         bg-white rounded-t-2xl lg:rounded-xl shadow-xl border border-gray-200 
-        ${isMobile ? 'max-h-[80vh] overflow-y-auto' : 'p-6'}
+        ${isMobile ? 'max-h-[85vh] overflow-y-auto' : 'p-6'}
       `}>
         {isMobile && (
           <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between rounded-t-2xl z-10">
-            <h3 className="text-lg font-bold">Design Controls</h3>
+            <h3 className="text-base font-bold">Design Controls</h3>
             <button onClick={() => setSidebarOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
-              <X size={20} />
+              <X size={18} />
             </button>
           </div>
         )}
 
         <div className={isMobile ? 'p-4' : ''}>
-          {/* PRIMARY TABS */}
-          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+          {/* TABS */}
+          <div className="flex gap-2 mb-4 lg:mb-6 overflow-x-auto pb-2 scrollbar-hide">
             {[
-              { id: 'fabric-fit', label: 'Fabric & Fit', icon: Palette },
-              { id: 'prints-embroidery', label: 'Prints & Embroidery', icon: Grid },
-              { id: 'ai-images', label: 'AI Images', icon: ImageIcon }
+              { id: 'fabric-fit', label: 'Fabric', icon: Palette },
+              { id: 'prints-embroidery', label: 'Prints', icon: Grid },
+              { id: 'ai-images', label: 'AI', icon: ImageIcon }
             ].map(tab => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold transition-all whitespace-nowrap ${activeTab === tab.id
+                  className={`flex items-center gap-1.5 lg:gap-2 px-3 lg:px-4 py-2 lg:py-2.5 rounded-lg font-semibold transition-all whitespace-nowrap text-xs lg:text-sm ${activeTab === tab.id
                     ? 'bg-secondary text-white shadow-md'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}>
-                  <Icon size={18} />
-                  <span className="text-sm">{tab.label}</span>
+                  <Icon size={16} />
+                  <span>{tab.label}</span>
                 </button>
               );
             })}
@@ -1218,67 +1088,63 @@ const DesignCanvas = ({
 
           {/* FABRIC & FIT TAB */}
           {activeTab === 'fabric-fit' && (
-            <div className="space-y-6">
-              {/* COLOR APPLICATION MODE TOGGLE */}
+            <div className="space-y-4 lg:space-y-6">
+              {/* Color Mode */}
               <div>
-                <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Color Application Mode</h4>
+                <h4 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Apply To</h4>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={() => setColorMode('full')}
-                    className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${colorMode === 'full'
+                    className={`p-2.5 lg:p-3 rounded-lg border-2 transition-all text-xs font-semibold flex items-center justify-center gap-2 ${colorMode === 'full'
                       ? 'border-secondary bg-secondary/5'
                       : 'border-gray-200 hover:border-gray-300'
                       }`}>
-                    <ShirtIcon size={16} className="inline mr-2" />
-                    Full Body
+                    <ShirtIcon size={14} />
+                    Full
                   </button>
                   <button
                     onClick={() => setColorMode('zone')}
-                    className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${colorMode === 'zone'
+                    className={`p-2.5 lg:p-3 rounded-lg border-2 transition-all text-xs font-semibold flex items-center justify-center gap-2 ${colorMode === 'zone'
                       ? 'border-secondary bg-secondary/5'
                       : 'border-gray-200 hover:border-gray-300'
                       }`}>
-                    <Move size={16} className="inline mr-2" />
-                    Selected Zone
+                    <Move size={14} />
+                    Zone
                   </button>
                 </div>
-                {colorMode === 'zone' && !selectedZone && (
-                  <p className="text-xs text-amber-600 mt-2 flex items-center gap-1">
-                    <Info size={12} />
-                    Please select a zone to apply color
-                  </p>
-                )}
               </div>
 
+              {/* Color Picker */}
               <div>
-                <h4 className="font-bold text-sm uppercase text-gray-600 mb-3 flex items-center gap-2">
-                  <Palette size={16} />
-                  {colorMode === 'full' ? 'Full Fabric Color' : 'Zone Color'}
+                <h4 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3 flex items-center gap-2">
+                  <Palette size={14} />
+                  Color
                 </h4>
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <div className="flex items-center gap-4 mb-4">
+                <div className="bg-gray-50 rounded-lg p-3 lg:p-4 border border-gray-200">
+                  <div className="flex items-center gap-3 lg:gap-4 mb-3">
                     <input
                       type="color"
                       value={fabricColor}
                       onChange={(e) => applyFabricColor(e.target.value)}
-                      className="w-16 h-16 rounded-lg cursor-pointer border-2 border-white shadow-md"
+                      className="w-12 h-12 lg:w-16 lg:h-16 rounded-lg cursor-pointer border-2 border-white shadow-md"
                     />
                     <div className="flex-1">
-                      <label className="block text-xs font-semibold text-gray-600 mb-1.5">Hex Code</label>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1.5">Hex</label>
                       <input
                         type="text"
                         value={fabricColor}
                         onChange={(e) => applyFabricColor(e.target.value)}
-                        className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-sm"
+                        className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-xs lg:text-sm"
                       />
                     </div>
                   </div>
                 </div>
               </div>
 
+              {/* Presets */}
               <div>
-                <h4 className="font-bold text-sm uppercase text-gray-600 mb-3">Color Presets</h4>
-                <div className="grid grid-cols-8 gap-2">
+                <h4 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Presets</h4>
+                <div className="grid grid-cols-8 gap-1.5 lg:gap-2">
                   {colorPresets.map(preset => (
                     <button
                       key={preset.color}
@@ -1291,11 +1157,12 @@ const DesignCanvas = ({
                 </div>
               </div>
 
+              {/* Sleeves */}
               {template.zones.some(z => z.id.includes('sleeve')) && (
                 <div>
-                  <h4 className="font-bold text-sm uppercase text-gray-600 mb-3 flex items-center gap-2">
-                    <Ruler size={16} />
-                    Sleeve Length
+                  <h4 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3 flex items-center gap-2">
+                    <Ruler size={14} />
+                    Sleeves
                   </h4>
                   <div className="grid grid-cols-2 gap-2">
                     {sleeveOptions.map(style => (
@@ -1308,7 +1175,7 @@ const DesignCanvas = ({
                           }
                           saveToHistory();
                         }}
-                        className={`p-3 rounded-lg border-2 transition-all text-xs font-semibold ${sleeveStyle === style.value
+                        className={`p-2.5 lg:p-3 rounded-lg border-2 transition-all text-xs font-semibold ${sleeveStyle === style.value
                           ? 'border-secondary bg-secondary/5'
                           : 'border-gray-200 hover:border-gray-300'
                           }`}>
@@ -1323,100 +1190,94 @@ const DesignCanvas = ({
 
           {/* PRINTS & EMBROIDERY TAB */}
           {activeTab === 'prints-embroidery' && (
-            <div className="space-y-6">
+            <div className="space-y-4 lg:space-y-6">
               <div className="flex gap-2">
                 <button
                   onClick={() => setPrintMode('browse')}
-                  className={`flex-1 px-4 py-2 rounded-lg font-semibold text-sm transition-all ${['browse', 'ai', 'upload'].includes(printMode)
+                  className={`flex-1 px-3 lg:px-4 py-2 rounded-lg font-semibold text-xs lg:text-sm transition-all ${['browse', 'ai', 'upload'].includes(printMode)
                     ? 'bg-blue-500 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}>
-                  <Grid size={16} className="inline mr-2" />
+                  <Grid size={14} className="inline mr-1.5" />
                   Prints
                 </button>
                 <button
                   onClick={() => setPrintMode('embroidery')}
-                  className={`flex-1 px-4 py-2 rounded-lg font-semibold text-sm transition-all ${printMode === 'embroidery'
+                  className={`flex-1 px-3 lg:px-4 py-2 rounded-lg font-semibold text-xs lg:text-sm transition-all ${printMode === 'embroidery'
                     ? 'bg-amber-500 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}>
-                  <Sparkles size={16} className="inline mr-2" />
+                  <Sparkles size={14} className="inline mr-1.5" />
                   Embroidery
                 </button>
               </div>
 
               {['browse', 'ai', 'upload'].includes(printMode) && (
                 <div className="space-y-4">
+                  {/* Print Type Selection */}
                   <div>
-                    <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Print Type</h5>
+                    <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Type</h5>
                     <div className="space-y-2">
                       {[
-                        { id: 'browse', label: 'Browse Prints', icon: Grid },
+                        { id: 'browse', label: 'Browse', icon: Grid },
                         { id: 'ai', label: 'AI Generate', icon: Sparkles },
-                        { id: 'upload', label: 'Upload Design', icon: Upload }
+                        { id: 'upload', label: 'Upload', icon: Upload }
                       ].map(mode => {
                         const Icon = mode.icon;
                         return (
                           <button
                             key={mode.id}
                             onClick={() => setPrintMode(mode.id)}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-all ${printMode === mode.id
+                            className={`w-full flex items-center gap-3 px-3 lg:px-4 py-2.5 lg:py-3 rounded-lg border-2 transition-all ${printMode === mode.id
                               ? 'border-secondary bg-secondary/5'
                               : 'border-gray-200 hover:border-gray-300'
                               }`}>
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${printMode === mode.id ? 'border-secondary' : 'border-gray-300'
+                            <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 flex items-center justify-center ${printMode === mode.id ? 'border-secondary' : 'border-gray-300'
                               }`}>
                               {printMode === mode.id && (
-                                <div className="w-3 h-3 rounded-full bg-secondary" />
+                                <div className="w-2 h-2 lg:w-3 lg:h-3 rounded-full bg-secondary" />
                               )}
                             </div>
-                            <Icon size={18} className={printMode === mode.id ? 'text-secondary' : 'text-gray-500'} />
-                            <span className="font-semibold text-sm">{mode.label}</span>
+                            <Icon size={16} className={printMode === mode.id ? 'text-secondary' : 'text-gray-500'} />
+                            <span className="font-semibold text-xs lg:text-sm">{mode.label}</span>
                           </button>
                         );
                       })}
                     </div>
                   </div>
 
-                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Print Color</h5>
-                    <div className="flex items-center gap-3 mb-3">
+                  {/* Print Color */}
+                  <div className="bg-gray-50 rounded-lg p-3 lg:p-4 border border-gray-200">
+                    <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Print Color</h5>
+                    <div className="flex items-center gap-2 lg:gap-3">
                       <input
                         type="color"
                         value={printColor}
                         onChange={(e) => setPrintColor(e.target.value)}
-                        className="w-12 h-12 rounded-lg cursor-pointer border-2 border-white shadow-md"
+                        className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg cursor-pointer border-2 border-white shadow-md"
                       />
                       <div className="flex-1">
                         <input
                           type="text"
                           value={printColor}
                           onChange={(e) => setPrintColor(e.target.value)}
-                          className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-xs"
+                          className="w-full px-2.5 lg:px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-xs"
                         />
                       </div>
                     </div>
                   </div>
 
-                  {selectedZone && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                      <p className="text-xs text-blue-800 font-semibold flex items-center gap-2">
-                        <Info size={14} />
-                        Applying to: {template.zones.find(z => z.id === selectedZone)?.label}
-                      </p>
-                    </div>
-                  )}
-
                   {printMode === 'browse' && (
                     <div className="space-y-4">
+                      {/* Category Selection */}
                       <div>
-                        <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Category</h5>
-                        <div className="flex flex-wrap gap-2">
+                        <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Category</h5>
+                        <div className="flex flex-wrap gap-1.5 lg:gap-2">
                           {printCategories.map(cat => (
                             <button
                               key={cat.id}
                               onClick={() => setPrintCategory(cat.id)}
-                              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${printCategory === cat.id
+                              className={`px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg text-xs lg:text-sm font-semibold transition-all ${printCategory === cat.id
                                 ? 'bg-secondary text-white'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}>
@@ -1426,9 +1287,10 @@ const DesignCanvas = ({
                         </div>
                       </div>
 
+                      {/* Print Grid */}
                       <div>
-                        <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Available Prints</h5>
-                        <div className="grid grid-cols-3 gap-3">
+                        <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Designs</h5>
+                        <div className="grid grid-cols-3 gap-2 lg:gap-3">
                           {currentCategoryPrints.map(print => {
                             return (
                               <button
@@ -1440,55 +1302,51 @@ const DesignCanvas = ({
                                   alt={print.name}
                                   className="w-full h-full object-cover"
                                 />
-                                <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <div className="font-semibold">{print.name}</div>
-                                  <div className="text-[10px] text-gray-300">{print.description}</div>
+                                <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1.5 lg:p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <div className="font-semibold text-[10px] lg:text-xs">{print.name}</div>
                                 </div>
                               </button>
                             );
                           })}
                         </div>
-                        {currentCategoryPrints.length === 0 && (
-                          <p className="text-sm text-gray-500 text-center py-8">More styles coming soon</p>
-                        )}
                       </div>
                     </div>
                   )}
 
                   {printMode === 'ai' && (
-                    <div className="space-y-4">
+                    <div className="space-y-3 lg:space-y-4">
                       <div>
-                        <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Describe Your Print</h5>
+                        <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Describe Print</h5>
                         <textarea
                           value={aiPrintPrompt}
                           onChange={(e) => setAiPrintPrompt(e.target.value)}
-                          placeholder="Example: Kalamkari inspired floral print"
-                          className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 h-24 focus:border-secondary focus:outline-none transition-all resize-none text-sm"
+                          placeholder="e.g., Floral paisley pattern"
+                          className="w-full border-2 border-gray-200 rounded-lg px-3 lg:px-4 py-2 lg:py-3 h-20 lg:h-24 focus:border-secondary focus:outline-none transition-all resize-none text-xs lg:text-sm"
                           rows="3"
                         />
                         <button
                           onClick={handleAIGeneratePrint}
                           disabled={aiGenerating || !aiPrintPrompt.trim()}
-                          className="w-full mt-3 px-4 py-3 bg-secondary text-white rounded-lg hover:shadow-lg transition-all font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                          className="w-full mt-3 px-4 py-2.5 lg:py-3 bg-secondary text-white rounded-lg hover:shadow-lg transition-all font-semibold text-xs lg:text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                           {aiGenerating ? (
                             <>
-                              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                              <div className="animate-spin rounded-full h-4 w-4 lg:h-5 lg:w-5 border-b-2 border-white"></div>
                               <span>Generating...</span>
                             </>
                           ) : (
                             <>
-                              <Wand2 size={18} />
-                              <span>Generate Print</span>
+                              <Wand2 size={16} />
+                              <span>Generate</span>
                             </>
                           )}
                         </button>
                       </div>
 
                       {generatedPrint && (
-                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                          <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Generated Preview</h5>
+                        <div className="bg-gray-50 rounded-lg p-3 lg:p-4 border border-gray-200">
+                          <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Preview</h5>
                           <div className="aspect-square rounded-lg border-2 border-gray-200 overflow-hidden mb-3 bg-white">
-                            <img src={generatedPrint.url} alt="Generated Print" className="w-full h-full object-cover" />
+                            <img src={generatedPrint.url} alt="Generated" className="w-full h-full object-cover" />
                           </div>
 
                           <div className="space-y-3">
@@ -1511,7 +1369,7 @@ const DesignCanvas = ({
                                   <button
                                     key={opt}
                                     onClick={() => setPrintRepeat(opt)}
-                                    className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all capitalize ${printRepeat === opt
+                                    className={`flex-1 px-2.5 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all capitalize ${printRepeat === opt
                                       ? 'bg-secondary text-white'
                                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                       }`}>
@@ -1538,13 +1396,13 @@ const DesignCanvas = ({
                           <div className="flex gap-2 mt-4">
                             <button
                               onClick={applyGeneratedPrint}
-                              className="flex-1 px-4 py-2 bg-secondary text-white rounded-lg hover:shadow-md transition-all font-semibold text-sm">
+                              className="flex-1 px-3 lg:px-4 py-2 bg-secondary text-white rounded-lg hover:shadow-md transition-all font-semibold text-xs lg:text-sm">
                               Apply
                             </button>
                             <button
                               onClick={handleAIGeneratePrint}
-                              className="flex-1 px-4 py-2 bg-white border-2 border-secondary text-secondary rounded-lg hover:bg-secondary/5 transition-all font-semibold text-sm">
-                              Regenerate
+                              className="flex-1 px-3 lg:px-4 py-2 bg-white border-2 border-secondary text-secondary rounded-lg hover:bg-secondary/5 transition-all font-semibold text-xs lg:text-sm">
+                              Retry
                             </button>
                           </div>
                         </div>
@@ -1553,23 +1411,23 @@ const DesignCanvas = ({
                   )}
 
                   {printMode === 'upload' && (
-                    <div className="space-y-4">
+                    <div className="space-y-3 lg:space-y-4">
                       <div>
-                        <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Upload Your Design</h5>
+                        <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Upload Design</h5>
                         <input
                           type="file"
                           accept="image/jpeg,image/png,image/svg+xml"
                           onChange={handleUploadPrint}
-                          className="block w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-6 focus:border-secondary transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-secondary file:text-white file:font-semibold hover:file:bg-secondary/90 cursor-pointer text-sm bg-white"
+                          className="block w-full border-2 border-dashed border-gray-300 rounded-lg px-3 lg:px-4 py-4 lg:py-6 focus:border-secondary transition-all file:mr-3 lg:file:mr-4 file:py-1.5 lg:file:py-2 file:px-3 lg:file:px-4 file:rounded-full file:border-0 file:bg-secondary file:text-white file:font-semibold file:text-xs lg:file:text-sm hover:file:bg-secondary/90 cursor-pointer text-xs lg:text-sm bg-white"
                         />
-                        <p className="text-xs text-gray-500 mt-2">Supported: JPG, PNG, SVG</p>
+                        <p className="text-xs text-gray-500 mt-2">JPG, PNG, SVG</p>
                       </div>
 
                       {uploadedPrint && (
-                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                          <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Preview</h5>
+                        <div className="bg-gray-50 rounded-lg p-3 lg:p-4 border border-gray-200">
+                          <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Preview</h5>
                           <div className="aspect-square rounded-lg border-2 border-gray-200 overflow-hidden mb-3 bg-white">
-                            <img src={uploadedPrint} alt="Uploaded Design" className="w-full h-full object-contain" />
+                            <img src={uploadedPrint} alt="Uploaded" className="w-full h-full object-contain" />
                           </div>
 
                           <div className="space-y-3">
@@ -1580,11 +1438,11 @@ const DesignCanvas = ({
                                   <button
                                     key={opt}
                                     onClick={() => setUploadRepeat(opt)}
-                                    className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${uploadRepeat === opt
+                                    className={`flex-1 px-2.5 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all ${uploadRepeat === opt
                                       ? 'bg-secondary text-white'
                                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                       }`}>
-                                    {opt === 'no-repeat' ? 'No Repeat' : opt}
+                                    {opt === 'no-repeat' ? 'None' : opt}
                                   </button>
                                 ))}
                               </div>
@@ -1593,8 +1451,8 @@ const DesignCanvas = ({
 
                           <button
                             onClick={applyUploadedPrint}
-                            className="w-full mt-4 px-4 py-2 bg-secondary text-white rounded-lg hover:shadow-md transition-all font-semibold text-sm">
-                            Apply Design
+                            className="w-full mt-4 px-4 py-2 bg-secondary text-white rounded-lg hover:shadow-md transition-all font-semibold text-xs lg:text-sm">
+                            Apply
                           </button>
                         </div>
                       )}
@@ -1604,36 +1462,30 @@ const DesignCanvas = ({
               )}
 
               {printMode === 'embroidery' && (
-                <div className="space-y-6">
+                <div className="space-y-4 lg:space-y-6">
                   {selectedZone ? (
                     <>
-                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                        <p className="text-xs text-amber-800 font-semibold flex items-center gap-2">
-                          <Info size={14} />
-                          Select embroidery for {template.zones.find(z => z.id === selectedZone)?.label}
-                        </p>
-                      </div>
-
-                      <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Thread Color</h5>
-                        <div className="flex items-center gap-3 mb-3">
+                      {/* Thread Color */}
+                      <div className="bg-gray-50 rounded-lg p-3 lg:p-4 border border-gray-200">
+                        <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Thread Color</h5>
+                        <div className="flex items-center gap-2 lg:gap-3 mb-3">
                           <input
                             type="color"
                             value={embroideryColor}
                             onChange={(e) => setEmbroideryColor(e.target.value)}
-                            className="w-12 h-12 rounded-lg cursor-pointer border-2 border-white shadow-md"
+                            className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg cursor-pointer border-2 border-white shadow-md"
                           />
                           <div className="flex-1">
                             <input
                               type="text"
                               value={embroideryColor}
                               onChange={(e) => setEmbroideryColor(e.target.value)}
-                              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-xs"
+                              className="w-full px-2.5 lg:px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-xs"
                             />
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-6 gap-2 mt-3">
+                        <div className="grid grid-cols-6 gap-1.5 lg:gap-2">
                           {['#FFD700', '#C0C0C0', '#DC2626', '#EC4899', '#FFFFFF', '#000000'].map(color => (
                             <button
                               key={color}
@@ -1645,9 +1497,10 @@ const DesignCanvas = ({
                         </div>
                       </div>
 
+                      {/* Embroidery Styles */}
                       <div>
-                        <h5 className="font-bold text-xs uppercase text-gray-600 mb-3">Embroidery Style</h5>
-                        <div className="grid grid-cols-1 gap-3">
+                        <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Style</h5>
+                        <div className="grid grid-cols-1 gap-2 lg:gap-3">
                           {embroideryStyles.map((style) => {
                             const pattern = IMPORTED_EMBROIDERY[style.pattern];
                             if (!pattern) return null;
@@ -1657,15 +1510,15 @@ const DesignCanvas = ({
                               <button
                                 key={style.id}
                                 onClick={() => applyEmbroidery(style.pattern)}
-                                className="group p-4 rounded-lg border-2 border-gray-200 hover:border-secondary hover:shadow-md transition-all flex items-center gap-4">
-                                <div className="w-14 h-14 rounded-lg border-2 border-gray-200 overflow-hidden bg-white">
+                                className="group p-3 lg:p-4 rounded-lg border-2 border-gray-200 hover:border-secondary hover:shadow-md transition-all flex items-center gap-3 lg:gap-4">
+                                <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-lg border-2 border-gray-200 overflow-hidden bg-white flex-shrink-0">
                                   <img src={patternCanvas.toDataURL()} alt={style.label} className="w-full h-full object-cover" />
                                 </div>
-                                <div className="text-left flex-1">
-                                  <div className="text-sm font-semibold text-text mb-1">{style.label}</div>
-                                  <div className="text-xs text-text/60">{pattern.note}</div>
+                                <div className="text-left flex-1 min-w-0">
+                                  <div className="text-xs lg:text-sm font-semibold text-text mb-0.5 truncate">{style.label}</div>
+                                  <div className="text-[10px] lg:text-xs text-text/60 truncate">{pattern.note}</div>
                                 </div>
-                                <CheckCircle2 size={18} className="text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <CheckCircle2 size={16} className="text-secondary opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                               </button>
                             );
                           })}
@@ -1674,7 +1527,7 @@ const DesignCanvas = ({
                     </>
                   ) : (
                     <div className="text-center py-12">
-                      <Move size={40} className="mx-auto mb-3 text-gray-300" />
+                      <Move size={32} className="mx-auto mb-3 text-gray-300" />
                       <p className="text-sm text-gray-500">Select a zone first</p>
                     </div>
                   )}
@@ -1685,21 +1538,21 @@ const DesignCanvas = ({
 
           {/* AI IMAGES TAB */}
           {activeTab === 'ai-images' && (
-            <div className="space-y-6">
-              <div className="bg-gradient-to-br from-secondary/5 to-primary/5 rounded-lg p-5 border-2 border-secondary/20">
+            <div className="space-y-4 lg:space-y-6">
+              <div className="bg-gradient-to-br from-secondary/5 to-primary/5 rounded-lg p-4 lg:p-5 border-2 border-secondary/20">
                 <div className="flex items-center gap-2 mb-3">
-                  <ImageIcon size={20} className="text-secondary" />
-                  <h4 className="font-bold text-text text-lg">AI Design Generator</h4>
+                  <ImageIcon size={18} className="text-secondary" />
+                  <h4 className="font-bold text-text text-sm lg:text-base">AI Generator</h4>
                 </div>
-                <p className="text-xs text-text/60 mb-4">
-                  Generate unique patterns using AI (1024x1024 resolution)
+                <p className="text-xs text-text/60 mb-3 lg:mb-4">
+                  Generate unique designs (1024x1024)
                 </p>
 
                 <textarea
                   value={aiImagePrompt}
                   onChange={(e) => setAiImagePrompt(e.target.value)}
-                  placeholder="Example: Traditional Indian paisley pattern with gold metallic accents"
-                  className="w-full px-4 py-3 border-2 border-secondary/20 rounded-lg focus:border-secondary focus:outline-none text-sm resize-none"
+                  placeholder="e.g., Traditional paisley with gold"
+                  className="w-full px-3 lg:px-4 py-2 lg:py-3 border-2 border-secondary/20 rounded-lg focus:border-secondary focus:outline-none text-xs lg:text-sm resize-none"
                   rows="4"
                   disabled={aiImageGenerating}
                 />
@@ -1707,16 +1560,16 @@ const DesignCanvas = ({
                 <button
                   onClick={handleGenerateReferenceImages}
                   disabled={aiImageGenerating || !aiImagePrompt.trim()}
-                  className="w-full mt-4 px-4 py-3 bg-secondary text-white rounded-lg hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm flex items-center justify-center gap-2 transition-all">
+                  className="w-full mt-3 lg:mt-4 px-4 py-2.5 lg:py-3 bg-secondary text-white rounded-lg hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-xs lg:text-sm flex items-center justify-center gap-2 transition-all">
                   {aiImageGenerating ? (
                     <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      <div className="animate-spin rounded-full h-4 w-4 lg:h-5 lg:w-5 border-b-2 border-white"></div>
                       <span>Generating...</span>
                     </>
                   ) : (
                     <>
-                      <Wand2 size={18} />
-                      <span>Generate Images</span>
+                      <Wand2 size={16} />
+                      <span>Generate</span>
                     </>
                   )}
                 </button>
@@ -1725,14 +1578,9 @@ const DesignCanvas = ({
               {generatedReferenceImages.length > 0 && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h5 className="font-bold text-sm text-gray-700">
+                    <h5 className="font-bold text-xs lg:text-sm text-gray-700">
                       Generated ({generatedReferenceImages.length})
                     </h5>
-                    {selectedZone && (
-                      <p className="text-xs text-secondary font-semibold bg-secondary/5 px-2 py-1 rounded">
-                        Click to apply to {template.zones.find(z => z.id === selectedZone)?.label}
-                      </p>
-                    )}
                   </div>
 
                   {generatedReferenceImages.map((img, idx) => (
@@ -1749,24 +1597,20 @@ const DesignCanvas = ({
                           onClick={() => !img.error && applyReferenceImageAsPrint(img.url)}
                         />
 
-                        <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs font-semibold">
-                          1024x1024
-                        </div>
-
                         {selectedZone && !img.error && (
                           <button
                             onClick={() => applyReferenceImageAsPrint(img.url)}
                             className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                            <div className="bg-secondary text-white px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 shadow-lg">
-                              <CheckCircle2 size={16} />
-                              Apply as Print
+                            <div className="bg-secondary text-white px-3 lg:px-4 py-2 rounded-lg font-semibold text-xs lg:text-sm flex items-center gap-2 shadow-lg">
+                              <CheckCircle2 size={14} />
+                              Apply
                             </div>
                           </button>
                         )}
                       </div>
 
                       <p className="text-xs text-gray-600 line-clamp-2">
-                        <strong>Design:</strong> {img.description}
+                        {img.description}
                       </p>
                     </div>
                   ))}
@@ -1776,6 +1620,16 @@ const DesignCanvas = ({
           )}
         </div>
       </div>
+
+      <style jsx>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
   );
 };

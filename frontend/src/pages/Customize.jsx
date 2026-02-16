@@ -533,7 +533,7 @@ Return JSON only:
                     Select Fabric
                     <span className="text-red-500">*</span>
                   </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                     {getAvailableFabrics().map((fabric) => {
                       const price = PRICING_MATRIX[form.dressType]?.[fabric.value] || 0;
                       return (
@@ -556,7 +556,6 @@ Return JSON only:
                               <IndianRupee size={16} />
                               <span>{price.toLocaleString()}</span>
                             </div>
-                            <span className="text-xs text-text/50">Base Price</span>
                           </div>
                         </button>
                       );
