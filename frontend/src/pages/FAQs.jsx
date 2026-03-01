@@ -22,7 +22,7 @@ const FAQs = () => {
         { question: "How do I place an order?", answer: "Browse our collection, add to cart, and checkout securely. You'll need an account or guest checkout to complete your purchase." },
         { question: "Can I modify or cancel my order?", answer: "Yes, within 2 hours of placing it. After that, contact support — we'll try our best before the order is processed." },
         { question: "What payment methods do you accept?", answer: "We accept cards, UPI, net banking, and major wallets — all secured with modern encryption." },
-        { question: "Do you offer bulk or wholesale pricing?", answer: "Yes, for custom or bulk orders. Email us at aharyasofficial@gmail.com for a tailored quote." }
+        { question: "Do you offer bulk or wholesale pricing?", answer: "Yes, for custom or bulk orders. Email us at aaroviofficial@gmail.com for a tailored quote." }
       ]
     },
     {
@@ -40,7 +40,7 @@ const FAQs = () => {
       icon: RotateCcw,
       faqs: [
         { question: "What is your return policy?", answer: "We accept returns within 15 days for unused items in original packaging. Personalized pieces may not qualify." },
-        { question: "How do I initiate a return?", answer: "Email us at aharyasofficial@gmail.com with your order details and reason. We'll guide you through it." },
+        { question: "How do I initiate a return?", answer: "Email us at aaroviofficial@gmail.com with your order details and reason. We'll guide you through it." },
         { question: "When will I receive my refund?", answer: "Within 5–7 business days after we receive and verify the return." },
         { question: "Do you offer exchanges?", answer: "Yes — for size, color, or variant swaps (subject to availability)." }
       ]
@@ -75,7 +75,7 @@ const FAQs = () => {
             Frequently Asked Questions
           </h1>
           <p className="text-lg sm:text-xl text-text/70 font-light leading-relaxed max-w-3xl mx-auto">
-            Everything you need to know about Aharyas — from orders to quality and beyond.
+            Everything you need to know about Aarovi — from orders to quality and beyond.
           </p>
         </div>
       </div>
@@ -196,7 +196,7 @@ const FAQs = () => {
           <div className="bg-gradient-to-r from-secondary/90 to-secondary/80 text-white p-10 rounded-lg max-w-4xl mx-auto text-center shadow-lg">
             <h3 className="font-serif text-2xl font-semibold mb-4">Professional Support Team</h3>
             <p className="leading-relaxed text-white/90 text-lg">
-              Our team understands the value of handcrafted artistry and ensures every Aharyas purchase brings satisfaction and pride.
+              Our team understands the value of handcrafted artistry and ensures every Aarovi purchase brings satisfaction and pride.
             </p>
           </div>
         </div>

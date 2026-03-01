@@ -621,27 +621,27 @@ const DesignCanvas = ({
     try {
       toast.info('Generating designs...');
 
-      const response = await fetch('/api/generate-design-image', {
+      // Call your own backend — it proxies to aigurulab, avoiding CORS
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
+
+      const response = await fetch(`${backendUrl}/api/generate-design-image`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           prompt: aiImagePrompt,
-          dressType: dressType,
-          fabric: fabric,
-          gender: gender,
+          dressType,
+          fabric,
+          gender,
           imageCount: 3,
           model: 'sdxl'
         })
       });
 
-      if (response.status === 404) {
-        throw new Error('Feature not available');
-      }
-
       if (!response.ok) {
-        throw new Error('Generation failed');
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || `Server error: ${response.status}`);
       }
 
       const data = await response.json();
@@ -653,11 +653,11 @@ const DesignCanvas = ({
       const successfulImages = data.images.filter(img => img.success);
 
       if (successfulImages.length === 0) {
-        throw new Error('All generations failed');
+        throw new Error('All image generations failed. Please try again.');
       }
 
       setGeneratedReferenceImages(data.images);
-      toast.success(`Generated ${successfulImages.length} designs!`);
+      toast.success(`Generated ${successfulImages.length} design${successfulImages.length > 1 ? 's' : ''}!`);
 
     } catch (error) {
       console.error('AI image error:', error);
@@ -1621,7 +1621,7 @@ const DesignCanvas = ({
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }

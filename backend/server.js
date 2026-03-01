@@ -9,6 +9,7 @@ import cartRouter from './routes/CartRoute.js';
 import orderRouter from './routes/OrderRoute.js';
 import wishlistRouter from './routes/WishlistRoute.js';
 import CustomizationRouter from './routes/CustomizationRoute.js';
+import imageGenerationRouter from './routes/ImageGenerationRoute.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -34,6 +35,7 @@ app.use('/api/cart', cartRouter);
 app.use('/api/order', orderRouter);
 app.use('/api/wishlist', wishlistRouter);
 app.use('/api/customization', CustomizationRouter);
+app.use('/api', imageGenerationRouter);
 
 app.get('/', (req, res) => {
     res.send("API is working");

@@ -38,7 +38,7 @@ const RecentlyViewed = () => {
 
       <div className="p-6">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
-          {recentlyViewed.slice(0, 10).map((item) => (
+          {recentlyViewed.slice(0, 5).map((item) => (
             <ProductItem
               key={item._id}
               id={item._id}
@@ -49,18 +49,6 @@ const RecentlyViewed = () => {
             />
           ))}
         </div>
-
-        {recentlyViewed.length > 5 && (
-          <div className="mt-6 sm:hidden">
-            <button
-              onClick={() => navigate && navigate('/collection')}
-              className="w-full py-3 border-2 border-background text-text font-semibold rounded-lg hover:bg-background/20 transition-all duration-300 flex items-center justify-center gap-2"
-            >
-              <span>View All Products</span>
-              <ArrowRight size={16} />
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

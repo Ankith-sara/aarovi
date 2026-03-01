@@ -35,7 +35,7 @@ const Hero = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
             <div className="text-center">
               <Sparkles className="w-12 h-12 mx-auto mb-4 text-secondary" />
               <h3 className="font-serif text-lg font-semibold mb-2 text-text/90">AI Design Suggestions</h3>

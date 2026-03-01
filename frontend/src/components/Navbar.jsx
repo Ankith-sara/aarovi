@@ -278,7 +278,7 @@ const Navbar = () => {
               </NavLink>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <button
                 onClick={() => { setShowSearch(true); navigate('/shop/collection') }}
                 className="p-2.5 transition-all duration-300 rounded-full hover:bg-background/30 text-text/70 hover:text-text"
@@ -290,7 +290,7 @@ const Navbar = () => {
               <div ref={profileDropdownRef} className="relative hidden lg:block">
                 <button
                   onClick={() => token ? setShowProfileDropdown(!showProfileDropdown) : navigate('/login')}
-                  className="p-2.5 transition-all duration-300 rounded-full hover:bg-background/30 text-text/70 hover:text-text"
+                  className="p-2 transition-all duration-300 rounded-full hover:bg-background/30 text-text/70 hover:text-text"
                   aria-label="Profile"
                 >
                   <User size={19} />
@@ -339,7 +339,7 @@ const Navbar = () => {
 
               <Link to='/wishlist' className='relative'>
                 <button
-                  className="p-2.5 transition-all duration-300 rounded-full hover:bg-background/30 text-text/70 hover:text-text"
+                  className="p-2 transition-all duration-300 rounded-full hover:bg-background/30 text-text/70 hover:text-text"
                   aria-label="Wishlist"
                 >
                   <Heart size={19} />
@@ -353,7 +353,7 @@ const Navbar = () => {
 
               <Link to='/cart' className='relative'>
                 <button
-                  className="p-2.5 transition-all duration-300 rounded-full hover:bg-background/30 text-text/70 hover:text-text"
+                  className="p-2 transition-all duration-300 rounded-full hover:bg-background/30 text-text/70 hover:text-text"
                   aria-label="Cart"
                 >
                   <ShoppingBag size={19} />
