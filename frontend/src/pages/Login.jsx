@@ -200,24 +200,19 @@ const Login = () => {
   // ── UI ────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen flex" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-
-      {/* ── Left panel — full bleed image ── */}
       <div className="hidden lg:flex lg:w-[52%] relative overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&amp;q=80"
           alt="Aarovi Indian fashion"
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
-        {/* gradient: dark top for logo, dark bottom for text, clear middle */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/10 to-black/65" />
 
         <div className="relative z-10 flex flex-col justify-between p-14 xl:p-20 w-full">
-          {/* Logo */}
           <span className="text-white/90 text-xs tracking-[0.3em] uppercase font-semibold">
             Aarovi
           </span>
 
-          {/* Bottom text */}
           <div className="space-y-5">
             <div className="w-10 h-px bg-white/50" />
             <h2 className="text-5xl xl:text-6xl font-light text-white tracking-tight leading-[1.1]"
@@ -230,7 +225,6 @@ const Login = () => {
             </p>
           </div>
 
-          {/* Pagination dots */}
           <div className="flex items-center gap-2">
             <div className="h-1.5 w-1.5 rounded-full bg-white/40" />
             <div className="h-1.5 w-1.5 rounded-full bg-white/40" />
@@ -263,7 +257,6 @@ const Login = () => {
           {/* ── Email step ── */}
           {step === 'email' && (
             <div className="space-y-4">
-              {/* Google button */}
               <button
                 onClick={handleGoogleSignIn}
                 className="w-full flex items-center justify-center gap-3 py-3.5 px-4 border border-stone-300 rounded-lg hover:bg-stone-50 transition-colors text-sm font-medium text-text"
@@ -315,7 +308,6 @@ const Login = () => {
             </div>
           )}
 
-          {/* ── Name step (new users only) ── */}
           {step === 'name' && (
             <div className="space-y-4">
               <div>
@@ -354,7 +346,6 @@ const Login = () => {
             </div>
           )}
 
-          {/* ── OTP step ── */}
           {step === 'otp' && (
             <div className="space-y-6">
               <div>
@@ -406,7 +397,6 @@ const Login = () => {
               </div>
             </div>
           )}
-
         </div>
       </div>
     </div>
