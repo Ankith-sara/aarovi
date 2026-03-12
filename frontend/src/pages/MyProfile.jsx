@@ -4,7 +4,7 @@ import axios from "axios";
 import {
   ChevronRight, Heart, Clock, User, Settings, LogOut, Edit2, Trash2,
   MapPinHouse, X, Camera, Calendar, Plus, ArrowRight, AlertCircle, Package,
-  KeyRound, Eye, EyeOff, CheckCircle2
+  CheckCircle2
 } from "lucide-react";
 import ProductItem from "../components/ProductItem";
 import { ShopContext } from "../context/ShopContext";
@@ -22,9 +22,6 @@ const MyProfile = () => {
   const [deleteAddressModal, setDeleteAddressModal] = useState({ open: false, index: -1 });
   const [errorModal, setErrorModal] = useState({ open: false, message: "" });
   const [successModal, setSuccessModal] = useState({ open: false, message: "" });
-  const [passwordForm, setPasswordForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
-  const [passwordError, setPasswordError] = useState("");
-  const [showPasswords, setShowPasswords] = useState({ current: false, new: false, confirm: false });
   const { backendUrl, setToken, navigate } = useContext(ShopContext);
 
   // Fetch user details
@@ -131,58 +128,6 @@ const MyProfile = () => {
     }
   };
 
-  // Change Password Submit
-  const handleChangePasswordSubmit = async (e) => {
-    e.preventDefault();
-    setPasswordError("");
-
-    if (passwordForm.newPassword.length < 8) {
-      setPasswordError("New password must be at least 8 characters.");
-      return;
-    }
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setPasswordError("New passwords do not match.");
-      return;
-    }
-    if (passwordForm.currentPassword === passwordForm.newPassword) {
-      setPasswordError("New password must be different from the current password.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.put(
-        `${backendUrl}/api/user/password/${userData._id}`,
-        {
-          currentPassword: passwordForm.currentPassword,
-          password: passwordForm.newPassword,
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      if (res.data.success) {
-        setActiveSection(null);
-        setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
-        setShowPasswords({ current: false, new: false, confirm: false });
-        setSuccessModal({ open: true, message: "Your password has been updated successfully." });
-      } else {
-        setPasswordError(res.data.message || "Failed to update password.");
-      }
-    } catch (err) {
-      setPasswordError(
-        err.response?.data?.message || "Failed to update password. Please check your current password."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Address Management
   const saveAddress = async (addressObj, index = -1) => {
     setLoading(true);
@@ -241,7 +186,6 @@ const MyProfile = () => {
     { icon: <MapPinHouse size={20} />, text: "Delivery Address", description: "Manage your delivery locations" },
     { icon: <Package size={20} />, text: "Order History", link: "/orders", description: "View your past orders" },
     { icon: <Heart size={20} />, text: "Wishlist", link: "/wishlist", description: "Items you've saved for later" },
-    { icon: <KeyRound size={20} />, text: "Change Password", description: "Update your account password" },
   ];
 
   if (!userData) {
@@ -598,154 +542,7 @@ const MyProfile = () => {
         </div>
       )}
 
-      {/* Change Password Modal */}
-      {activeSection === "Change Password" && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl my-8">
-            <div className="p-4 sm:p-6 border-b border-background/30 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-secondary/10 rounded-xl flex items-center justify-center">
-                  <KeyRound size={18} className="text-secondary" />
-                </div>
-                <h2 className="text-xl sm:text-2xl font-serif font-bold text-text">Change Password</h2>
-              </div>
-              <button
-                onClick={() => {
-                  setActiveSection(null);
-                  setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
-                  setPasswordError("");
-                  setShowPasswords({ current: false, new: false, confirm: false });
-                }}
-                className="p-2 hover:bg-background/20 rounded-lg transition-colors"
-              >
-                <X size={20} />
-              </button>
-            </div>
 
-            <form className="p-4 sm:p-6 space-y-4 sm:space-y-5" onSubmit={handleChangePasswordSubmit}>
-              <p className="text-sm text-text/60 font-light">
-                For your security, please enter your current password before setting a new one.
-              </p>
-
-              {/* Current Password */}
-              <div>
-                <label className="block text-xs text-text/60 font-semibold uppercase tracking-wider mb-2">
-                  Current Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPasswords.current ? "text" : "password"}
-                    className="w-full px-4 py-3 pr-11 border border-background/50 rounded-xl bg-white focus:outline-none focus:border-secondary transition-colors font-light text-sm sm:text-base"
-                    value={passwordForm.currentPassword}
-                    onChange={e => setPasswordForm(f => ({ ...f, currentPassword: e.target.value }))}
-                    placeholder="Enter current password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPasswords(s => ({ ...s, current: !s.current }))}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text/40 hover:text-text/70 transition-colors"
-                  >
-                    {showPasswords.current ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
-
-              {/* New Password */}
-              <div>
-                <label className="block text-xs text-text/60 font-semibold uppercase tracking-wider mb-2">
-                  New Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPasswords.new ? "text" : "password"}
-                    className="w-full px-4 py-3 pr-11 border border-background/50 rounded-xl bg-white focus:outline-none focus:border-secondary transition-colors font-light text-sm sm:text-base"
-                    value={passwordForm.newPassword}
-                    onChange={e => setPasswordForm(f => ({ ...f, newPassword: e.target.value }))}
-                    placeholder="Enter new password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPasswords(s => ({ ...s, new: !s.new }))}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text/40 hover:text-text/70 transition-colors"
-                  >
-                    {showPasswords.new ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-                {/* Password strength hint */}
-                {passwordForm.newPassword.length > 0 && (
-                  <p className={`text-xs mt-1.5 font-light ${passwordForm.newPassword.length >= 8 ? "text-green-500" : "text-amber-500"}`}>
-                    {passwordForm.newPassword.length >= 8
-                      ? "✓ Password meets the minimum length"
-                      : `${8 - passwordForm.newPassword.length} more characters needed`}
-                  </p>
-                )}
-              </div>
-
-              {/* Confirm New Password */}
-              <div>
-                <label className="block text-xs text-text/60 font-semibold uppercase tracking-wider mb-2">
-                  Confirm New Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPasswords.confirm ? "text" : "password"}
-                    className="w-full px-4 py-3 pr-11 border border-background/50 rounded-xl bg-white focus:outline-none focus:border-secondary transition-colors font-light text-sm sm:text-base"
-                    value={passwordForm.confirmPassword}
-                    onChange={e => setPasswordForm(f => ({ ...f, confirmPassword: e.target.value }))}
-                    placeholder="Re-enter new password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPasswords(s => ({ ...s, confirm: !s.confirm }))}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text/40 hover:text-text/70 transition-colors"
-                  >
-                    {showPasswords.confirm ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-                {/* Match indicator */}
-                {passwordForm.confirmPassword.length > 0 && (
-                  <p className={`text-xs mt-1.5 font-light ${passwordForm.newPassword === passwordForm.confirmPassword ? "text-green-500" : "text-red-400"}`}>
-                    {passwordForm.newPassword === passwordForm.confirmPassword ? "✓ Passwords match" : "✗ Passwords do not match"}
-                  </p>
-                )}
-              </div>
-
-              {/* Inline error */}
-              {passwordError && (
-                <div className="flex items-start gap-2.5 bg-red-50 border border-red-100 rounded-xl p-3 sm:p-4">
-                  <AlertCircle size={16} className="text-red-500 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-600 font-light">{passwordError}</p>
-                </div>
-              )}
-
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex-1 bg-secondary text-white px-4 sm:px-6 py-3 sm:py-4 rounded-full hover:bg-secondary/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg shadow-secondary/30 text-sm sm:text-base"
-                >
-                  {loading ? "Updating..." : "Update Password"}
-                </button>
-                <button
-                  type="button"
-                  className="px-4 sm:px-6 py-3 sm:py-4 bg-background/40 text-text rounded-full hover:bg-background/60 transition-all duration-300 font-semibold text-sm sm:text-base"
-                  onClick={() => {
-                    setActiveSection(null);
-                    setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
-                    setPasswordError("");
-                    setShowPasswords({ current: false, new: false, confirm: false });
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* Address Management Modal */}
       {activeSection === "Delivery Address" && (
@@ -986,7 +783,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
           className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-background/50 rounded-xl focus:outline-none focus:border-secondary transition-colors font-light text-sm sm:text-base"
           value={form.phone}
           onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-          placeholder="Enter phone number for this address"
+          placeholder="Enter phone number"
         />
       </div>
 

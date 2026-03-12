@@ -17,7 +17,7 @@ const Collections = () => {
       description: 'Elegant, handcrafted designs'
     },
     {
-      name: 'Lehengas',
+      name: 'Lehangas',
       imageUrl: 'https://static3.azafashions.com/tr:w-450/uploads/product_gallery/samirah_1506-0264510001623775747.jpg',
       description: 'Royal elegance redefined'
     },

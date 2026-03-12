@@ -50,10 +50,9 @@ const Orders = () => {
         allOrdersItem.sort((a, b) => new Date(b.date) - new Date(a.date));
         
         setOrderData(allOrdersItem);
-        console.log('Loaded orders:', allOrdersItem.length);
       }
     } catch (error) {
-      console.error('Error loading orders:', error);
+      
     } finally {
       setLoading(false);
     }

@@ -60,7 +60,7 @@ const FAQs = () => {
       icon: User,
       faqs: [
         { question: "How do I create an account?", answer: "Click 'Sign Up' on top of any page or create one during checkout — quick and easy." },
-        { question: "I forgot my password. How do I reset it?", answer: "Click 'Forgot Password', enter your email, and follow the reset link we send you." },
+        { question: "How do I sign in to my account?", answer: "Enter your email address and we'll send you a 6-digit verification code. No password needed — just verify your email every time you sign in." },
         { question: "Is my personal information secure?", answer: "Yes. All data is encrypted and protected — we never share it without consent." },
         { question: "How can I contact customer support?", answer: "Email aaroviofficial@gmail.com or call +91 7416964805 (Mon–Sat, 9AM–6PM)." }
       ]

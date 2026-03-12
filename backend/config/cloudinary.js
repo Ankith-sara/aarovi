@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
+import logger from '../utils/logger.js';
 
 const connectCloudinary = async () => {
   try {
@@ -7,9 +8,9 @@ const connectCloudinary = async () => {
       api_key: process.env.CLOUDINARY_API_KEY,
       api_secret: process.env.CLOUDINARY_SECRET_KEY,
     });
-    console.log("Cloudinary configured successfully!");
+    logger.info('Cloudinary configured');
   } catch (error) {
-    console.error("Failed to configure Cloudinary: ", error.message);
+    logger.error('Cloudinary config failed:', error.message);
   }
 };
 

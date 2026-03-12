@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import Title from '../components/Title';
 import CartTotal from '../components/CartTotal';
 import { assets } from '../assets/assets';
 import { ShopContext } from '../context/ShopContext';
@@ -66,7 +65,7 @@ const PlaceOrder = () => {
           }));
         }
       } catch (error) {
-        console.error('Error fetching user:', error);
+        
       }
     };
 
@@ -151,7 +150,7 @@ const PlaceOrder = () => {
             toast.error(verifyRes.data.message);
           }
         } catch (err) {
-          console.error('Error verifying Razorpay payment:', err);
+          
           toast.error('Payment verification failed.');
         }
       },
@@ -247,7 +246,7 @@ const PlaceOrder = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.error(error);
+      
       toast.error(error.response?.data?.message || error.message);
     } finally {
       setIsLoading(false);
@@ -347,7 +346,7 @@ const PlaceOrder = () => {
           break;
       }
     } catch (error) {
-      console.error(error);
+      
       toast.error(error.message);
     } finally {
       setIsLoading(false);
@@ -801,6 +800,23 @@ const PlaceOrder = () => {
           </form>
         </div>
       </section>
+
+      {/* Sticky mobile place order bar */}
+      <div className="xl:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-stone-200 px-4 py-3 shadow-xl">
+        <div className="flex items-center gap-3 max-w-lg mx-auto">
+          <div className="flex-1">
+            <p className="text-xs text-stone-500">Total</p>
+            <p className="text-base font-bold text-secondary">₹{(getCartAmount() + delivery_fee).toLocaleString()}</p>
+          </div>
+          <button
+            onClick={onSubmitHandler}
+            disabled={isLoading || !agreeToTerms}
+            className="flex-shrink-0 px-6 py-3 bg-secondary text-white rounded-xl text-sm font-semibold disabled:opacity-40 flex items-center gap-2"
+          >
+            {isLoading ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><CreditCard size={15} />{method === 'qr' ? 'Pay Now' : 'Place Order'}</>}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

@@ -26,7 +26,6 @@ const Hero = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to='/customize' className="inline-flex items-center justify-center gap-2 bg-secondary text-white px-6 py-3 rounded-md font-medium hover:bg-secondary/90 transition-all w-full sm:w-auto">
                   Start Designing
-                  <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link to='/shop/collection' className="inline-flex items-center justify-center gap-2 border-2 border-secondary bg-white text-secondary px-6 py-3 rounded-md font-medium hover:bg-secondary/5 transition-all w-full sm:w-auto">
                   Browse Collection

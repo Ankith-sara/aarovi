@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
-import { Trash2, Plus, Minus, ShoppingBag, Tag, Truck, ArrowLeft, Heart, ShieldCheck, RefreshCcw, Headset, CreditCard, Package } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag, Truck, ArrowLeft, ShieldCheck, RefreshCcw, Headset, CreditCard, Package } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 const Cart = () => {
   const { products, cartItems, currency, updateQuantity, removeFromCart, updateCustomizationQuantity, removeCustomizationFromCart, getCartAmount, navigate, delivery_fee } = useContext(ShopContext);
   const [cartProducts, setCartProducts] = useState([]);
   const [customizationItems, setCustomizationItems] = useState([]);
-  const [savedItems, setSavedItems] = useState(new Set());
+
 
   useEffect(() => {
     if (!cartItems) return;
@@ -79,17 +79,7 @@ const Cart = () => {
     toast.info('Custom design removed from cart');
   };
 
-  const handleSaveForLater = (itemId) => {
-    const newSaved = new Set(savedItems);
-    if (newSaved.has(itemId)) {
-      newSaved.delete(itemId);
-      toast.info('Removed from saved items');
-    } else {
-      newSaved.add(itemId);
-      toast.success('Saved for later');
-    }
-    setSavedItems(newSaved);
-  };
+
 
   const cartAmount = getCartAmount();
   const totalAmount = cartAmount + delivery_fee;
@@ -170,15 +160,6 @@ const Cart = () => {
                         <h3 className="font-semibold text-sm sm:text-base md:text-lg text-gray-900 line-clamp-2">
                           {item.name}
                         </h3>
-                        <button
-                          onClick={() => handleSaveForLater(`${item._id}-${item.size}`)}
-                          className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
-                        >
-                          <Heart
-                            size={18}
-                            fill={savedItems.has(`${item._id}-${item.size}`) ? 'currentColor' : 'none'}
-                          />
-                        </button>
                       </div>
 
                       <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
@@ -267,15 +248,6 @@ const Cart = () => {
                             <span className="text-xs bg-secondary text-white px-2.5 py-1 rounded-full font-bold shadow-sm">
                               CUSTOM
                             </span>
-                            <button
-                              onClick={() => handleSaveForLater(`custom-${item._id}`)}
-                              className="text-gray-400 hover:text-red-500 transition-colors"
-                            >
-                              <Heart
-                                size={18}
-                                fill={savedItems.has(`custom-${item._id}`) ? 'currentColor' : 'none'}
-                              />
-                            </button>
                           </div>
                         </div>
 
@@ -347,7 +319,7 @@ const Cart = () => {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 lg:sticky lg:top-24 space-y-4 sm:space-y-6">
               <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Tag className="text-secondary flex-shrink-0" size={20} />
+                <Package className="text-secondary flex-shrink-0" size={20} />
                 <span>Order Summary</span>
               </h2>
 
@@ -414,6 +386,22 @@ const Cart = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Sticky mobile checkout bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 px-4 py-3 shadow-xl">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-xs text-gray-500">Total ({totalItems} items)</p>
+            <p className="text-lg font-bold text-secondary">{currency}{totalAmount.toLocaleString()}</p>
+          </div>
+          <button
+            onClick={() => navigate('/place-order')}
+            className="flex-1 max-w-[200px] py-3 bg-secondary text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2"
+          >
+            <CreditCard size={16} /> Checkout
+          </button>
         </div>
       </div>
     </div>

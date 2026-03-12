@@ -107,7 +107,6 @@ const Sidebar = ({ token, setToken }) => {
 
   return (
     <>
-      {/* Mobile Menu Button */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
           onClick={() => setIsMobileMenuOpen(true)}
@@ -130,7 +129,6 @@ const Sidebar = ({ token, setToken }) => {
         lg:hidden fixed top-0 left-0 z-50 h-full w-80 bg-white shadow-2xl border-r border-background/30 transform transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
-        {/* Mobile Header */}
         <div className="flex items-center justify-between p-6 border-b border-background/30 bg-gradient-to-br from-secondary/5 to-secondary/10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center shadow-lg shadow-secondary/30">
@@ -149,14 +147,12 @@ const Sidebar = ({ token, setToken }) => {
           </button>
         </div>
 
-        {/* Mobile Navigation */}
         <div className="py-6 space-y-2">
           {navigationItems.map((item, index) => (
             <NavItem key={index} item={item} mobile={true} />
           ))}
         </div>
 
-        {/* Mobile Footer */}
         <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-background/30 bg-gradient-to-br from-background/10 to-background/5">
           <button
             onClick={handleLogout}
@@ -168,7 +164,6 @@ const Sidebar = ({ token, setToken }) => {
         </div>
       </div>
 
-      {/* Desktop Sidebar */}
       <div className={`
         hidden lg:flex flex-col h-screen bg-white border-r border-background/30 shadow-sm transition-all duration-300 ease-in-out sticky top-0
         ${isCollapsed ? 'w-20' : 'w-72'}
@@ -188,7 +183,6 @@ const Sidebar = ({ token, setToken }) => {
           </div>
         )}
 
-        {/* Collapsed Header */}
         {isCollapsed && (
           <div className="p-4 border-b border-background/30 bg-gradient-to-br from-secondary/5 to-secondary/10 flex justify-center">
             <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center shadow-lg shadow-secondary/30">
@@ -197,14 +191,12 @@ const Sidebar = ({ token, setToken }) => {
           </div>
         )}
 
-        {/* Desktop Navigation */}
         <div className="flex-1 p-4 space-y-2 overflow-y-auto">
           {navigationItems.map((item, index) => (
             <NavItem key={index} item={item} />
           ))}
         </div>
 
-        {/* Desktop Footer */}
         <div className="p-4 border-t border-background/30 bg-gradient-to-br from-background/10 to-background/5 space-y-2">
           {!isCollapsed && (
             <button
@@ -235,7 +227,6 @@ const Sidebar = ({ token, setToken }) => {
             )}
           </button>
 
-          {/* Collapsed Logout Button */}
           {isCollapsed && (
             <button
               onClick={handleLogout}

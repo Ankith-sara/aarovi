@@ -1,66 +1,79 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import Index from './pages/Index';
-import Collection from './pages/Collection';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import Product from './pages/Product';
-import Cart from './pages/Cart';
-import Login from './pages/Login';
-import PlaceOrder from './pages/PlaceOrder';
-import Orders from './pages/Orders';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import SearchBar from './components/SearchBar';
-import ProductPage from './pages/ProductPage';
-import MyProfile from './pages/MyProfile';
-import Verify from './pages/Verify';
 import ScrollToTop from './components/ScrollToTop';
-import TrackOrder from './pages/TrackOrder';
-import CancellationRefundPolicy from './pages/RefundPolicy';
-import ShippingDeliveryPolicy from './pages/DeliveryPolicy';
-import TermsConditions from './pages/TermsConditions';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import FAQs from './pages/FAQs';
-import Support from './pages/Support';
-import Wishlist from './pages/Wishlist';
-import Customize from './pages/Customize';
+import ErrorBoundary from './ErrorBoundary';
+
+// Lazy-loaded pages for better performance
+const Index = lazy(() => import('./pages/Index'));
+const Collection = lazy(() => import('./pages/Collection'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Product = lazy(() => import('./pages/Product'));
+const Cart = lazy(() => import('./pages/Cart'));
+const Login = lazy(() => import('./pages/Login'));
+const PlaceOrder = lazy(() => import('./pages/PlaceOrder'));
+const Orders = lazy(() => import('./pages/Orders'));
+const ProductPage = lazy(() => import('./pages/ProductPage'));
+const MyProfile = lazy(() => import('./pages/MyProfile'));
+const Verify = lazy(() => import('./pages/Verify'));
+const TrackOrder = lazy(() => import('./pages/TrackOrder'));
+const CancellationRefundPolicy = lazy(() => import('./pages/RefundPolicy'));
+const ShippingDeliveryPolicy = lazy(() => import('./pages/DeliveryPolicy'));
+const TermsConditions = lazy(() => import('./pages/TermsConditions'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const FAQs = lazy(() => import('./pages/FAQs'));
+const Support = lazy(() => import('./pages/Support'));
+const Wishlist = lazy(() => import('./pages/Wishlist'));
+const Customize = lazy(() => import('./pages/Customize'));
+
+const PageLoader = () => (
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+    <div>Loading...</div>
+  </div>
+);
 
 const App = () => {
   const location = useLocation();
   const hideNavAndFooter = location.pathname === '/login';
- 
+
   return (
     <div>
       <ToastContainer />
       {!hideNavAndFooter && <Navbar />}
       <SearchBar />
       <ScrollToTop />
-      <Routes>
-        <Route path='/' element={<Index />} />
-        <Route path='/shop/collection' element={<Collection />} />
-        <Route path='/about' element={<About />} />
-        <Route path='/contact' element={<Contact />} />
-        <Route path='/product/:productId' element={<Product />} />
-        <Route path='/shop/:subcategory' element={<ProductPage />} />
-        <Route path='/customize' element={<Customize/>} />
-        <Route path='/cart' element={<Cart />} />
-        <Route path='/wishlist' element={<Wishlist />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/place-order' element={<PlaceOrder />} />
-        <Route path='/orders' element={<Orders />} />
-        <Route path='/status/:orderId' element={<TrackOrder />} />
-        <Route path='/verify' element={<Verify />} />
-        <Route path='/profile/:id' element={<MyProfile />} />
-        <Route path='/refundpolicy' element={<CancellationRefundPolicy />} />
-        <Route path='/shippingpolicy' element={<ShippingDeliveryPolicy />} />
-        <Route path='/termsconditions' element={<TermsConditions />} />
-        <Route path='/privacypolicy' element={<PrivacyPolicy />} />
-        <Route path='/faqs' element={<FAQs />} />
-        <Route path='/support' element={<Support />} />
-        </Routes>
+      <ErrorBoundary>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path='/' element={<Index />} />
+            <Route path='/shop/collection' element={<Collection />} />
+            <Route path='/about' element={<About />} />
+            <Route path='/contact' element={<Contact />} />
+            <Route path='/product/:productId' element={<Product />} />
+            <Route path='/shop/:subcategory' element={<ProductPage />} />
+            <Route path='/customize' element={<Customize />} />
+            <Route path='/cart' element={<Cart />} />
+            <Route path='/wishlist' element={<Wishlist />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/place-order' element={<PlaceOrder />} />
+            <Route path='/orders' element={<Orders />} />
+            <Route path='/status/:orderId' element={<TrackOrder />} />
+            <Route path='/verify' element={<Verify />} />
+            <Route path='/profile/:id' element={<MyProfile />} />
+            <Route path='/refundpolicy' element={<CancellationRefundPolicy />} />
+            <Route path='/shippingpolicy' element={<ShippingDeliveryPolicy />} />
+            <Route path='/termsconditions' element={<TermsConditions />} />
+            <Route path='/privacypolicy' element={<PrivacyPolicy />} />
+            <Route path='/faqs' element={<FAQs />} />
+            <Route path='/support' element={<Support />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
       {!hideNavAndFooter && <Footer />}
     </div>
   );

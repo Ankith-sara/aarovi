@@ -92,7 +92,7 @@ const Navbar = () => {
         { name: 'Kurtis', path: '/shop/Kurtis' },
         { name: 'Kurti Sets', path: '/shop/Kurti-Sets' },
         { name: 'Anarkalis', path: '/shop/Anarkalis' },
-        { name: 'Lehengas', path: '/shop/Lehengas' },
+        { name: 'Lehangas', path: '/shop/Lehangas' },
         { name: 'Sheraras', path: '/shop/Sheraras' },
       ]
     },

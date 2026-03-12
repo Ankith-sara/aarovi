@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import logger from '../utils/logger.js';
 
 dotenv.config();
 
@@ -16,7 +17,7 @@ const transporter = nodemailer.createTransport({
 
 const sendOtpMail = async (email, otp, role = 'user') => {
   if (!email || !otp) {
-    console.error('Missing email or OTP for verification mail');
+    logger.warn('sendOtpMail: missing email or OTP');
     return false;
   }
 
@@ -282,10 +283,10 @@ const sendOtpMail = async (email, otp, role = 'user') => {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log(`OTP email sent successfully for ${role} registration to ${email}`);
+    logger.info(`OTP sent [${role}] to ${email}`);
     return true;
   } catch (error) {
-    console.error('Failed to send OTP email:', error.message);
+    logger.error('Failed to send OTP email:', error.message);
     return false;
   }
 };

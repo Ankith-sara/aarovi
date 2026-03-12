@@ -676,9 +676,43 @@ const Product = () => {
       </section>
 
       {/* Recently Viewed */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-10 sm:pb-16">
+      <section className="px-4 sm:px-6 lg:px-8 pb-28 sm:pb-16">
         <RecentlyViewed />
       </section>
+
+      {/* ── Sticky mobile Add to Cart bar ── */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-stone-200 shadow-xl">
+        <div className="flex items-center gap-3 px-4 py-3 safe-area-inset-bottom">
+          <div className="flex-1">
+            <p className="text-xs text-text/50 leading-none mb-0.5">Price</p>
+            <p className="text-base font-bold text-secondary">{currency}{productData.price?.toLocaleString()}</p>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={handleWishlistToggle}
+              className={`w-11 h-11 flex items-center justify-center border rounded-xl transition-all ${isWishlisted ? 'border-secondary bg-secondary/10 text-secondary' : 'border-stone-200 text-stone-500'}`}
+            >
+              <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
+            </button>
+            {!isAddedToCart ? (
+              <button
+                onClick={handleAddToCart}
+                className="flex items-center justify-center gap-2 px-5 py-2.5 bg-secondary text-white rounded-xl text-sm font-semibold active:bg-secondary/90 transition-all"
+              >
+                <ShoppingCart size={16} />
+                {!size ? 'Select Size' : 'Add to Cart'}
+              </button>
+            ) : (
+              <button
+                onClick={handleViewCart}
+                className="flex items-center justify-center gap-2 px-5 py-2.5 bg-text text-white rounded-xl text-sm font-semibold active:bg-text/90 transition-all"
+              >
+                <Check size={16} /> View Cart
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
 
       <style>{`
         input[type=number]::-webkit-inner-spin-button,

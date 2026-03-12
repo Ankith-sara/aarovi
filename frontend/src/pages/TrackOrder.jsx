@@ -34,7 +34,6 @@ const TrackOrder = () => {
           throw new Error("Missing backend URL or order ID");
         }
 
-        console.log('Fetching order from:', `${backendUrl}/api/order/status/${orderId}`);
 
         const response = await fetch(`${backendUrl}/api/order/status/${orderId}`, {
           method: "GET",
@@ -44,7 +43,6 @@ const TrackOrder = () => {
         });
 
         const data = await response.json();
-        console.log('Order data received:', data);
 
         if (data.success) {
           setOrder(data.order);
@@ -120,10 +118,6 @@ const TrackOrder = () => {
     const currentStatusIndex = allStatuses.indexOf(normalizedOrderStatus);
     const statusIndex = allStatuses.indexOf(status);
 
-    console.log('Order Status:', order.status);
-    console.log('Normalized Order Status:', normalizedOrderStatus);
-    console.log('Current Index:', currentStatusIndex);
-    console.log('Checking Status:', status, 'Index:', statusIndex);
 
     if (statusIndex < 0) return 'upcoming';
 
@@ -154,7 +148,6 @@ const TrackOrder = () => {
     const normalizedStatus = normalizeStatus(order.status);
     const currentIndex = allStatuses.indexOf(normalizedStatus);
     const percentage = currentIndex >= 0 ? ((currentIndex + 1) / allStatuses.length) * 100 : 0;
-    console.log('Progress:', percentage, '% for status:', order.status);
     return percentage;
   };
 
