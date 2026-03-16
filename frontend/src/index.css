@@ -98,3 +98,39 @@ a.active hr {
     transition: var(--transition-standard);
   }
 }
+/* ── Focus visible ring (keyboard navigation) ─────────────────────────── */
+:focus-visible {
+  outline: 2px solid #4F200D;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ── Page-level fade-in ────────────────────────────────────────────────── */
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+main, .page-root {
+  animation: pageFadeIn 0.25s ease-out both;
+}
+
+/* ── Smooth image loading (prevents layout shift flash) ───────────────── */
+img {
+  display: block;
+}
+
+img[loading="lazy"] {
+  background-color: #f3f0ee;
+}
+
+/* ── Button / interactive base ─────────────────────────────────────────── */
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* ── Transition sidepanel animation ────────────────────────────────────── */
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}

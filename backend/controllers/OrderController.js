@@ -1,6 +1,6 @@
 import orderModel from "../models/OrderModel.js";
 import userModel from "../models/UserModel.js";
-import productModel from "../models/ProductModal.js"
+import productModel from "../models/ProductModel.js"
 import customizationModel from "../models/CustomizationModel.js";
 import Razorpay from 'razorpay';
 import crypto from 'crypto';

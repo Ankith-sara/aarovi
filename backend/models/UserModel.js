@@ -22,7 +22,6 @@ const userSchema = new mongoose.Schema({
   cartData:            { type: Object, default: {} },
 
   role:       { type: String, enum: ['user', 'admin'], default: 'user' },
-  isAdmin:    { type: Boolean, default: false },
   isVerified: { type: Boolean, default: false },
 
   // Shared OTP field – used for both signup and login

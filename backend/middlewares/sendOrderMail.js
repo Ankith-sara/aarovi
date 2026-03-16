@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-import productModel from '../models/ProductModal.js';
+import productModel from '../models/ProductModel.js';
 
 dotenv.config();
 

@@ -52,7 +52,7 @@ const Orders = () => {
         setOrderData(allOrdersItem);
       }
     } catch (error) {
-      
+      console.error('Failed to load orders:', error);
     } finally {
       setLoading(false);
     }
@@ -171,22 +171,33 @@ const Orders = () => {
   if (loading) {
     return (
       <div className="min-h-screen mt-20">
-        <section className="py-16 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-text mb-4">
-              Order History
-            </h1>
+        <section className="py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto">
+            <div className="h-8 bg-gray-200 rounded-lg w-48 animate-pulse mb-3" />
+            <div className="h-4 bg-gray-100 rounded w-64 animate-pulse" />
           </div>
         </section>
-
         <section className="px-4 sm:px-6 lg:px-8 pb-20">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-center py-20">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-4 border-background border-t-secondary mx-auto mb-6"></div>
-                <span className="text-text/60 font-light text-lg">Loading your orders...</span>
+          <div className="max-w-5xl mx-auto space-y-4">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="bg-white rounded-xl border border-gray-100 overflow-hidden animate-pulse">
+                <div className="p-5 border-b border-gray-100 flex gap-6">
+                  <div className="h-4 bg-gray-200 rounded w-40" />
+                  <div className="h-4 bg-gray-100 rounded w-28" />
+                </div>
+                <div className="p-5 flex gap-5">
+                  <div className="w-28 h-28 bg-gray-200 rounded-lg flex-shrink-0" />
+                  <div className="flex-1 space-y-3 pt-1">
+                    <div className="h-5 bg-gray-200 rounded w-2/3" />
+                    <div className="h-4 bg-gray-100 rounded w-1/3" />
+                    <div className="flex gap-4 pt-2">
+                      <div className="h-8 bg-gray-100 rounded w-20" />
+                      <div className="h-8 bg-gray-100 rounded w-20" />
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </section>
       </div>

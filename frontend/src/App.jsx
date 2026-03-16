@@ -32,8 +32,9 @@ const Wishlist = lazy(() => import('./pages/Wishlist'));
 const Customize = lazy(() => import('./pages/Customize'));
 
 const PageLoader = () => (
-  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-    <div>Loading...</div>
+  <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
+    <div className="w-10 h-10 border-[3px] border-background border-t-secondary rounded-full animate-spin" />
+    <p className="text-xs text-text/40 font-light tracking-wider">Loading…</p>
   </div>
 );
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   Instagram, Linkedin, Twitter, Mail, Phone, MapPin
 } from 'lucide-react';
@@ -62,24 +63,24 @@ const Footer = () => {
                 </h4>
                 <ul className="space-y-3">
                   <li>
-                    <a href='/about' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                    <Link to="/about" className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
                       <span className="group-hover:translate-x-1 transition-transform duration-300">About Us</span>
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href='/contact' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                    <Link to="/contact" className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
                       <span className="group-hover:translate-x-1 transition-transform duration-300">Contact Us</span>
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href='/shop/collection' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                    <Link to="/shop/collection" className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
                       <span className="group-hover:translate-x-1 transition-transform duration-300">Collection</span>
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href='/customize' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                    <Link to="/customize" className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
                       <span className="group-hover:translate-x-1 transition-transform duration-300">Customize</span>
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -91,24 +92,24 @@ const Footer = () => {
                 </h4>
                 <ul className="space-y-3">
                   <li>
-                    <a href='/shippingpolicy' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                    <Link to="/shippingpolicy" className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
                       <span className="group-hover:translate-x-1 transition-transform duration-300">Shipping Policy</span>
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href='/refundpolicy' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                    <Link to="/refundpolicy" className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
                       <span className="group-hover:translate-x-1 transition-transform duration-300">Return Policy</span>
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href='/privacypolicy' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                    <Link to="/privacypolicy" className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
                       <span className="group-hover:translate-x-1 transition-transform duration-300">Privacy Policy</span>
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href='/termsconditions' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                    <Link to="/termsconditions" className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
                       <span className="group-hover:translate-x-1 transition-transform duration-300">Terms & Conditions</span>
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -120,19 +121,19 @@ const Footer = () => {
                 </h4>
                 <ul className="space-y-3">
                   <li>
-                    <a href='/support' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                    <Link to="/support" className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
                       <span className="group-hover:translate-x-1 transition-transform duration-300">Get Help</span>
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href='/faqs' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                    <Link to="/faqs" className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
                       <span className="group-hover:translate-x-1 transition-transform duration-300">FAQs</span>
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a href='/orders' className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
+                    <Link to="/orders" className="text-white/60 hover:text-white transition-colors font-light flex items-center group text-sm">
                       <span className="group-hover:translate-x-1 transition-transform duration-300">Orders</span>
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>

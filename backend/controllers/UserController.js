@@ -41,7 +41,7 @@ async function issueOtp(email, name, role = 'user') {
     user.otp = otp;
     user.otpExpiry = otpExpiry;
   } else {
-    user = new userModel({ email, name, role, isAdmin: role === 'admin', otp, otpExpiry });
+    user = new userModel({ email, name, role, otp, otpExpiry });
   }
 
   await user.save();
@@ -153,27 +153,22 @@ export const googleSignIn = async (req, res) => {
 
 export const sendAdminOtp = async (req, res) => {
   try {
-    const { email, name } = req.body;
+    const { email } = req.body;
 
     if (!validator.isEmail(email)) {
       return res.status(400).json({ success: false, message: 'Invalid email address' });
     }
 
+    // Only allow accounts already designated admin — no silent privilege promotion
     const existing = await userModel.findOne({ email });
-    const isNewAdmin = !existing || !existing.isVerified;
-
-    if (isNewAdmin && (!name || name.trim().length < 2)) {
-      return res.status(400).json({ success: false, message: 'Name is required for new admin accounts' });
+    if (!existing || existing.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'This email is not authorised for admin access.',
+      });
     }
 
-    // If existing user is not an admin role, promote to admin
-    if (existing && existing.role !== 'admin') {
-      existing.role = 'admin';
-      existing.isAdmin = true;
-      await existing.save();
-    }
-
-    await issueOtp(email, name || existing?.name || 'Admin', 'admin');
+    await issueOtp(email, existing.name || 'Admin', 'admin');
 
     res.json({ success: true, message: 'Verification code sent to your email.' });
   } catch (err) {
