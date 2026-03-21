@@ -29,7 +29,7 @@ const saveCustomization = async (req, res) => {
   try {
     const {
       gender, dressType, fabric, color, designNotes, referenceImages,
-      measurements, aiPrompt, canvasDesign, estimatedPrice, aiGeneratedDesign
+      size, measurements, aiPrompt, canvasDesign, estimatedPrice, aiGeneratedDesign
     } = req.body;
 
     const userId = req.body.userId;
@@ -148,22 +148,27 @@ const saveCustomization = async (req, res) => {
       uploadedEmbroidery: uploadedEmbroideryUrls
     };
 
+    // Validate size if provided
+    const validSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+    if (size && !validSizes.includes(size)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid size. Must be one of: ${validSizes.join(', ')}`
+      });
+    }
+
     const customization = new customizationModel({
       userId,
       gender,
       dressType,
       fabric,
       color,
+      size: size || null,
       designNotes: designNotes || "",
       referenceImages: uploadedReferenceImages,
       measurements: measurements || {
-        bust: "",
-        waist: "",
-        hips: "",
-        shoulder: "",
-        sleeveLength: "",
-        length: "",
-        customNotes: ""
+        bust: "", waist: "", hips: "",
+        shoulder: "", sleeveLength: "", length: "", customNotes: ""
       },
       aiPrompt: aiPrompt || "",
       estimatedPrice: estimatedPrice || 0,
