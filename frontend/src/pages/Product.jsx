@@ -8,10 +8,12 @@ import SizeChartModal from '../components/SizeChartModal';
 
 const Product = () => {
   const { productId } = useParams();
-  const { products, currency, addToCart, navigate, addProductToRecentlyViewed, toggleWishlist, isInWishlist, token } = useContext(ShopContext) || {};
+  const { products, currency, addToCart, navigate, addProductToRecentlyViewed, toggleWishlist, isInWishlist } = useContext(ShopContext) || {};
   const [productData, setProductData] = useState(null);
   const [size, setSize] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [neckStyle, setNeckStyle] = useState('');
+  const [sleeveStyle, setSleeveStyle] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isModalOpen, setModalOpen] = useState(false);
   const [modalImage, setModalImage] = useState('');
@@ -20,6 +22,7 @@ const Product = () => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [expandedSection, setExpandedSection] = useState('description');
+  const [showCustomOptions, setShowCustomOptions] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const minSwipeDistance = 50;
@@ -46,7 +49,7 @@ const Product = () => {
       }
       return;
     }
-    addToCart(productData._id, size, quantity);
+    addToCart(productData._id, size, quantity, { neckStyle: neckStyle || null, sleeveStyle: sleeveStyle || null });
     setIsAddedToCart(true);
   };
 
@@ -55,10 +58,6 @@ const Product = () => {
   };
 
   const handleWishlistToggle = async () => {
-    if (!token) {
-      navigate('/login');
-      return;
-    }
     const wasAdded = await toggleWishlist(productId);
     if (wasAdded !== undefined) {
       setIsWishlisted(wasAdded);
@@ -339,11 +338,10 @@ const Product = () => {
                     <button
                       key={index}
                       onClick={() => handleThumbnailClick(index)}
-                      className={`flex-shrink-0 w-16 h-20 sm:w-auto sm:h-auto sm:aspect-[4/5] overflow-hidden transition-all duration-300 ${
-                        currentIndex === index
+                      className={`flex-shrink-0 w-16 h-20 sm:w-auto sm:h-auto sm:aspect-[4/5] overflow-hidden transition-all duration-300 ${currentIndex === index
                           ? 'ring-2 ring-secondary shadow-lg'
                           : 'ring-1 ring-background/50 active:ring-secondary/50'
-                      }`}
+                        }`}
                     >
                       <img
                         src={img}
@@ -367,11 +365,10 @@ const Product = () => {
                   <div className="flex gap-2 flex-shrink-0">
                     <button
                       onClick={handleWishlistToggle}
-                      className={`w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center transition-all duration-300 active:scale-95 ${
-                        isWishlisted
+                      className={`w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center transition-all duration-300 active:scale-95 ${isWishlisted
                           ? 'bg-secondary text-white'
                           : 'bg-background/50 text-text'
-                      }`}
+                        }`}
                       title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
                     >
                       <Heart
@@ -414,16 +411,98 @@ const Product = () => {
                     <button
                       key={index}
                       onClick={() => setSize(size === s ? '' : s)}
-                      className={`min-w-[3rem] sm:min-w-[3.5rem] px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-semibold transition-all duration-200 active:scale-95 ${
-                        size === s
+                      className={`min-w-[3rem] sm:min-w-[3.5rem] px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-semibold transition-all duration-200 active:scale-95 ${size === s
                           ? 'bg-secondary text-white'
                           : 'bg-background/40 text-text'
-                      }`}
+                        }`}
                     >
                       {s}
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Customisation Options — collapsible */}
+              <div className="border border-background/60 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setShowCustomOptions(prev => !prev)}
+                  className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-background/30 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-text uppercase tracking-wider">Customise Style</span>
+                    {(neckStyle || sleeveStyle) && (
+                      <span className="text-[10px] bg-secondary text-white px-2 py-0.5 rounded-full font-semibold">
+                        {[neckStyle, sleeveStyle].filter(Boolean).length} selected
+                      </span>
+                    )}
+                  </div>
+                  <ChevronDown size={16} className={`text-text/50 transition-transform duration-200 ${showCustomOptions ? 'rotate-180' : ''}`} />
+                </button>
+
+                {showCustomOptions && (
+                  <div className="px-4 pb-4 pt-3 space-y-4 border-t border-background/40">
+                    {/* Neckline */}
+                    <div>
+                      <label className="text-xs font-bold text-text uppercase tracking-wider mb-2 flex items-center gap-2">
+                        Neckline
+                        <span className="text-text/40 font-normal normal-case text-xs">(optional)</span>
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { value: '', label: 'Default' },
+                          { value: 'round', label: 'Round' },
+                          { value: 'v-neck', label: 'V-Neck' },
+                          { value: 'boat', label: 'Boat' },
+                          { value: 'square', label: 'Square' },
+                          { value: 'sweetheart', label: 'Sweetheart' },
+                          { value: 'mandarin', label: 'Mandarin' },
+                          { value: 'halter', label: 'Halter' },
+                        ].map(opt => (
+                          <button
+                            key={opt.value}
+                            onClick={() => setNeckStyle(neckStyle === opt.value ? '' : opt.value)}
+                            className={`px-3 py-2 text-xs font-semibold transition-all duration-200 active:scale-95 border
+                              ${neckStyle === opt.value
+                                ? 'bg-secondary text-white border-secondary'
+                                : 'bg-background/40 text-text border-background/60 hover:border-secondary/50'
+                              }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Sleeve */}
+                    <div>
+                      <label className="text-xs font-bold text-text uppercase tracking-wider mb-2 flex items-center gap-2">
+                        Sleeve Style
+                        <span className="text-text/40 font-normal normal-case text-xs">(optional)</span>
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { value: '', label: 'Default' },
+                          { value: 'full', label: 'Full' },
+                          { value: 'elbow', label: '3/4' },
+                          { value: 'short', label: 'Short' },
+                          { value: 'sleeveless', label: 'Sleeveless' },
+                        ].map(opt => (
+                          <button
+                            key={opt.value}
+                            onClick={() => setSleeveStyle(sleeveStyle === opt.value ? '' : opt.value)}
+                            className={`px-3 py-2 text-xs font-semibold transition-all duration-200 active:scale-95 border
+                              ${sleeveStyle === opt.value
+                                ? 'bg-secondary text-white border-secondary'
+                                : 'bg-background/40 text-text border-background/60 hover:border-secondary/50'
+                              }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Quantity */}
@@ -477,7 +556,6 @@ const Product = () => {
                     onClick={handleViewCart}
                     className="w-full py-3.5 sm:py-4 bg-text text-white font-semibold uppercase tracking-wider hover:bg-text/90 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
                   >
-                    <Check size={18} />
                     <span>View Cart</span>
                   </button>
                 )}
@@ -620,7 +698,7 @@ const Product = () => {
             className="absolute top-4 right-4 w-10 h-10 sm:w-11 sm:h-11 bg-white/95 text-text flex items-center justify-center active:bg-white transition-colors shadow-xl z-10"
             onClick={closeModal}
           >
-            <X size={18} sm:size={20} />
+            <X size={18} />
           </button>
 
           {/* Desktop Navigation */}

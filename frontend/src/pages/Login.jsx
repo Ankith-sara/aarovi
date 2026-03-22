@@ -224,12 +224,6 @@ const Login = () => {
               Handcrafted Indian fashion, made for you. Every stitch tells a story.
             </p>
           </div>
-
-          <div className="flex items-center gap-2">
-            <div className="h-1.5 w-1.5 rounded-full bg-white/40" />
-            <div className="h-1.5 w-1.5 rounded-full bg-white/40" />
-            <div className="h-1.5 w-6 rounded-full bg-white" />
-          </div>
         </div>
       </div>
 

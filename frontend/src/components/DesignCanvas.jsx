@@ -54,6 +54,38 @@ const getEssentialZones = (zones, dressType) => {
   });
 };
 
+// ── Dress-specific neckline options ─────────────────────────────────────────
+// Each dress type only shows the necklines that actually make sense for it.
+const DRESS_NECKLINES = {
+  // Women's ethnic — typically round, v-neck, boat, square, sweetheart
+  Kurti:        ['', 'round', 'v-neck', 'square', 'boat', 'sweetheart', 'mandarin'],
+  'Kurti Sets': ['', 'round', 'v-neck', 'square', 'boat', 'sweetheart', 'mandarin'],
+  Anarkali:     ['', 'round', 'v-neck', 'square', 'sweetheart', 'boat'],
+  Lehenga:      ['', 'round', 'v-neck', 'sweetheart', 'square', 'halter'],
+  Sheraras:     ['', 'round', 'v-neck', 'square', 'sweetheart', 'halter'],
+  // Men's — kurtas use mandarin/band collar; sherwani has its own collar zone
+  Kurta:        ['', 'round', 'v-neck', 'mandarin'],
+  'Kurta Sets': ['', 'round', 'v-neck', 'mandarin'],
+  Sherwani:     ['', 'mandarin', 'round'],
+};
+
+const ALL_NECKLINE_LABELS = {
+  '':           'Default',
+  round:        'Round',
+  'v-neck':     'V-Neck',
+  boat:         'Boat',
+  square:       'Square',
+  sweetheart:   'Sweetheart',
+  mandarin:     'Mandarin',
+  halter:       'Halter',
+};
+
+// Returns only the neckline options relevant to the given dress type
+const getNecklinesForDress = (dressType) => {
+  const values = DRESS_NECKLINES[dressType] || ['', 'round', 'v-neck', 'boat', 'square', 'sweetheart', 'mandarin', 'halter'];
+  return values.map(v => ({ value: v, label: ALL_NECKLINE_LABELS[v] || v }));
+};
+
 // MAIN COMPONENT
 const DesignCanvas = ({
   onDesignChange,
@@ -67,7 +99,6 @@ const DesignCanvas = ({
 
   const [activeTab, setActiveTab] = useState('fabric-fit');
   const [printMode, setPrintMode] = useState('browse');
-  // Embroidery sub-mode: 'browse' | 'ai' | 'upload'
   const [embroideryMode, setEmbroideryMode] = useState('browse');
   const [printCategory, setPrintCategory] = useState('floral');
   const [selectedZone, setSelectedZone] = useState(null);
@@ -80,6 +111,7 @@ const DesignCanvas = ({
   const [fabricColor, setFabricColor] = useState(selectedColor);
   const [colorMode, setColorMode] = useState('full');
   const [sleeveStyle, setSleeveStyle] = useState('full');
+  const [neckStyle, setNeckStyle] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [initialized, setInitialized] = useState(false);
@@ -94,7 +126,7 @@ const DesignCanvas = ({
   const [uploadedPrint, setUploadedPrint] = useState(null);
   const [uploadRepeat, setUploadRepeat] = useState('tile');
 
-  // Embroidery AI/Upload state (new)
+  // Embroidery AI/Upload state
   const [aiEmbroideryPrompt, setAiEmbroideryPrompt] = useState('');
   const [aiEmbroideryGenerating, setAiEmbroideryGenerating] = useState(false);
   const [generatedEmbroidery, setGeneratedEmbroidery] = useState(null);
@@ -124,6 +156,9 @@ const DesignCanvas = ({
     ...rawTemplate,
     zones: getEssentialZones(rawTemplate.zones, dressType)
   };
+
+  // Dress-specific neckline options (no SVG icons — names only)
+  const necklineOptions = getNecklinesForDress(dressType);
 
   // Print Categories
   const printCategories = [
@@ -178,6 +213,8 @@ const DesignCanvas = ({
   useEffect(() => {
     setInitialized(false);
     setSelectedZone(null);
+    // Reset neckline when dress type changes — new dress may not support old selection
+    setNeckStyle('');
   }, [dressType]);
 
   useEffect(() => {
@@ -214,6 +251,7 @@ const DesignCanvas = ({
       printMetadata: { ...printMetadata },
       fabricColor,
       sleeveStyle,
+      neckStyle,
       embroideryColor,
       printColor,
       colorMode
@@ -225,7 +263,7 @@ const DesignCanvas = ({
       return newHistory.slice(-50);
     });
     setHistoryIndex(prev => Math.min(prev + 1, 49));
-  }, [zoneColors, zonePatterns, embroideryMetadata, printMetadata, fabricColor, sleeveStyle, embroideryColor, printColor, colorMode, historyIndex]);
+  }, [zoneColors, zonePatterns, embroideryMetadata, printMetadata, fabricColor, sleeveStyle, neckStyle, embroideryColor, printColor, colorMode, historyIndex]);
 
   const handleUndo = useCallback(() => {
     if (historyIndex > 0) {
@@ -237,6 +275,7 @@ const DesignCanvas = ({
       setPrintMetadata(state.printMetadata);
       setFabricColor(state.fabricColor);
       setSleeveStyle(state.sleeveStyle);
+      setNeckStyle(state.neckStyle || '');
       setEmbroideryColor(state.embroideryColor);
       setPrintColor(state.printColor);
       setColorMode(state.colorMode);
@@ -254,6 +293,7 @@ const DesignCanvas = ({
       setPrintMetadata(state.printMetadata);
       setFabricColor(state.fabricColor);
       setSleeveStyle(state.sleeveStyle);
+      setNeckStyle(state.neckStyle || '');
       setEmbroideryColor(state.embroideryColor);
       setPrintColor(state.printColor);
       setColorMode(state.colorMode);
@@ -449,13 +489,11 @@ const DesignCanvas = ({
     }
   };
 
-  // AI Generate Embroidery
   const handleAIGenerateEmbroidery = async () => {
     if (!aiEmbroideryPrompt.trim()) { toast.error('Describe your embroidery first'); return; }
     setAiEmbroideryGenerating(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1500));
-      // Pick a random embroidery pattern, apply with current thread color
       const embroideryKeys = Object.keys(IMPORTED_EMBROIDERY);
       const randomKey = embroideryKeys[Math.floor(Math.random() * embroideryKeys.length)];
       const pattern = IMPORTED_EMBROIDERY[randomKey];
@@ -483,7 +521,6 @@ const DesignCanvas = ({
     if (isMobile) setSidebarOpen(false);
   };
 
-  // Upload Embroidery
   const handleUploadEmbroidery = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -581,7 +618,7 @@ const DesignCanvas = ({
         const svgString = new XMLSerializer().serializeToString(svgRef.current);
         const pngData = await svgToPng();
         onDesignChange({
-          svg: svgString, png: pngData, zoneColors, zonePatterns, sleeveStyle,
+          svg: svgString, png: pngData, zoneColors, zonePatterns, sleeveStyle, neckStyle,
           color: fabricColor, baseColor: fabricColor,
           embroideryMetadata: Object.values(embroideryMetadata),
           printMetadata: Object.values(printMetadata),
@@ -590,7 +627,7 @@ const DesignCanvas = ({
       }
     };
     exportDesign();
-  }, [zoneColors, zonePatterns, fabricColor, sleeveStyle, embroideryMetadata, printMetadata, generatedReferenceImages, onDesignChange, svgToPng]);
+  }, [zoneColors, zonePatterns, fabricColor, sleeveStyle, neckStyle, embroideryMetadata, printMetadata, generatedReferenceImages, onDesignChange, svgToPng]);
 
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
@@ -755,6 +792,7 @@ const DesignCanvas = ({
           {/* ── FABRIC & FIT TAB ── */}
           {activeTab === 'fabric-fit' && (
             <div className="space-y-4 lg:space-y-6">
+              {/* Apply To */}
               <div>
                 <h4 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Apply To</h4>
                 <div className="grid grid-cols-2 gap-2">
@@ -762,6 +800,8 @@ const DesignCanvas = ({
                   <button onClick={() => setColorMode('zone')} className={`p-2.5 lg:p-3 rounded-lg border-2 transition-all text-xs font-semibold flex items-center justify-center gap-2 ${colorMode === 'zone' ? 'border-secondary bg-secondary/5' : 'border-gray-200 hover:border-gray-300'}`}><Move size={14} />Zone</button>
                 </div>
               </div>
+
+              {/* Color */}
               <div>
                 <h4 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3 flex items-center gap-2"><Palette size={14} />Color</h4>
                 <div className="bg-gray-50 rounded-lg p-3 lg:p-4 border border-gray-200">
@@ -774,12 +814,53 @@ const DesignCanvas = ({
                   </div>
                 </div>
               </div>
+
+              {/* Presets */}
               <div>
                 <h4 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Presets</h4>
                 <div className="grid grid-cols-8 gap-1.5 lg:gap-2">
                   {colorPresets.map(preset => (<button key={preset.color} onClick={() => applyFabricColor(preset.color)} className="aspect-square rounded-lg border-2 border-gray-200 hover:border-secondary hover:scale-110 transition-all shadow-sm" style={{ backgroundColor: preset.color }} title={preset.name} />))}
                 </div>
               </div>
+
+              {/* ── Neckline — dress-specific, names only ── */}
+              <div>
+                <h4 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3 flex items-center gap-2">
+                  <Ruler size={14} />
+                  Neckline
+                  <span className="text-gray-400 font-normal normal-case text-xs">(optional)</span>
+                  {neckStyle && (
+                    <span className="ml-auto text-secondary text-xs font-bold normal-case">
+                      {necklineOptions.find(n => n.value === neckStyle)?.label}
+                    </span>
+                  )}
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {necklineOptions.map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => { setNeckStyle(neckStyle === opt.value ? '' : opt.value); saveToHistory(); }}
+                      className={`px-3 py-2 rounded-lg border-2 transition-all text-xs font-semibold
+                        ${neckStyle === opt.value
+                          ? 'border-secondary bg-secondary/5 text-secondary'
+                          : 'border-gray-200 hover:border-secondary/50 text-gray-600'
+                        }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                {neckStyle && (
+                  <button
+                    onClick={() => { setNeckStyle(''); saveToHistory(); }}
+                    className="mt-2 text-xs text-text/50 hover:text-red-500 transition-colors"
+                  >
+                    ✕ Clear neckline
+                  </button>
+                )}
+              </div>
+
+              {/* Sleeves */}
               {template.zones.some(z => z.id.includes('sleeve')) && (
                 <div>
                   <h4 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3 flex items-center gap-2"><Ruler size={14} />Sleeves</h4>
@@ -798,7 +879,6 @@ const DesignCanvas = ({
           {/* ── PRINTS & EMBROIDERY TAB ── */}
           {activeTab === 'prints-embroidery' && (
             <div className="space-y-4 lg:space-y-6">
-              {/* Top-level toggle: Prints vs Embroidery */}
               <div className="flex gap-2">
                 <button
                   onClick={() => setPrintMode('browse')}
@@ -815,7 +895,6 @@ const DesignCanvas = ({
               {/* ── PRINTS SECTION ── */}
               {['browse', 'ai', 'upload'].includes(printMode) && (
                 <div className="space-y-4">
-                  {/* Print sub-mode selector */}
                   <div>
                     <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Type</h5>
                     <div className="space-y-2">
@@ -838,7 +917,6 @@ const DesignCanvas = ({
                     </div>
                   </div>
 
-                  {/* Print Color */}
                   <div className="bg-gray-50 rounded-lg p-3 lg:p-4 border border-gray-200">
                     <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Print Color</h5>
                     <div className="flex items-center gap-2 lg:gap-3">
@@ -847,7 +925,6 @@ const DesignCanvas = ({
                     </div>
                   </div>
 
-                  {/* Browse Prints */}
                   {printMode === 'browse' && (
                     <div className="space-y-4">
                       <div>
@@ -874,7 +951,6 @@ const DesignCanvas = ({
                     </div>
                   )}
 
-                  {/* AI Generate Print */}
                   {printMode === 'ai' && (
                     <div className="space-y-3 lg:space-y-4">
                       <div>
@@ -905,7 +981,6 @@ const DesignCanvas = ({
                     </div>
                   )}
 
-                  {/* Upload Print */}
                   {printMode === 'upload' && (
                     <div className="space-y-3 lg:space-y-4">
                       <div>
@@ -929,7 +1004,6 @@ const DesignCanvas = ({
               {/* ── EMBROIDERY SECTION ── */}
               {printMode === 'embroidery' && (
                 <div className="space-y-4 lg:space-y-6">
-                  {/* Embroidery sub-mode selector */}
                   <div>
                     <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Type</h5>
                     <div className="space-y-2">
@@ -940,10 +1014,7 @@ const DesignCanvas = ({
                       ].map(mode => {
                         const Icon = mode.icon;
                         return (
-                          <button
-                            key={mode.id}
-                            onClick={() => setEmbroideryMode(mode.id)}
-                            className={`w-full flex items-center gap-3 px-3 lg:px-4 py-2.5 lg:py-3 rounded-lg border-2 transition-all ${embroideryMode === mode.id ? 'border-secondary bg-background' : 'border-gray-200 hover:border-gray-300'}`}>
+                          <button key={mode.id} onClick={() => setEmbroideryMode(mode.id)} className={`w-full flex items-center gap-3 px-3 lg:px-4 py-2.5 lg:py-3 rounded-lg border-2 transition-all ${embroideryMode === mode.id ? 'border-secondary bg-background' : 'border-gray-200 hover:border-gray-300'}`}>
                             <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 flex items-center justify-center ${embroideryMode === mode.id ? 'border-secondary' : 'border-gray-300'}`}>
                               {embroideryMode === mode.id && <div className="w-2 h-2 lg:w-3 lg:h-3 rounded-full bg-secondary" />}
                             </div>
@@ -955,7 +1026,6 @@ const DesignCanvas = ({
                     </div>
                   </div>
 
-                  {/* Thread Color — shared across all embroidery sub-modes */}
                   <div className="rounded-lg p-3 lg:p-4 border border-secondary">
                     <h5 className="font-bold text-xs uppercase text-text mb-2 lg:mb-3">Thread Color</h5>
                     <div className="flex items-center gap-2 lg:gap-3 mb-3">
@@ -969,7 +1039,6 @@ const DesignCanvas = ({
                     </div>
                   </div>
 
-                  {/* ── Browse Embroidery Styles ── */}
                   {embroideryMode === 'browse' && (
                     <div>
                       <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Styles</h5>
@@ -979,11 +1048,7 @@ const DesignCanvas = ({
                           if (!pattern) return null;
                           const patternCanvas = pattern.createPattern(embroideryColor);
                           return (
-                            <button
-                              key={style.id}
-                              onClick={() => applyEmbroidery(style.pattern)}
-                              disabled={!selectedZone}
-                              className="group p-3 lg:p-4 rounded-lg border-2 border-gray-200 hover:border-secondary hover:shadow-md transition-all flex items-center gap-3 lg:gap-4 disabled:opacity-40 disabled:cursor-not-allowed">
+                            <button key={style.id} onClick={() => applyEmbroidery(style.pattern)} disabled={!selectedZone} className="group p-3 lg:p-4 rounded-lg border-2 border-gray-200 hover:border-secondary hover:shadow-md transition-all flex items-center gap-3 lg:gap-4 disabled:opacity-40 disabled:cursor-not-allowed">
                               <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-lg border-2 border-gray-200 overflow-hidden bg-white flex-shrink-0">
                                 <img src={patternCanvas.toDataURL()} alt={style.label} className="w-full h-full object-cover" />
                               </div>
@@ -999,114 +1064,47 @@ const DesignCanvas = ({
                     </div>
                   )}
 
-                  {/* ── AI Generate Embroidery ── */}
                   {embroideryMode === 'ai' && (
                     <div className="space-y-3 lg:space-y-4">
                       <div>
                         <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Describe Embroidery</h5>
-                        <textarea
-                          value={aiEmbroideryPrompt}
-                          onChange={(e) => setAiEmbroideryPrompt(e.target.value)}
-                          placeholder="e.g., Intricate gold zari border with peacock motifs"
-                          className="w-full border-2 border-secondary rounded-lg px-3 lg:px-4 py-2 lg:py-3 h-20 lg:h-24 focus:border-secondary focus:outline-none transition-all resize-none text-xs lg:text-sm"
-                          rows="3"
-                        />
-                        <button
-                          onClick={handleAIGenerateEmbroidery}
-                          disabled={aiEmbroideryGenerating || !aiEmbroideryPrompt.trim()}
-                          className="w-full mt-3 px-4 py-2.5 lg:py-3 bg-secondary text-white rounded-lg hover:bg-secondary hover:shadow-lg transition-all font-semibold text-xs lg:text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                          {aiEmbroideryGenerating ? (
-                            <><div className="animate-spin rounded-full h-4 w-4 lg:h-5 lg:w-5 border-b-2 border-white"></div><span>Generating...</span></>
-                          ) : (
-                            <><Wand2 size={16} /><span>Generate Embroidery</span></>
-                          )}
+                        <textarea value={aiEmbroideryPrompt} onChange={(e) => setAiEmbroideryPrompt(e.target.value)} placeholder="e.g., Intricate gold zari border with peacock motifs" className="w-full border-2 border-secondary rounded-lg px-3 lg:px-4 py-2 lg:py-3 h-20 lg:h-24 focus:border-secondary focus:outline-none transition-all resize-none text-xs lg:text-sm" rows="3" />
+                        <button onClick={handleAIGenerateEmbroidery} disabled={aiEmbroideryGenerating || !aiEmbroideryPrompt.trim()} className="w-full mt-3 px-4 py-2.5 lg:py-3 bg-secondary text-white rounded-lg hover:bg-secondary hover:shadow-lg transition-all font-semibold text-xs lg:text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                          {aiEmbroideryGenerating ? (<><div className="animate-spin rounded-full h-4 w-4 lg:h-5 lg:w-5 border-b-2 border-white"></div><span>Generating...</span></>) : (<><Wand2 size={16} /><span>Generate Embroidery</span></>)}
                         </button>
                       </div>
-
                       {generatedEmbroidery && (
                         <div className="rounded-lg p-3 lg:p-4 border border-secondary">
                           <h5 className="font-bold text-xs uppercase text-text mb-2 lg:mb-3">Preview</h5>
-                          <div className="aspect-square rounded-lg border-2 border-secondary overflow-hidden mb-3 bg-white">
-                            <img src={generatedEmbroidery.url} alt="Generated Embroidery" className="w-full h-full object-cover" />
-                          </div>
+                          <div className="aspect-square rounded-lg border-2 border-secondary overflow-hidden mb-3 bg-white"><img src={generatedEmbroidery.url} alt="Generated Embroidery" className="w-full h-full object-cover" /></div>
                           <p className="text-xs text-text mb-3 font-medium">{generatedEmbroidery.name} style</p>
-
                           <div className="space-y-3">
-                            <div>
-                              <label className="block text-xs font-semibold text-gray-600 mb-2">Scale</label>
-                              <input type="range" min="1" max="10" value={embroideryScale} onChange={(e) => setEmbroideryScale(parseInt(e.target.value))} className="w-full accent-secondary" />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-semibold text-gray-600 mb-2">Repeat</label>
-                              <div className="flex gap-2">
-                                {['tile', 'mirror', 'center'].map(opt => (
-                                  <button key={opt} onClick={() => setEmbroideryRepeat(opt)} className={`flex-1 px-2.5 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all capitalize ${embroideryRepeat === opt ? 'bg-secondary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{opt}</button>
-                                ))}
-                              </div>
-                            </div>
+                            <div><label className="block text-xs font-semibold text-gray-600 mb-2">Scale</label><input type="range" min="1" max="10" value={embroideryScale} onChange={(e) => setEmbroideryScale(parseInt(e.target.value))} className="w-full accent-secondary" /></div>
+                            <div><label className="block text-xs font-semibold text-gray-600 mb-2">Repeat</label><div className="flex gap-2">{['tile', 'mirror', 'center'].map(opt => (<button key={opt} onClick={() => setEmbroideryRepeat(opt)} className={`flex-1 px-2.5 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all capitalize ${embroideryRepeat === opt ? 'bg-secondary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{opt}</button>))}</div></div>
                           </div>
-
                           <div className="flex gap-2 mt-4">
-                            <button
-                              onClick={applyGeneratedEmbroidery}
-                              disabled={!selectedZone}
-                              className="flex-1 px-3 lg:px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary hover:shadow-md transition-all font-semibold text-xs lg:text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-                              Apply
-                            </button>
-                            <button
-                              onClick={handleAIGenerateEmbroidery}
-                              className="flex-1 px-3 lg:px-4 py-2 bg-white border-2 border-secondary text-text rounded-lg hover:bg-background transition-all font-semibold text-xs lg:text-sm">
-                              Retry
-                            </button>
+                            <button onClick={applyGeneratedEmbroidery} disabled={!selectedZone} className="flex-1 px-3 lg:px-4 py-2 bg-secondary text-white rounded-lg hover:shadow-md transition-all font-semibold text-xs lg:text-sm disabled:opacity-50 disabled:cursor-not-allowed">Apply</button>
+                            <button onClick={handleAIGenerateEmbroidery} className="flex-1 px-3 lg:px-4 py-2 bg-white border-2 border-secondary text-text rounded-lg hover:bg-background transition-all font-semibold text-xs lg:text-sm">Retry</button>
                           </div>
-
                           {!selectedZone && <p className="text-xs text-text mt-2 text-center">Select a zone to apply</p>}
                         </div>
                       )}
                     </div>
                   )}
 
-                  {/* ── Upload Embroidery Design ── */}
                   {embroideryMode === 'upload' && (
                     <div className="space-y-3 lg:space-y-4">
                       <div>
                         <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Upload Embroidery Design</h5>
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/png,image/svg+xml"
-                          onChange={handleUploadEmbroidery}
-                          className="block w-full border-2 border-dashed border-gray-300 rounded-lg px-3 lg:px-4 py-4 lg:py-6 focus:border-secondary transition-all file:mr-3 lg:file:mr-4 file:py-1.5 lg:file:py-2 file:px-3 lg:file:px-4 file:rounded-full file:border-0 file:bg-secondary file:text-white file:font-semibold file:text-xs lg:file:text-sm hover:file:bg-secondary cursor-pointer text-xs lg:text-sm bg-white"
-                        />
+                        <input type="file" accept="image/jpeg,image/png,image/svg+xml" onChange={handleUploadEmbroidery} className="block w-full border-2 border-dashed border-gray-300 rounded-lg px-3 lg:px-4 py-4 lg:py-6 focus:border-secondary transition-all file:mr-3 lg:file:mr-4 file:py-1.5 lg:file:py-2 file:px-3 lg:file:px-4 file:rounded-full file:border-0 file:bg-secondary file:text-white file:font-semibold file:text-xs lg:file:text-sm hover:file:bg-secondary cursor-pointer text-xs lg:text-sm bg-white" />
                         <p className="text-xs text-gray-500 mt-2">JPG, PNG, SVG — ideally transparent background for best results</p>
                       </div>
-
                       {uploadedEmbroidery && (
                         <div className="bg-background rounded-lg p-3 lg:p-4 border border-secondary">
                           <h5 className="font-bold text-xs uppercase text-text mb-2 lg:mb-3">Preview</h5>
-                          <div className="aspect-square rounded-lg border-2 border-secondary overflow-hidden mb-3 bg-white">
-                            <img src={uploadedEmbroidery} alt="Uploaded Embroidery" className="w-full h-full object-contain" />
-                          </div>
-
-                          <div className="space-y-3">
-                            <div>
-                              <label className="block text-xs font-semibold text-gray-600 mb-2">Repeat</label>
-                              <div className="flex gap-2">
-                                {['tile', 'mirror', 'no-repeat'].map(opt => (
-                                  <button key={opt} onClick={() => setEmbroideryUploadRepeat(opt)} className={`flex-1 px-2.5 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all ${embroideryUploadRepeat === opt ? 'bg-background text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
-                                    {opt === 'no-repeat' ? 'None' : opt}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-
-                          <button
-                            onClick={applyUploadedEmbroidery}
-                            disabled={!selectedZone}
-                            className="w-full mt-4 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary hover:shadow-md transition-all font-semibold text-xs lg:text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-                            Apply Embroidery
-                          </button>
-
+                          <div className="aspect-square rounded-lg border-2 border-secondary overflow-hidden mb-3 bg-white"><img src={uploadedEmbroidery} alt="Uploaded Embroidery" className="w-full h-full object-contain" /></div>
+                          <div><label className="block text-xs font-semibold text-gray-600 mb-2">Repeat</label><div className="flex gap-2">{['tile', 'mirror', 'no-repeat'].map(opt => (<button key={opt} onClick={() => setEmbroideryUploadRepeat(opt)} className={`flex-1 px-2.5 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all ${embroideryUploadRepeat === opt ? 'bg-background text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{opt === 'no-repeat' ? 'None' : opt}</button>))}</div></div>
+                          <button onClick={applyUploadedEmbroidery} disabled={!selectedZone} className="w-full mt-4 px-4 py-2 bg-secondary text-white rounded-lg hover:shadow-md transition-all font-semibold text-xs lg:text-sm disabled:opacity-50 disabled:cursor-not-allowed">Apply Embroidery</button>
                           {!selectedZone && <p className="text-xs text-text mt-2 text-center">Select a zone to apply</p>}
                         </div>
                       )}

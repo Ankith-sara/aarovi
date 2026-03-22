@@ -446,8 +446,14 @@ const Orders = () => {
                                   {item.customization.color && (
                                     <p><span className="font-semibold">Color:</span> {item.customization.color}</p>
                                   )}
+                                  {item.customization.size && (
+                                    <p><span className="font-semibold">Size:</span> {item.customization.size}</p>
+                                  )}
+                                  {item.customization.neckStyle && (
+                                    <p><span className="font-semibold">Neckline:</span> <span className="capitalize">{item.customization.neckStyle}</span></p>
+                                  )}
                                   {item.customization.sleeveStyle && (
-                                    <p><span className="font-semibold">Sleeve:</span> {item.customization.sleeveStyle}</p>
+                                    <p><span className="font-semibold">Sleeve:</span> <span className="capitalize">{item.customization.sleeveStyle}</span></p>
                                   )}
                                 </div>
                               )}

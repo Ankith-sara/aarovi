@@ -8,6 +8,13 @@ const Cart = () => {
   const [cartProducts, setCartProducts] = useState([]);
   const [customizationItems, setCustomizationItems] = useState([]);
 
+  // Helper: cart entries are objects { quantity, neckStyle, sleeveStyle }
+  // but may be plain numbers in legacy data — handle both.
+  const getEntryQuantity = (entry) => {
+    if (entry === null || entry === undefined) return 0;
+    if (typeof entry === 'object') return entry.quantity || 0;
+    return entry;
+  };
 
   useEffect(() => {
     if (!cartItems) return;
@@ -20,12 +27,18 @@ const Cart = () => {
       const product = products.find(p => p._id === itemId);
       if (product) {
         for (const size in cartItems[itemId]) {
-          if (cartItems[itemId][size] > 0) {
+          const entry = cartItems[itemId][size];
+          const quantity = getEntryQuantity(entry);
+
+          if (quantity > 0) {
             tempProducts.push({
               _id: itemId,
               size,
-              quantity: cartItems[itemId][size],
-              ...product
+              quantity,
+              // Pull style options from the entry object (null if legacy number)
+              neckStyle: typeof entry === 'object' ? entry.neckStyle : null,
+              sleeveStyle: typeof entry === 'object' ? entry.sleeveStyle : null,
+              ...product,
             });
           }
         }
@@ -33,7 +46,7 @@ const Cart = () => {
     }
     setCartProducts(tempProducts);
 
-    // Process customizations
+    // Process customizations (unchanged)
     const tempCustomizations = [];
     if (cartItems.customizations) {
       for (const customId in cartItems.customizations) {
@@ -50,7 +63,8 @@ const Cart = () => {
   }, [cartItems, products]);
 
   const handleUpdateQuantity = (itemId, size, delta) => {
-    const currentQty = cartItems[itemId]?.[size] || 0;
+    const entry = cartItems[itemId]?.[size];
+    const currentQty = getEntryQuantity(entry);
     const newQty = Math.max(0, currentQty + delta);
     updateQuantity(itemId, size, newQty);
 
@@ -78,8 +92,6 @@ const Cart = () => {
     removeCustomizationFromCart(customId);
     toast.info('Custom design removed from cart');
   };
-
-
 
   const cartAmount = getCartAmount();
   const totalAmount = cartAmount + delivery_fee;
@@ -112,7 +124,7 @@ const Cart = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-20 mt-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-20 mt-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-4 sm:mb-6">
           <button
@@ -166,6 +178,16 @@ const Cart = () => {
                         <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-medium">
                           Size: {item.size}
                         </span>
+                        {item.neckStyle && (
+                          <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium capitalize">
+                            {item.neckStyle} neck
+                          </span>
+                        )}
+                        {item.sleeveStyle && (
+                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium capitalize">
+                            {item.sleeveStyle} sleeve
+                          </span>
+                        )}
                         {item.inStock && (
                           <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
                             In Stock
@@ -267,6 +289,25 @@ const Cart = () => {
                               style={{ backgroundColor: snapshot.color }}
                             />
                           </p>
+                          {(snapshot.neckStyle || snapshot.sleeveStyle || snapshot.size) && (
+                            <div className="flex flex-wrap gap-1.5 pt-1">
+                              {snapshot.size && (
+                                <span className="bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-bold text-[10px]">
+                                  Size {snapshot.size}
+                                </span>
+                              )}
+                              {snapshot.neckStyle && (
+                                <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-semibold text-[10px] capitalize">
+                                  {snapshot.neckStyle} neck
+                                </span>
+                              )}
+                              {snapshot.sleeveStyle && (
+                                <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-semibold text-[10px] capitalize">
+                                  {snapshot.sleeveStyle} sleeve
+                                </span>
+                              )}
+                            </div>
+                          )}
                         </div>
 
                         <div className="space-y-2 sm:space-y-3">

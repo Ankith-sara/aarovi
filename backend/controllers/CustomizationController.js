@@ -29,7 +29,7 @@ const saveCustomization = async (req, res) => {
   try {
     const {
       gender, dressType, fabric, color, designNotes, referenceImages,
-      size, measurements, aiPrompt, canvasDesign, estimatedPrice, aiGeneratedDesign
+      size, neckStyle, sleeveStyle, measurements, aiPrompt, canvasDesign, estimatedPrice, aiGeneratedDesign
     } = req.body;
 
     const userId = req.body.userId;
@@ -157,6 +157,24 @@ const saveCustomization = async (req, res) => {
       });
     }
 
+    // Validate neckStyle if provided
+    const validNeckStyles = ['', 'round', 'v-neck', 'u-neck', 'square', 'sweetheart', 'boat', 'cowl', 'collar', 'mandarin', 'halter'];
+    if (neckStyle && !validNeckStyles.includes(neckStyle)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid neckStyle. Must be one of: ${validNeckStyles.filter(Boolean).join(', ')}`
+      });
+    }
+
+    // Validate sleeveStyle if provided
+    const validSleeves = ['', 'full', 'elbow', 'short', 'sleeveless'];
+    if (sleeveStyle && !validSleeves.includes(sleeveStyle)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid sleeveStyle. Must be one of: ${validSleeves.filter(Boolean).join(', ')}`
+      });
+    }
+
     const customization = new customizationModel({
       userId,
       gender,
@@ -164,6 +182,8 @@ const saveCustomization = async (req, res) => {
       fabric,
       color,
       size: size || null,
+      neckStyle: neckStyle || '',
+      sleeveStyle: sleeveStyle || '',
       designNotes: designNotes || "",
       referenceImages: uploadedReferenceImages,
       measurements: measurements || {

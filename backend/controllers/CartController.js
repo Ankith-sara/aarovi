@@ -2,10 +2,17 @@ import userModel from "../models/UserModel.js";
 import customizationModel from "../models/CustomizationModel.js";
 import mongoose from "mongoose";
 
+// Helper: safely read quantity whether entry is a number (legacy) or an object (new format)
+const getEntryQuantity = (entry) => {
+  if (entry === null || entry === undefined) return 0;
+  if (typeof entry === 'object') return entry.quantity || 0;
+  return entry;
+};
+
 // ADD TO CART
 const addToCart = async (req, res) => {
   try {
-    const { userId, itemId, size, quantity = 1 } = req.body;
+    const { userId, itemId, size, quantity = 1, neckStyle = null, sleeveStyle = null } = req.body;
 
     if (!userId || !itemId || !size) {
       return res.status(400).json({
@@ -17,15 +24,17 @@ const addToCart = async (req, res) => {
     const userData = await userModel.findById(userId);
     let cartData = userData.cartData || {};
 
-    if (cartData[itemId]) {
-      if (cartData[itemId][size]) {
-        cartData[itemId][size] += quantity;
-      } else {
-        cartData[itemId][size] = quantity;
-      }
-    } else {
-      cartData[itemId] = { [size]: quantity };
-    }
+    if (!cartData[itemId]) cartData[itemId] = {};
+
+    const existing = cartData[itemId][size];
+    const existingQty = getEntryQuantity(existing);
+
+    // Store as an object so neckStyle/sleeveStyle are persisted
+    cartData[itemId][size] = {
+      quantity: existingQty + quantity,
+      neckStyle,
+      sleeveStyle,
+    };
 
     await userModel.findByIdAndUpdate(userId, { cartData });
 
@@ -67,10 +76,16 @@ const updateCart = async (req, res) => {
         }
       }
     } else {
-      if (!cartData[itemId]) {
-        cartData[itemId] = {};
+      if (!cartData[itemId]) cartData[itemId] = {};
+
+      const existing = cartData[itemId][size];
+      if (typeof existing === 'object' && existing !== null) {
+        // Preserve style options — only update the quantity
+        cartData[itemId][size] = { ...existing, quantity };
+      } else {
+        // Legacy number entry — upgrade to object, no style info available
+        cartData[itemId][size] = { quantity, neckStyle: null, sleeveStyle: null };
       }
-      cartData[itemId][size] = quantity;
     }
 
     await userModel.findByIdAndUpdate(userId, { cartData });
@@ -188,7 +203,7 @@ const clearCart = async (req, res) => {
 };
 
 // ============================================================================
-// CUSTOMIZATION CART FUNCTIONS
+// CUSTOMIZATION CART FUNCTIONS (unchanged)
 // ============================================================================
 
 // ADD CUSTOMIZATION TO CART

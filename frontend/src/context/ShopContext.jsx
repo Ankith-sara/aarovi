@@ -50,19 +50,48 @@ const ShopContextProvider = (props) => {
         return false;
     }, [navigate]);
 
+    // ============= CART HELPER =============
+    // Cart entries for regular products are stored as objects:
+    // cartItems[itemId][size] = { quantity, neckStyle, sleeveStyle }
+    // This helper safely reads the quantity from either the old number format or new object format.
+    const getEntryQuantity = (entry) => {
+        if (entry === null || entry === undefined) return 0;
+        if (typeof entry === 'object') return entry.quantity || 0;
+        return entry; // legacy number
+    };
+
     // ============= CART FUNCTIONS =============
-    const addToCart = useCallback(async (itemId, size, quantity = 1) => {
+    const addToCart = useCallback(async (itemId, size, quantity = 1, options = {}) => {
         if (!size) { toast.error('Please select a size'); return false; }
+
+        const { neckStyle = null, sleeveStyle = null } = options;
+
         try {
             const cartData = structuredClone(cartItems);
-            if (cartData[itemId]) {
-                cartData[itemId][size] = (cartData[itemId][size] || 0) + quantity;
-            } else {
-                cartData[itemId] = { [size]: quantity };
-            }
+            if (!cartData[itemId]) cartData[itemId] = {};
+
+            const existing = cartData[itemId][size];
+            const existingQty = getEntryQuantity(existing);
+
+            // Always store as object so style options are preserved
+            cartData[itemId][size] = {
+                quantity: existingQty + quantity,
+                neckStyle: neckStyle,
+                sleeveStyle: sleeveStyle,
+            };
+
             setCartItems(cartData);
             toast.success('Added to cart');
-            if (token) await axios.post(`${backendUrl}/api/cart/add`, { itemId, size, quantity });
+
+            if (token) {
+                await axios.post(`${backendUrl}/api/cart/add`, {
+                    itemId,
+                    size,
+                    quantity,
+                    neckStyle,
+                    sleeveStyle,
+                });
+            }
             return true;
         } catch (error) {
             if (!handleAuthError(error)) toast.error(error.response?.data?.message || 'Unable to add item');
@@ -78,7 +107,14 @@ const ShopContextProvider = (props) => {
                 delete cartData[itemId][size];
                 if (Object.keys(cartData[itemId]).length === 0) delete cartData[itemId];
             } else {
-                cartData[itemId][size] = quantity;
+                const existing = cartData[itemId]?.[size];
+                if (typeof existing === 'object' && existing !== null) {
+                    // Preserve style options, just update quantity
+                    cartData[itemId][size] = { ...existing, quantity };
+                } else {
+                    // Legacy number format — upgrade to object
+                    cartData[itemId][size] = { quantity, neckStyle: null, sleeveStyle: null };
+                }
             }
             setCartItems(cartData);
             if (token) await axios.post(`${backendUrl}/api/cart/update`, { itemId, size, quantity });
@@ -112,15 +148,15 @@ const ShopContextProvider = (props) => {
 
     const getCartCount = useCallback(() => {
         let totalCount = 0;
-        for (const items in cartItems) {
-            if (items === 'customizations') {
+        for (const itemId in cartItems) {
+            if (itemId === 'customizations') {
                 for (const customId in cartItems.customizations) {
                     if (cartItems.customizations[customId]?.quantity > 0)
                         totalCount += cartItems.customizations[customId].quantity;
                 }
             } else {
-                for (const item in cartItems[items]) {
-                    if (cartItems[items][item] > 0) totalCount += cartItems[items][item];
+                for (const size in cartItems[itemId]) {
+                    totalCount += getEntryQuantity(cartItems[itemId][size]);
                 }
             }
         }
@@ -130,12 +166,13 @@ const ShopContextProvider = (props) => {
     const getCartAmount = useCallback(() => {
         if (products.length === 0) return 0;
         let totalAmount = 0;
-        for (const items in cartItems) {
-            if (items === 'customizations') continue;
-            const itemInfo = products.find((product) => product._id === items);
+        for (const itemId in cartItems) {
+            if (itemId === 'customizations') continue;
+            const itemInfo = products.find((product) => product._id === itemId);
             if (itemInfo) {
-                for (const item in cartItems[items]) {
-                    if (cartItems[items][item] > 0) totalAmount += itemInfo.price * cartItems[items][item];
+                for (const size in cartItems[itemId]) {
+                    const qty = getEntryQuantity(cartItems[itemId][size]);
+                    if (qty > 0) totalAmount += itemInfo.price * qty;
                 }
             }
         }
@@ -155,8 +192,17 @@ const ShopContextProvider = (props) => {
             const product = products.find(p => p._id === itemId);
             if (product) {
                 for (const size in cartItems[itemId]) {
-                    if (cartItems[itemId][size] > 0) {
-                        items.push({ ...product, size, quantity: cartItems[itemId][size], type: 'product' });
+                    const entry = cartItems[itemId][size];
+                    const quantity = getEntryQuantity(entry);
+                    if (quantity > 0) {
+                        items.push({
+                            ...product,
+                            size,
+                            quantity,
+                            neckStyle: typeof entry === 'object' ? entry.neckStyle : null,
+                            sleeveStyle: typeof entry === 'object' ? entry.sleeveStyle : null,
+                            type: 'product',
+                        });
                     }
                 }
             }

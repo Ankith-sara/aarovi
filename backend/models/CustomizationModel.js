@@ -32,6 +32,19 @@ const customizationSchema = new mongoose.Schema({
     default: null
   },
 
+  // ── Neckline & Sleeve preferences ──
+  neckStyle: {
+    type: String,
+    enum: ['', 'round', 'v-neck', 'u-neck', 'square', 'sweetheart', 'boat', 'cowl', 'collar', 'mandarin', 'halter'],
+    default: ''
+  },
+
+  sleeveStyle: {
+    type: String,
+    enum: ['', 'full', 'elbow', 'short', 'sleeveless'],
+    default: ''
+  },
+
   designNotes: {
     type: String,
     default: ''

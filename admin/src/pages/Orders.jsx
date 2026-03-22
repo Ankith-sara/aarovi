@@ -242,16 +242,24 @@ const CanvasModal = ({ item, onClose }) => {
                     </div>
                   </div>
                 )}
+                {item.customization?.size && (
+                  <div className="flex justify-between">
+                    <span className="text-text/60 font-light">Size:</span>
+                    <span className="font-semibold px-2 py-0.5 bg-secondary/10 text-secondary rounded text-xs">
+                      {item.customization.size}
+                    </span>
+                  </div>
+                )}
                 {item.customization?.neckStyle && (
                   <div className="flex justify-between">
                     <span className="text-text/60 font-light">Neck Style:</span>
-                    <span className="font-semibold">{item.customization.neckStyle}</span>
+                    <span className="font-semibold capitalize">{item.customization.neckStyle}</span>
                   </div>
                 )}
                 {item.customization?.sleeveStyle && (
                   <div className="flex justify-between">
                     <span className="text-text/60 font-light">Sleeve Style:</span>
-                    <span className="font-semibold">{item.customization.sleeveStyle}</span>
+                    <span className="font-semibold capitalize">{item.customization.sleeveStyle}</span>
                   </div>
                 )}
               </div>

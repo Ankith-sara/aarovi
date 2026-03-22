@@ -16,7 +16,7 @@ export const ProductItemSkeleton = () => (
 );
 
 const ProductItem = ({ id, image, name, price }) => {
-  const { currency, toggleWishlist, isInWishlist, navigate, token } = useContext(ShopContext);
+  const { currency, toggleWishlist, isInWishlist, navigate } = useContext(ShopContext);
   const [isWishlistLoading, setIsWishlistLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [secondaryLoaded, setSecondaryLoaded] = useState(false);
@@ -24,7 +24,6 @@ const ProductItem = ({ id, image, name, price }) => {
   const handleWishlistToggle = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!token) { navigate('/login'); return; }
     setIsWishlistLoading(true);
     try {
       await toggleWishlist(id);

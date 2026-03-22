@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 // ── Size config ────────────────────────────────────────────────────────────
+
 const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
 // Map dress type → YouTube video ID for "how to measure" reference
@@ -25,6 +26,7 @@ const MEASURE_VIDEOS = {
 const DEFAULT_VIDEO = 'Q3vRSPiCOIU';
 
 // ── Sub-components ─────────────────────────────────────────────────────────
+
 const SizeButton = ({ size, selected, onClick }) => (
   <button
     onClick={() => onClick(size)}
@@ -77,6 +79,7 @@ const VideoModal = ({ videoId, title, onClose }) => (
 );
 
 // ── Main Component ─────────────────────────────────────────────────────────
+
 const Customize = () => {
   const { saveCustomization, addCustomizationToCart, token, navigate } = useContext(ShopContext);
 
@@ -86,7 +89,9 @@ const Customize = () => {
     dressType: "",
     fabric: "",
     color: "#ffffff",
-    size: "", 
+    size: "",             // ← replaces manual measurements
+    neckStyle: "",        // optional — lifted from DesignCanvas
+    sleeveStyle: "",      // optional — lifted from DesignCanvas
     designNotes: "",
     aiPrompt: "",
     referenceImages: [],
@@ -169,7 +174,14 @@ const Customize = () => {
   // ── Handlers ──────────────────────────────────────────────────────────────
 
   const handleDesignChange = (designData) => {
-    setForm({ ...form, canvasDesign: designData, color: designData.color });
+    setForm({
+      ...form,
+      canvasDesign: designData,
+      color: designData.color,
+      // Lift neckStyle and sleeveStyle up to top-level so backend stores them
+      neckStyle: designData.neckStyle || form.neckStyle || '',
+      sleeveStyle: designData.sleeveStyle || form.sleeveStyle || '',
+    });
   };
 
   const handleGenderChange = (gender) => {
@@ -617,6 +629,8 @@ const Customize = () => {
                         <span className="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-sm font-semibold">{form.dressType}</span>
                         <span className="px-3 py-1 bg-gray-100 text-text rounded-full text-sm font-semibold">{form.fabric}</span>
                         {form.size && <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">Size {form.size}</span>}
+                        {form.neckStyle && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold capitalize">{form.neckStyle} neck</span>}
+                        {form.sleeveStyle && <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold capitalize">{form.sleeveStyle} sleeve</span>}
                       </div>
                     </div>
                     <div className="text-left sm:text-right">
