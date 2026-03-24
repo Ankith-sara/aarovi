@@ -307,7 +307,7 @@ const DesignCanvas = ({
     }
   }, []);
 
-  // AI Query Handler
+  // AI Query Handler — powered by Groq via backend /api/ai-assistant
   const handleAiQuery = async () => {
     if (!userQuery.trim()) return;
 
@@ -317,68 +317,78 @@ const DesignCanvas = ({
     setUserQuery('');
     setAiLoading(true);
 
-    try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      let response = '';
-      const query = currentQuery.toLowerCase();
+    // ── Local intent shortcuts (instant, no network needed) ───────────────
+    // These handle simple canvas actions before hitting the AI.
+    const q = currentQuery.toLowerCase();
+    let localResponse = null;
 
-      if (query.includes('color')) {
-        const colorMap = {
-          'red': '#DC2626', 'blue': '#3B82F6', 'green': '#10B981',
-          'pink': '#EC4899', 'yellow': '#F59E0B', 'gold': '#F59E0B',
-          'white': '#FFFFFF', 'black': '#1F2937'
-        };
-        let applied = false;
-        for (const [colorName, colorValue] of Object.entries(colorMap)) {
-          if (query.includes(colorName)) {
-            applyFabricColor(colorValue);
-            response = `Changed to ${colorName}!`;
-            saveToHistory();
-            applied = true;
-            break;
-          }
+    if (q.includes('sleeve')) {
+      if (q.includes('full') || q.includes('long'))    { setSleeveStyle('full');      localResponse = 'Changed to full sleeves!';      saveToHistory(); }
+      else if (q.includes('short'))                     { setSleeveStyle('short');     localResponse = 'Changed to short sleeves!';     saveToHistory(); }
+      else if (q.includes('3/4') || q.includes('elbow')){ setSleeveStyle('elbow');    localResponse = 'Changed to 3/4 sleeves!';       saveToHistory(); }
+      else if (q.includes('sleeveless'))                { setSleeveStyle('sleeveless');localResponse = 'Changed to sleeveless!';        saveToHistory(); }
+    } else if (q.includes('select') || q.includes('zone')) {
+      const targets = [
+        { kw: ['neck'],           matcher: z => z.id.includes('neckline') || z.id.includes('neck'),   label: 'Neckline' },
+        { kw: ['sleeve'],         matcher: z => z.id.includes('sleeve'),                               label: 'Sleeve'   },
+        { kw: ['body','bodice'],  matcher: z => z.id.includes('body') || z.id.includes('bodice'),      label: 'Body'     },
+      ];
+      for (const t of targets) {
+        if (t.kw.some(k => q.includes(k))) {
+          const zone = template.zones.find(t.matcher);
+          if (zone) { setSelectedZone(zone.id); localResponse = `${t.label} zone selected.`; }
+          break;
         }
-        if (!applied) response = `Try: "change to red", "make it blue", etc.`;
-      } else if (query.includes('embroidery')) {
-        const necklineZone = template.zones.find(z => z.id.includes('neckline') || z.id.includes('neck'));
-        if (necklineZone) {
-          setSelectedZone(necklineZone.id);
-          response = `Neckline selected. Choose embroidery style from the tab.`;
-          setActiveTab('prints-embroidery');
-          setPrintMode('embroidery');
-        } else {
-          response = `Select a zone first.`;
-        }
-      } else if (query.includes('sleeve')) {
-        if (query.includes('full') || query.includes('long')) { setSleeveStyle('full'); response = `Changed to full sleeves.`; saveToHistory(); }
-        else if (query.includes('short')) { setSleeveStyle('short'); response = `Changed to short sleeves.`; saveToHistory(); }
-        else if (query.includes('3/4') || query.includes('elbow')) { setSleeveStyle('elbow'); response = `Changed to 3/4 sleeves.`; saveToHistory(); }
-        else if (query.includes('sleeveless')) { setSleeveStyle('sleeveless'); response = `Changed to sleeveless.`; saveToHistory(); }
-        else response = `Options: full, short, 3/4, or sleeveless.`;
-      } else if (query.includes('print') || query.includes('pattern')) {
-        setActiveTab('prints-embroidery');
-        setPrintMode('browse');
-        response = `Opened prints tab. Select a zone and choose a print design.`;
-      } else if (query.includes('select') || query.includes('zone')) {
-        if (query.includes('neck')) {
-          const neckZone = template.zones.find(z => z.id.includes('neckline') || z.id.includes('neck'));
-          if (neckZone) { setSelectedZone(neckZone.id); response = `Neckline zone selected.`; }
-        } else if (query.includes('sleeve')) {
-          const sleeveZone = template.zones.find(z => z.id.includes('sleeve'));
-          if (sleeveZone) { setSelectedZone(sleeveZone.id); response = `Sleeve zone selected.`; }
-        } else if (query.includes('body') || query.includes('bodice')) {
-          const bodyZone = template.zones.find(z => z.id.includes('body') || z.id.includes('bodice'));
-          if (bodyZone) { setSelectedZone(bodyZone.id); response = `Body zone selected.`; }
-        } else {
-          response = `Available zones: neck, sleeve, body. Try "select neck".`;
-        }
-      } else {
-        response = `I can help with:\n• Colors: "change to red"\n• Embroidery: "add embroidery"\n• Sleeves: "full sleeves"\n• Prints: "show prints"\n• Zones: "select neck"`;
+      }
+    } else if (q.includes('print') || q.includes('pattern')) {
+      setActiveTab('prints-embroidery'); setPrintMode('browse');
+      localResponse = 'Opened the Prints tab — pick a zone then choose a design.';
+    } else if (q.includes('embroidery')) {
+      const neckZone = template.zones.find(z => z.id.includes('neckline') || z.id.includes('neck'));
+      if (neckZone) { setSelectedZone(neckZone.id); setActiveTab('prints-embroidery'); setPrintMode('embroidery'); }
+      localResponse = 'Opened Embroidery tab — select a zone and pick a style.';
+    }
+
+    if (localResponse) {
+      setChatHistory(prev => [...prev, { type: 'ai', text: localResponse, timestamp: new Date() }]);
+      setAiLoading(false);
+      return;
+    }
+
+    // ── For all other queries, hit the Groq-powered backend ──────────────
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
+      const resp = await fetch(`${backendUrl}/api/ai-assistant`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: currentQuery,
+          dressType,
+          fabric,
+          gender,
+          chatHistory: chatHistory.slice(-8)
+        })
+      });
+
+      const data = await resp.json();
+
+      if (!resp.ok || !data.success) throw new Error(data.error || 'AI request failed');
+
+      // If the reply contains a hex colour, apply it automatically
+      const hexMatch = data.reply.match(/#([0-9A-Fa-f]{6})\b/);
+      if (hexMatch) {
+        applyFabricColor(hexMatch[0]);
+        saveToHistory();
       }
 
-      setChatHistory(prev => [...prev, { type: 'ai', text: response, timestamp: new Date() }]);
+      setChatHistory(prev => [...prev, { type: 'ai', text: data.reply, timestamp: new Date() }]);
     } catch (error) {
       console.error('AI query error:', error);
+      setChatHistory(prev => [...prev, {
+        type: 'ai',
+        text: "Sorry, I couldn't connect to the AI right now. Try asking about colours, sleeves, or prints!",
+        timestamp: new Date()
+      }]);
     } finally {
       setAiLoading(false);
     }

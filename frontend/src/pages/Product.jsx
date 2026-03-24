@@ -23,6 +23,7 @@ const Product = () => {
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [expandedSection, setExpandedSection] = useState('description');
   const [showCustomOptions, setShowCustomOptions] = useState(false);
+  const [specialInstructions, setSpecialInstructions] = useState('');
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const minSwipeDistance = 50;
@@ -49,7 +50,11 @@ const Product = () => {
       }
       return;
     }
-    addToCart(productData._id, size, quantity, { neckStyle: neckStyle || null, sleeveStyle: sleeveStyle || null });
+    addToCart(productData._id, size, quantity, {
+      neckStyle: neckStyle || null,
+      sleeveStyle: sleeveStyle || null,
+      specialInstructions: specialInstructions.trim() || null   // ← new
+    });
     setIsAddedToCart(true);
   };
 
@@ -250,6 +255,7 @@ const Product = () => {
     setIsAddedToCart(false);
     setSize('');
     setQuantity(1);
+    setSpecialInstructions('');
   }, [productId]);
 
   if (!productData) {
@@ -339,8 +345,8 @@ const Product = () => {
                       key={index}
                       onClick={() => handleThumbnailClick(index)}
                       className={`flex-shrink-0 w-16 h-20 sm:w-auto sm:h-auto sm:aspect-[4/5] overflow-hidden transition-all duration-300 ${currentIndex === index
-                          ? 'ring-2 ring-secondary shadow-lg'
-                          : 'ring-1 ring-background/50 active:ring-secondary/50'
+                        ? 'ring-2 ring-secondary shadow-lg'
+                        : 'ring-1 ring-background/50 active:ring-secondary/50'
                         }`}
                     >
                       <img
@@ -366,8 +372,8 @@ const Product = () => {
                     <button
                       onClick={handleWishlistToggle}
                       className={`w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center transition-all duration-300 active:scale-95 ${isWishlisted
-                          ? 'bg-secondary text-white'
-                          : 'bg-background/50 text-text'
+                        ? 'bg-secondary text-white'
+                        : 'bg-background/50 text-text'
                         }`}
                       title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
                     >
@@ -412,8 +418,8 @@ const Product = () => {
                       key={index}
                       onClick={() => setSize(size === s ? '' : s)}
                       className={`min-w-[3rem] sm:min-w-[3.5rem] px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-semibold transition-all duration-200 active:scale-95 ${size === s
-                          ? 'bg-secondary text-white'
-                          : 'bg-background/40 text-text'
+                        ? 'bg-secondary text-white'
+                        : 'bg-background/40 text-text'
                         }`}
                     >
                       {s}
@@ -430,9 +436,9 @@ const Product = () => {
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-text uppercase tracking-wider">Customise Style</span>
-                    {(neckStyle || sleeveStyle) && (
+                    {(neckStyle || sleeveStyle || specialInstructions) && (
                       <span className="text-[10px] bg-secondary text-white px-2 py-0.5 rounded-full font-semibold">
-                        {[neckStyle, sleeveStyle].filter(Boolean).length} selected
+                        {[neckStyle, sleeveStyle, specialInstructions].filter(Boolean).length} selected
                       </span>
                     )}
                   </div>
@@ -462,7 +468,7 @@ const Product = () => {
                             key={opt.value}
                             onClick={() => setNeckStyle(neckStyle === opt.value ? '' : opt.value)}
                             className={`px-3 py-2 text-xs font-semibold transition-all duration-200 active:scale-95 border
-                              ${neckStyle === opt.value
+                ${neckStyle === opt.value
                                 ? 'bg-secondary text-white border-secondary'
                                 : 'bg-background/40 text-text border-background/60 hover:border-secondary/50'
                               }`}
@@ -491,7 +497,7 @@ const Product = () => {
                             key={opt.value}
                             onClick={() => setSleeveStyle(sleeveStyle === opt.value ? '' : opt.value)}
                             className={`px-3 py-2 text-xs font-semibold transition-all duration-200 active:scale-95 border
-                              ${sleeveStyle === opt.value
+                ${sleeveStyle === opt.value
                                 ? 'bg-secondary text-white border-secondary'
                                 : 'bg-background/40 text-text border-background/60 hover:border-secondary/50'
                               }`}
@@ -499,6 +505,31 @@ const Product = () => {
                             {opt.label}
                           </button>
                         ))}
+                      </div>
+                    </div>
+
+                    {/* Design Notes & Special Instructions */}
+                    <div className="border-t border-background/40 pt-4">
+                      <label className="text-xs font-bold text-text uppercase tracking-wider mb-1 flex items-center gap-2">
+                        Design Notes & Special Instructions
+                        <span className="text-text/40 font-normal normal-case text-xs">(optional)</span>
+                      </label>
+                      <p className="text-[11px] text-text/50 mb-2 leading-relaxed">
+                        Mention any specific requirements — embroidery placement, colour preferences, measurements, or other customisations.
+                      </p>
+                      <textarea
+                        value={specialInstructions}
+                        onChange={(e) => setSpecialInstructions(e.target.value)}
+                        placeholder={`e.g. "Please add gold zari border on sleeves, prefer boat neckline with slightly deeper cut, bust measurement 38 inches"`}
+                        rows={4}
+                        maxLength={500}
+                        className="w-full px-3 py-2.5 text-sm text-text border border-background/60 rounded-lg resize-none focus:outline-none focus:border-secondary transition-colors placeholder:text-text/30 bg-white leading-relaxed"
+                      />
+                      <div className="flex items-center justify-between mt-1">
+                        <p className="text-[10px] text-text/40">Our artisans will review your note before crafting.</p>
+                        <span className={`text-[10px] font-medium ${specialInstructions.length > 450 ? 'text-secondary' : 'text-text/40'}`}>
+                          {specialInstructions.length}/500
+                        </span>
                       </div>
                     </div>
                   </div>

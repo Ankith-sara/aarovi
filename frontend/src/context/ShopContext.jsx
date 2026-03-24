@@ -34,7 +34,7 @@ const ShopContextProvider = (props) => {
         }
     }, [token]);
 
-    // ============= HELPER FUNCTIONS =============
+    // ── Auth error handler ─────────────────────────────────────────────────
     const handleAuthError = useCallback((error) => {
         if (error.response?.status === 401) {
             localStorage.removeItem('token');
@@ -50,34 +50,43 @@ const ShopContextProvider = (props) => {
         return false;
     }, [navigate]);
 
-    // ============= CART HELPER =============
+    // ── Cart entry helper ──────────────────────────────────────────────────
     // Cart entries for regular products are stored as objects:
-    // cartItems[itemId][size] = { quantity, neckStyle, sleeveStyle }
-    // This helper safely reads the quantity from either the old number format or new object format.
+    // cartItems[itemId][size] = { quantity, neckStyle, sleeveStyle, specialInstructions }
+    // This helper safely reads the quantity from either the old number format or the new object format.
     const getEntryQuantity = (entry) => {
         if (entry === null || entry === undefined) return 0;
         if (typeof entry === 'object') return entry.quantity || 0;
-        return entry; // legacy number
+        return entry; // legacy plain number
     };
 
     // ============= CART FUNCTIONS =============
+
+    // addToCart now accepts a full options object including specialInstructions.
+    // The entire entry is stored as a flat object on cartItems[itemId][size] —
+    // NOT nested under entry.customizations — so PlaceOrder can read fields directly.
     const addToCart = useCallback(async (itemId, size, quantity = 1, options = {}) => {
         if (!size) { toast.error('Please select a size'); return false; }
 
-        const { neckStyle = null, sleeveStyle = null } = options;
+        const {
+            neckStyle           = null,
+            sleeveStyle         = null,
+            specialInstructions = null,
+        } = options;
 
         try {
             const cartData = structuredClone(cartItems);
             if (!cartData[itemId]) cartData[itemId] = {};
 
-            const existing = cartData[itemId][size];
+            const existing    = cartData[itemId][size];
             const existingQty = getEntryQuantity(existing);
 
-            // Always store as object so style options are preserved
+            // Flat object — style fields live directly here, never nested
             cartData[itemId][size] = {
-                quantity: existingQty + quantity,
-                neckStyle: neckStyle,
-                sleeveStyle: sleeveStyle,
+                quantity:            existingQty + quantity,
+                neckStyle:           neckStyle,
+                sleeveStyle:         sleeveStyle,
+                specialInstructions: specialInstructions,
             };
 
             setCartItems(cartData);
@@ -90,6 +99,7 @@ const ShopContextProvider = (props) => {
                     quantity,
                     neckStyle,
                     sleeveStyle,
+                    specialInstructions,
                 });
             }
             return true;
@@ -109,11 +119,11 @@ const ShopContextProvider = (props) => {
             } else {
                 const existing = cartData[itemId]?.[size];
                 if (typeof existing === 'object' && existing !== null) {
-                    // Preserve style options, just update quantity
+                    // Preserve all style options, only update quantity
                     cartData[itemId][size] = { ...existing, quantity };
                 } else {
-                    // Legacy number format — upgrade to object
-                    cartData[itemId][size] = { quantity, neckStyle: null, sleeveStyle: null };
+                    // Legacy number — upgrade to object
+                    cartData[itemId][size] = { quantity, neckStyle: null, sleeveStyle: null, specialInstructions: null };
                 }
             }
             setCartItems(cartData);
@@ -192,15 +202,16 @@ const ShopContextProvider = (props) => {
             const product = products.find(p => p._id === itemId);
             if (product) {
                 for (const size in cartItems[itemId]) {
-                    const entry = cartItems[itemId][size];
+                    const entry    = cartItems[itemId][size];
                     const quantity = getEntryQuantity(entry);
                     if (quantity > 0) {
                         items.push({
                             ...product,
                             size,
                             quantity,
-                            neckStyle: typeof entry === 'object' ? entry.neckStyle : null,
-                            sleeveStyle: typeof entry === 'object' ? entry.sleeveStyle : null,
+                            neckStyle:           typeof entry === 'object' ? entry.neckStyle           : null,
+                            sleeveStyle:         typeof entry === 'object' ? entry.sleeveStyle         : null,
+                            specialInstructions: typeof entry === 'object' ? entry.specialInstructions : null,
                             type: 'product',
                         });
                     }
@@ -218,10 +229,12 @@ const ShopContextProvider = (props) => {
                         quantity: custom.quantity, price: custom.price,
                         gender: snapshot.gender || '', dressType: snapshot.dressType || '',
                         fabric: snapshot.fabric || '', color: snapshot.color || '',
+                        size: snapshot.size || '',
                         designNotes: snapshot.designNotes || '', measurements: snapshot.measurements || {},
                         canvasDesign: snapshot.canvasDesign || {}, referenceImages: snapshot.referenceImages || [],
                         aiPrompt: snapshot.aiPrompt || '', neckStyle: snapshot.neckStyle || '',
                         sleeveStyle: snapshot.sleeveStyle || '',
+                        specialInstructions: snapshot.specialInstructions || '',
                         image: snapshot.canvasDesign?.png || '',
                         images: [snapshot.canvasDesign?.png || ''].filter(Boolean)
                     });
@@ -242,6 +255,7 @@ const ShopContextProvider = (props) => {
     }, [backendUrl, handleAuthError]);
 
     // ============= WISHLIST FUNCTIONS =============
+
     const addToWishlist = useCallback(async (itemId) => {
         if (!token) {
             setWishlistItems(prev => prev.includes(itemId) ? prev : [...prev, itemId]);
@@ -250,7 +264,11 @@ const ShopContextProvider = (props) => {
         }
         try {
             const response = await axios.post(`${backendUrl}/api/wishlist/add`, { itemId });
-            if (response.data.success) { setWishlistItems(response.data.wishlist); toast.success('Added to wishlist'); return true; }
+            if (response.data.success) {
+                setWishlistItems(response.data.wishlist);
+                toast.success('Added to wishlist');
+                return true;
+            }
         } catch (error) {
             if (!handleAuthError(error)) {
                 if (error.response?.data?.message === "Item already in wishlist") toast.info('Already in wishlist');
@@ -268,9 +286,16 @@ const ShopContextProvider = (props) => {
         }
         try {
             const response = await axios.post(`${backendUrl}/api/wishlist/remove`, { itemId });
-            if (response.data.success) { setWishlistItems(response.data.wishlist); toast.info('Removed from wishlist'); return true; }
+            if (response.data.success) {
+                setWishlistItems(response.data.wishlist);
+                toast.info('Removed from wishlist');
+                return true;
+            }
         } catch (error) {
-            if (!handleAuthError(error)) { setWishlistItems(prev => prev.filter(id => id !== itemId)); toast.info('Removed from wishlist'); }
+            if (!handleAuthError(error)) {
+                setWishlistItems(prev => prev.filter(id => id !== itemId));
+                toast.info('Removed from wishlist');
+            }
             return false;
         }
     }, [token, backendUrl, handleAuthError]);
@@ -283,7 +308,11 @@ const ShopContextProvider = (props) => {
         }
         try {
             const response = await axios.post(`${backendUrl}/api/wishlist/toggle`, { itemId });
-            if (response.data.success) { setWishlistItems(response.data.wishlist); toast.success(response.data.message); return response.data.isAdded; }
+            if (response.data.success) {
+                setWishlistItems(response.data.wishlist);
+                toast.success(response.data.message);
+                return response.data.isAdded;
+            }
         } catch (error) {
             if (!handleAuthError(error)) {
                 if (alreadyIn) { setWishlistItems(prev => prev.filter(id => id !== itemId)); toast.info('Removed from wishlist'); return false; }
@@ -293,9 +322,9 @@ const ShopContextProvider = (props) => {
         }
     }, [token, backendUrl, handleAuthError, wishlistItems]);
 
-    const isInWishlist = useCallback((itemId) => wishlistItems.includes(itemId), [wishlistItems]);
-    const getWishlistCount = useCallback(() => wishlistItems.length, [wishlistItems]);
-    const getWishlistProducts = useCallback(() => products.filter(product => wishlistItems.includes(product._id)), [products, wishlistItems]);
+    const isInWishlist      = useCallback((itemId) => wishlistItems.includes(itemId), [wishlistItems]);
+    const getWishlistCount  = useCallback(() => wishlistItems.length, [wishlistItems]);
+    const getWishlistProducts = useCallback(() => products.filter(p => wishlistItems.includes(p._id)), [products, wishlistItems]);
 
     const getUserWishlist = useCallback(async (userToken) => {
         try {
@@ -308,6 +337,7 @@ const ShopContextProvider = (props) => {
     }, [backendUrl, handleAuthError]);
 
     // ============= PRODUCT FUNCTIONS =============
+
     const getProductsData = useCallback(async () => {
         try {
             setIsLoading(true);
@@ -317,29 +347,30 @@ const ShopContextProvider = (props) => {
         finally { setIsLoading(false); }
     }, [backendUrl]);
 
-    const getProductById = useCallback((productId) => products.find(product => product._id === productId), [products]);
+    const getProductById  = useCallback((productId) => products.find(p => p._id === productId), [products]);
 
     const searchProducts = useCallback((query) => {
         if (!query?.trim()) return products;
-        const lowercaseQuery = query.toLowerCase();
-        return products.filter(product =>
-            product.name?.toLowerCase().includes(lowercaseQuery) ||
-            product.category?.toLowerCase().includes(lowercaseQuery) ||
-            product.subCategory?.toLowerCase().includes(lowercaseQuery) ||
-            product.description?.toLowerCase().includes(lowercaseQuery)
+        const q = query.toLowerCase();
+        return products.filter(p =>
+            p.name?.toLowerCase().includes(q) ||
+            p.category?.toLowerCase().includes(q) ||
+            p.subCategory?.toLowerCase().includes(q) ||
+            p.description?.toLowerCase().includes(q)
         );
     }, [products]);
 
     const filterProducts = useCallback((filters) => {
         let filtered = [...products];
-        if (filters.category?.length > 0) filtered = filtered.filter(p => filters.category.includes(p.category));
+        if (filters.category?.length > 0)    filtered = filtered.filter(p => filters.category.includes(p.category));
         if (filters.subCategory?.length > 0) filtered = filtered.filter(p => filters.subCategory.includes(p.subCategory));
-        if (filters.priceRange) filtered = filtered.filter(p => p.price >= filters.priceRange.min && p.price <= filters.priceRange.max);
-        if (filters.inStock) filtered = filtered.filter(p => p.inStock);
+        if (filters.priceRange)              filtered = filtered.filter(p => p.price >= filters.priceRange.min && p.price <= filters.priceRange.max);
+        if (filters.inStock)                 filtered = filtered.filter(p => p.inStock);
         return filtered;
     }, [products]);
 
     // ============= CUSTOMIZATION FUNCTIONS =============
+
     const getUserCustomizations = useCallback(async (userToken, profileId) => {
         if (!profileId) return;
         try {
@@ -358,7 +389,11 @@ const ShopContextProvider = (props) => {
         if (!token) { toast.error("Please login to continue"); return false; }
         try {
             setCustomizationLoading(true);
-            const res = await axios.post(`${backendUrl}/api/customization/submit`, { customizationId }, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.post(
+                `${backendUrl}/api/customization/submit`,
+                { customizationId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
             if (res.data.success) {
                 setCustomizations(prev => prev.map(c => c._id === customizationId ? { ...c, status: 'Submitted' } : c));
                 toast.success("Customization submitted successfully");
@@ -374,7 +409,11 @@ const ShopContextProvider = (props) => {
         if (!userProfile?._id) { toast.error("Please login again"); return null; }
         try {
             setCustomizationLoading(true);
-            const res = await axios.post(`${backendUrl}/api/customization/save`, { ...data, userId: userProfile._id }, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.post(
+                `${backendUrl}/api/customization/save`,
+                { ...data, userId: userProfile._id },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
             if (res.data.success) {
                 const saved = res.data.customization;
                 setActiveCustomization(saved);
@@ -394,7 +433,11 @@ const ShopContextProvider = (props) => {
         if (!token || !userProfile?._id) { toast.error("Please login to continue"); return null; }
         try {
             setCustomizationLoading(true);
-            const res = await axios.put(`${backendUrl}/api/customization/update/${customizationId}`, { ...data, userId: userProfile._id }, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.put(
+                `${backendUrl}/api/customization/update/${customizationId}`,
+                { ...data, userId: userProfile._id },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
             if (res.data.success) {
                 const updated = res.data.customization;
                 setCustomizations(prev => prev.map(c => c._id === customizationId ? updated : c));
@@ -408,7 +451,11 @@ const ShopContextProvider = (props) => {
     const getCustomizationById = useCallback(async (customizationId) => {
         if (!token || !userProfile?._id) return null;
         try {
-            const res = await axios.post(`${backendUrl}/api/customization/${customizationId}`, { userId: userProfile._id }, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.post(
+                `${backendUrl}/api/customization/${customizationId}`,
+                { userId: userProfile._id },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
             if (res.data.success) return res.data.customization;
             return null;
         } catch (err) { handleAuthError(err); return null; }
@@ -417,13 +464,21 @@ const ShopContextProvider = (props) => {
     const deleteCustomization = useCallback(async (customizationId) => {
         if (!token || !userProfile?._id) { toast.error("Please login to continue"); return false; }
         try {
-            const res = await axios.delete(`${backendUrl}/api/customization/${customizationId}`, { headers: { Authorization: `Bearer ${token}` }, data: { userId: userProfile._id } });
-            if (res.data.success) { setCustomizations(prev => prev.filter(c => c._id !== customizationId)); toast.success("Deleted successfully"); return true; }
+            const res = await axios.delete(
+                `${backendUrl}/api/customization/${customizationId}`,
+                { headers: { Authorization: `Bearer ${token}` }, data: { userId: userProfile._id } }
+            );
+            if (res.data.success) {
+                setCustomizations(prev => prev.filter(c => c._id !== customizationId));
+                toast.success("Deleted successfully");
+                return true;
+            }
             return false;
         } catch (err) { if (!handleAuthError(err)) toast.error("Unable to delete"); return false; }
     }, [token, backendUrl, userProfile, handleAuthError]);
 
     // ============= CUSTOMIZATION CART FUNCTIONS =============
+
     const addCustomizationToCart = useCallback(async (customization) => {
         if (!customization?._id) { toast.error("Invalid customization"); return false; }
         try {
@@ -435,15 +490,28 @@ const ShopContextProvider = (props) => {
                 updatedCart.customizations[customization._id] = {
                     price: customization.estimatedPrice || customization.price || 0,
                     quantity: 1,
+                    // Use pngUrl (Cloudinary) over raw base64 png to avoid cart image blink
+                    image: customization.canvasDesign?.pngUrl || customization.canvasDesign?.png || '',
                     snapshot: {
-                        gender: customization.gender, dressType: customization.dressType,
-                        fabric: customization.fabric, color: customization.color,
-                        designNotes: customization.designNotes, measurements: customization.measurements,
-                        canvasDesign: customization.canvasDesign, referenceImages: customization.referenceImages,
-                        aiPrompt: customization.aiPrompt,
-                        neckStyle: customization.canvasDesign?.neckStyle || '',
-                        sleeveStyle: customization.canvasDesign?.sleeveStyle || '',
-                        status: customization.status
+                        gender:           customization.gender,
+                        dressType:        customization.dressType,
+                        fabric:           customization.fabric,
+                        color:            customization.color,
+                        size:             customization.size || '',       // ← XS–XXXL
+                        designNotes:      customization.designNotes,
+                        measurements:     customization.measurements,
+                        // Store only pngUrl in snapshot — raw base64 causes re-render flicker
+                        canvasDesign: {
+                            ...customization.canvasDesign,
+                            png: undefined, // strip raw base64 from snapshot
+                            pngUrl: customization.canvasDesign?.pngUrl || customization.canvasDesign?.png || '',
+                        },
+                        referenceImages:  customization.referenceImages,
+                        aiPrompt:         customization.aiPrompt,
+                        neckStyle:        customization.canvasDesign?.neckStyle || customization.neckStyle || '',
+                        sleeveStyle:      customization.canvasDesign?.sleeveStyle || customization.sleeveStyle || '',
+                        specialInstructions: customization.specialInstructions || '',
+                        status:           customization.status
                     }
                 };
             }
@@ -491,6 +559,7 @@ const ShopContextProvider = (props) => {
     }, [cartItems, token, backendUrl, handleAuthError]);
 
     // ============= RECENTLY VIEWED =============
+
     const addProductToRecentlyViewed = useCallback((product) => {
         try {
             let viewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
@@ -504,7 +573,9 @@ const ShopContextProvider = (props) => {
         try {
             let viewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
             if (allProducts.length > 0) {
-                viewed = viewed.map(vp => { const u = allProducts.find(p => p._id === vp._id); return u ? { ...vp, name: u.name, price: u.price, images: u.images } : vp; }).filter(vp => allProducts.some(p => p._id === vp._id));
+                viewed = viewed
+                    .map(vp => { const u = allProducts.find(p => p._id === vp._id); return u ? { ...vp, name: u.name, price: u.price, images: u.images } : vp; })
+                    .filter(vp => allProducts.some(p => p._id === vp._id));
                 localStorage.setItem('recentlyViewed', JSON.stringify(viewed));
             }
             return viewed;
@@ -516,6 +587,7 @@ const ShopContextProvider = (props) => {
     }, []);
 
     // ============= AUTH & USER FUNCTIONS =============
+
     const logout = useCallback(() => {
         initializedRef.current = '';
         localStorage.removeItem('token');
@@ -532,36 +604,32 @@ const ShopContextProvider = (props) => {
     const getUserProfile = useCallback(async (userToken) => {
         try {
             const response = await axios.get(`${backendUrl}/api/user/profile`, { headers: { Authorization: `Bearer ${userToken}` } });
-            if (response.data.success) {
-                setUserProfile(response.data.user);
-                return response.data.user;
-            }
+            if (response.data.success) { setUserProfile(response.data.user); return response.data.user; }
         } catch (error) { handleAuthError(error); }
         return null;
     }, [backendUrl, handleAuthError]);
 
     // ============= CATEGORY MANAGEMENT =============
+
     const setCategory = useCallback((category) => {
         setSelectedSubCategory(category);
         localStorage.setItem("selectedSubCategory", category);
     }, []);
 
     // ============= INITIALIZATION =============
+
     useEffect(() => {
         const storedSubCategory = localStorage.getItem("selectedSubCategory");
         if (storedSubCategory) setSelectedSubCategory(storedSubCategory);
     }, []);
 
-    useEffect(() => {
-        getProductsData();
-    }, [getProductsData]);
+    useEffect(() => { getProductsData(); }, [getProductsData]);
 
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
         const activeToken = token || storedToken;
 
         if (!activeToken || initializedRef.current === activeToken) return;
-
         if (!token && storedToken) setToken(storedToken);
 
         initializedRef.current = activeToken;
@@ -576,7 +644,6 @@ const ShopContextProvider = (props) => {
         bootstrap();
     }, [token, getUserCart, getUserWishlist, getUserProfile, getUserCustomizations]);
 
-    // ── Clear data on logout ───────────────────────────────────────────────
     useEffect(() => {
         if (!token) {
             setWishlistItems([]);
@@ -587,6 +654,7 @@ const ShopContextProvider = (props) => {
     }, [token]);
 
     // ============= MEMOIZED CONTEXT VALUE =============
+
     const contextValue = useMemo(() => ({
         products, currency, delivery_fee, search, showSearch, cartItems, wishlistItems,
         token, selectedSubCategory, isLoading, userProfile, customizations, activeCustomization, customizationLoading,

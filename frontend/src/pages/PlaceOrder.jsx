@@ -7,6 +7,18 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { CreditCard, Home, Shield, ArrowLeft, MapPin, Phone, Mail, User, Package, CheckCircle, QrCode, X, AlertCircle } from 'lucide-react';
 
+// ── Safe token decoder — never throws ─────────────────────────────────────
+const safeDecodeToken = (token) => {
+  if (!token || typeof token !== 'string') return null;
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+  try {
+    return jwtDecode(token);
+  } catch {
+    return null;
+  }
+};
+
 const PlaceOrder = () => {
   const [method, setMethod] = useState('cod');
   const { navigate, backendUrl, token, cartItems, setCartItems, getCartAmount, delivery_fee, products } = useContext(ShopContext);
@@ -36,22 +48,24 @@ const PlaceOrder = () => {
     });
   }
 
+  // ── Resolve the best available token ──────────────────────────────────────
+  const getToken = () => token || localStorage.getItem('token');
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
+        const rawToken = getToken();
+        if (!rawToken) return;
 
-        const decoded = jwtDecode(token);
-        const userId = decoded.id;
+        const decoded = safeDecodeToken(rawToken);
+        if (!decoded?.id) return;
 
-        const res = await axios.get(`${backendUrl}/api/user/profile/${userId}`, {
-          headers: { Authorization: `Bearer ${token}` }
+        const res = await axios.get(`${backendUrl}/api/user/profile/${decoded.id}`, {
+          headers: { Authorization: `Bearer ${rawToken}` }
         });
 
         if (res.data.success) {
           const user = res.data.user;
-
           setFormData(prev => ({
             ...prev,
             Name: user.name || '',
@@ -65,15 +79,15 @@ const PlaceOrder = () => {
           }));
         }
       } catch (error) {
-        
+        // silently ignore prefill errors
       }
     };
 
     fetchUser();
-  }, [backendUrl]);
+  }, [backendUrl, token]);
 
   useEffect(() => {
-    document.title = 'Checkout | Aarovi'
+    document.title = 'Checkout | Aarovi';
   }, []);
 
   const onChangeHandler = (event) => {
@@ -81,34 +95,13 @@ const PlaceOrder = () => {
     setFormData((data) => ({ ...data, [name]: value }));
   };
 
-  // Validate transaction ID
   const validateTransactionId = (value) => {
     const trimmedValue = value.trim();
-    
-    if (!trimmedValue) {
-      setTransactionIdError('Transaction ID is required');
-      return false;
-    }
-    
-    // Minimum length validation (most UPI transaction IDs are at least 12 characters)
-    if (trimmedValue.length < 8) {
-      setTransactionIdError('Transaction ID must be at least 8 characters long');
-      return false;
-    }
-    
-    // Maximum length validation
-    if (trimmedValue.length > 50) {
-      setTransactionIdError('Transaction ID is too long (max 50 characters)');
-      return false;
-    }
-    
-    // Allow alphanumeric and common special characters used in transaction IDs
+    if (!trimmedValue) { setTransactionIdError('Transaction ID is required'); return false; }
+    if (trimmedValue.length < 8) { setTransactionIdError('Transaction ID must be at least 8 characters'); return false; }
+    if (trimmedValue.length > 50) { setTransactionIdError('Transaction ID is too long (max 50 characters)'); return false; }
     const validPattern = /^[A-Za-z0-9\-_./]+$/;
-    if (!validPattern.test(trimmedValue)) {
-      setTransactionIdError('Transaction ID contains invalid characters');
-      return false;
-    }
-    
+    if (!validPattern.test(trimmedValue)) { setTransactionIdError('Transaction ID contains invalid characters'); return false; }
     setTransactionIdError('');
     return true;
   };
@@ -116,15 +109,83 @@ const PlaceOrder = () => {
   const handleTransactionIdChange = (e) => {
     const value = e.target.value;
     setTransactionId(value);
-    
-    // Clear error when user starts typing
-    if (transactionIdError && value.trim()) {
-      setTransactionIdError('');
+    if (transactionIdError && value.trim()) setTransactionIdError('');
+  };
+
+  // ── Build order items from cartItems ──────────────────────────────────────
+  const buildOrderItems = () => {
+    const orderItems = [];
+
+    for (const productId in cartItems) {
+      if (productId === 'customizations') continue;
+      const sizes = cartItems[productId];
+      if (typeof sizes !== 'object') continue;
+
+      for (const sizeKey in sizes) {
+        const entry = sizes[sizeKey];
+
+        // entry is either a plain number (legacy) or an object
+        // { quantity, neckStyle, sleeveStyle, specialInstructions }
+        // NOTE: style fields live DIRECTLY on the entry, NOT nested under entry.customizations
+        const qty = typeof entry === 'object' ? (entry.quantity ?? 0) : entry;
+        if (!qty || qty <= 0) continue;
+
+        const product = products.find((p) => p._id === productId);
+        if (!product) continue;
+
+        const neckStyle           = typeof entry === 'object' ? (entry.neckStyle           || '') : '';
+        const sleeveStyle         = typeof entry === 'object' ? (entry.sleeveStyle         || '') : '';
+        const specialInstructions = typeof entry === 'object' ? (entry.specialInstructions || '') : '';
+
+        orderItems.push({
+          productId: product._id,
+          name: product.name,
+          price: product.price,
+          quantity: qty,
+          size: sizeKey,
+          image: product.images?.[0] || null,
+          ...(neckStyle           && { neckStyle }),
+          ...(sleeveStyle         && { sleeveStyle }),
+          ...(specialInstructions && { specialInstructions }),
+        });
+      }
     }
+
+    if (cartItems.customizations) {
+      for (const customId in cartItems.customizations) {
+        const custom = cartItems.customizations[customId];
+        if (!custom || !custom.quantity || custom.quantity <= 0) continue;
+
+        orderItems.push({
+          _id: customId,
+          type: 'customization',
+          name: `Custom ${custom.snapshot?.gender || ''} ${custom.snapshot?.dressType || 'Design'}`,
+          quantity: custom.quantity,
+          price: custom.price,
+          gender: custom.snapshot?.gender || '',
+          dressType: custom.snapshot?.dressType || '',
+          fabric: custom.snapshot?.fabric || '',
+          color: custom.snapshot?.color || '',
+          size: custom.snapshot?.size || '',             // ← XS–XXXL
+          designNotes: custom.snapshot?.designNotes || '',
+          measurements: custom.snapshot?.measurements || {},
+          canvasDesign: custom.snapshot?.canvasDesign || {},
+          referenceImages: custom.snapshot?.referenceImages || [],
+          aiPrompt: custom.snapshot?.aiPrompt || '',
+          neckStyle: custom.snapshot?.neckStyle || '',
+          sleeveStyle: custom.snapshot?.sleeveStyle || '',
+          specialInstructions: custom.snapshot?.specialInstructions || '',
+          image: custom.snapshot?.canvasDesign?.pngUrl || custom.snapshot?.canvasDesign?.png || ''
+        });
+      }
+    }
+
+    return orderItems;
   };
 
   const initPay = async (order, userId, orderItems, totalAmount) => {
     await loadRazorpayScript("https://checkout.razorpay.com/v1/checkout.js");
+    const rawToken = getToken();
 
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -141,7 +202,7 @@ const PlaceOrder = () => {
             items: orderItems,
             amount: totalAmount,
             address: formData
-          }, { headers: { Authorization: `Bearer ${token}` } });
+          }, { headers: { Authorization: `Bearer ${rawToken}` } });
 
           if (verifyRes.data.success) {
             setCartItems({});
@@ -149,8 +210,7 @@ const PlaceOrder = () => {
           } else {
             toast.error(verifyRes.data.message);
           }
-        } catch (err) {
-          
+        } catch {
           toast.error('Payment verification failed.');
         }
       },
@@ -166,64 +226,31 @@ const PlaceOrder = () => {
   };
 
   const handleQRSubmit = async () => {
-    // Validate transaction ID before submission
     if (!validateTransactionId(transactionId)) {
       toast.error(transactionIdError || 'Please enter a valid transaction ID');
       return;
     }
 
+    const rawToken = getToken();
+    if (!rawToken) {
+      toast.error('Please log in to place your order.');
+      navigate('/login');
+      return;
+    }
+
+    const decoded = safeDecodeToken(rawToken);
+    if (!decoded?.id) {
+      toast.error('Your session has expired. Please log in again.');
+      localStorage.removeItem('token');
+      navigate('/login');
+      return;
+    }
+
     setIsLoading(true);
-    const decoded = jwtDecode(token);
-
     try {
-      let orderItems = [];
-      for (const items in cartItems) {
-        if (items === 'customization') continue;
-        for (const item in cartItems[items]) {
-          if (cartItems[items][item] > 0) {
-            const product = products.find((p) => p._id === items);
-            if (product) {
-              orderItems.push({
-                productId: product._id,
-                name: product.name,
-                price: product.price,
-                quantity: cartItems[items][item],
-                size: item,
-                image: product.images?.[0] || null
-              });
-            }
-          }
-        }
-      }
+      const orderItems = buildOrderItems();
 
-      if (cartItems.customizations) {
-        for (const customId in cartItems.customizations) {
-          const custom = cartItems.customizations[customId];
-          if (custom && custom.quantity > 0) {
-            orderItems.push({
-              _id: customId,
-              type: 'customization',
-              name: `Custom ${custom.snapshot?.gender || ''} ${custom.snapshot?.dressType || 'Design'}`,
-              quantity: custom.quantity,
-              price: custom.price,
-              gender: custom.snapshot?.gender || '',
-              dressType: custom.snapshot?.dressType || '',
-              fabric: custom.snapshot?.fabric || '',
-              color: custom.snapshot?.color || '',
-              designNotes: custom.snapshot?.designNotes || '',
-              measurements: custom.snapshot?.measurements || {},
-              canvasDesign: custom.snapshot?.canvasDesign || {},
-              referenceImages: custom.snapshot?.referenceImages || [],
-              aiPrompt: custom.snapshot?.aiPrompt || '',
-              neckStyle: custom.snapshot?.neckStyle || '',
-              sleeveStyle: custom.snapshot?.sleeveStyle || '',
-              image: custom.snapshot?.canvasDesign?.pngUrl || custom.snapshot?.canvasDesign?.png || ''
-            });
-          }
-        }
-      }
-
-      let orderData = {
+      const orderData = {
         userId: decoded.id,
         address: formData,
         items: orderItems,
@@ -231,8 +258,8 @@ const PlaceOrder = () => {
         transactionId: transactionId.trim()
       };
 
-      const response = await axios.post(`${backendUrl}/api/order/qr`, orderData, { 
-        headers: { Authorization: `Bearer ${token}` } 
+      const response = await axios.post(`${backendUrl}/api/order/qr`, orderData, {
+        headers: { Authorization: `Bearer ${rawToken}` }
       });
 
       if (response.data.success) {
@@ -246,7 +273,6 @@ const PlaceOrder = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      
       toast.error(error.response?.data?.message || error.message);
     } finally {
       setIsLoading(false);
@@ -254,71 +280,45 @@ const PlaceOrder = () => {
   };
 
   const onSubmitHandler = async (event) => {
-    event.preventDefault();
+    event?.preventDefault();
 
     if (!agreeToTerms) {
       toast.error('Please agree to our Terms & Conditions and Privacy Policy to proceed.');
       return;
     }
 
-    // If QR payment is selected, show the QR modal
     if (method === 'qr') {
       setShowQRModal(true);
       return;
     }
 
+    // ── Token validation ───────────────────────────────────────────────────
+    const rawToken = getToken();
+    if (!rawToken) {
+      toast.error('Please log in to place your order.');
+      navigate('/login');
+      return;
+    }
+
+    const decoded = safeDecodeToken(rawToken);
+    if (!decoded?.id) {
+      toast.error('Your session has expired. Please log in again.');
+      localStorage.removeItem('token');
+      navigate('/login');
+      return;
+    }
+
     setIsLoading(true);
-    const decoded = jwtDecode(token);
-
     try {
-      let orderItems = [];
-      for (const items in cartItems) {
-        if (items === 'customization') continue;
-        for (const item in cartItems[items]) {
-          if (cartItems[items][item] > 0) {
-            const product = products.find((p) => p._id === items);
-            if (product) {
-              orderItems.push({
-                productId: product._id,
-                name: product.name,
-                price: product.price,
-                quantity: cartItems[items][item],
-                size: item,
-                image: product.images?.[0] || null
-              });
-            }
-          }
-        }
+      const orderItems = buildOrderItems();
+
+      if (orderItems.length === 0) {
+        toast.error('Your cart is empty.');
+        setIsLoading(false);
+        return;
       }
 
-      if (cartItems.customizations) {
-        for (const customId in cartItems.customizations) {
-          const custom = cartItems.customizations[customId];
-          if (custom && custom.quantity > 0) {
-            orderItems.push({
-              _id: customId,
-              type: 'customization',
-              name: `Custom ${custom.snapshot?.gender || ''} ${custom.snapshot?.dressType || 'Design'}`,
-              quantity: custom.quantity,
-              price: custom.price,
-              gender: custom.snapshot?.gender || '',
-              dressType: custom.snapshot?.dressType || '',
-              fabric: custom.snapshot?.fabric || '',
-              color: custom.snapshot?.color || '',
-              designNotes: custom.snapshot?.designNotes || '',
-              measurements: custom.snapshot?.measurements || {},
-              canvasDesign: custom.snapshot?.canvasDesign || {},
-              referenceImages: custom.snapshot?.referenceImages || [],
-              aiPrompt: custom.snapshot?.aiPrompt || '',
-              neckStyle: custom.snapshot?.neckStyle || '',
-              sleeveStyle: custom.snapshot?.sleeveStyle || '',
-              image: custom.snapshot?.canvasDesign?.pngUrl || custom.snapshot?.canvasDesign?.png || ''
-            });
-          }
-        }
-      }
-
-      let orderData = {
+      const orderData = {
         userId: decoded.id,
         address: formData,
         items: orderItems,
@@ -326,8 +326,12 @@ const PlaceOrder = () => {
       };
 
       switch (method) {
-        case 'cod':
-          const response = await axios.post(`${backendUrl}/api/order/place`, orderData, { headers: { Authorization: `Bearer ${token}` } });
+        case 'cod': {
+          const response = await axios.post(
+            `${backendUrl}/api/order/place`,
+            orderData,
+            { headers: { Authorization: `Bearer ${rawToken}` } }
+          );
           if (response.data.success) {
             setCartItems({});
             navigate('/orders');
@@ -335,19 +339,27 @@ const PlaceOrder = () => {
             toast.error(response.data.message);
           }
           break;
+        }
 
-        case 'razorpay':
-          const responseRazorpay = await axios.post(`${backendUrl}/api/order/razorpay`, orderData, { headers: { Authorization: `Bearer ${token}` } });
+        case 'razorpay': {
+          const responseRazorpay = await axios.post(
+            `${backendUrl}/api/order/razorpay`,
+            orderData,
+            { headers: { Authorization: `Bearer ${rawToken}` } }
+          );
           if (responseRazorpay.data.success) {
             initPay(responseRazorpay.data.order, decoded.id, orderItems, orderData.amount);
           } else {
             toast.error(responseRazorpay.data.message);
           }
           break;
+        }
+
+        default:
+          toast.error('Unknown payment method selected.');
       }
     } catch (error) {
-      
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || error.message);
     } finally {
       setIsLoading(false);
     }
@@ -359,9 +371,7 @@ const PlaceOrder = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-2">
-                Checkout
-              </h1>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-2">Checkout</h1>
               <p className="text-text/50 font-light flex items-center gap-2">
                 <Package size={16} />
                 Complete your purchase
@@ -390,11 +400,7 @@ const PlaceOrder = () => {
                 <h2 className="text-lg sm:text-xl font-serif font-bold text-text">Scan QR to Pay</h2>
               </div>
               <button
-                onClick={() => {
-                  setShowQRModal(false);
-                  setTransactionId('');
-                  setTransactionIdError('');
-                }}
+                onClick={() => { setShowQRModal(false); setTransactionId(''); setTransactionIdError(''); }}
                 className="text-text/50 hover:text-text transition-colors"
               >
                 <X size={20} />
@@ -405,30 +411,17 @@ const PlaceOrder = () => {
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-gradient-to-br from-background/10 to-background/5 rounded-xl p-4 flex flex-col items-center justify-center">
                   <div className="bg-white p-3 rounded-lg shadow-lg mb-3">
-                    <img 
-                      src={assets.Qr_img} 
-                      alt="Payment QR Code" 
-                      className="w-40 h-40 sm:w-48 sm:h-48 object-contain"
-                    />
+                    <img src={assets.Qr_img} alt="Payment QR Code" className="w-40 h-40 sm:w-48 sm:h-48 object-contain" />
                   </div>
-                  <p className="text-xs sm:text-sm text-text/70 text-center font-light mb-2">
-                    Scan with any UPI app
-                  </p>
-                  <p className="text-xl sm:text-2xl font-bold text-secondary">
-                    ₹{getCartAmount() + delivery_fee}
-                  </p>
+                  <p className="text-xs sm:text-sm text-text/70 text-center font-light mb-2">Scan with any UPI app</p>
+                  <p className="text-xl sm:text-2xl font-bold text-secondary">₹{getCartAmount() + delivery_fee}</p>
                 </div>
 
-                {/* Form Section */}
                 <div className="flex flex-col justify-center space-y-4">
-                  {/* Info */}
                   <div className="bg-blue-50 rounded-lg p-3">
-                    <p className="text-xs text-blue-800 font-medium">
-                      ℹ️ Complete payment via UPI, then enter the transaction ID below
-                    </p>
+                    <p className="text-xs text-blue-800 font-medium">ℹ️ Complete payment via UPI, then enter the transaction ID below</p>
                   </div>
 
-                  {/* Transaction ID Input */}
                   <div className="space-y-2">
                     <label className="block text-xs sm:text-sm font-medium text-text/70 uppercase tracking-wider">
                       Transaction ID / UTR Number *
@@ -440,8 +433,8 @@ const PlaceOrder = () => {
                       onBlur={() => validateTransactionId(transactionId)}
                       placeholder="Enter UPI transaction/reference ID"
                       className={`w-full px-3 py-2.5 sm:px-4 sm:py-3 border rounded-lg bg-white focus:outline-none focus:ring-2 transition-all font-light text-sm ${
-                        transactionIdError 
-                          ? 'border-red-300 focus:border-red-500 focus:ring-red-200' 
+                        transactionIdError
+                          ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
                           : 'border-background/50 focus:border-secondary focus:ring-secondary/20'
                       }`}
                       required
@@ -452,15 +445,12 @@ const PlaceOrder = () => {
                         <span>{transactionIdError}</span>
                       </div>
                     )}
-                    <p className="text-xs text-text/50 font-light">
-                      Found in your payment app after completing the transaction (e.g., 312345678901)
-                    </p>
+                    <p className="text-xs text-text/50 font-light">Found in your payment app after completing the transaction</p>
                   </div>
 
-                  {/* Submit Button */}
                   <button
                     onClick={handleQRSubmit}
-                    disabled={isLoading || !transactionId.trim() || transactionIdError}
+                    disabled={isLoading || !transactionId.trim() || !!transactionIdError}
                     className={`w-full py-3 sm:py-3.5 font-bold rounded-full transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base ${
                       !transactionId.trim() || transactionIdError
                         ? 'bg-background/30 text-text/40 cursor-not-allowed'
@@ -468,15 +458,9 @@ const PlaceOrder = () => {
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     {isLoading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        <span>Processing...</span>
-                      </>
+                      <><div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div><span>Processing...</span></>
                     ) : (
-                      <>
-                        <CheckCircle size={18} />
-                        <span>Confirm & Place Order</span>
-                      </>
+                      <><CheckCircle size={18} /><span>Confirm & Place Order</span></>
                     )}
                   </button>
                 </div>
@@ -486,7 +470,6 @@ const PlaceOrder = () => {
         </div>
       )}
 
-      {/* Checkout Content - Rest of the component remains the same */}
       <section className="px-4 sm:px-6 lg:px-8 pb-20">
         <div className="max-w-7xl mx-auto">
           <form onSubmit={onSubmitHandler} className="grid xl:grid-cols-[1.5fr_1fr] gap-10 mt-12">
@@ -506,149 +489,61 @@ const PlaceOrder = () => {
                 </div>
 
                 <div className="p-6 space-y-6">
-                  {/* Personal Information */}
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-text uppercase tracking-wider mb-4 flex items-center gap-2">
                       <User size={14} className="text-secondary" />
                       Personal Details
                     </h3>
-
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
-                          Full Name *
-                        </label>
-                        <input
-                          onChange={onChangeHandler}
-                          name="Name"
-                          value={formData.Name}
-                          className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
-                          type="text"
-                          placeholder="Enter your full name"
-                          required
-                        />
+                        <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">Full Name *</label>
+                        <input onChange={onChangeHandler} name="Name" value={formData.Name} className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light" type="text" placeholder="Enter your full name" required />
                       </div>
-
                       <div className="space-y-2">
-                        <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
-                          Email Address *
-                        </label>
+                        <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">Email Address *</label>
                         <div className="relative">
                           <Mail size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text/40" />
-                          <input
-                            onChange={onChangeHandler}
-                            name="email"
-                            value={formData.email}
-                            className="w-full pl-10 pr-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
-                            type="email"
-                            placeholder="you@example.com"
-                            required
-                          />
+                          <input onChange={onChangeHandler} name="email" value={formData.email} className="w-full pl-10 pr-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light" type="email" placeholder="you@example.com" required />
                         </div>
                       </div>
                     </div>
-
                     <div className="space-y-2">
-                      <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
-                        Phone Number *
-                      </label>
+                      <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">Phone Number *</label>
                       <div className="relative">
                         <Phone size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text/40" />
-                        <input
-                          onChange={onChangeHandler}
-                          name="phone"
-                          value={formData.phone}
-                          className="w-full pl-10 pr-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
-                          type="tel"
-                          placeholder="+91 1234567890"
-                          required
-                        />
+                        <input onChange={onChangeHandler} name="phone" value={formData.phone} className="w-full pl-10 pr-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light" type="tel" placeholder="+91 1234567890" required />
                       </div>
                     </div>
                   </div>
 
-                  {/* Address Information */}
                   <div className="space-y-4 pt-6 border-t border-background/30">
                     <h3 className="text-sm font-semibold text-text uppercase tracking-wider mb-4 flex items-center gap-2">
                       <MapPin size={14} className="text-secondary" />
                       Delivery Address
                     </h3>
-
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
-                          Street Address *
-                        </label>
-                        <input
-                          onChange={onChangeHandler}
-                          name="street"
-                          value={formData.street}
-                          className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
-                          type="text"
-                          placeholder="House number, street name"
-                          required
-                        />
+                        <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">Street Address *</label>
+                        <input onChange={onChangeHandler} name="street" value={formData.street} className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light" type="text" placeholder="House number, street name" required />
                       </div>
-
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
-                            City *
-                          </label>
-                          <input
-                            onChange={onChangeHandler}
-                            name="city"
-                            value={formData.city}
-                            className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
-                            type="text"
-                            placeholder="Your city"
-                            required
-                          />
+                          <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">City *</label>
+                          <input onChange={onChangeHandler} name="city" value={formData.city} className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light" type="text" placeholder="Your city" required />
                         </div>
                         <div className="space-y-2">
-                          <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
-                            State *
-                          </label>
-                          <input
-                            onChange={onChangeHandler}
-                            name="state"
-                            value={formData.state}
-                            className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
-                            type="text"
-                            placeholder="Your state"
-                            required
-                          />
+                          <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">State *</label>
+                          <input onChange={onChangeHandler} name="state" value={formData.state} className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light" type="text" placeholder="Your state" required />
                         </div>
                       </div>
-
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
-                            Postal Code *
-                          </label>
-                          <input
-                            onChange={onChangeHandler}
-                            name="pincode"
-                            value={formData.pincode}
-                            className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
-                            type="text"
-                            placeholder="ZIP/Postal code"
-                            required
-                          />
+                          <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">Postal Code *</label>
+                          <input onChange={onChangeHandler} name="pincode" value={formData.pincode} className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light" type="text" placeholder="ZIP/Postal code" required />
                         </div>
                         <div className="space-y-2">
-                          <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">
-                            Country *
-                          </label>
-                          <input
-                            onChange={onChangeHandler}
-                            name="country"
-                            value={formData.country}
-                            className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
-                            type="text"
-                            placeholder="Your country"
-                            required
-                          />
+                          <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">Country *</label>
+                          <input onChange={onChangeHandler} name="country" value={formData.country} className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light" type="text" placeholder="Your country" required />
                         </div>
                       </div>
                     </div>
@@ -659,14 +554,7 @@ const PlaceOrder = () => {
                     <div className="bg-background/10 rounded-xl p-5">
                       <div className="flex items-start gap-3">
                         <div className="flex items-center mt-1">
-                          <input
-                            type="checkbox"
-                            id="agree-terms"
-                            checked={agreeToTerms}
-                            onChange={(e) => setAgreeToTerms(e.target.checked)}
-                            className="w-5 h-5 text-secondary bg-white border-background/50 focus:ring-secondary focus:ring-2 cursor-pointer rounded"
-                            required
-                          />
+                          <input type="checkbox" id="agree-terms" checked={agreeToTerms} onChange={(e) => setAgreeToTerms(e.target.checked)} className="w-5 h-5 text-secondary bg-white border-background/50 focus:ring-secondary focus:ring-2 cursor-pointer rounded" required />
                         </div>
                         <div className="flex-1">
                           <label htmlFor="agree-terms" className="block text-sm text-text/80 cursor-pointer leading-relaxed font-light">
@@ -678,7 +566,6 @@ const PlaceOrder = () => {
                           </label>
                         </div>
                       </div>
-
                       {!agreeToTerms && (
                         <div className="mt-3 p-3 bg-red-50 rounded-lg">
                           <p className="text-xs text-red-600 flex items-center gap-2 font-medium">
@@ -695,22 +582,10 @@ const PlaceOrder = () => {
                         Key Policy Highlights
                       </h4>
                       <ul className="text-xs text-text/70 space-y-2 font-light">
-                        <li className="flex items-start gap-2">
-                          <span className="text-secondary mt-0.5">•</span>
-                          <span>Processing time: 0-7 days from order confirmation</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-secondary mt-0.5">•</span>
-                          <span>Shipping via registered courier services (domestic & international)</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-secondary mt-0.5">•</span>
-                          <span>Aarovi ensures timely handover to courier companies</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-secondary mt-0.5">•</span>
-                          <span>Support available at +91 9063284008 or aaroviofficial@gmail.com</span>
-                        </li>
+                        <li className="flex items-start gap-2"><span className="text-secondary mt-0.5">•</span><span>Processing time: 0-7 days from order confirmation</span></li>
+                        <li className="flex items-start gap-2"><span className="text-secondary mt-0.5">•</span><span>Shipping via registered courier services (domestic & international)</span></li>
+                        <li className="flex items-start gap-2"><span className="text-secondary mt-0.5">•</span><span>Aarovi ensures timely handover to courier companies</span></li>
+                        <li className="flex items-start gap-2"><span className="text-secondary mt-0.5">•</span><span>Support available at +91 9063284008 or aaroviofficial@gmail.com</span></li>
                       </ul>
                     </div>
                   </div>
@@ -730,11 +605,10 @@ const PlaceOrder = () => {
                     </div>
                   </div>
                 </div>
-
                 <div className="p-6 space-y-3">
                   <PaymentOption method={method} setMethod={setMethod} type="qr" />
                   {/* <PaymentOption method={method} setMethod={setMethod} type="razorpay" logo={assets.razorpay_logo} /> */}
-                  {/* <PaymentOption method={method} setMethod={setMethod} type="cod" /> */}
+                  <PaymentOption method={method} setMethod={setMethod} type="cod" />
                 </div>
               </div>
             </div>
@@ -753,41 +627,26 @@ const PlaceOrder = () => {
                     </div>
                   </div>
                 </div>
-
                 <div className="p-6 space-y-6">
                   <CartTotal />
-
                   <div className="space-y-3 pt-6 border-t border-background/30">
                     <button
                       type="submit"
                       disabled={isLoading || !agreeToTerms}
-                      className={`group w-full py-4 font-bold rounded-full transition-all duration-300 flex items-center justify-center gap-3 ${!agreeToTerms
-                          ? 'bg-background/30 text-text/40 cursor-not-allowed'
-                          : 'bg-secondary text-white hover:bg-secondary/90'
-                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      className={`group w-full py-4 font-bold rounded-full transition-all duration-300 flex items-center justify-center gap-3 ${
+                        !agreeToTerms ? 'bg-background/30 text-text/40 cursor-not-allowed' : 'bg-secondary text-white hover:bg-secondary/90'
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       {isLoading ? (
-                        <>
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                          <span>Processing...</span>
-                        </>
+                        <><div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div><span>Processing...</span></>
                       ) : (
-                        <>
-                          <span>{method === 'qr' ? 'Proceed to Payment' : 'Place Order'}</span>
-                        </>
+                        <span>{method === 'qr' ? 'Proceed to Payment' : 'Place Order'}</span>
                       )}
                     </button>
-
-                    <button
-                      type="button"
-                      onClick={() => navigate('/cart')}
-                      className="w-full py-4 bg-background/30 text-text font-semibold rounded-full hover:bg-background/50 transition-all duration-300 flex items-center justify-center gap-2"
-                    >
+                    <button type="button" onClick={() => navigate('/cart')} className="w-full py-4 bg-background/30 text-text font-semibold rounded-full hover:bg-background/50 transition-all duration-300 flex items-center justify-center gap-2">
                       <span>Back to Cart</span>
                     </button>
                   </div>
-
-                  {/* Security Badge */}
                   <div className="pt-4 border-t border-background/30">
                     <div className="flex items-center justify-center gap-2 text-xs text-text/60 font-medium bg-green-50 py-3 rounded-xl">
                       <Shield size={16} className="text-green-600" />
@@ -809,11 +668,14 @@ const PlaceOrder = () => {
             <p className="text-base font-bold text-secondary">₹{(getCartAmount() + delivery_fee).toLocaleString()}</p>
           </div>
           <button
-            onClick={onSubmitHandler}
+            onClick={(e) => { e.preventDefault(); onSubmitHandler(e); }}
             disabled={isLoading || !agreeToTerms}
             className="flex-shrink-0 px-6 py-3 bg-secondary text-white rounded-xl text-sm font-semibold disabled:opacity-40 flex items-center gap-2"
           >
-            {isLoading ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><CreditCard size={15} />{method === 'qr' ? 'Pay Now' : 'Place Order'}</>}
+            {isLoading
+              ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              : <><CreditCard size={15} />{method === 'qr' ? 'Pay Now' : 'Place Order'}</>
+            }
           </button>
         </div>
       </div>
@@ -824,21 +686,17 @@ const PlaceOrder = () => {
 const PaymentOption = ({ method, setMethod, type, logo }) => (
   <div
     onClick={() => setMethod(type)}
-    className={`group flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-all duration-300 ${method === type
-        ? 'border-secondary bg-secondary/5 shadow-lg'
-        : 'border-background/50 hover:border-background hover:shadow-md'
-      }`}
+    className={`group flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-all duration-300 ${
+      method === type ? 'border-secondary bg-secondary/5 shadow-lg' : 'border-background/50 hover:border-background hover:shadow-md'
+    }`}
   >
-    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${method === type ? 'border-secondary' : 'border-background/50'
-      }`}>
+    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${method === type ? 'border-secondary' : 'border-background/50'}`}>
       {method === type && <div className="w-2.5 h-2.5 bg-secondary rounded-full"></div>}
     </div>
 
     {type === 'qr' ? (
       <div className="flex items-center gap-3 flex-1">
-        <div className="bg-background/20 p-2 rounded-lg group-hover:bg-background/30 transition-colors">
-          <QrCode size={18} className="text-text" />
-        </div>
+        <div className="bg-background/20 p-2 rounded-lg group-hover:bg-background/30 transition-colors"><QrCode size={18} className="text-text" /></div>
         <div className="flex flex-col">
           <span className="font-semibold text-text">QR Code Payment</span>
           <span className="text-xs text-text/50 font-light">Pay via UPI by scanning QR code</span>
@@ -854,9 +712,7 @@ const PaymentOption = ({ method, setMethod, type, logo }) => (
       </div>
     ) : (
       <div className="flex items-center gap-3 flex-1">
-        <div className="bg-background/20 p-2 rounded-lg group-hover:bg-background/30 transition-colors">
-          <Package size={18} className="text-text" />
-        </div>
+        <div className="bg-background/20 p-2 rounded-lg group-hover:bg-background/30 transition-colors"><Package size={18} className="text-text" /></div>
         <div className="flex flex-col">
           <span className="font-semibold text-text">Cash on Delivery</span>
           <span className="text-xs text-text/50 font-light">Pay when you receive your order</span>

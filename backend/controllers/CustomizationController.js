@@ -622,14 +622,15 @@ const getAllCustomizationsAdmin = async (req, res) => {
     const customizations = await customizationModel
       .find()
       .sort({ createdAt: -1 })
+      .populate('userId', 'name email phone')
       .lean();
-
+ 
     return res.status(200).json({
       success: true,
       customizations: customizations || [],
       count: customizations.length
     });
-
+ 
   } catch (error) {
     console.error("Get All Customizations Admin Error:", error);
     return res.status(500).json({
@@ -642,41 +643,55 @@ const getAllCustomizationsAdmin = async (req, res) => {
 const updateCustomizationStatusAdmin = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
-
+    const { status, size } = req.body;
+ 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
         message: "Invalid customization ID"
       });
     }
-
-    const validStatuses = ["Draft", "Submitted", "In Review", "In Production", "Ready", "Delivered"];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
-      });
-    }
-
+ 
     const customization = await customizationModel.findById(id);
-
     if (!customization) {
       return res.status(404).json({
         success: false,
         message: "Customization not found"
       });
     }
-
-    customization.status = status;
+ 
+    // ── Update status ────────────────────────────────────────────────────────
+    if (status !== undefined) {
+      const validStatuses = ["Draft", "Submitted", "In Review", "In Production", "Ready", "Delivered"];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+        });
+      }
+      customization.status = status;
+    }
+ 
+    // ── Update size (admin override) ─────────────────────────────────────────
+    if (size !== undefined) {
+      const validSizes = ['', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+      if (!validSizes.includes(size)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid size. Must be one of: ${validSizes.filter(Boolean).join(', ')}`
+        });
+      }
+      customization.size = size || null;
+    }
+ 
     await customization.save();
-
+ 
     res.json({
       success: true,
-      message: "Status updated successfully",
+      message: "Customization updated successfully",
       customization
     });
-
+ 
   } catch (error) {
     console.error("Update Customization Status Admin Error:", error);
     res.status(500).json({

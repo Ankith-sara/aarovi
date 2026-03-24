@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
 import DesignCanvas from "../components/DesignCanvas";
@@ -12,7 +12,6 @@ import {
 
 const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
-// Map dress type → YouTube video ID for "how to measure" reference
 const MEASURE_VIDEOS = {
   'Kurti':      'xnBSSNgL5yY',
   'Kurti Sets': 'xnBSSNgL5yY',
@@ -39,11 +38,6 @@ const SizeButton = ({ size, selected, onClick }) => (
     `}
   >
     {size}
-    {selected && (
-      <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-        <CheckCircle2 size={10} className="text-white" />
-      </span>
-    )}
   </button>
 );
 
@@ -72,7 +66,9 @@ const VideoModal = ({ videoId, title, onClose }) => (
         />
       </div>
       <div className="px-6 py-3 bg-gray-50 text-center">
-        <p className="text-xs text-text/50 font-light">Reference video — your garment will be stitched to your selected size's standard measurements.</p>
+        <p className="text-xs text-text/50 font-light">
+          Reference video — your garment will be stitched to your selected size's standard measurements.
+        </p>
       </div>
     </div>
   </div>
@@ -81,7 +77,11 @@ const VideoModal = ({ videoId, title, onClose }) => (
 // ── Main Component ─────────────────────────────────────────────────────────
 
 const Customize = () => {
-  const { saveCustomization, addCustomizationToCart, token, navigate } = useContext(ShopContext);
+  const { saveCustomization, updateCustomization, addCustomizationToCart, token, navigate } = useContext(ShopContext);
+
+  // savedDraftId tracks whether we've already persisted this session's design,
+  // so Add to Cart reuses (updates) the same document rather than creating a duplicate.
+  const savedDraftId = useRef(null);
 
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
@@ -89,9 +89,9 @@ const Customize = () => {
     dressType: "",
     fabric: "",
     color: "#ffffff",
-    size: "",             // ← replaces manual measurements
-    neckStyle: "",        // optional — lifted from DesignCanvas
-    sleeveStyle: "",      // optional — lifted from DesignCanvas
+    size: "",
+    neckStyle: "",
+    sleeveStyle: "",
     designNotes: "",
     aiPrompt: "",
     referenceImages: [],
@@ -107,7 +107,6 @@ const Customize = () => {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
 
-  // Modals
   const [showSizeChart, setShowSizeChart] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
 
@@ -121,7 +120,7 @@ const Customize = () => {
     "Lehenga":    { "Banarasi": 8500, "Georgette": 5500, "Chiffon": 6200, "Crape": 5800, "Tissue": 7200, "Pattu": 9500 },
     "Anarkali":   { "Georgette": 4200, "Chiffon": 4500, "Crape": 3800, "Tissue": 5200, "Pattu": 6500, "Banarasi": 7200, "Cotton": 2800 },
     "Sherwani":   { "Raw Silk": 6500, "Velvet": 8200, "Banarasi": 9500 },
-    "Sheraras":   { "Georgette": 5800, "Banarasi": 8200, "Silk": 6800, "Chiffon": 6200, "Crape": 5500 }
+    "Sheraras":   { "Georgette": 5800, "Banarasi": 8200, "Silk": 6800, "Chiffon": 6200, "Crape": 5500 },
   };
 
   const calculatePrice = () => {
@@ -133,28 +132,28 @@ const Customize = () => {
 
   const dressTypes = {
     Women: [
-      { value: "Kurti", label: "Kurti" },
+      { value: "Kurti",      label: "Kurti" },
       { value: "Kurti Sets", label: "Kurti Sets" },
-      { value: "Lehenga", label: "Lehenga" },
-      { value: "Sheraras", label: "Sheraras" },
-      { value: "Anarkali", label: "Anarkali" }
+      { value: "Lehenga",    label: "Lehenga" },
+      { value: "Sheraras",   label: "Sheraras" },
+      { value: "Anarkali",   label: "Anarkali" },
     ],
     Men: [
-      { value: "Kurta", label: "Kurta" },
+      { value: "Kurta",      label: "Kurta" },
       { value: "Kurta Sets", label: "Kurta Sets" },
-      { value: "Sherwani", label: "Sherwani" }
-    ]
+      { value: "Sherwani",   label: "Sherwani" },
+    ],
   };
 
   const fabricOptions = {
-    "Kurti":      [{ value: "Cotton", label: "Cotton", description: "Breathable & Comfortable" },{ value: "Silk", label: "Silk", description: "Luxurious & Elegant" },{ value: "Georgette", label: "Georgette", description: "Lightweight & Flowy" },{ value: "Kota", label: "Kota", description: "Traditional & Airy" },{ value: "Chiffon", label: "Chiffon", description: "Delicate & Sheer" },{ value: "Crape", label: "Crape", description: "Textured & Stylish" },{ value: "Lenin", label: "Lenin", description: "Crisp & Natural" },{ value: "Chanderi", label: "Chanderi", description: "Premium Handloom" },{ value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" }],
-    "Kurti Sets": [{ value: "Cotton", label: "Cotton", description: "Breathable & Comfortable" },{ value: "Silk", label: "Silk", description: "Luxurious & Elegant" },{ value: "Georgette", label: "Georgette", description: "Lightweight & Flowy" },{ value: "Kota", label: "Kota", description: "Traditional & Airy" },{ value: "Chiffon", label: "Chiffon", description: "Delicate & Sheer" },{ value: "Crape", label: "Crape", description: "Textured & Stylish" },{ value: "Lenin", label: "Lenin", description: "Crisp & Natural" },{ value: "Chanderi", label: "Chanderi", description: "Premium Handloom" },{ value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" }],
-    "Sheraras":   [{ value: "Georgette", label: "Georgette", description: "Lightweight & Flowy" },{ value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" },{ value: "Silk", label: "Silk", description: "Luxurious & Elegant" },{ value: "Chiffon", label: "Chiffon", description: "Delicate & Sheer" },{ value: "Crape", label: "Crape", description: "Textured & Stylish" }],
-    "Lehenga":    [{ value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" },{ value: "Georgette", label: "Georgette", description: "Lightweight & Flowy" },{ value: "Chiffon", label: "Chiffon", description: "Delicate & Sheer" },{ value: "Crape", label: "Crape", description: "Textured & Stylish" },{ value: "Tissue", label: "Tissue", description: "Shimmering & Festive" },{ value: "Pattu", label: "Pattu", description: "Rich Silk Tradition" }],
-    "Anarkali":   [{ value: "Georgette", label: "Georgette", description: "Lightweight & Flowy" },{ value: "Chiffon", label: "Chiffon", description: "Delicate & Sheer" },{ value: "Crape", label: "Crape", description: "Textured & Stylish" },{ value: "Tissue", label: "Tissue", description: "Shimmering & Festive" },{ value: "Pattu", label: "Pattu", description: "Rich Silk Tradition" },{ value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" },{ value: "Cotton", label: "Cotton", description: "Breathable & Comfortable" }],
-    "Kurta":      [{ value: "Cotton", label: "Cotton", description: "Breathable & Comfortable" },{ value: "Raw Silk", label: "Raw Silk", description: "Natural Elegance" },{ value: "Lenin", label: "Lenin", description: "Crisp & Natural" },{ value: "Velvet", label: "Velvet", description: "Luxe & Sophisticated" },{ value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" }],
-    "Kurta Sets": [{ value: "Cotton", label: "Cotton", description: "Breathable & Comfortable" },{ value: "Raw Silk", label: "Raw Silk", description: "Natural Elegance" },{ value: "Lenin", label: "Lenin", description: "Crisp & Natural" },{ value: "Velvet", label: "Velvet", description: "Luxe & Sophisticated" },{ value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" }],
-    "Sherwani":   [{ value: "Raw Silk", label: "Raw Silk", description: "Natural Elegance" },{ value: "Velvet", label: "Velvet", description: "Luxe & Sophisticated" },{ value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" }]
+    "Kurti":      [{ value: "Cotton", label: "Cotton", description: "Breathable & Comfortable" }, { value: "Silk", label: "Silk", description: "Luxurious & Elegant" }, { value: "Georgette", label: "Georgette", description: "Lightweight & Flowy" }, { value: "Kota", label: "Kota", description: "Traditional & Airy" }, { value: "Chiffon", label: "Chiffon", description: "Delicate & Sheer" }, { value: "Crape", label: "Crape", description: "Textured & Stylish" }, { value: "Lenin", label: "Lenin", description: "Crisp & Natural" }, { value: "Chanderi", label: "Chanderi", description: "Premium Handloom" }, { value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" }],
+    "Kurti Sets": [{ value: "Cotton", label: "Cotton", description: "Breathable & Comfortable" }, { value: "Silk", label: "Silk", description: "Luxurious & Elegant" }, { value: "Georgette", label: "Georgette", description: "Lightweight & Flowy" }, { value: "Kota", label: "Kota", description: "Traditional & Airy" }, { value: "Chiffon", label: "Chiffon", description: "Delicate & Sheer" }, { value: "Crape", label: "Crape", description: "Textured & Stylish" }, { value: "Lenin", label: "Lenin", description: "Crisp & Natural" }, { value: "Chanderi", label: "Chanderi", description: "Premium Handloom" }, { value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" }],
+    "Sheraras":   [{ value: "Georgette", label: "Georgette", description: "Lightweight & Flowy" }, { value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" }, { value: "Silk", label: "Silk", description: "Luxurious & Elegant" }, { value: "Chiffon", label: "Chiffon", description: "Delicate & Sheer" }, { value: "Crape", label: "Crape", description: "Textured & Stylish" }],
+    "Lehenga":    [{ value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" }, { value: "Georgette", label: "Georgette", description: "Lightweight & Flowy" }, { value: "Chiffon", label: "Chiffon", description: "Delicate & Sheer" }, { value: "Crape", label: "Crape", description: "Textured & Stylish" }, { value: "Tissue", label: "Tissue", description: "Shimmering & Festive" }, { value: "Pattu", label: "Pattu", description: "Rich Silk Tradition" }],
+    "Anarkali":   [{ value: "Georgette", label: "Georgette", description: "Lightweight & Flowy" }, { value: "Chiffon", label: "Chiffon", description: "Delicate & Sheer" }, { value: "Crape", label: "Crape", description: "Textured & Stylish" }, { value: "Tissue", label: "Tissue", description: "Shimmering & Festive" }, { value: "Pattu", label: "Pattu", description: "Rich Silk Tradition" }, { value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" }, { value: "Cotton", label: "Cotton", description: "Breathable & Comfortable" }],
+    "Kurta":      [{ value: "Cotton", label: "Cotton", description: "Breathable & Comfortable" }, { value: "Raw Silk", label: "Raw Silk", description: "Natural Elegance" }, { value: "Lenin", label: "Lenin", description: "Crisp & Natural" }, { value: "Velvet", label: "Velvet", description: "Luxe & Sophisticated" }, { value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" }],
+    "Kurta Sets": [{ value: "Cotton", label: "Cotton", description: "Breathable & Comfortable" }, { value: "Raw Silk", label: "Raw Silk", description: "Natural Elegance" }, { value: "Lenin", label: "Lenin", description: "Crisp & Natural" }, { value: "Velvet", label: "Velvet", description: "Luxe & Sophisticated" }, { value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" }],
+    "Sherwani":   [{ value: "Raw Silk", label: "Raw Silk", description: "Natural Elegance" }, { value: "Velvet", label: "Velvet", description: "Luxe & Sophisticated" }, { value: "Banarasi", label: "Banarasi", description: "Regal & Ornate" }],
   };
 
   const getAvailableFabrics = () => fabricOptions[form.dressType] || [];
@@ -167,34 +166,25 @@ const Customize = () => {
   const onTouchEnd   = () => {
     if (!touchStart || !touchEnd) return;
     const distance = touchStart - touchEnd;
-    if (distance > minSwipeDistance  && step < 3 && validateStep(step)) setStep(step + 1);
+    if (distance >  minSwipeDistance && step < 3 && validateStep(step)) setStep(step + 1);
     if (distance < -minSwipeDistance && step > 1) setStep(step - 1);
   };
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
   const handleDesignChange = (designData) => {
-    setForm({
-      ...form,
+    setForm(prev => ({
+      ...prev,
       canvasDesign: designData,
-      color: designData.color,
-      // Lift neckStyle and sleeveStyle up to top-level so backend stores them
-      neckStyle: designData.neckStyle || form.neckStyle || '',
-      sleeveStyle: designData.sleeveStyle || form.sleeveStyle || '',
-    });
+      color:        designData.color,
+      neckStyle:    designData.neckStyle  || prev.neckStyle  || '',
+      sleeveStyle:  designData.sleeveStyle || prev.sleeveStyle || '',
+    }));
   };
 
-  const handleGenderChange = (gender) => {
-    setForm({ ...form, gender, dressType: "", fabric: "", size: "" });
-  };
-
-  const handleDressTypeChange = (dressType) => {
-    setForm({ ...form, dressType, fabric: "", size: "" });
-  };
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleGenderChange    = (gender)    => setForm(prev => ({ ...prev, gender,    dressType: "", fabric: "", size: "" }));
+  const handleDressTypeChange = (dressType) => setForm(prev => ({ ...prev, dressType, fabric: "", size: "" }));
+  const handleChange          = (e)         => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleImageChange = async (e) => {
     const files = Array.from(e.target.files);
@@ -203,14 +193,14 @@ const Customize = () => {
       const base64Images = await Promise.all(
         files.map(file => new Promise((resolve, reject) => {
           const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
+          reader.onload  = () => resolve(reader.result);
           reader.onerror = reject;
           reader.readAsDataURL(file);
         }))
       );
-      setForm({ ...form, referenceImages: base64Images });
+      setForm(prev => ({ ...prev, referenceImages: base64Images }));
       toast.success(`${files.length} image(s) uploaded`);
-    } catch (err) {
+    } catch {
       toast.error("Failed to upload images");
     }
   };
@@ -219,14 +209,17 @@ const Customize = () => {
     if (!form.aiPrompt.trim()) { toast.error("Please enter a design description"); return; }
     try {
       setAiGenerating(true);
-      toast.info("AI is generating your design...");
+      toast.info("AI is generating your design…");
       const response = await fetch("/api/generate-design", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: form.aiPrompt, dressType: form.dressType, fabric: form.fabric, gender: form.gender }),
+        body: JSON.stringify({
+          prompt: form.aiPrompt, dressType: form.dressType,
+          fabric: form.fabric,   gender: form.gender,
+        }),
       });
       if (response.ok) {
-        const data = await response.json();
+        const data   = await response.json();
         const design = JSON.parse(data.structuredDesign || '{}');
         if (design.colorPalette?.[0]) setForm(prev => ({ ...prev, color: design.colorPalette[0] }));
         setForm(prev => ({ ...prev, designNotes: design.tailorNotes || form.aiPrompt, aiGeneratedDesign: design }));
@@ -234,7 +227,7 @@ const Customize = () => {
       } else {
         throw new Error("AI generation failed");
       }
-    } catch (err) {
+    } catch {
       setForm(prev => ({ ...prev, designNotes: form.aiPrompt }));
       toast.info("Design description added to notes");
     } finally {
@@ -247,45 +240,76 @@ const Customize = () => {
       if (!form.gender)    { toast.error("Please select gender");     return false; }
       if (!form.dressType) { toast.error("Please select dress type"); return false; }
       if (!form.fabric)    { toast.error("Please select fabric");     return false; }
-      return true;
     }
     if (stepNum === 2) {
       if (!form.color) { toast.error("Please select a color"); return false; }
-      return true;
     }
     return true;
   };
 
   const validateSize = () => {
-    if (!form.size) { toast.error("Please select a size to add to cart"); return false; }
+    if (!form.size) {
+      toast.error("Please select a size before adding to cart");
+      return false;
+    }
     return true;
   };
 
+  // ── Save Draft (explicit user action only) ────────────────────────────────
+  // This persists the design to the DB as status "Draft".
+  // The customization will only appear in the admin panel after the user
+  // places an order (status changes to "In Production" / "Submitted").
   const handleSaveDraft = async () => {
     if (!token) { toast.error("Please login to save"); navigate("/login"); return; }
     try {
       setLoading(true);
-      const result = await saveCustomization({ ...form, estimatedPrice: calculatePrice() });
+      const payload = { ...form, estimatedPrice: calculatePrice() };
+
+      let result;
+      if (savedDraftId.current) {
+        // Update existing draft — don't create a duplicate
+        result = await updateCustomization(savedDraftId.current, payload);
+      } else {
+        result = await saveCustomization(payload);
+        if (result?._id) savedDraftId.current = result._id;
+      }
+
       if (result) toast.success("Customization saved as draft");
-    } catch (err) {
+    } catch {
       toast.error("Failed to save draft");
     } finally {
       setLoading(false);
     }
   };
 
+  // ── Add to Cart ───────────────────────────────────────────────────────────
+  // Saves (or updates) the customization as "Submitted", then adds to cart.
+  // The admin will only see it once the order is actually placed at checkout.
   const handleAddToCart = async () => {
     if (!token) { toast.error("Please login to add to cart"); navigate("/login"); return; }
     if (!validateSize()) return;
+
     try {
       setLoading(true);
-      const customizationData = { ...form, estimatedPrice: calculatePrice(), status: "Ready for Cart" };
-      const result = await saveCustomization(customizationData);
-      if (result?._id) {
-        const added = await addCustomizationToCart(result);
-        if (added) { toast.success("Custom design added to cart"); navigate("/cart"); }
+      const payload = { ...form, estimatedPrice: calculatePrice() };
+
+      let savedResult;
+      if (savedDraftId.current) {
+        // Reuse the existing draft document — update it with the latest data
+        savedResult = await updateCustomization(savedDraftId.current, { ...payload, status: "Submitted" });
+      } else {
+        savedResult = await saveCustomization(payload);
+        if (savedResult?._id) savedDraftId.current = savedResult._id;
       }
-    } catch (err) {
+
+      if (savedResult?._id) {
+        const added = await addCustomizationToCart(savedResult);
+        if (added) {
+          toast.success("Custom design added to cart");
+          navigate("/cart");
+        }
+      }
+    } catch {
       toast.error("Failed to add to cart");
     } finally {
       setLoading(false);
@@ -293,7 +317,7 @@ const Customize = () => {
   };
 
   const estimatedPrice = calculatePrice();
-  const videoId = MEASURE_VIDEOS[form.dressType] || DEFAULT_VIDEO;
+  const videoId        = MEASURE_VIDEOS[form.dressType] || DEFAULT_VIDEO;
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -302,7 +326,7 @@ const Customize = () => {
       {/* Hero */}
       <section className="relative py-12 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-background/10 via-primary/5 to-transparent" />
-        <div className="max-w-7xl mx-auto relative z-10 text-center max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto relative z-10 text-center">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-4 leading-tight">
             Design Your Custom Outfit
           </h1>
@@ -317,17 +341,19 @@ const Customize = () => {
         <div className="mb-8 sm:mb-12 bg-white rounded-xl shadow-md border border-background/20 p-5 sm:p-6">
           <div className="flex items-center justify-between">
             {[
-              { num: 1, label: "Basic Details", icon: Shirt },
+              { num: 1, label: "Basic Details",   icon: Shirt   },
               { num: 2, label: "Design & Colors", icon: Palette },
-              { num: 3, label: "Size & Notes", icon: Ruler }
+              { num: 3, label: "Size & Notes",    icon: Ruler   },
             ].map((s, idx) => {
-              const Icon = s.icon;
-              const isActive = step === s.num;
+              const Icon        = s.icon;
+              const isActive    = step === s.num;
               const isCompleted = step > s.num;
               return (
                 <React.Fragment key={s.num}>
                   <div className="flex flex-col items-center flex-1">
-                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${isActive ? "bg-secondary text-white shadow-lg" : isCompleted ? "bg-green-500 text-white shadow-md" : "bg-gray-100 text-gray-400 border-2 border-gray-200"}`}>
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center font-semibold transition-all duration-300
+                      ${isActive ? "bg-secondary text-white shadow-lg" : isCompleted ? "bg-green-500 text-white shadow-md" : "bg-gray-100 text-gray-400 border-2 border-gray-200"}`}
+                    >
                       {isCompleted ? <CheckCircle2 size={24} /> : <Icon size={24} />}
                     </div>
                     <span className={`text-xs sm:text-sm mt-3 font-semibold text-center transition-colors ${step >= s.num ? "text-text" : "text-text/40"}`}>
@@ -335,7 +361,9 @@ const Customize = () => {
                     </span>
                   </div>
                   {idx < 2 && (
-                    <div className="hidden sm:block flex-1 h-0.5 mx-4 transition-all duration-300" style={{ backgroundColor: step > s.num ? '#10b981' : step === s.num ? 'var(--secondary)' : '#e5e7eb' }} />
+                    <div className="hidden sm:block flex-1 h-0.5 mx-4 transition-all duration-300"
+                      style={{ backgroundColor: step > s.num ? '#10b981' : step === s.num ? 'var(--secondary)' : '#e5e7eb' }}
+                    />
                   )}
                 </React.Fragment>
               );
@@ -369,7 +397,8 @@ const Customize = () => {
                 <div className="grid grid-cols-2 gap-4 sm:gap-5">
                   {["Women", "Men"].map((gender) => (
                     <button key={gender} onClick={() => handleGenderChange(gender)}
-                      className={`group relative p-6 rounded-xl border-2 transition-all duration-300 ${form.gender === gender ? "border-secondary bg-background/20 shadow-md" : "border-gray-200 hover:border-secondary/40 hover:shadow-sm"}`}>
+                      className={`group relative p-6 rounded-xl border-2 transition-all duration-300
+                        ${form.gender === gender ? "border-secondary bg-background/20 shadow-md" : "border-gray-200 hover:border-secondary/40 hover:shadow-sm"}`}>
                       <div className="text-center">
                         <div className="font-bold text-lg sm:text-xl text-text">{gender}</div>
                       </div>
@@ -393,7 +422,8 @@ const Customize = () => {
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
                     {dressTypes[form.gender].map((dress) => (
                       <button key={dress.value} onClick={() => handleDressTypeChange(dress.value)}
-                        className={`p-4 flex flex-row gap-2 justify-center items-center rounded-xl border-2 transition-all duration-300 ${form.dressType === dress.value ? "border-secondary bg-background/20 shadow-md" : "border-gray-200 hover:border-secondary/40 hover:shadow-sm"}`}>
+                        className={`p-4 flex flex-row gap-2 justify-center items-center rounded-xl border-2 transition-all duration-300
+                          ${form.dressType === dress.value ? "border-secondary bg-background/20 shadow-md" : "border-gray-200 hover:border-secondary/40 hover:shadow-sm"}`}>
                         {form.dressType === dress.value && <CheckCircle2 size={16} className="text-secondary" />}
                         <div className="font-semibold text-sm text-text text-center">{dress.label}</div>
                       </button>
@@ -413,8 +443,9 @@ const Customize = () => {
                     {getAvailableFabrics().map((fabric) => {
                       const price = PRICING_MATRIX[form.dressType]?.[fabric.value] || 0;
                       return (
-                        <button key={fabric.value} onClick={() => setForm({ ...form, fabric: fabric.value })}
-                          className={`p-5 rounded-xl border-2 transition-all duration-300 text-left ${form.fabric === fabric.value ? "border-secondary bg-background/20 shadow-md" : "border-gray-200 hover:border-secondary/40 hover:shadow-sm"}`}>
+                        <button key={fabric.value} onClick={() => setForm(prev => ({ ...prev, fabric: fabric.value }))}
+                          className={`p-5 rounded-xl border-2 transition-all duration-300 text-left
+                            ${form.fabric === fabric.value ? "border-secondary bg-background/20 shadow-md" : "border-gray-200 hover:border-secondary/40 hover:shadow-sm"}`}>
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex-1">
                               <div className="font-bold text-base text-text mb-1">{fabric.label}</div>
@@ -451,7 +482,9 @@ const Customize = () => {
                   <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">Step 2 of 3</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-serif font-bold text-text mb-3">Customise Your Design</h2>
-                <p className="text-sm sm:text-base text-text/60 font-light max-w-2xl mx-auto">Choose colours and add patterns to different zones of your garment</p>
+                <p className="text-sm sm:text-base text-text/60 font-light max-w-2xl mx-auto">
+                  Choose colours and add patterns to different zones of your garment
+                </p>
               </div>
 
               <DesignCanvas
@@ -462,7 +495,7 @@ const Customize = () => {
                 gender={form.gender}
                 fabric={form.fabric}
                 aiPrompt={form.aiPrompt}
-                onAIPromptChange={(value) => setForm({ ...form, aiPrompt: value })}
+                onAIPromptChange={(value) => setForm(prev => ({ ...prev, aiPrompt: value }))}
                 onAIGenerate={handleAIGenerate}
                 aiGenerating={aiGenerating}
               />
@@ -477,28 +510,33 @@ const Customize = () => {
                       <p className="text-sm text-purple-700 font-semibold mb-3">Recommended Colour Palette</p>
                       <div className="flex gap-3">
                         {form.aiGeneratedDesign.colorPalette.map((color, i) => (
-                          <button key={i} onClick={() => setForm(prev => ({ ...prev, color }))}
+                          <button key={i}
+                            onClick={() => setForm(prev => ({ ...prev, color }))}
                             className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg border-2 border-white shadow-md hover:scale-110 transition-transform"
-                            style={{ backgroundColor: color }} />
+                            style={{ backgroundColor: color }}
+                          />
                         ))}
                       </div>
                     </div>
                   )}
                   {form.aiGeneratedDesign.tailorNotes && (
                     <div className="text-sm text-purple-700 bg-purple-50 rounded-lg p-4 border border-purple-200">
-                      <strong className="block mb-1">Tailor Notes:</strong>{form.aiGeneratedDesign.tailorNotes}
+                      <strong className="block mb-1">Tailor Notes:</strong>
+                      {form.aiGeneratedDesign.tailorNotes}
                     </div>
                   )}
                 </div>
               )}
 
               <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
-                <button onClick={() => setStep(1)} className="px-6 sm:px-8 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-secondary/5 transition-all font-semibold flex items-center gap-2">
+                <button onClick={() => setStep(1)}
+                  className="px-6 sm:px-8 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-secondary/5 transition-all font-semibold flex items-center gap-2">
                   <ArrowLeft size={18} /><span>Back</span>
                 </button>
                 <button onClick={() => { if (validateStep(2)) setStep(3); }}
                   className="group px-8 sm:px-10 py-3 bg-secondary text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2 font-semibold">
-                  <span>Continue</span><ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                  <span>Continue</span>
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>
@@ -531,36 +569,31 @@ const Customize = () => {
                       <p className="text-xs text-text/50 font-light">Required to add to cart</p>
                     </div>
                   </div>
-
-                  {/* Help buttons */}
                   <div className="flex gap-2 flex-wrap">
                     <button
                       onClick={() => setShowSizeChart(true)}
                       className="flex items-center gap-2 text-sm font-semibold text-secondary border-2 border-secondary rounded-lg px-4 py-2 hover:bg-secondary/10 transition-all"
                     >
-                      <Info size={15} />
-                      Size Chart
+                      <Info size={15} />Size Chart
                     </button>
                     {form.dressType && (
                       <button
                         onClick={() => setShowVideo(true)}
                         className="flex items-center gap-2 text-sm font-semibold text-white bg-secondary rounded-lg px-4 py-2 hover:bg-secondary/80 transition-all shadow-sm"
                       >
-                        <PlayCircle size={15} />
-                        How to measure
+                        <PlayCircle size={15} />How to measure
                       </button>
                     )}
                   </div>
                 </div>
 
-                {/* Size pills */}
                 <div className="flex flex-wrap gap-3 justify-center sm:justify-start mb-4">
                   {SIZE_ORDER.map(size => (
                     <SizeButton
                       key={size}
                       size={size}
                       selected={form.size === size}
-                      onClick={(s) => setForm({ ...form, size: form.size === s ? '' : s })}
+                      onClick={(s) => setForm(prev => ({ ...prev, size: prev.size === s ? '' : s }))}
                     />
                   ))}
                 </div>
@@ -610,7 +643,8 @@ const Customize = () => {
                   placeholder="Share your vision: embroidery preferences, colour combinations, traditional or modern look, special occasions, or any specific requirements"
                   onChange={handleChange}
                   className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 h-32 focus:border-secondary focus:outline-none transition-all resize-none text-sm"
-                  rows="4" />
+                  rows="4"
+                />
               </div>
 
               {/* ── PRICE ESTIMATE ── */}
@@ -628,9 +662,9 @@ const Customize = () => {
                       <div className="flex flex-wrap gap-2">
                         <span className="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-sm font-semibold">{form.dressType}</span>
                         <span className="px-3 py-1 bg-gray-100 text-text rounded-full text-sm font-semibold">{form.fabric}</span>
-                        {form.size && <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">Size {form.size}</span>}
+                        {form.size      && <span className="px-3 py-1 bg-green-100  text-green-700  rounded-full text-sm font-semibold">Size {form.size}</span>}
                         {form.neckStyle && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold capitalize">{form.neckStyle} neck</span>}
-                        {form.sleeveStyle && <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold capitalize">{form.sleeveStyle} sleeve</span>}
+                        {form.sleeveStyle && <span className="px-3 py-1 bg-blue-100  text-blue-700   rounded-full text-sm font-semibold capitalize">{form.sleeveStyle} sleeve</span>}
                       </div>
                     </div>
                     <div className="text-left sm:text-right">
@@ -650,11 +684,11 @@ const Customize = () => {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button onClick={handleSaveDraft} disabled={loading}
                     className="w-full sm:w-auto px-6 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-secondary/5 transition-all font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
-                    <Save size={18} /><span>{loading ? "Saving..." : "Save Draft"}</span>
+                    <Save size={18} /><span>{loading ? "Saving…" : "Save Draft"}</span>
                   </button>
                   <button onClick={handleAddToCart} disabled={loading}
                     className="group w-full sm:w-auto px-10 py-3 bg-secondary text-white rounded-lg hover:shadow-lg transition-all flex items-center justify-center gap-2 font-semibold disabled:opacity-50">
-                    <ShoppingCart size={18} /><span>{loading ? "Adding..." : "Add to Cart"}</span>
+                    <ShoppingCart size={18} /><span>{loading ? "Adding…" : "Add to Cart"}</span>
                   </button>
                 </div>
               </div>
@@ -663,7 +697,7 @@ const Customize = () => {
         </div>
       </div>
 
-      {/* ── Size Chart Modal (reuses existing component) ── */}
+      {/* Size Chart Modal */}
       {showSizeChart && (
         <SizeChartModal
           isOpen={showSizeChart}
@@ -675,7 +709,7 @@ const Customize = () => {
         />
       )}
 
-      {/* ── Reference Video Modal ── */}
+      {/* Reference Video Modal */}
       {showVideo && form.dressType && (
         <VideoModal
           videoId={videoId}

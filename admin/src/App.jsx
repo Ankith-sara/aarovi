@@ -9,7 +9,6 @@ import Login from './components/Login'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AdminPanel from './pages/AdminPanel'
-import Customizations from './pages/customizations'
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = '₹'
@@ -39,7 +38,6 @@ const App = () => {
                 <Route path='/add' element={<Add token={token} />} />
                 <Route path='/list' element={<List token={token} />} />
                 <Route path='/orders' element={<Orders token={token} />} />
-                <Route path='/customizations' element={<Customizations token={token} />} />
                 <Route path='*' element={<Navigate to="/" replace />} />
               </Routes>
             </div>

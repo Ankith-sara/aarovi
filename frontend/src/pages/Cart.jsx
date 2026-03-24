@@ -4,12 +4,15 @@ import { Trash2, Plus, Minus, ShoppingBag, Truck, ArrowLeft, ShieldCheck, Refres
 import { toast } from 'react-toastify';
 
 const Cart = () => {
-  const { products, cartItems, currency, updateQuantity, removeFromCart, updateCustomizationQuantity, removeCustomizationFromCart, getCartAmount, navigate, delivery_fee } = useContext(ShopContext);
+  const {
+    products, cartItems, currency, updateQuantity, removeFromCart,
+    updateCustomizationQuantity, removeCustomizationFromCart,
+    getCartAmount, navigate, delivery_fee
+  } = useContext(ShopContext);
+
   const [cartProducts, setCartProducts] = useState([]);
   const [customizationItems, setCustomizationItems] = useState([]);
 
-  // Helper: cart entries are objects { quantity, neckStyle, sleeveStyle }
-  // but may be plain numbers in legacy data — handle both.
   const getEntryQuantity = (entry) => {
     if (entry === null || entry === undefined) return 0;
     if (typeof entry === 'object') return entry.quantity || 0;
@@ -19,43 +22,36 @@ const Cart = () => {
   useEffect(() => {
     if (!cartItems) return;
 
-    // Process regular products
     const tempProducts = [];
     for (const itemId in cartItems) {
       if (itemId === 'customizations') continue;
-
       const product = products.find(p => p._id === itemId);
-      if (product) {
-        for (const size in cartItems[itemId]) {
-          const entry = cartItems[itemId][size];
-          const quantity = getEntryQuantity(entry);
+      if (!product) continue;
 
-          if (quantity > 0) {
-            tempProducts.push({
-              _id: itemId,
-              size,
-              quantity,
-              // Pull style options from the entry object (null if legacy number)
-              neckStyle: typeof entry === 'object' ? entry.neckStyle : null,
-              sleeveStyle: typeof entry === 'object' ? entry.sleeveStyle : null,
-              ...product,
-            });
-          }
-        }
+      for (const size in cartItems[itemId]) {
+        const entry = cartItems[itemId][size];
+        const quantity = getEntryQuantity(entry);
+        if (quantity <= 0) continue;
+
+        tempProducts.push({
+          _id: itemId,
+          size,
+          quantity,
+          neckStyle:           typeof entry === 'object' ? (entry.neckStyle || null)           : null,
+          sleeveStyle:         typeof entry === 'object' ? (entry.sleeveStyle || null)         : null,
+          specialInstructions: typeof entry === 'object' ? (entry.specialInstructions || null) : null,
+          ...product,
+        });
       }
     }
     setCartProducts(tempProducts);
 
-    // Process customizations (unchanged)
     const tempCustomizations = [];
     if (cartItems.customizations) {
       for (const customId in cartItems.customizations) {
         const customItem = cartItems.customizations[customId];
         if (customItem && customItem.quantity > 0) {
-          tempCustomizations.push({
-            _id: customId,
-            ...customItem
-          });
+          tempCustomizations.push({ _id: customId, ...customItem });
         }
       }
     }
@@ -67,36 +63,24 @@ const Cart = () => {
     const currentQty = getEntryQuantity(entry);
     const newQty = Math.max(0, currentQty + delta);
     updateQuantity(itemId, size, newQty);
-
-    if (delta > 0) {
-      toast.success('Quantity updated', { autoClose: 1000 });
-    }
+    if (delta > 0) toast.success('Quantity updated', { autoClose: 1000 });
   };
 
   const handleUpdateCustomQuantity = (customId, delta) => {
     const currentQty = cartItems.customizations?.[customId]?.quantity || 0;
     const newQty = Math.max(0, currentQty + delta);
     updateCustomizationQuantity(customId, newQty);
-
-    if (delta > 0) {
-      toast.success('Quantity updated', { autoClose: 1000 });
-    }
+    if (delta > 0) toast.success('Quantity updated', { autoClose: 1000 });
   };
 
-  const handleRemoveItem = (itemId, size) => {
-    removeFromCart(itemId, size);
-    toast.info('Item removed from cart');
-  };
+  const handleRemoveItem   = (itemId, size) => removeFromCart(itemId, size);
+  const handleRemoveCustom = (customId) => { removeCustomizationFromCart(customId); toast.info('Custom design removed from cart'); };
 
-  const handleRemoveCustom = (customId) => {
-    removeCustomizationFromCart(customId);
-    toast.info('Custom design removed from cart');
-  };
-
-  const cartAmount = getCartAmount();
+  const cartAmount  = getCartAmount();
   const totalAmount = cartAmount + delivery_fee;
-  const totalItems = cartProducts.reduce((sum, item) => sum + item.quantity, 0) +
-    customizationItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalItems  =
+    cartProducts.reduce((sum, i) => sum + i.quantity, 0) +
+    customizationItems.reduce((sum, i) => sum + i.quantity, 0);
 
   if (cartProducts.length === 0 && customizationItems.length === 0) {
     return (
@@ -112,10 +96,7 @@ const Cart = () => {
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">Your Cart is Empty</h2>
           <p className="text-gray-500 mb-8 text-base sm:text-lg">Discover amazing products and start shopping!</p>
-          <button
-            onClick={() => navigate('/shop/collection')}
-            className="px-8 py-4 bg-secondary text-white rounded-full hover:bg-secondary/90 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
-          >
+          <button onClick={() => navigate('/shop/collection')} className="px-8 py-4 bg-secondary text-white rounded-full hover:bg-secondary/90 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
             Start Shopping
           </button>
         </div>
@@ -126,18 +107,13 @@ const Cart = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-20 mt-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
         <div className="mb-4 sm:mb-6">
-          <button
-            onClick={() => navigate('/shop/collection')}
-            className="flex items-center gap-2 text-gray-600 hover:text-secondary transition-colors mb-4 text-sm sm:text-base"
-          >
-            <ArrowLeft size={18} />
-            <span className="font-medium">Continue Shopping</span>
+          <button onClick={() => navigate('/shop/collection')} className="flex items-center gap-2 text-gray-600 hover:text-secondary transition-colors mb-4 text-sm sm:text-base">
+            <ArrowLeft size={18} /><span className="font-medium">Continue Shopping</span>
           </button>
           <div className="flex items-center justify-between">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
-              Shopping Cart
-            </h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Shopping Cart</h1>
             <div className="flex items-center gap-2 bg-secondary/10 px-3 sm:px-4 py-2 rounded-full">
               <Package size={18} className="text-secondary" />
               <span className="text-secondary font-bold text-sm sm:text-base">{totalItems} items</span>
@@ -146,92 +122,56 @@ const Cart = () => {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-3 sm:space-y-4">
+
+            {/* Regular products */}
             {cartProducts.map((item, index) => (
-              <div
-                key={`${item._id}-${item.size}-${index}`}
-                className="bg-white rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300"
-              >
+              <div key={`${item._id}-${item.size}-${index}`} className="bg-white rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300">
                 <div className="p-3 sm:p-4 md:p-6">
                   <div className="flex gap-3 sm:gap-4">
                     <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 flex-shrink-0 rounded-xl overflow-hidden bg-gray-50">
-                      <img
-                        src={item.images?.[0] || '/placeholder-image.png'}
-                        alt={item.name}
-                        className="w-full h-full object-contain"
-                        onError={(e) => {
-                          e.target.src = '/placeholder-image.png';
-                        }}
-                      />
+                      <img src={item.images?.[0] || '/placeholder-image.png'} alt={item.name} className="w-full h-full object-contain" onError={(e) => { e.target.src = '/placeholder-image.png'; }} />
                     </div>
 
-                    {/* Product Details */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <h3 className="font-semibold text-sm sm:text-base md:text-lg text-gray-900 line-clamp-2">
-                          {item.name}
-                        </h3>
-                      </div>
+                      <h3 className="font-semibold text-sm sm:text-base md:text-lg text-gray-900 line-clamp-2 mb-2">{item.name}</h3>
 
-                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-medium">
-                          Size: {item.size}
-                        </span>
+                      {/* Style tags */}
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2">
+                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-medium">Size: {item.size}</span>
                         {item.neckStyle && (
-                          <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium capitalize">
-                            {item.neckStyle} neck
-                          </span>
+                          <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium capitalize">{item.neckStyle} neck</span>
                         )}
                         {item.sleeveStyle && (
-                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium capitalize">
-                            {item.sleeveStyle} sleeve
-                          </span>
+                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium capitalize">{item.sleeveStyle} sleeve</span>
                         )}
                         {item.inStock && (
-                          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
-                            In Stock
-                          </span>
+                          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">In Stock</span>
                         )}
                       </div>
 
-                      {/* Price and Controls */}
+                      {/* Special instructions */}
+                      {item.specialInstructions && (
+                        <div className="mb-2.5 px-2.5 py-1.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 leading-relaxed">
+                          <span className="font-semibold">Note: </span>{item.specialInstructions}
+                        </div>
+                      )}
+
                       <div className="space-y-2 sm:space-y-3">
                         <div>
-                          <p className="text-lg sm:text-xl md:text-2xl font-bold text-secondary">
-                            {currency}{(item.price * item.quantity).toLocaleString()}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {currency}{item.price?.toLocaleString()} each
-                          </p>
+                          <p className="text-lg sm:text-xl md:text-2xl font-bold text-secondary">{currency}{(item.price * item.quantity).toLocaleString()}</p>
+                          <p className="text-xs text-gray-500">{currency}{item.price?.toLocaleString()} each</p>
                         </div>
-
-                        {/* Quantity Controls */}
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 bg-gray-100 rounded-full px-2 sm:px-3 py-1.5 sm:py-2">
-                            <button
-                              onClick={() => handleUpdateQuantity(item._id, item.size, -1)}
-                              className="text-gray-600 hover:text-gray-900 transition-colors p-1"
-                            >
-                              <Minus size={14} />
-                            </button>
-                            <span className="text-sm font-bold w-6 sm:w-8 text-center">
-                              {item.quantity}
-                            </span>
-                            <button
-                              onClick={() => handleUpdateQuantity(item._id, item.size, 1)}
-                              className="text-gray-600 hover:text-gray-900 transition-colors p-1"
-                            >
-                              <Plus size={14} />
-                            </button>
+                            <button onClick={() => handleUpdateQuantity(item._id, item.size, -1)} className="text-gray-600 hover:text-gray-900 transition-colors p-1"><Minus size={14} /></button>
+                            <span className="text-sm font-bold w-6 sm:w-8 text-center">{item.quantity}</span>
+                            <button onClick={() => handleUpdateQuantity(item._id, item.size, 1)} className="text-gray-600 hover:text-gray-900 transition-colors p-1"><Plus size={14} /></button>
                           </div>
-
-                          <button
-                            onClick={() => handleRemoveItem(item._id, item.size)}
-                            className="flex items-center gap-1.5 text-red-400 hover:text-red-600 transition-colors px-3 py-1.5 hover:bg-red-50 rounded-full text-xs sm:text-sm font-medium"
-                          >
-                            <Trash2 size={16} />
-                            <span className="hidden sm:inline">Remove</span>
+                          <button onClick={() => handleRemoveItem(item._id, item.size)} className="flex items-center gap-1.5 text-red-400 hover:text-red-600 transition-colors px-3 py-1.5 hover:bg-red-50 rounded-full text-xs sm:text-sm font-medium">
+                            <Trash2 size={16} /><span className="hidden sm:inline">Remove</span>
                           </button>
                         </div>
                       </div>
@@ -241,110 +181,56 @@ const Cart = () => {
               </div>
             ))}
 
-            {/* Custom Designs */}
+            {/* Custom designs */}
             {customizationItems.map((item, index) => {
               const snapshot = item.snapshot || {};
-              const productImage = snapshot.productImage || '/placeholder-custom.png';
-
               return (
-                <div
-                  key={`custom-${item._id}-${index}`}
-                  className="rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border-2 border-secondary/20"
-                >
+                <div key={`custom-${item._id}-${index}`} className="rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border-2 border-secondary/20">
                   <div className="p-3 sm:p-4 md:p-6">
                     <div className="flex gap-3 sm:gap-4">
                       <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 flex-shrink-0 bg-white rounded-xl overflow-hidden border-2 border-secondary/30">
-                        <img
-                          src={item.image?.[0] || productImage}
-                          alt={`Custom ${snapshot.dressType}`}
-                          className="w-full h-full object-contain"
-                          onError={(e) => {
-                            e.target.src = '/placeholder-custom.png';
-                          }}
-                        />
+                        <img src={item.image || snapshot.canvasDesign?.pngUrl || '/placeholder-custom.png'} alt={`Custom ${snapshot.dressType}`} className="w-full h-full object-contain" onError={(e) => { e.target.src = '/placeholder-custom.png'; }} />
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-xs bg-secondary text-white px-2.5 py-1 rounded-full font-bold shadow-sm">
-                              CUSTOM
-                            </span>
-                          </div>
+                        <div className="flex items-center gap-2 flex-wrap mb-2">
+                          <span className="text-xs bg-secondary text-white px-2.5 py-1 rounded-full font-bold shadow-sm">CUSTOM</span>
                         </div>
-
-                        <h3 className="font-bold text-sm sm:text-base md:text-lg text-gray-900 mb-2 line-clamp-1">
-                          Custom {snapshot.dressType || 'Design'}
-                        </h3>
+                        <h3 className="font-bold text-sm sm:text-base md:text-lg text-gray-900 mb-2 line-clamp-1">Custom {snapshot.dressType || 'Design'}</h3>
 
                         <div className="text-xs text-gray-600 space-y-1 mb-2 sm:mb-3">
-                          <p className="flex items-center gap-2">
-                            <span className="font-semibold">Fabric:</span>
-                            <span className="bg-gray-100 px-2 py-0.5 rounded truncate">{snapshot.fabric}</span>
-                          </p>
+                          <p className="flex items-center gap-2"><span className="font-semibold">Fabric:</span><span className="bg-gray-100 px-2 py-0.5 rounded truncate">{snapshot.fabric}</span></p>
                           <p className="flex items-center gap-2">
                             <span className="font-semibold">Color:</span>
-                            <span
-                              className="inline-block w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-white shadow-md"
-                              style={{ backgroundColor: snapshot.color }}
-                            />
+                            <span className="inline-block w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-white shadow-md" style={{ backgroundColor: snapshot.color }} />
                           </p>
-                          {(snapshot.neckStyle || snapshot.sleeveStyle || snapshot.size) && (
+                          {(snapshot.size || snapshot.neckStyle || snapshot.sleeveStyle) && (
                             <div className="flex flex-wrap gap-1.5 pt-1">
-                              {snapshot.size && (
-                                <span className="bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-bold text-[10px]">
-                                  Size {snapshot.size}
-                                </span>
-                              )}
-                              {snapshot.neckStyle && (
-                                <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-semibold text-[10px] capitalize">
-                                  {snapshot.neckStyle} neck
-                                </span>
-                              )}
-                              {snapshot.sleeveStyle && (
-                                <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-semibold text-[10px] capitalize">
-                                  {snapshot.sleeveStyle} sleeve
-                                </span>
-                              )}
+                              {snapshot.size && <span className="bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-bold text-[10px]">Size {snapshot.size}</span>}
+                              {snapshot.neckStyle && <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-semibold text-[10px] capitalize">{snapshot.neckStyle} neck</span>}
+                              {snapshot.sleeveStyle && <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-semibold text-[10px] capitalize">{snapshot.sleeveStyle} sleeve</span>}
+                            </div>
+                          )}
+                          {snapshot.specialInstructions && (
+                            <div className="mt-1 px-2.5 py-1.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 leading-relaxed">
+                              <span className="font-semibold">Note: </span>{snapshot.specialInstructions}
                             </div>
                           )}
                         </div>
 
                         <div className="space-y-2 sm:space-y-3">
                           <div>
-                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-secondary">
-                              {currency}{(item.price * item.quantity).toLocaleString()}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {currency}{item.price?.toLocaleString()} each
-                            </p>
+                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-secondary">{currency}{(item.price * item.quantity).toLocaleString()}</p>
+                            <p className="text-xs text-gray-500">{currency}{item.price?.toLocaleString()} each</p>
                           </div>
-
                           <div className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2 bg-white rounded-full px-2 sm:px-3 py-1.5 sm:py-2 shadow-sm">
-                              <button
-                                onClick={() => handleUpdateCustomQuantity(item._id, -1)}
-                                className="text-gray-600 hover:text-secondary transition-colors p-1"
-                              >
-                                <Minus size={14} />
-                              </button>
-                              <span className="text-sm font-bold w-6 sm:w-8 text-center">
-                                {item.quantity}
-                              </span>
-                              <button
-                                onClick={() => handleUpdateCustomQuantity(item._id, 1)}
-                                className="text-gray-600 hover:text-secondary transition-colors p-1"
-                              >
-                                <Plus size={14} />
-                              </button>
+                              <button onClick={() => handleUpdateCustomQuantity(item._id, -1)} className="text-gray-600 hover:text-secondary transition-colors p-1"><Minus size={14} /></button>
+                              <span className="text-sm font-bold w-6 sm:w-8 text-center">{item.quantity}</span>
+                              <button onClick={() => handleUpdateCustomQuantity(item._id, 1)} className="text-gray-600 hover:text-secondary transition-colors p-1"><Plus size={14} /></button>
                             </div>
-
-                            <button
-                              onClick={() => handleRemoveCustom(item._id)}
-                              className="flex items-center gap-1.5 text-red-400 hover:text-red-600 transition-colors px-3 py-1.5 hover:bg-red-50 rounded-full text-xs sm:text-sm font-medium"
-                            >
-                              <Trash2 size={16} />
-                              <span className="hidden sm:inline">Remove</span>
+                            <button onClick={() => handleRemoveCustom(item._id)} className="flex items-center gap-1.5 text-red-400 hover:text-red-600 transition-colors px-3 py-1.5 hover:bg-red-50 rounded-full text-xs sm:text-sm font-medium">
+                              <Trash2 size={16} /><span className="hidden sm:inline">Remove</span>
                             </button>
                           </div>
                         </div>
@@ -360,87 +246,51 @@ const Cart = () => {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 lg:sticky lg:top-24 space-y-4 sm:space-y-6">
               <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Package className="text-secondary flex-shrink-0" size={20} />
-                <span>Order Summary</span>
+                <Package className="text-secondary flex-shrink-0" size={20} /><span>Order Summary</span>
               </h2>
-
               <div className="border-t border-gray-200 pt-4 space-y-3">
                 <div className="flex justify-between text-sm sm:text-base text-gray-600">
                   <span>Subtotal ({totalItems} items)</span>
                   <span className="font-semibold">{currency}{cartAmount.toLocaleString()}</span>
                 </div>
-
                 <div className="flex justify-between text-sm sm:text-base text-gray-600">
-                  <span className="flex items-center gap-1">
-                    <Truck size={16} className="flex-shrink-0" />
-                    <span>Delivery</span>
-                  </span>
-                  <span className="font-semibold">
-                    {currency}{delivery_fee}
-                  </span>
+                  <span className="flex items-center gap-1"><Truck size={16} className="flex-shrink-0" /><span>Delivery</span></span>
+                  <span className="font-semibold">{currency}{delivery_fee}</span>
                 </div>
-
                 <div className="border-t border-gray-200 pt-3 sm:pt-4">
                   <div className="flex justify-between items-center">
                     <span className="text-base sm:text-lg font-bold text-gray-900">Total</span>
                     <div className="text-right">
-                      <p className="text-xl sm:text-2xl font-bold text-secondary">
-                        {currency}{totalAmount.toLocaleString()}
-                      </p>
+                      <p className="text-xl sm:text-2xl font-bold text-secondary">{currency}{totalAmount.toLocaleString()}</p>
                       <p className="text-xs text-gray-500">Including taxes</p>
                     </div>
                   </div>
                 </div>
               </div>
-
-              <button
-                onClick={() => navigate('/place-order')}
-                className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-secondary to-secondary/90 text-white rounded-full hover:shadow-xl transition-all duration-300 font-bold text-sm sm:text-base md:text-lg transform flex items-center justify-center gap-2"
-              >
-                <CreditCard size={20} />
-                <span>Proceed to Checkout</span>
+              <button onClick={() => navigate('/place-order')} className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-secondary to-secondary/90 text-white rounded-full hover:shadow-xl transition-all duration-300 font-bold text-sm sm:text-base flex items-center justify-center gap-2">
+                <CreditCard size={20} /><span>Proceed to Checkout</span>
               </button>
-
-              <button
-                onClick={() => navigate('/shop/collection')}
-                className="w-full px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-secondary text-secondary rounded-full hover:bg-secondary/5 transition-all duration-300 font-semibold text-sm sm:text-base"
-              >
+              <button onClick={() => navigate('/shop/collection')} className="w-full px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-secondary text-secondary rounded-full hover:bg-secondary/5 transition-all duration-300 font-semibold text-sm sm:text-base">
                 Continue Shopping
               </button>
-
-              {/* Trust Badges */}
               <div className="border-t border-gray-200 pt-4 space-y-2">
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
-                  <ShieldCheck size={16} className="text-green-500 flex-shrink-0" />
-                  <span>Secure checkout</span>
-                </div>
-
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
-                  <RefreshCcw size={16} className="text-green-500 flex-shrink-0" />
-                  <span>Free returns within 30 days</span>
-                </div>
-
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
-                  <Headset size={16} className="text-green-500 flex-shrink-0" />
-                  <span>Customer support 24/7</span>
-                </div>
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600"><ShieldCheck size={16} className="text-green-500 flex-shrink-0" /><span>Secure checkout</span></div>
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600"><RefreshCcw size={16} className="text-green-500 flex-shrink-0" /><span>Free returns within 30 days</span></div>
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600"><Headset size={16} className="text-green-500 flex-shrink-0" /><span>Customer support 24/7</span></div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Sticky mobile checkout bar */}
+      {/* Sticky mobile checkout */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 px-4 py-3 shadow-xl">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-xs text-gray-500">Total ({totalItems} items)</p>
             <p className="text-lg font-bold text-secondary">{currency}{totalAmount.toLocaleString()}</p>
           </div>
-          <button
-            onClick={() => navigate('/place-order')}
-            className="flex-1 max-w-[200px] py-3 bg-secondary text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2"
-          >
+          <button onClick={() => navigate('/place-order')} className="flex-1 max-w-[200px] py-3 bg-secondary text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2">
             <CreditCard size={16} /> Checkout
           </button>
         </div>
