@@ -282,19 +282,6 @@ const Cart = () => {
           </div>
         </div>
       </div>
-
-      {/* Sticky mobile checkout */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 px-4 py-3 shadow-xl">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-xs text-gray-500">Total ({totalItems} items)</p>
-            <p className="text-lg font-bold text-secondary">{currency}{totalAmount.toLocaleString()}</p>
-          </div>
-          <button onClick={() => navigate('/place-order')} className="flex-1 max-w-[200px] py-3 bg-secondary text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2">
-            <CreditCard size={16} /> Checkout
-          </button>
-        </div>
-      </div>
     </div>
   );
 };
