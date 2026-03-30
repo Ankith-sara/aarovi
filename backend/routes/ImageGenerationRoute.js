@@ -1,129 +1,110 @@
 import express from 'express';
 import axios from 'axios';
+import { v2 as cloudinary } from 'cloudinary';
 
 const imageGenerationRouter = express.Router();
 
-// Hugging Face Inference API — SDXL
 const HF_API_URL = 'https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0';
 
-// Retry helper — HF cold-starts models, first request often returns 503
-const queryHuggingFace = async (payload, apiToken, retries = 3, delayMs = 8000) => {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      const response = await axios.post(HF_API_URL, payload, {
-        headers: {
-          Authorization: `Bearer ${apiToken}`,
-          'Content-Type': 'application/json',
-          Accept: 'image/png'
+const generateImageHF = async (prompt, apiKey) => {
+    const response = await axios.post(
+        HF_API_URL,
+        {
+            inputs: prompt,
+            parameters: { width: 1024, height: 1024, num_inference_steps: 30, guidance_scale: 7.5 }
         },
-        responseType: 'arraybuffer',
-        timeout: 120000
-      });
-      return response.data;
-    } catch (err) {
-      const status = err.response?.status;
-
-      // 503 = model loading, wait and retry
-      if (status === 503 && attempt < retries) {
-        console.log(`HF model loading, retrying in ${delayMs / 1000}s (attempt ${attempt}/${retries})...`);
-        await new Promise(resolve => setTimeout(resolve, delayMs));
-        continue;
-      }
-
-      // Surface the real error body for every other failure
-      const errBody = err.response?.data
-        ? Buffer.from(err.response.data).toString('utf8')
-        : err.message;
-      throw new Error(`HF API [${status}]: ${errBody}`);
-    }
-  }
+        {
+            headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json', Accept: 'image/png' },
+            responseType: 'arraybuffer',
+            timeout: 120000
+        }
+    );
+    return Buffer.from(response.data);
 };
 
-// POST /api/generate-design-image
-imageGenerationRouter.post('/generate-design-image', async (req, res) => {
-  try {
-    const {
-      prompt,
-      dressType = 'Kurta',
-      fabric = 'Cotton',
-      gender = 'Women',
-      imageCount = 3
-    } = req.body;
-
-    if (!prompt?.trim()) {
-      return res.status(400).json({ success: false, error: 'Prompt is required' });
-    }
-
-    const apiToken = process.env.HF_API_TOKEN;
-    if (!apiToken) {
-      return res.status(500).json({ success: false, error: 'HF_API_TOKEN not configured' });
-    }
-
-    // Craft a detailed fashion-specific prompt
-    const enhancedPrompt = `${prompt}, ${gender.toLowerCase()} ${dressType} Indian ethnic fashion design, ${fabric} fabric, ` +
-      `detailed textile pattern, haute couture illustration, flat lay product shot, ` +
-      `white background, sharp focus, 4k, professional fashion photography`;
-
-    const negativePrompt = 'blurry, low quality, deformed, ugly, watermark, text, signature, ' +
-      'cartoon, anime, 3d render, person wearing clothes';
-
-    // Generate images in parallel with slight prompt variation for variety
-    const variations = [
-      enhancedPrompt,
-      `${enhancedPrompt}, floral motifs, intricate embroidery`,
-      `${enhancedPrompt}, geometric patterns, minimal design`
-    ].slice(0, imageCount);
-
-    const imagePromises = variations.map(async (variantPrompt, i) => {
-      try {
-        const imageBuffer = await queryHuggingFace(
-          {
-            inputs: variantPrompt,
-            parameters: {
-              negative_prompt: negativePrompt,
-              num_inference_steps: 30,
-              guidance_scale: 7.5,
-              width: 1024,
-              height: 1024
-            }
-          },
-          apiToken
+const uploadBufferToCloudinary = (buffer, filename) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { folder: 'aarovi/ai-designs', public_id: filename, resource_type: 'image', format: 'webp', transformation: [{ quality: 'auto', fetch_format: 'auto' }] },
+            (error, result) => { if (error) reject(error); else resolve(result.secure_url); }
         );
-
-        // Convert binary buffer → base64 data URL
-        const base64 = Buffer.from(imageBuffer).toString('base64');
-        const dataUrl = `data:image/png;base64,${base64}`;
-
-        return {
-          success: true,
-          url: dataUrl,
-          description: `${prompt} — Design ${i + 1}`
-        };
-      } catch (err) {
-        console.error(`Image ${i + 1} generation failed:`, err.message);
-        return {
-          success: false,
-          error: err.message,
-          url: null,
-          description: `Design ${i + 1} — Generation failed`
-        };
-      }
+        stream.end(buffer);
     });
+};
 
-    const images = await Promise.all(imagePromises);
-    const successCount = images.filter(img => img.success).length;
+imageGenerationRouter.post('/generate-design-image', async (req, res) => {
+    try {
+        const {
+            prompt,
+            dressType = 'Kurta',
+            fabric = 'Cotton',
+            gender = 'Women',
+            imageCount = 2,
+            model = 'sdxl'
+        } = req.body;
 
-    return res.status(200).json({
-      success: successCount > 0,
-      images,
-      totalRequested: imageCount,
-      totalGenerated: successCount
-    });
+        if (!prompt || !prompt.trim()) {
+            return res.status(400).json({ success: false, error: 'Prompt is required' });
+        }
 
-  } catch (error) {
-    console.error('Image generation route error:', error.message);
-    return res.status(500).json({ success: false, error: error.message || 'Image generation failed' });
-  }
+        const hfKey = process.env.HF_API_KEY;
+        if (!hfKey) {
+            console.error('[ImageGen] HF_API_KEY is not set. Add it to backend/.env');
+            return res.status(500).json({ success: false, error: 'Image generation API key not configured. Add HF_API_KEY to backend/.env' });
+        }
+
+        const enhancedPrompt = `${prompt}, ${gender.toLowerCase()} ${dressType} fashion design, ${fabric} fabric, Indian ethnic wear, intricate traditional patterns, detailed textile, studio photography, high quality, 8k`;
+        console.log(`[ImageGen] Generating ${imageCount} image(s) via HF SDXL | prompt: "${enhancedPrompt.slice(0, 80)}..."`);
+
+        const images = [];
+        for (let i = 0; i < imageCount; i++) {
+            try {
+                console.log(`[ImageGen] Requesting image ${i + 1}/${imageCount}...`);
+                const buffer = await generateImageHF(enhancedPrompt, hfKey);
+                const filename = `design_${Date.now()}_${i}`;
+                const url = await uploadBufferToCloudinary(buffer, filename);
+                console.log(`[ImageGen] Image ${i + 1} OK → ${url.slice(0, 70)}`);
+                images.push({ success: true, error: null, url, description: `${prompt} - Design ${i + 1}` });
+            } catch (err) {
+                const status = err.response?.status;
+                let body = '';
+                if (err.response?.data) {
+                    try { body = Buffer.from(err.response.data).toString('utf-8'); }
+                    catch (_) { body = String(err.response.data); }
+                }
+                console.error(`[ImageGen] Image ${i + 1} failed — HTTP ${status}: ${body || err.message}`);
+
+                if (status === 503) {
+                    console.log('[ImageGen] Model loading — waiting 20s then retrying...');
+                    await new Promise(r => setTimeout(r, 20000));
+                    try {
+                        const buffer = await generateImageHF(enhancedPrompt, hfKey);
+                        const filename = `design_${Date.now()}_${i}_retry`;
+                        const url = await uploadBufferToCloudinary(buffer, filename);
+                        console.log(`[ImageGen] Image ${i + 1} retry OK → ${url.slice(0, 70)}`);
+                        images.push({ success: true, error: null, url, description: `${prompt} - Design ${i + 1}` });
+                        continue;
+                    } catch (retryErr) {
+                        console.error(`[ImageGen] Image ${i + 1} retry also failed:`, retryErr.message);
+                    }
+                }
+
+                const msg = (() => {
+                    try { return JSON.parse(body)?.error || body || err.message; }
+                    catch (_) { return body || err.message || 'Unknown error'; }
+                })();
+                images.push({ success: false, error: `${status ? `HTTP ${status}: ` : ''}${msg}`, url: null, description: `Design ${i + 1} - Failed` });
+            }
+        }
+
+        const successCount = images.filter(img => img.success).length;
+        console.log(`[ImageGen] Done — ${successCount}/${imageCount} succeeded`);
+        return res.status(200).json({ success: successCount > 0, images, totalRequested: imageCount, totalGenerated: successCount });
+
+    } catch (error) {
+        console.error('[ImageGen] Route error:', error.message);
+        return res.status(500).json({ success: false, error: error.message || 'Image generation failed' });
+    }
 });
 
 export default imageGenerationRouter;
