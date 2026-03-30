@@ -547,10 +547,10 @@ const DesignCanvas = ({
   const handleGenerateReferenceImages = async () => {
     if (!aiImagePrompt.trim()) { toast.error('Describe the design first'); return; }
     setAiImageGenerating(true);
-    setGeneratedReferenceImages([]); // clear previous results
+    setGeneratedReferenceImages([]); 
     try {
       toast.info('Generating designs...');
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
       const response = await fetch(`${backendUrl}/api/generate-design-image`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
