@@ -561,7 +561,6 @@ const DesignCanvas = ({
         throw new Error(errData.error || `Server error: ${response.status}`);
       }
       const data = await response.json();
-      // Only keep images that actually succeeded (have a real URL)
       const successfulImages = (data.images || []).filter(img => img.success && img.url);
       if (successfulImages.length === 0) {
         // Surface a more helpful error if backend gave us details
