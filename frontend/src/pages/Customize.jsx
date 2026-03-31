@@ -101,8 +101,10 @@ const Customize = () => {
   // Pricing 
   const PRICING_MATRIX = {
     "Kurti": { "Cotton": [700, 1000], "Silk": [800, 1200], "Georgette": [700, 1000], "Kota": [800, 1200], "Chiffon": [900, 1400], "Crape": [800, 1200], "Lenin": [900, 1400], "Chanderi": [900, 1600], "Banarasi": [1400, 1800] },
+    "Short Kurti": { "Cotton": [700, 1000], "Silk": [800, 1200], "Georgette": [700, 1000], "Kota": [800, 1200], "Chiffon": [900, 1400], "Crape": [800, 1200], "Lenin": [900, 1400], "Chanderi": [900, 1600], "Banarasi": [1400, 1800] },
     "Kurti Sets": { "Cotton": [1000, 1300], "Silk": [1000, 1200], "Georgette": [1000, 1400], "Kota": [1000, 1500], "Chiffon": [1300, 1700], "Crape": [1000, 1500], "Lenin": [1300, 1700], "Chanderi": [1400, 1900], "Banarasi": [1800, 2500] },
     "Kurta": { "Cotton": [700, 1000], "Raw Silk": [800, 1200], "Lenin": [900, 1400], "Velvet": [800, 1200], "Banarasi": [1400, 1800] },
+    "Short Kurta": { "Cotton": [700, 1000], "Raw Silk": [800, 1200], "Lenin": [900, 1400], "Velvet": [800, 1200], "Banarasi": [1400, 1800] },
     "Kurta Sets": { "Cotton": [1000, 1300], "Raw Silk": [1000, 1200], "Lenin": [1300, 1700], "Velvet": [1000, 1500], "Banarasi": [1800, 2500] },
     "Lehenga": { "Banarasi": [5000, 7000], "Georgette": [3000, 4500], "Chiffon": [2800, 4000], "Crape": [3000, 4600], "Tissue": [2900, 4000], "Pattu": [4900, 10000] },
     "Anarkali": { "Georgette": [3500, 4800], "Chiffon": [2300, 3600], "Crape": [1800, 2500], "Tissue": [1800, 3000], "Pattu": [3900, 5000], "Banarasi": [3800, 5000], "Cotton": [2300, 3500] },
@@ -125,6 +127,7 @@ const Customize = () => {
   const dressTypes = {
     Women: [
       { value: "Kurti", label: "Kurti" },
+      { value: "Short Kurti", label: "Short Kurti" },
       { value: "Kurti Sets", label: "Kurti Sets" },
       { value: "Lehenga", label: "Lehenga" },
       { value: "Sheraras", label: "Sheraras" },
@@ -132,6 +135,7 @@ const Customize = () => {
     ],
     Men: [
       { value: "Kurta", label: "Kurta" },
+      { value: "Short Kurta", label: "Short Kurta" },
       { value: "Kurta Sets", label: "Kurta Sets" },
       { value: "Sherwani", label: "Sherwani" }
     ]
@@ -139,11 +143,13 @@ const Customize = () => {
 
   const fabricOptions = {
     "Kurti": [{ value: "Cotton", label: "Cotton" }, { value: "Silk", label: "Silk" }, { value: "Georgette", label: "Georgette" }, { value: "Kota", label: "Kota"}, { value: "Chiffon", label: "Chiffon"}, { value: "Crape", label: "Crape"}, { value: "Lenin", label: "Lenin" }, { value: "Chanderi", label: "Chanderi" }, { value: "Banarasi", label: "Banarasi"}],
+    "Short Kurti": [{ value: "Cotton", label: "Cotton" }, { value: "Silk", label: "Silk" }, { value: "Georgette", label: "Georgette" }, { value: "Kota", label: "Kota"}, { value: "Chiffon", label: "Chiffon"}, { value: "Crape", label: "Crape"}, { value: "Lenin", label: "Lenin" }, { value: "Chanderi", label: "Chanderi" }, { value: "Banarasi", label: "Banarasi"}],
     "Kurti Sets": [{ value: "Cotton", label: "Cotton" }, { value: "Silk", label: "Silk" }, { value: "Georgette", label: "Georgette" }, { value: "Kota", label: "Kota"}, { value: "Chiffon", label: "Chiffon"}, { value: "Crape", label: "Crape"}, { value: "Lenin", label: "Lenin" }, { value: "Chanderi", label: "Chanderi" }, { value: "Banarasi", label: "Banarasi"}],
     "Sheraras": [{ value: "Georgette", label: "Georgette" }, { value: "Banarasi", label: "Banaras" }, { value: "Silk", label: "Silk" }, { value: "Chiffon", label: "Chiffon"}, { value: "Crape", label: "Crape"}],
     "Lehenga": [{ value: "Banarasi", label: "Banaras" }, { value: "Georgette", label: "Georgette", }, { value: "Chiffon", label: "Chiffon" }, { value: "Crape", label: "Crape"}, { value: "Tissue", label: "Tissue"}, { value: "Pattu", label: "Pattu" }],
     "Anarkali": [{ value: "Georgette", label: "Georgette" }, { value: "Chiffon", label: "Chiffon" }, { value: "Crape", label: "Crape" }, { value: "Tissue", label: "Tissue"}, { value: "Pattu", label: "Pattu"}, { value: "Banarasi", label: "Banarasi" }, { value: "Cotton", label: "Cotton" }],
     "Kurta": [{ value: "Cotton", label: "Cotton" }, { value: "Raw Silk", label: "Raw Silk" }, { value: "Lenin", label: "Lenin" }, { value: "Velvet", label: "Velvet"}, { value: "Banarasi", label: "Banarasi"}],
+    "Short Kurta": [{ value: "Cotton", label: "Cotton" }, { value: "Raw Silk", label: "Raw Silk" }, { value: "Lenin", label: "Lenin" }, { value: "Velvet", label: "Velvet"}, { value: "Banarasi", label: "Banarasi"}],
     "Kurta Sets": [{ value: "Cotton", label: "Cotton" }, { value: "Raw Silk", label: "Raw Silk" }, { value: "Lenin", label: "Lenin" }, { value: "Velvet", label: "Velvet"}, { value: "Banarasi", label: "Banarasi"}],
     "Sherwani": [{ value: "Raw Silk", label: "Raw Silk" }, { value: "Velvet", label: "Velvet" }, { value: "Banarasi", label: "Banarasi" }]
   };
