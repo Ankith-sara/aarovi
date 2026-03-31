@@ -130,7 +130,6 @@ const ShopContextProvider = (props) => {
                 if (Object.keys(cartData[itemId]).length === 0) delete cartData[itemId];
             }
             setCartItems(cartData);
-            toast.success('Item removed');
             if (token) await axios.post(`${backendUrl}/api/cart/remove`, { itemId, size });
         } catch (error) {
             if (!handleAuthError(error)) toast.error('Unable to remove item');
@@ -529,7 +528,6 @@ const ShopContextProvider = (props) => {
             if (quantity === 0) {
                 delete updatedCart.customizations[customizationId];
                 if (Object.keys(updatedCart.customizations).length === 0) delete updatedCart.customizations;
-                toast.success("Item removed");
             } else {
                 updatedCart.customizations[customizationId].quantity = quantity;
             }
@@ -546,7 +544,6 @@ const ShopContextProvider = (props) => {
                 if (Object.keys(updatedCart.customizations).length === 0) delete updatedCart.customizations;
             }
             setCartItems(updatedCart);
-            toast.success("Item removed");
             if (token) await axios.post(`${backendUrl}/api/cart/remove-custom`, { customizationId });
         } catch (err) { handleAuthError(err); }
     }, [cartItems, token, backendUrl, handleAuthError]);
