@@ -644,7 +644,7 @@ const DesignCanvas = ({
       <div className="bg-white rounded-xl shadow-md border border-gray-200 p-4 lg:p-6">
         <div className="mb-4 lg:mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2 lg:gap-3">
-            <div className="w-8 h-8 lg:w-10 lg:h-10 bg-secondary rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 lg:w-10 lg:h-10 bg-[#4F200D] rounded-lg flex items-center justify-center">
               <Palette size={isMobile ? 16 : 20} className="text-white" />
             </div>
             <div>
@@ -655,32 +655,32 @@ const DesignCanvas = ({
           <div className="flex gap-1.5 lg:gap-2">
             <button onClick={handleUndo} disabled={!canUndo} className="p-1.5 lg:p-2 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all" title="Undo"><Undo size={isMobile ? 16 : 18} /></button>
             <button onClick={handleRedo} disabled={!canRedo} className="p-1.5 lg:p-2 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all" title="Redo"><Redo size={isMobile ? 16 : 18} /></button>
-            <button onClick={() => setAiHelperExpanded(!aiHelperExpanded)} className={`p-1.5 lg:p-2 rounded-lg transition-all ${aiHelperExpanded ? 'bg-secondary text-white' : 'bg-gray-100 hover:bg-gray-200 text-secondary'}`} title="AI Assistant"><Lightbulb size={isMobile ? 16 : 18} /></button>
-            {isMobile && (<button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1.5 bg-secondary text-white rounded-lg"><Menu size={16} /></button>)}
+            <button onClick={() => setAiHelperExpanded(!aiHelperExpanded)} className={`p-1.5 lg:p-2 rounded-lg transition-all ${aiHelperExpanded ? 'bg-[#4F200D] text-white' : 'bg-gray-100 hover:bg-gray-200 text-[#4F200D]'}`} title="AI Assistant"><Lightbulb size={isMobile ? 16 : 18} /></button>
+            {isMobile && (<button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1.5 bg-[#4F200D] text-white rounded-lg"><Menu size={16} /></button>)}
           </div>
         </div>
 
         {/* AI HELPER */}
         {aiHelperExpanded && (
-          <div className="mb-4 lg:mb-6 bg-gradient-to-br from-secondary/5 to-primary/5 rounded-xl p-3 lg:p-4 border-2 border-secondary/20">
+          <div className="mb-4 lg:mb-6 bg-gradient-to-br from-[#4F200D]/5 to-primary/5 rounded-xl p-3 lg:p-4 border-2 border-[#4F200D]/20">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Lightbulb size={18} className="text-secondary" />
+                <Lightbulb size={18} className="text-[#4F200D]" />
                 <h4 className="font-bold text-sm lg:text-base text-text">AI Assistant</h4>
               </div>
-              <button onClick={() => setAiHelperExpanded(false)} className="p-1 hover:bg-secondary/10 rounded transition-all"><X size={16} className="text-secondary" /></button>
+              <button onClick={() => setAiHelperExpanded(false)} className="p-1 hover:bg-[#4F200D]/10 rounded transition-all"><X size={16} className="text-[#4F200D]" /></button>
             </div>
-            <div className="bg-white rounded-lg p-2 lg:p-3 max-h-48 lg:max-h-64 overflow-y-auto space-y-2 border border-secondary/20 mb-2 lg:mb-3">
+            <div className="bg-white rounded-lg p-2 lg:p-3 max-h-48 lg:max-h-64 overflow-y-auto space-y-2 border border-[#4F200D]/20 mb-2 lg:mb-3">
               {chatHistory.length === 0 ? (
                 <div className="text-center py-3 lg:py-4">
-                  <p className="text-xs text-secondary mb-2">💬 Try:</p>
+                  <p className="text-xs text-[#4F200D] mb-2">💬 Try:</p>
                   <div className="text-xs text-text/60 space-y-1"><p>"Change to red"</p><p>"Add embroidery"</p><p>"Full sleeves"</p><p>"Show prints"</p></div>
                 </div>
               ) : (
                 chatHistory.map((msg, idx) => (
                   <div key={idx} className={`flex gap-2 ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    {msg.type === 'ai' && (<div className="w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0"><Bot size={10} className="text-secondary" /></div>)}
-                    <div className={`max-w-[80%] px-2.5 lg:px-3 py-1.5 rounded-lg text-xs ${msg.type === 'user' ? 'bg-secondary text-white' : 'bg-gray-100 text-text'}`}>
+                    {msg.type === 'ai' && (<div className="w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-[#4F200D]/10 flex items-center justify-center flex-shrink-0"><Bot size={10} className="text-[#4F200D]" /></div>)}
+                    <div className={`max-w-[80%] px-2.5 lg:px-3 py-1.5 rounded-lg text-xs ${msg.type === 'user' ? 'bg-[#4F200D] text-white' : 'bg-gray-100 text-text'}`}>
                       {msg.text.split('\n').map((line, i) => (<React.Fragment key={i}>{line}{i < msg.text.split('\n').length - 1 && <br />}</React.Fragment>))}
                     </div>
                   </div>
@@ -688,14 +688,14 @@ const DesignCanvas = ({
               )}
               {aiLoading && (
                 <div className="flex gap-2 justify-start">
-                  <div className="w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-secondary/10 flex items-center justify-center"><Bot size={10} className="text-secondary" /></div>
+                  <div className="w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-[#4F200D]/10 flex items-center justify-center"><Bot size={10} className="text-[#4F200D]" /></div>
                   <div className="bg-gray-100 px-2.5 lg:px-3 py-1.5 rounded-lg"><div className="flex gap-1"><div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div><div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div><div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div></div></div>
                 </div>
               )}
             </div>
             <div className="flex gap-2">
-              <input type="text" value={userQuery} onChange={(e) => setUserQuery(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleAiQuery()} placeholder="Ask me..." className="flex-1 px-3 py-2 border-2 border-secondary/20 rounded-lg focus:border-secondary focus:outline-none text-xs lg:text-sm" disabled={aiLoading} />
-              <button onClick={handleAiQuery} disabled={aiLoading || !userQuery.trim()} className="px-2.5 lg:px-3 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-all disabled:opacity-50"><Send size={14} /></button>
+              <input type="text" value={userQuery} onChange={(e) => setUserQuery(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleAiQuery()} placeholder="Ask me..." className="flex-1 px-3 py-2 border-2 border-[#4F200D]/20 rounded-lg focus:border-[#4F200D] focus:outline-none text-xs lg:text-sm" disabled={aiLoading} />
+              <button onClick={handleAiQuery} disabled={aiLoading || !userQuery.trim()} className="px-2.5 lg:px-3 py-2 bg-[#4F200D] text-white rounded-lg hover:bg-[#4F200D]/90 transition-all disabled:opacity-50"><Send size={14} /></button>
             </div>
           </div>
         )}
@@ -729,7 +729,7 @@ const DesignCanvas = ({
           <h4 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Select Zone</h4>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {template.zones.filter(zone => getSleeveVisibility(zone.id).visible).map(zone => (
-              <button key={zone.id} onClick={() => handleZoneClick(zone.id)} className={`p-2 lg:p-3 rounded-lg border-2 transition-all text-xs font-semibold ${selectedZone === zone.id ? 'border-secondary bg-secondary/5' : 'border-gray-200 hover:border-gray-300'}`}>
+              <button key={zone.id} onClick={() => handleZoneClick(zone.id)} className={`p-2 lg:p-3 rounded-lg border-2 transition-all text-xs font-semibold ${selectedZone === zone.id ? 'border-[#4F200D] bg-[#4F200D]/5' : 'border-gray-200 hover:border-gray-300'}`}>
                 {zone.label}
               </button>
             ))}
@@ -737,9 +737,9 @@ const DesignCanvas = ({
         </div>
 
         {selectedZone && (
-          <div className="mb-4 lg:mb-6 p-3 lg:p-4 bg-secondary/5 rounded-lg border border-secondary/20 flex items-center justify-between">
+          <div className="mb-4 lg:mb-6 p-3 lg:p-4 bg-[#4F200D]/5 rounded-lg border border-[#4F200D]/20 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <CheckCircle2 size={16} className="text-secondary" />
+              <CheckCircle2 size={16} className="text-[#4F200D]" />
               <span className="text-xs lg:text-sm font-semibold text-text">{template.zones.find(z => z.id === selectedZone)?.label}</span>
             </div>
             <button onClick={clearZone} className="px-2.5 lg:px-3 py-1.5 bg-white text-red-600 rounded-lg hover:bg-red-50 transition-all text-xs font-semibold flex items-center gap-1">
@@ -749,12 +749,12 @@ const DesignCanvas = ({
         )}
 
         {generatedReferenceImages.length > 0 && (
-          <div className="bg-secondary/5 border border-secondary/20 rounded-lg p-3 lg:p-4">
+          <div className="bg-[#4F200D]/5 border border-[#4F200D]/20 rounded-lg p-3 lg:p-4">
             <h4 className="font-bold text-xs lg:text-sm text-text mb-2">AI Reference Images</h4>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {generatedReferenceImages.filter(img => img.url).map((img, idx) => (
                 <div key={idx} className="relative group">
-                  <img src={img.url} alt={`Reference ${idx + 1}`} className="w-full aspect-square object-cover rounded-lg border-2 border-secondary/20" />
+                  <img src={img.url} alt={`Reference ${idx + 1}`} className="w-full aspect-square object-cover rounded-lg border-2 border-[#4F200D]/20" />
                 </div>
               ))}
             </div>
@@ -786,7 +786,7 @@ const DesignCanvas = ({
             ].map(tab => {
               const Icon = tab.icon;
               return (
-                <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1.5 lg:gap-2 px-3 lg:px-4 py-2 lg:py-2.5 rounded-lg font-semibold transition-all whitespace-nowrap text-xs lg:text-sm ${activeTab === tab.id ? 'bg-secondary text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1.5 lg:gap-2 px-3 lg:px-4 py-2 lg:py-2.5 rounded-lg font-semibold transition-all whitespace-nowrap text-xs lg:text-sm ${activeTab === tab.id ? 'bg-[#4F200D] text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
                   <Icon size={16} /><span>{tab.label}</span>
                 </button>
               );
@@ -800,8 +800,8 @@ const DesignCanvas = ({
               <div>
                 <h4 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Apply To</h4>
                 <div className="grid grid-cols-2 gap-2">
-                  <button onClick={() => setColorMode('full')} className={`p-2.5 lg:p-3 rounded-lg border-2 transition-all text-xs font-semibold flex items-center justify-center gap-2 ${colorMode === 'full' ? 'border-secondary bg-secondary/5' : 'border-gray-200 hover:border-gray-300'}`}><ShirtIcon size={14} />Full</button>
-                  <button onClick={() => setColorMode('zone')} className={`p-2.5 lg:p-3 rounded-lg border-2 transition-all text-xs font-semibold flex items-center justify-center gap-2 ${colorMode === 'zone' ? 'border-secondary bg-secondary/5' : 'border-gray-200 hover:border-gray-300'}`}><Move size={14} />Zone</button>
+                  <button onClick={() => setColorMode('full')} className={`p-2.5 lg:p-3 rounded-lg border-2 transition-all text-xs font-semibold flex items-center justify-center gap-2 ${colorMode === 'full' ? 'border-[#4F200D] bg-[#4F200D]/5' : 'border-gray-200 hover:border-gray-300'}`}><ShirtIcon size={14} />Full</button>
+                  <button onClick={() => setColorMode('zone')} className={`p-2.5 lg:p-3 rounded-lg border-2 transition-all text-xs font-semibold flex items-center justify-center gap-2 ${colorMode === 'zone' ? 'border-[#4F200D] bg-[#4F200D]/5' : 'border-gray-200 hover:border-gray-300'}`}><Move size={14} />Zone</button>
                 </div>
               </div>
 
@@ -813,7 +813,7 @@ const DesignCanvas = ({
                     <input type="color" value={fabricColor} onChange={(e) => applyFabricColor(e.target.value)} className="w-12 h-12 lg:w-16 lg:h-16 rounded-lg cursor-pointer border-2 border-white shadow-md" />
                     <div className="flex-1">
                       <label className="block text-xs font-semibold text-gray-600 mb-1.5">Hex</label>
-                      <input type="text" value={fabricColor} onChange={(e) => applyFabricColor(e.target.value)} className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-xs lg:text-sm" />
+                      <input type="text" value={fabricColor} onChange={(e) => applyFabricColor(e.target.value)} className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-[#4F200D] focus:outline-none font-mono text-xs lg:text-sm" />
                     </div>
                   </div>
                 </div>
@@ -823,7 +823,7 @@ const DesignCanvas = ({
               <div>
                 <h4 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Presets</h4>
                 <div className="grid grid-cols-8 gap-1.5 lg:gap-2">
-                  {colorPresets.map(preset => (<button key={preset.color} onClick={() => applyFabricColor(preset.color)} className="aspect-square rounded-lg border-2 border-gray-200 hover:border-secondary hover:scale-110 transition-all shadow-sm" style={{ backgroundColor: preset.color }} title={preset.name} />))}
+                  {colorPresets.map(preset => (<button key={preset.color} onClick={() => applyFabricColor(preset.color)} className="aspect-square rounded-lg border-2 border-gray-200 hover:border-[#4F200D] hover:scale-110 transition-all shadow-sm" style={{ backgroundColor: preset.color }} title={preset.name} />))}
                 </div>
               </div>
 
@@ -834,7 +834,7 @@ const DesignCanvas = ({
                   Neckline
                   <span className="text-gray-400 font-normal normal-case text-xs">(optional)</span>
                   {neckStyle && (
-                    <span className="ml-auto text-secondary text-xs font-bold normal-case">
+                    <span className="ml-auto text-[#4F200D] text-xs font-bold normal-case">
                       {necklineOptions.find(n => n.value === neckStyle)?.label}
                     </span>
                   )}
@@ -846,8 +846,8 @@ const DesignCanvas = ({
                       onClick={() => { setNeckStyle(neckStyle === opt.value ? '' : opt.value); saveToHistory(); }}
                       className={`px-3 py-2 rounded-lg border-2 transition-all text-xs font-semibold
                         ${neckStyle === opt.value
-                          ? 'border-secondary bg-secondary/5 text-secondary'
-                          : 'border-gray-200 hover:border-secondary/50 text-gray-600'
+                          ? 'border-[#4F200D] bg-[#4F200D]/5 text-[#4F200D]'
+                          : 'border-gray-200 hover:border-[#4F200D]/50 text-gray-600'
                         }`}
                     >
                       {opt.label}
@@ -870,7 +870,7 @@ const DesignCanvas = ({
                   <h4 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3 flex items-center gap-2"><Ruler size={14} />Sleeves</h4>
                   <div className="grid grid-cols-2 gap-2">
                     {sleeveOptions.map(style => (
-                      <button key={style.value} onClick={() => { setSleeveStyle(style.value); if (style.value === 'sleeveless' && selectedZone && selectedZone.includes('sleeve')) setSelectedZone(null); saveToHistory(); }} className={`p-2.5 lg:p-3 rounded-lg border-2 transition-all text-xs font-semibold ${sleeveStyle === style.value ? 'border-secondary bg-secondary/5' : 'border-gray-200 hover:border-gray-300'}`}>
+                      <button key={style.value} onClick={() => { setSleeveStyle(style.value); if (style.value === 'sleeveless' && selectedZone && selectedZone.includes('sleeve')) setSelectedZone(null); saveToHistory(); }} className={`p-2.5 lg:p-3 rounded-lg border-2 transition-all text-xs font-semibold ${sleeveStyle === style.value ? 'border-[#4F200D] bg-[#4F200D]/5' : 'border-gray-200 hover:border-gray-300'}`}>
                         {style.label}
                       </button>
                     ))}
@@ -909,11 +909,11 @@ const DesignCanvas = ({
                       ].map(mode => {
                         const Icon = mode.icon;
                         return (
-                          <button key={mode.id} onClick={() => setPrintMode(mode.id)} className={`w-full flex items-center gap-3 px-3 lg:px-4 py-2.5 lg:py-3 rounded-lg border-2 transition-all ${printMode === mode.id ? 'border-secondary bg-secondary/5' : 'border-gray-200 hover:border-gray-300'}`}>
-                            <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 flex items-center justify-center ${printMode === mode.id ? 'border-secondary' : 'border-gray-300'}`}>
-                              {printMode === mode.id && <div className="w-2 h-2 lg:w-3 lg:h-3 rounded-full bg-secondary" />}
+                          <button key={mode.id} onClick={() => setPrintMode(mode.id)} className={`w-full flex items-center gap-3 px-3 lg:px-4 py-2.5 lg:py-3 rounded-lg border-2 transition-all ${printMode === mode.id ? 'border-[#4F200D] bg-[#4F200D]/5' : 'border-gray-200 hover:border-gray-300'}`}>
+                            <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 flex items-center justify-center ${printMode === mode.id ? 'border-[#4F200D]' : 'border-gray-300'}`}>
+                              {printMode === mode.id && <div className="w-2 h-2 lg:w-3 lg:h-3 rounded-full bg-[#4F200D]" />}
                             </div>
-                            <Icon size={16} className={printMode === mode.id ? 'text-secondary' : 'text-gray-500'} />
+                            <Icon size={16} className={printMode === mode.id ? 'text-[#4F200D]' : 'text-gray-500'} />
                             <span className="font-semibold text-xs lg:text-sm">{mode.label}</span>
                           </button>
                         );
@@ -925,7 +925,7 @@ const DesignCanvas = ({
                     <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Print Color</h5>
                     <div className="flex items-center gap-2 lg:gap-3">
                       <input type="color" value={printColor} onChange={(e) => setPrintColor(e.target.value)} className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg cursor-pointer border-2 border-white shadow-md" />
-                      <div className="flex-1"><input type="text" value={printColor} onChange={(e) => setPrintColor(e.target.value)} className="w-full px-2.5 lg:px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-secondary focus:outline-none font-mono text-xs" /></div>
+                      <div className="flex-1"><input type="text" value={printColor} onChange={(e) => setPrintColor(e.target.value)} className="w-full px-2.5 lg:px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-[#4F200D] focus:outline-none font-mono text-xs" /></div>
                     </div>
                   </div>
 
@@ -935,7 +935,7 @@ const DesignCanvas = ({
                         <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Category</h5>
                         <div className="flex flex-wrap gap-1.5 lg:gap-2">
                           {printCategories.map(cat => (
-                            <button key={cat.id} onClick={() => setPrintCategory(cat.id)} className={`px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg text-xs lg:text-sm font-semibold transition-all ${printCategory === cat.id ? 'bg-secondary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{cat.label}</button>
+                            <button key={cat.id} onClick={() => setPrintCategory(cat.id)} className={`px-3 lg:px-4 py-1.5 lg:py-2 rounded-lg text-xs lg:text-sm font-semibold transition-all ${printCategory === cat.id ? 'bg-[#4F200D] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{cat.label}</button>
                           ))}
                         </div>
                       </div>
@@ -943,7 +943,7 @@ const DesignCanvas = ({
                         <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Designs</h5>
                         <div className="grid grid-cols-3 gap-2 lg:gap-3">
                           {currentCategoryPrints.map(print => (
-                            <button key={print.key} onClick={() => applyBrowsePrint(print.key)} className="group aspect-square rounded-lg border-2 border-gray-200 hover:border-secondary hover:shadow-md transition-all overflow-hidden bg-white relative">
+                            <button key={print.key} onClick={() => applyBrowsePrint(print.key)} className="group aspect-square rounded-lg border-2 border-gray-200 hover:border-[#4F200D] hover:shadow-md transition-all overflow-hidden bg-white relative">
                               <img src={print.img} alt={print.name} className="w-full h-full object-cover" />
                               <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1.5 lg:p-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <div className="font-semibold text-[10px] lg:text-xs">{print.name}</div>
@@ -959,8 +959,8 @@ const DesignCanvas = ({
                     <div className="space-y-3 lg:space-y-4">
                       <div>
                         <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Describe Print</h5>
-                        <textarea value={aiPrintPrompt} onChange={(e) => setAiPrintPrompt(e.target.value)} placeholder="e.g., Floral paisley pattern" className="w-full border-2 border-gray-200 rounded-lg px-3 lg:px-4 py-2 lg:py-3 h-20 lg:h-24 focus:border-secondary focus:outline-none transition-all resize-none text-xs lg:text-sm" rows="3" />
-                        <button onClick={handleAIGeneratePrint} disabled={aiGenerating || !aiPrintPrompt.trim()} className="w-full mt-3 px-4 py-2.5 lg:py-3 bg-secondary text-white rounded-lg hover:shadow-lg transition-all font-semibold text-xs lg:text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <textarea value={aiPrintPrompt} onChange={(e) => setAiPrintPrompt(e.target.value)} placeholder="e.g., Floral paisley pattern" className="w-full border-2 border-gray-200 rounded-lg px-3 lg:px-4 py-2 lg:py-3 h-20 lg:h-24 focus:border-[#4F200D] focus:outline-none transition-all resize-none text-xs lg:text-sm" rows="3" />
+                        <button onClick={handleAIGeneratePrint} disabled={aiGenerating || !aiPrintPrompt.trim()} className="w-full mt-3 px-4 py-2.5 lg:py-3 bg-[#4F200D] text-white rounded-lg hover:shadow-lg transition-all font-semibold text-xs lg:text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                           {aiGenerating ? (<><div className="animate-spin rounded-full h-4 w-4 lg:h-5 lg:w-5 border-b-2 border-white"></div><span>Generating...</span></>) : (<><Wand2 size={16} /><span>Generate</span></>)}
                         </button>
                       </div>
@@ -972,13 +972,13 @@ const DesignCanvas = ({
                             <div><label className="block text-xs font-semibold text-gray-600 mb-2">Scale</label><input type="range" min="1" max="10" value={printScale} onChange={(e) => setPrintScale(parseInt(e.target.value))} className="w-full" /></div>
                             <div>
                               <label className="block text-xs font-semibold text-gray-600 mb-2">Repeat</label>
-                              <div className="flex gap-2">{['tile', 'mirror', 'center'].map(opt => (<button key={opt} onClick={() => setPrintRepeat(opt)} className={`flex-1 px-2.5 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all capitalize ${printRepeat === opt ? 'bg-secondary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{opt}</button>))}</div>
+                              <div className="flex gap-2">{['tile', 'mirror', 'center'].map(opt => (<button key={opt} onClick={() => setPrintRepeat(opt)} className={`flex-1 px-2.5 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all capitalize ${printRepeat === opt ? 'bg-[#4F200D] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{opt}</button>))}</div>
                             </div>
                             <div><label className="block text-xs font-semibold text-gray-600 mb-2">Rotation: {printRotation}°</label><input type="range" min="0" max="360" step="45" value={printRotation} onChange={(e) => setPrintRotation(parseInt(e.target.value))} className="w-full" /></div>
                           </div>
                           <div className="flex gap-2 mt-4">
-                            <button onClick={applyGeneratedPrint} className="flex-1 px-3 lg:px-4 py-2 bg-secondary text-white rounded-lg hover:shadow-md transition-all font-semibold text-xs lg:text-sm">Apply</button>
-                            <button onClick={handleAIGeneratePrint} className="flex-1 px-3 lg:px-4 py-2 bg-white border-2 border-secondary text-secondary rounded-lg hover:bg-secondary/5 transition-all font-semibold text-xs lg:text-sm">Retry</button>
+                            <button onClick={applyGeneratedPrint} className="flex-1 px-3 lg:px-4 py-2 bg-[#4F200D] text-white rounded-lg hover:shadow-md transition-all font-semibold text-xs lg:text-sm">Apply</button>
+                            <button onClick={handleAIGeneratePrint} className="flex-1 px-3 lg:px-4 py-2 bg-white border-2 border-[#4F200D] text-[#4F200D] rounded-lg hover:bg-[#4F200D]/5 transition-all font-semibold text-xs lg:text-sm">Retry</button>
                           </div>
                         </div>
                       )}
@@ -989,15 +989,15 @@ const DesignCanvas = ({
                     <div className="space-y-3 lg:space-y-4">
                       <div>
                         <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Upload Design</h5>
-                        <input type="file" accept="image/jpeg,image/png,image/svg+xml" onChange={handleUploadPrint} className="block w-full border-2 border-dashed border-gray-300 rounded-lg px-3 lg:px-4 py-4 lg:py-6 focus:border-secondary transition-all file:mr-3 lg:file:mr-4 file:py-1.5 lg:file:py-2 file:px-3 lg:file:px-4 file:rounded-full file:border-0 file:bg-secondary file:text-white file:font-semibold file:text-xs lg:file:text-sm hover:file:bg-secondary/90 cursor-pointer text-xs lg:text-sm bg-white" />
+                        <input type="file" accept="image/jpeg,image/png,image/svg+xml" onChange={handleUploadPrint} className="block w-full border-2 border-dashed border-gray-300 rounded-lg px-3 lg:px-4 py-4 lg:py-6 focus:border-[#4F200D] transition-all file:mr-3 lg:file:mr-4 file:py-1.5 lg:file:py-2 file:px-3 lg:file:px-4 file:rounded-full file:border-0 file:bg-[#4F200D] file:text-white file:font-semibold file:text-xs lg:file:text-sm hover:file:bg-[#4F200D]/90 cursor-pointer text-xs lg:text-sm bg-white" />
                         <p className="text-xs text-gray-500 mt-2">JPG, PNG, SVG</p>
                       </div>
                       {uploadedPrint && (
                         <div className="bg-gray-50 rounded-lg p-3 lg:p-4 border border-gray-200">
                           <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Preview</h5>
                           <div className="aspect-square rounded-lg border-2 border-gray-200 overflow-hidden mb-3 bg-white"><img src={uploadedPrint} alt="Uploaded" className="w-full h-full object-contain" /></div>
-                          <div><label className="block text-xs font-semibold text-gray-600 mb-2">Repeat</label><div className="flex gap-2">{['tile', 'mirror', 'no-repeat'].map(opt => (<button key={opt} onClick={() => setUploadRepeat(opt)} className={`flex-1 px-2.5 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all ${uploadRepeat === opt ? 'bg-secondary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{opt === 'no-repeat' ? 'None' : opt}</button>))}</div></div>
-                          <button onClick={applyUploadedPrint} className="w-full mt-4 px-4 py-2 bg-secondary text-white rounded-lg hover:shadow-md transition-all font-semibold text-xs lg:text-sm">Apply</button>
+                          <div><label className="block text-xs font-semibold text-gray-600 mb-2">Repeat</label><div className="flex gap-2">{['tile', 'mirror', 'no-repeat'].map(opt => (<button key={opt} onClick={() => setUploadRepeat(opt)} className={`flex-1 px-2.5 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all ${uploadRepeat === opt ? 'bg-[#4F200D] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{opt === 'no-repeat' ? 'None' : opt}</button>))}</div></div>
+                          <button onClick={applyUploadedPrint} className="w-full mt-4 px-4 py-2 bg-[#4F200D] text-white rounded-lg hover:shadow-md transition-all font-semibold text-xs lg:text-sm">Apply</button>
                         </div>
                       )}
                     </div>
@@ -1018,11 +1018,11 @@ const DesignCanvas = ({
                       ].map(mode => {
                         const Icon = mode.icon;
                         return (
-                          <button key={mode.id} onClick={() => setEmbroideryMode(mode.id)} className={`w-full flex items-center gap-3 px-3 lg:px-4 py-2.5 lg:py-3 rounded-lg border-2 transition-all ${embroideryMode === mode.id ? 'border-secondary bg-background' : 'border-gray-200 hover:border-gray-300'}`}>
-                            <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 flex items-center justify-center ${embroideryMode === mode.id ? 'border-secondary' : 'border-gray-300'}`}>
-                              {embroideryMode === mode.id && <div className="w-2 h-2 lg:w-3 lg:h-3 rounded-full bg-secondary" />}
+                          <button key={mode.id} onClick={() => setEmbroideryMode(mode.id)} className={`w-full flex items-center gap-3 px-3 lg:px-4 py-2.5 lg:py-3 rounded-lg border-2 transition-all ${embroideryMode === mode.id ? 'border-[#4F200D] bg-[#FBF7F3]' : 'border-gray-200 hover:border-gray-300'}`}>
+                            <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 flex items-center justify-center ${embroideryMode === mode.id ? 'border-[#4F200D]' : 'border-gray-300'}`}>
+                              {embroideryMode === mode.id && <div className="w-2 h-2 lg:w-3 lg:h-3 rounded-full bg-[#4F200D]" />}
                             </div>
-                            <Icon size={16} className={embroideryMode === mode.id ? 'text-secondary' : 'text-gray-500'} />
+                            <Icon size={16} className={embroideryMode === mode.id ? 'text-[#4F200D]' : 'text-gray-500'} />
                             <span className="font-semibold text-xs lg:text-sm">{mode.label}</span>
                           </button>
                         );
@@ -1030,15 +1030,15 @@ const DesignCanvas = ({
                     </div>
                   </div>
 
-                  <div className="rounded-lg p-3 lg:p-4 border border-secondary">
+                  <div className="rounded-lg p-3 lg:p-4 border border-[#4F200D]">
                     <h5 className="font-bold text-xs uppercase text-text mb-2 lg:mb-3">Thread Color</h5>
                     <div className="flex items-center gap-2 lg:gap-3 mb-3">
                       <input type="color" value={embroideryColor} onChange={(e) => setEmbroideryColor(e.target.value)} className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg cursor-pointer border-2 border-white shadow-md" />
-                      <div className="flex-1"><input type="text" value={embroideryColor} onChange={(e) => setEmbroideryColor(e.target.value)} className="w-full px-2.5 lg:px-3 py-2 border-2 border-secondary rounded-lg focus:border-secondary focus:outline-none font-mono text-xs" /></div>
+                      <div className="flex-1"><input type="text" value={embroideryColor} onChange={(e) => setEmbroideryColor(e.target.value)} className="w-full px-2.5 lg:px-3 py-2 border-2 border-[#4F200D] rounded-lg focus:border-[#4F200D] focus:outline-none font-mono text-xs" /></div>
                     </div>
                     <div className="grid grid-cols-6 gap-1.5 lg:gap-2">
                       {['#FFD700', '#C0C0C0', '#DC143C', '#EC4899', '#FFFFFF', '#000000'].map(color => (
-                        <button key={color} onClick={() => setEmbroideryColor(color)} className="aspect-square rounded-lg border-2 border-gray-200 hover:border-secondary hover:scale-110 transition-all shadow-sm" style={{ backgroundColor: color }} />
+                        <button key={color} onClick={() => setEmbroideryColor(color)} className="aspect-square rounded-lg border-2 border-gray-200 hover:border-[#4F200D] hover:scale-110 transition-all shadow-sm" style={{ backgroundColor: color }} />
                       ))}
                     </div>
                   </div>
@@ -1052,7 +1052,7 @@ const DesignCanvas = ({
                           if (!pattern) return null;
                           const patternCanvas = pattern.createPattern(embroideryColor);
                           return (
-                            <button key={style.id} onClick={() => applyEmbroidery(style.pattern)} disabled={!selectedZone} className="group p-3 lg:p-4 rounded-lg border-2 border-gray-200 hover:border-secondary hover:shadow-md transition-all flex items-center gap-3 lg:gap-4 disabled:opacity-40 disabled:cursor-not-allowed">
+                            <button key={style.id} onClick={() => applyEmbroidery(style.pattern)} disabled={!selectedZone} className="group p-3 lg:p-4 rounded-lg border-2 border-gray-200 hover:border-[#4F200D] hover:shadow-md transition-all flex items-center gap-3 lg:gap-4 disabled:opacity-40 disabled:cursor-not-allowed">
                               <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-lg border-2 border-gray-200 overflow-hidden bg-white flex-shrink-0">
                                 <img src={patternCanvas.toDataURL()} alt={style.label} className="w-full h-full object-cover" />
                               </div>
@@ -1060,7 +1060,7 @@ const DesignCanvas = ({
                                 <div className="text-xs lg:text-sm font-semibold text-text mb-0.5 truncate">{style.label}</div>
                                 <div className="text-[10px] lg:text-xs text-text/60 truncate">{pattern.note}</div>
                               </div>
-                              <CheckCircle2 size={16} className="text-secondary opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                              <CheckCircle2 size={16} className="text-[#4F200D] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                             </button>
                           );
                         })}
@@ -1072,23 +1072,23 @@ const DesignCanvas = ({
                     <div className="space-y-3 lg:space-y-4">
                       <div>
                         <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Describe Embroidery</h5>
-                        <textarea value={aiEmbroideryPrompt} onChange={(e) => setAiEmbroideryPrompt(e.target.value)} placeholder="e.g., Intricate gold zari border with peacock motifs" className="w-full border-2 border-secondary rounded-lg px-3 lg:px-4 py-2 lg:py-3 h-20 lg:h-24 focus:border-secondary focus:outline-none transition-all resize-none text-xs lg:text-sm" rows="3" />
-                        <button onClick={handleAIGenerateEmbroidery} disabled={aiEmbroideryGenerating || !aiEmbroideryPrompt.trim()} className="w-full mt-3 px-4 py-2.5 lg:py-3 bg-secondary text-white rounded-lg hover:bg-secondary hover:shadow-lg transition-all font-semibold text-xs lg:text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <textarea value={aiEmbroideryPrompt} onChange={(e) => setAiEmbroideryPrompt(e.target.value)} placeholder="e.g., Intricate gold zari border with peacock motifs" className="w-full border-2 border-[#4F200D] rounded-lg px-3 lg:px-4 py-2 lg:py-3 h-20 lg:h-24 focus:border-[#4F200D] focus:outline-none transition-all resize-none text-xs lg:text-sm" rows="3" />
+                        <button onClick={handleAIGenerateEmbroidery} disabled={aiEmbroideryGenerating || !aiEmbroideryPrompt.trim()} className="w-full mt-3 px-4 py-2.5 lg:py-3 bg-[#4F200D] text-white rounded-lg hover:bg-[#4F200D] hover:shadow-lg transition-all font-semibold text-xs lg:text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                           {aiEmbroideryGenerating ? (<><div className="animate-spin rounded-full h-4 w-4 lg:h-5 lg:w-5 border-b-2 border-white"></div><span>Generating...</span></>) : (<><Wand2 size={16} /><span>Generate Embroidery</span></>)}
                         </button>
                       </div>
                       {generatedEmbroidery && (
-                        <div className="rounded-lg p-3 lg:p-4 border border-secondary">
+                        <div className="rounded-lg p-3 lg:p-4 border border-[#4F200D]">
                           <h5 className="font-bold text-xs uppercase text-text mb-2 lg:mb-3">Preview</h5>
-                          <div className="aspect-square rounded-lg border-2 border-secondary overflow-hidden mb-3 bg-white"><img src={generatedEmbroidery.url} alt="Generated Embroidery" className="w-full h-full object-cover" /></div>
+                          <div className="aspect-square rounded-lg border-2 border-[#4F200D] overflow-hidden mb-3 bg-white"><img src={generatedEmbroidery.url} alt="Generated Embroidery" className="w-full h-full object-cover" /></div>
                           <p className="text-xs text-text mb-3 font-medium">{generatedEmbroidery.name} style</p>
                           <div className="space-y-3">
                             <div><label className="block text-xs font-semibold text-gray-600 mb-2">Scale</label><input type="range" min="1" max="10" value={embroideryScale} onChange={(e) => setEmbroideryScale(parseInt(e.target.value))} className="w-full accent-secondary" /></div>
-                            <div><label className="block text-xs font-semibold text-gray-600 mb-2">Repeat</label><div className="flex gap-2">{['tile', 'mirror', 'center'].map(opt => (<button key={opt} onClick={() => setEmbroideryRepeat(opt)} className={`flex-1 px-2.5 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all capitalize ${embroideryRepeat === opt ? 'bg-secondary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{opt}</button>))}</div></div>
+                            <div><label className="block text-xs font-semibold text-gray-600 mb-2">Repeat</label><div className="flex gap-2">{['tile', 'mirror', 'center'].map(opt => (<button key={opt} onClick={() => setEmbroideryRepeat(opt)} className={`flex-1 px-2.5 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all capitalize ${embroideryRepeat === opt ? 'bg-[#4F200D] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{opt}</button>))}</div></div>
                           </div>
                           <div className="flex gap-2 mt-4">
-                            <button onClick={applyGeneratedEmbroidery} disabled={!selectedZone} className="flex-1 px-3 lg:px-4 py-2 bg-secondary text-white rounded-lg hover:shadow-md transition-all font-semibold text-xs lg:text-sm disabled:opacity-50 disabled:cursor-not-allowed">Apply</button>
-                            <button onClick={handleAIGenerateEmbroidery} className="flex-1 px-3 lg:px-4 py-2 bg-white border-2 border-secondary text-text rounded-lg hover:bg-background transition-all font-semibold text-xs lg:text-sm">Retry</button>
+                            <button onClick={applyGeneratedEmbroidery} disabled={!selectedZone} className="flex-1 px-3 lg:px-4 py-2 bg-[#4F200D] text-white rounded-lg hover:shadow-md transition-all font-semibold text-xs lg:text-sm disabled:opacity-50 disabled:cursor-not-allowed">Apply</button>
+                            <button onClick={handleAIGenerateEmbroidery} className="flex-1 px-3 lg:px-4 py-2 bg-white border-2 border-[#4F200D] text-text rounded-lg hover:bg-[#FBF7F3] transition-all font-semibold text-xs lg:text-sm">Retry</button>
                           </div>
                           {!selectedZone && <p className="text-xs text-text mt-2 text-center">Select a zone to apply</p>}
                         </div>
@@ -1100,15 +1100,15 @@ const DesignCanvas = ({
                     <div className="space-y-3 lg:space-y-4">
                       <div>
                         <h5 className="font-bold text-xs uppercase text-gray-600 mb-2 lg:mb-3">Upload Embroidery Design</h5>
-                        <input type="file" accept="image/jpeg,image/png,image/svg+xml" onChange={handleUploadEmbroidery} className="block w-full border-2 border-dashed border-gray-300 rounded-lg px-3 lg:px-4 py-4 lg:py-6 focus:border-secondary transition-all file:mr-3 lg:file:mr-4 file:py-1.5 lg:file:py-2 file:px-3 lg:file:px-4 file:rounded-full file:border-0 file:bg-secondary file:text-white file:font-semibold file:text-xs lg:file:text-sm hover:file:bg-secondary cursor-pointer text-xs lg:text-sm bg-white" />
+                        <input type="file" accept="image/jpeg,image/png,image/svg+xml" onChange={handleUploadEmbroidery} className="block w-full border-2 border-dashed border-gray-300 rounded-lg px-3 lg:px-4 py-4 lg:py-6 focus:border-[#4F200D] transition-all file:mr-3 lg:file:mr-4 file:py-1.5 lg:file:py-2 file:px-3 lg:file:px-4 file:rounded-full file:border-0 file:bg-[#4F200D] file:text-white file:font-semibold file:text-xs lg:file:text-sm hover:file:bg-[#4F200D] cursor-pointer text-xs lg:text-sm bg-white" />
                         <p className="text-xs text-gray-500 mt-2">JPG, PNG, SVG — ideally transparent background for best results</p>
                       </div>
                       {uploadedEmbroidery && (
-                        <div className="bg-background rounded-lg p-3 lg:p-4 border border-secondary">
+                        <div className="bg-[#FBF7F3] rounded-lg p-3 lg:p-4 border border-[#4F200D]">
                           <h5 className="font-bold text-xs uppercase text-text mb-2 lg:mb-3">Preview</h5>
-                          <div className="aspect-square rounded-lg border-2 border-secondary overflow-hidden mb-3 bg-white"><img src={uploadedEmbroidery} alt="Uploaded Embroidery" className="w-full h-full object-contain" /></div>
-                          <div><label className="block text-xs font-semibold text-gray-600 mb-2">Repeat</label><div className="flex gap-2">{['tile', 'mirror', 'no-repeat'].map(opt => (<button key={opt} onClick={() => setEmbroideryUploadRepeat(opt)} className={`flex-1 px-2.5 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all ${embroideryUploadRepeat === opt ? 'bg-background text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{opt === 'no-repeat' ? 'None' : opt}</button>))}</div></div>
-                          <button onClick={applyUploadedEmbroidery} disabled={!selectedZone} className="w-full mt-4 px-4 py-2 bg-secondary text-white rounded-lg hover:shadow-md transition-all font-semibold text-xs lg:text-sm disabled:opacity-50 disabled:cursor-not-allowed">Apply Embroidery</button>
+                          <div className="aspect-square rounded-lg border-2 border-[#4F200D] overflow-hidden mb-3 bg-white"><img src={uploadedEmbroidery} alt="Uploaded Embroidery" className="w-full h-full object-contain" /></div>
+                          <div><label className="block text-xs font-semibold text-gray-600 mb-2">Repeat</label><div className="flex gap-2">{['tile', 'mirror', 'no-repeat'].map(opt => (<button key={opt} onClick={() => setEmbroideryUploadRepeat(opt)} className={`flex-1 px-2.5 py-1.5 lg:py-2 rounded-lg text-xs font-semibold transition-all ${embroideryUploadRepeat === opt ? 'bg-[#FBF7F3] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{opt === 'no-repeat' ? 'None' : opt}</button>))}</div></div>
+                          <button onClick={applyUploadedEmbroidery} disabled={!selectedZone} className="w-full mt-4 px-4 py-2 bg-[#4F200D] text-white rounded-lg hover:shadow-md transition-all font-semibold text-xs lg:text-sm disabled:opacity-50 disabled:cursor-not-allowed">Apply Embroidery</button>
                           {!selectedZone && <p className="text-xs text-text mt-2 text-center">Select a zone to apply</p>}
                         </div>
                       )}
@@ -1122,14 +1122,14 @@ const DesignCanvas = ({
           {/* ── AI IMAGES TAB ── */}
           {activeTab === 'ai-images' && (
             <div className="space-y-4 lg:space-y-6">
-              <div className="bg-gradient-to-br from-secondary/5 to-primary/5 rounded-lg p-4 lg:p-5 border-2 border-secondary/20">
+              <div className="bg-gradient-to-br from-[#4F200D]/5 to-primary/5 rounded-lg p-4 lg:p-5 border-2 border-[#4F200D]/20">
                 <div className="flex items-center gap-2 mb-3">
-                  <ImageIcon size={18} className="text-secondary" />
+                  <ImageIcon size={18} className="text-[#4F200D]" />
                   <h4 className="font-bold text-text text-sm lg:text-base">AI Generator</h4>
                 </div>
                 <p className="text-xs text-text/60 mb-3 lg:mb-4">Generate unique designs (1024x1024)</p>
-                <textarea value={aiImagePrompt} onChange={(e) => setAiImagePrompt(e.target.value)} placeholder="e.g., Traditional paisley with gold" className="w-full px-3 lg:px-4 py-2 lg:py-3 border-2 border-secondary/20 rounded-lg focus:border-secondary focus:outline-none text-xs lg:text-sm resize-none" rows="4" disabled={aiImageGenerating} />
-                <button onClick={handleGenerateReferenceImages} disabled={aiImageGenerating || !aiImagePrompt.trim()} className="w-full mt-3 lg:mt-4 px-4 py-2.5 lg:py-3 bg-secondary text-white rounded-lg hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-xs lg:text-sm flex items-center justify-center gap-2 transition-all">
+                <textarea value={aiImagePrompt} onChange={(e) => setAiImagePrompt(e.target.value)} placeholder="e.g., Traditional paisley with gold" className="w-full px-3 lg:px-4 py-2 lg:py-3 border-2 border-[#4F200D]/20 rounded-lg focus:border-[#4F200D] focus:outline-none text-xs lg:text-sm resize-none" rows="4" disabled={aiImageGenerating} />
+                <button onClick={handleGenerateReferenceImages} disabled={aiImageGenerating || !aiImagePrompt.trim()} className="w-full mt-3 lg:mt-4 px-4 py-2.5 lg:py-3 bg-[#4F200D] text-white rounded-lg hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-xs lg:text-sm flex items-center justify-center gap-2 transition-all">
                   {aiImageGenerating ? (<><div className="animate-spin rounded-full h-4 w-4 lg:h-5 lg:w-5 border-b-2 border-white"></div><span>Generating...</span></>) : (<><Wand2 size={16} /><span>Generate</span></>)}
                 </button>
               </div>
@@ -1140,7 +1140,7 @@ const DesignCanvas = ({
                     <h5 className="font-bold text-xs lg:text-sm text-gray-700">Generated ({generatedReferenceImages.length})</h5>
                   </div>
                   {generatedReferenceImages.map((img, idx) => (
-                    <div key={idx} className={`bg-white rounded-lg p-3 border-2 transition-all group ${!img.success ? 'border-red-200' : 'border-gray-200 hover:border-secondary'}`}>
+                    <div key={idx} className={`bg-white rounded-lg p-3 border-2 transition-all group ${!img.success ? 'border-red-200' : 'border-gray-200 hover:border-[#4F200D]'}`}>
                       <div className="relative">
                         {img.url ? (
                           <img src={img.url} alt={`AI Design ${idx + 1}`} className={`w-full aspect-square object-cover rounded-lg mb-2 ${selectedZone && img.success ? 'cursor-pointer' : ''}`} onClick={() => img.success && applyReferenceImageAsPrint(img.url)} />
@@ -1151,7 +1151,7 @@ const DesignCanvas = ({
                         )}
                         {selectedZone && img.success && img.url && (
                           <button onClick={() => applyReferenceImageAsPrint(img.url)} className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                            <div className="bg-secondary text-white px-3 lg:px-4 py-2 rounded-lg font-semibold text-xs lg:text-sm flex items-center gap-2 shadow-lg"><CheckCircle2 size={14} />Apply</div>
+                            <div className="bg-[#4F200D] text-white px-3 lg:px-4 py-2 rounded-lg font-semibold text-xs lg:text-sm flex items-center gap-2 shadow-lg"><CheckCircle2 size={14} />Apply</div>
                           </button>
                         )}
                       </div>

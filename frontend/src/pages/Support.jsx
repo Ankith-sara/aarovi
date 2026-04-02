@@ -35,9 +35,9 @@ const Support = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
+      <div className="relative bg-[#FBF7F3] px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
             Customer Support
           </h1>
           <p className="text-lg sm:text-xl text-text/70 mb-8 max-w-3xl mx-auto font-light">
@@ -49,8 +49,8 @@ const Support = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <MessageCircle className="w-12 h-12 mx-auto mb-4 text-secondary" />
-            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Get In Touch</h2>
+            <MessageCircle className="w-12 h-12 mx-auto mb-4 text-[#4F200D]" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-[#4F200D]" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Get In Touch</h2>
             <p className="text-text/70 mt-4 max-w-2xl mx-auto">
               Choose your preferred way to reach us. Our team is ready to assist you.
             </p>
@@ -59,8 +59,8 @@ const Support = () => {
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background hover:shadow-md transition-shadow">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-14 h-14 bg-gradient-to-br from-background/30 to-primary rounded-xl flex items-center justify-center">
-                  <Phone className="text-secondary" size={28} />
+                <div className="w-14 h-14 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-xl flex items-center justify-center">
+                  <Phone className="text-[#4F200D]" size={28} />
                 </div>
                 <div>
                   <h3 className="text-xl font-serif font-semibold text-text">Phone Support</h3>
@@ -69,7 +69,7 @@ const Support = () => {
               </div>
 
               <div className="space-y-4">
-                <div className="bg-gradient-to-br from-background/20 to-primary p-5 rounded-lg">
+                <div className="bg-gradient-to-br from-[#FBF7F3]/20 to-primary p-5 rounded-lg">
                   <p className="text-2xl font-serif font-semibold text-text mb-2">+91 7416964805</p>
                   <div className="flex items-center text-sm text-text/70">
                     <Clock size={16} className="mr-2" />
@@ -82,8 +82,8 @@ const Support = () => {
 
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background hover:shadow-md transition-shadow">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-14 h-14 bg-gradient-to-br from-background/30 to-primary rounded-xl flex items-center justify-center">
-                  <Mail className="text-secondary" size={28} />
+                <div className="w-14 h-14 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-xl flex items-center justify-center">
+                  <Mail className="text-[#4F200D]" size={28} />
                 </div>
                 <div>
                   <h3 className="text-xl font-serif font-semibold text-text">Email Support</h3>
@@ -92,7 +92,7 @@ const Support = () => {
               </div>
 
               <div className="space-y-4">
-                <div className="bg-gradient-to-br from-background/20 to-primary p-5 rounded-lg">
+                <div className="bg-gradient-to-br from-[#FBF7F3]/20 to-primary p-5 rounded-lg">
                   <p className="text-xl font-serif font-semibold text-text mb-2">aaroiviofficial@gmail.com</p>
                   <p className="text-sm text-text/70">Response within 24 hours</p>
                 </div>
@@ -106,8 +106,8 @@ const Support = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-primary">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <HelpCircle className="w-12 h-12 mx-auto mb-4 text-secondary" />
-            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">How Can We Help?</h2>
+            <HelpCircle className="w-12 h-12 mx-auto mb-4 text-[#4F200D]" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-[#4F200D]" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>How Can We Help?</h2>
             <p className="text-text/70 mt-4 max-w-2xl mx-auto">
               Find quick answers and support for common inquiries
             </p>
@@ -120,8 +120,8 @@ const Support = () => {
               return (
                 <div key={index} className="bg-white p-8 rounded-lg shadow-sm border border-background hover:shadow-md transition-shadow">
                   <div className="flex items-start gap-4 mb-6">
-                    <div className="w-12 h-12 bg-gradient-to-br from-background/30 to-primary rounded-xl flex items-center justify-center flex-shrink-0">
-                      <IconComponent className="text-secondary" size={24} />
+                    <div className="w-12 h-12 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-xl flex items-center justify-center flex-shrink-0">
+                      <IconComponent className="text-[#4F200D]" size={24} />
                     </div>
                     <div>
                       <h3 className="text-xl font-serif font-semibold text-text mb-1">{category.title}</h3>
@@ -129,7 +129,7 @@ const Support = () => {
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-background/20 to-primary p-5 rounded-lg">
+                  <div className="bg-gradient-to-br from-[#FBF7F3]/20 to-primary p-5 rounded-lg">
                     <h4 className="font-semibold text-text mb-3 text-sm">Common Topics:</h4>
                     <div className="flex flex-wrap gap-2">
                       {category.topics.map((topic, topicIndex) => (
@@ -152,17 +152,17 @@ const Support = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-5xl mx-auto">
-            <div className="bg-gradient-to-br from-background/40 to-primary p-10 rounded-lg shadow-sm border border-background">
+            <div className="bg-gradient-to-br from-[#FBF7F3]/40 to-primary p-10 rounded-lg shadow-sm border border-background">
               <div className="text-center mb-10">
-                <CheckCircle className="w-12 h-12 mx-auto mb-4 text-secondary" />
+                <CheckCircle className="w-12 h-12 mx-auto mb-4 text-[#4F200D]" />
                 <h3 className="text-2xl font-serif font-semibold text-text mb-3">Quick Tips for Faster Support</h3>
-                <div className="w-20 h-1 bg-secondary mx-auto rounded-full"></div>
+                <div className="w-20 h-1 bg-[#4F200D] mx-auto rounded-full"></div>
               </div>
               
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 bg-[#4F200D] rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-white text-sm font-semibold">1</span>
                     </div>
                     <div>
@@ -170,7 +170,7 @@ const Support = () => {
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 bg-[#4F200D] rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-white text-sm font-semibold">2</span>
                     </div>
                     <div>
@@ -180,7 +180,7 @@ const Support = () => {
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 bg-[#4F200D] rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-white text-sm font-semibold">3</span>
                     </div>
                     <div>
@@ -188,7 +188,7 @@ const Support = () => {
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 bg-[#4F200D] rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-white text-sm font-semibold">4</span>
                     </div>
                     <div>
@@ -205,7 +205,7 @@ const Support = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-background">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary mb-4">Professional Support Team</h2>
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-[#4F200D] mb-4" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Professional Support Team</h2>
             <p className="text-text/70 max-w-2xl mx-auto leading-relaxed">
               Our dedicated customer support team understands the value of handcrafted artistry and
               is committed to ensuring your complete satisfaction with every Aarovi purchase.
@@ -214,21 +214,21 @@ const Support = () => {
 
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
-              <Phone className="w-10 h-10 text-secondary mx-auto mb-4" />
+              <Phone className="w-10 h-10 text-[#4F200D] mx-auto mb-4" />
               <h4 className="font-serif font-semibold text-text mb-3">Phone Support</h4>
               <p className="text-xl text-text mb-2">+91 7416964805</p>
               <p className="text-sm text-text/60">Mon-Sat: 9 AM - 6 PM</p>
             </div>
 
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
-              <Mail className="w-10 h-10 text-secondary mx-auto mb-4" />
+              <Mail className="w-10 h-10 text-[#4F200D] mx-auto mb-4" />
               <h4 className="font-serif font-semibold text-text mb-3">Email Support</h4>
               <p className="text-xl text-text mb-2">aaroiviofficial@gmail.com</p>
               <p className="text-sm text-text/60">Response within 24 hours</p>
             </div>
 
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
-              <MapPin className="w-10 h-10 text-secondary mx-auto mb-4" />
+              <MapPin className="w-10 h-10 text-[#4F200D] mx-auto mb-4" />
               <h4 className="font-serif font-semibold text-text mb-3">Address</h4>
               <p className="text-sm text-text/80 leading-relaxed">
                 Hyderabad, Telangana<br />

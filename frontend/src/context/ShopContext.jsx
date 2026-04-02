@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
-export const ShopContext = createContext();
+export const ShopContext = createContext({});
 
 const ShopContextProvider = (props) => {
     const currency = '₹';
@@ -334,9 +334,35 @@ const ShopContextProvider = (props) => {
 
     const getProductsData = useCallback(async () => {
         try {
+            // Stale-while-revalidate: show cached products immediately, then refresh
+            const stale = localStorage.getItem('aarovi_products_cache');
+            if (stale) {
+                try {
+                    const { products: cachedProducts, ts } = JSON.parse(stale);
+                    const AGE_MS = Date.now() - ts;
+                    if (AGE_MS < 5 * 60 * 1000) {
+                        // Cache is fresh — use it and skip the network call
+                        setProducts(cachedProducts);
+                        setIsLoading(false);
+                        return;
+                    }
+                    // Stale but usable — show immediately, then revalidate below
+                    setProducts(cachedProducts);
+                } catch { /* ignore corrupt cache */ }
+            }
+
             setIsLoading(true);
             const response = await axios.get(`${backendUrl}/api/product/all`);
-            if (response.data.success) setProducts(response.data.products);
+            if (response.data.success) {
+                setProducts(response.data.products);
+                // Persist to localStorage for next visit
+                try {
+                    localStorage.setItem('aarovi_products_cache', JSON.stringify({
+                        products: response.data.products,
+                        ts: Date.now(),
+                    }));
+                } catch { /* storage quota exceeded — ignore */ }
+            }
         } catch (error) { }
         finally { setIsLoading(false); }
     }, [backendUrl]);

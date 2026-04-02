@@ -1,9 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Hind+Mysuru:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Serif+Thai:wght@100..900&family=Oswald:wght@200..700&family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+/* ── Fonts ────────────────────────────────────────────────────────────────── */
+/* Loaded via index.html <link> with display=swap — no extra @import needed   */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ── Reset ─────────────────────────────────────────────────────────────────── */
 * {
   margin: 0;
   padding: 0;
@@ -12,74 +14,52 @@
   scrollbar-width: none;
 }
 
+*::-webkit-scrollbar { display: none; }
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  /* Prevent layout shift from scrollbar appearing/disappearing */
+  overflow-y: scroll;
+}
+
 body {
-  font-family: 'Montserrat', 'Oswald', Courier, monospace, sans-serif;
+  font-family: 'Montserrat', system-ui, sans-serif;
   overflow-x: hidden;
   color: var(--color-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Better tap targets on mobile */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
-html {
-  scroll-behavior: smooth;
+/* ── Accessibility: keyboard focus ring ───────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #4F200D;
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
-::-webkit-scrollbar {
-  display: none;
-}
-
-.hind-mysuru-light {
-  font-family: "Hind Mysuru", sans-serif;
-  font-weight: 300;
-  font-style: normal;
-}
-
-.hind-mysuru-regular {
-  font-family: "Hind Mysuru", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-}
-
-.hind-mysuru-medium {
-  font-family: "Hind Mysuru", sans-serif;
-  font-weight: 500;
-  font-style: normal;
-}
-
-.hind-mysuru-semibold {
-  font-family: "Hind Mysuru", sans-serif;
-  font-weight: 600;
-  font-style: normal;
-}
-
-.hind-mysuru-bold {
-  font-family: "Hind Mysuru", sans-serif;
-  font-weight: 700;
-  font-style: normal;
+/* ── Utility font classes ──────────────────────────────────────────────────── */
+.font-serif-display {
+  font-family: 'Cormorant Garamond', Georgia, serif;
 }
 
 .dancing-script {
-  font-family: "Dancing Script", serif;
-  font-optical-sizing: auto;
-  font-style: normal;
+  font-family: 'Dancing Script', cursive;
 }
 
-.oswald {
-  font-family: "Oswald", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 700;
-  font-style: normal;
-}
+/* Legacy aliases kept for backward compat */
+.hind-mysuru-light   { font-family: 'Montserrat', sans-serif; font-weight: 300; }
+.hind-mysuru-regular { font-family: 'Montserrat', sans-serif; font-weight: 400; }
+.hind-mysuru-medium  { font-family: 'Montserrat', sans-serif; font-weight: 500; }
+.hind-mysuru-semibold{ font-family: 'Montserrat', sans-serif; font-weight: 600; }
+.hind-mysuru-bold    { font-family: 'Montserrat', sans-serif; font-weight: 700; }
+.oswald              { font-family: 'Montserrat', sans-serif; font-weight: 700; }
+.noto-serif-thai     { font-family: 'Cormorant Garamond', serif; }
 
-.noto-serif-thai {
-  font-family: "Noto Serif Thai", serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
-}
-
+/* ── Sticky nav ────────────────────────────────────────────────────────────── */
 .sticky {
   position: sticky;
   top: 0;
@@ -87,9 +67,7 @@ html {
   transition: var(--transition-standard);
 }
 
-a.active hr {
-  display: block;
-}
+a.active hr { display: block; }
 
 @media (max-width: 640px) {
   a.active {
@@ -98,39 +76,98 @@ a.active hr {
     transition: var(--transition-standard);
   }
 }
-/* ── Focus visible ring (keyboard navigation) ─────────────────────────── */
-:focus-visible {
-  outline: 2px solid #4F200D;
-  outline-offset: 3px;
-  border-radius: 4px;
-}
 
-/* ── Page-level fade-in ────────────────────────────────────────────────── */
+/* ── Page-level fade-in ────────────────────────────────────────────────────── */
 @keyframes pageFadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 main, .page-root {
-  animation: pageFadeIn 0.25s ease-out both;
+  animation: pageFadeIn 0.3s ease-out both;
 }
 
-/* ── Smooth image loading (prevents layout shift flash) ───────────────── */
-img {
-  display: block;
+/* ── Image progressive loading ────────────────────────────────────────────── */
+img { display: block; }
+
+/* Shimmer placeholder while image loads */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
 }
 
 img[loading="lazy"] {
-  background-color: #f3f0ee;
+  background: linear-gradient(
+    90deg,
+    #f0ece8 25%,
+    #e8e2dc 50%,
+    #f0ece8 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
 }
 
-/* ── Button / interactive base ─────────────────────────────────────────── */
-button:disabled {
-  cursor: not-allowed;
+/* Kill shimmer once loaded */
+img.loaded,
+img[loading="lazy"]:not([src=""]):not([src$="undefined"]) {
+  background: none;
+  animation: none;
 }
 
-/* ── Transition sidepanel animation ────────────────────────────────────── */
+/* ── Cloudinary URL helper class (add to any <img>) ──────────────────────── */
+/* Use ?w=800&f_auto&q_auto on Cloudinary src for best results */
+
+/* ── Product card hover lift ──────────────────────────────────────────────── */
+.product-card {
+  will-change: transform;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+}
+
+/* ── Slide-in sidebar ─────────────────────────────────────────────────────── */
 @keyframes slideInRight {
   from { transform: translateX(100%); }
   to   { transform: translateX(0); }
+}
+
+/* ── Mobile: better touch scroll momentum ────────────────────────────────── */
+.scroll-container {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+button:disabled { cursor: not-allowed; }
+
+/* Prevent double-tap zoom on buttons/links on iOS */
+button, a {
+  touch-action: manipulation;
+}
+
+/* ── Section scroll-reveal base ──────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Luxury grain overlay (opt-in via class) ─────────────────────────────── */
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+  opacity: 0.035;
+  border-radius: inherit;
 }

@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
 import { Camera, ChevronDown, ChevronUp, Minus, Plus, Heart, Share2, Ruler, X, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, Check, Info, ShoppingCart } from 'lucide-react';
 import RelatedProducts from '../components/RelatedProducts';
+import ProgressiveImage from '../components/ProgressiveImage';
 import RecentlyViewed from '../components/RecentlyViewed';
 import SizeChartModal from '../components/SizeChartModal';
 
@@ -262,7 +263,7 @@ const Product = () => {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-background border-t-secondary rounded-full animate-spin mx-auto mb-6"></div>
+          <div className="w-16 h-16 border-4 border-t-[#4F200D] rounded-full animate-spin mx-auto mb-6" style={{ borderColor: "rgba(79,32,13,0.15)", borderTopColor: "#4F200D" }}></div>
           <span className="text-text/60 font-light text-lg">Loading product...</span>
         </div>
       </div>
@@ -274,7 +275,7 @@ const Product = () => {
     : ['Premium quality ethnic wear', 'Comfortable fabric', 'Perfect for all occasions'];
 
   return (
-    <div className="min-h-screen bg-white mt-16 sm:mt-20">
+    <div className="min-h-screen mt-[68px]" style={{ background: "#FBF7F3" }}>
       {/* Product Section */}
       <section className="py-0 sm:py-6 lg:py-8">
         <div className="max-w-7xl mx-auto">
@@ -290,13 +291,14 @@ const Product = () => {
                 onClick={handleImageClick}
               >
                 <div className="relative h-[60vh] sm:h-[70vh] lg:h-[80vh] flex items-center justify-center overflow-hidden">
-                  <img
+                  <ProgressiveImage
                     src={productData.images[currentIndex]}
                     alt={productData.name}
-                    className="w-full h-full object-contain select-none"
-                    style={{ imageRendering: '-webkit-optimize-contrast' }}
-                    draggable="false"
+                    width={1000}
+                    className="object-contain select-none"
                     loading="eager"
+                    fetchpriority="high"
+                    style={{ imageRendering: '-webkit-optimize-contrast' }}
                   />
 
                   <div className="hidden sm:flex absolute top-4 right-4 bg-white/95 text-text px-3 py-1.5 text-xs font-medium items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg pointer-events-none">
@@ -346,7 +348,7 @@ const Product = () => {
                       onClick={() => handleThumbnailClick(index)}
                       className={`flex-shrink-0 w-16 h-20 sm:w-auto sm:h-auto sm:aspect-[4/5] overflow-hidden transition-all duration-300 ${currentIndex === index
                         ? 'ring-2 ring-secondary shadow-lg'
-                        : 'ring-1 ring-background/50 active:ring-secondary/50'
+                        : 'ring-1 ring-[#FBF7F3]/50 active:ring-[#4F200D]/50'
                         }`}
                     >
                       <img
@@ -363,17 +365,17 @@ const Product = () => {
             {/* Product Details */}
             <div id="product-details" className="lg:sticky lg:top-24 lg:self-start space-y-4 sm:space-y-5 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-0 pb-6 sm:pb-8">
               {/* Header */}
-              <div className="border-b border-background/50 pb-4 sm:pb-5">
+              <div className="border-b border-[#FBF7F3]/50 pb-4 sm:pb-5">
                 <div className="flex items-start justify-between gap-3 mb-3">
-                  <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-serif font-bold text-text leading-tight flex-1 break-words">
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-serif font-bold text-text leading-tight flex-1 break-words" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
                     {productData.name}
                   </h1>
                   <div className="flex gap-2 flex-shrink-0">
                     <button
                       onClick={handleWishlistToggle}
                       className={`w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center transition-all duration-300 active:scale-95 ${isWishlisted
-                        ? 'bg-secondary text-white'
-                        : 'bg-background/50 text-text'
+                        ? 'bg-[#4F200D] text-white'
+                        : 'bg-[#FBF7F3]/50 text-text'
                         }`}
                       title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
                     >
@@ -385,7 +387,7 @@ const Product = () => {
                     </button>
                     <button
                       onClick={handleShare}
-                      className="w-10 h-10 sm:w-11 sm:h-11 bg-background/50 text-text flex items-center justify-center transition-all duration-300 active:scale-95"
+                      className="w-10 h-10 sm:w-11 sm:h-11 bg-[#FBF7F3]/50 text-text flex items-center justify-center transition-all duration-300 active:scale-95"
                       title="Share"
                     >
                       <Share2 size={16} />
@@ -394,7 +396,7 @@ const Product = () => {
                 </div>
 
                 <div className="flex items-baseline gap-2 sm:gap-3 mb-2">
-                  <span className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-secondary">{currency}{productData.price}</span>
+                  <span className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#4F200D]">{currency}{productData.price}</span>
                   <span className="text-xs sm:text-sm text-text/50 font-light">Incl. GST</span>
                 </div>
               </div>
@@ -405,7 +407,7 @@ const Product = () => {
                   <label className="text-xs font-bold text-text uppercase tracking-wider">Select Size</label>
                   <button
                     onClick={() => setShowSizeChart(true)}
-                    className="text-xs text-secondary font-medium underline flex items-center gap-1 active:scale-95"
+                    className="text-xs text-[#4F200D] font-medium underline flex items-center gap-1 active:scale-95"
                   >
                     <Ruler size={14} />
                     <span>Size Guide</span>
@@ -418,8 +420,8 @@ const Product = () => {
                       key={index}
                       onClick={() => setSize(size === s ? '' : s)}
                       className={`min-w-[3rem] sm:min-w-[3.5rem] px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-semibold transition-all duration-200 active:scale-95 ${size === s
-                        ? 'bg-secondary text-white'
-                        : 'bg-background/40 text-text'
+                        ? 'bg-[#4F200D] text-white'
+                        : 'bg-[#FBF7F3]/40 text-text'
                         }`}
                     >
                       {s}
@@ -429,15 +431,15 @@ const Product = () => {
               </div>
 
               {/* Customisation Options — collapsible */}
-              <div className="border border-background/60 rounded-lg overflow-hidden">
+              <div className="border border-[#FBF7F3]/60 rounded-lg overflow-hidden">
                 <button
                   onClick={() => setShowCustomOptions(prev => !prev)}
-                  className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-background/30 transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-[#FBF7F3]/30 transition-colors"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-text uppercase tracking-wider">Customise Style</span>
                     {(neckStyle || sleeveStyle || specialInstructions) && (
-                      <span className="text-[10px] bg-secondary text-white px-2 py-0.5 rounded-full font-semibold">
+                      <span className="text-[10px] bg-[#4F200D] text-white px-2 py-0.5 rounded-full font-semibold">
                         {[neckStyle, sleeveStyle, specialInstructions].filter(Boolean).length} selected
                       </span>
                     )}
@@ -446,7 +448,7 @@ const Product = () => {
                 </button>
 
                 {showCustomOptions && (
-                  <div className="px-4 pb-4 pt-3 space-y-4 border-t border-background/40">
+                  <div className="px-4 pb-4 pt-3 space-y-4 border-t border-[#FBF7F3]/40">
                     {/* Neckline */}
                     <div>
                       <label className="text-xs font-bold text-text uppercase tracking-wider mb-2 flex items-center gap-2">
@@ -469,8 +471,8 @@ const Product = () => {
                             onClick={() => setNeckStyle(neckStyle === opt.value ? '' : opt.value)}
                             className={`px-3 py-2 text-xs font-semibold transition-all duration-200 active:scale-95 border
                 ${neckStyle === opt.value
-                                ? 'bg-secondary text-white border-secondary'
-                                : 'bg-background/40 text-text border-background/60 hover:border-secondary/50'
+                                ? 'bg-[#4F200D] text-white border-[#4F200D]'
+                                : 'bg-[#FBF7F3]/40 text-text border-[#FBF7F3]/60 hover:border-[#4F200D]/50'
                               }`}
                           >
                             {opt.label}
@@ -498,8 +500,8 @@ const Product = () => {
                             onClick={() => setSleeveStyle(sleeveStyle === opt.value ? '' : opt.value)}
                             className={`px-3 py-2 text-xs font-semibold transition-all duration-200 active:scale-95 border
                 ${sleeveStyle === opt.value
-                                ? 'bg-secondary text-white border-secondary'
-                                : 'bg-background/40 text-text border-background/60 hover:border-secondary/50'
+                                ? 'bg-[#4F200D] text-white border-[#4F200D]'
+                                : 'bg-[#FBF7F3]/40 text-text border-[#FBF7F3]/60 hover:border-[#4F200D]/50'
                               }`}
                           >
                             {opt.label}
@@ -509,7 +511,7 @@ const Product = () => {
                     </div>
 
                     {/* Design Notes & Special Instructions */}
-                    <div className="border-t border-background/40 pt-4">
+                    <div className="border-t border-[#FBF7F3]/40 pt-4">
                       <label className="text-xs font-bold text-text uppercase tracking-wider mb-1 flex items-center gap-2">
                         Design Notes & Special Instructions
                         <span className="text-text/40 font-normal normal-case text-xs">(optional)</span>
@@ -523,11 +525,11 @@ const Product = () => {
                         placeholder={`e.g. "Please add gold zari border on sleeves, prefer boat neckline with slightly deeper cut, bust measurement 38 inches"`}
                         rows={4}
                         maxLength={500}
-                        className="w-full px-3 py-2.5 text-sm text-text border border-background/60 rounded-lg resize-none focus:outline-none focus:border-secondary transition-colors placeholder:text-text/30 bg-white leading-relaxed"
+                        className="w-full px-3 py-2.5 text-sm text-text border border-[#FBF7F3]/60 rounded-lg resize-none focus:outline-none focus:border-[#4F200D] transition-colors placeholder:text-text/30 bg-white leading-relaxed"
                       />
                       <div className="flex items-center justify-between mt-1">
                         <p className="text-[10px] text-text/40">Our artisans will review your note before crafting.</p>
-                        <span className={`text-[10px] font-medium ${specialInstructions.length > 450 ? 'text-secondary' : 'text-text/40'}`}>
+                        <span className={`text-[10px] font-medium ${specialInstructions.length > 450 ? 'text-[#4F200D]' : 'text-text/40'}`}>
                           {specialInstructions.length}/500
                         </span>
                       </div>
@@ -539,10 +541,10 @@ const Product = () => {
               {/* Quantity */}
               <div>
                 <label className="text-xs font-bold text-text uppercase tracking-wider mb-3 block">Quantity</label>
-                <div className="inline-flex items-center border border-background/50">
+                <div className="inline-flex items-center border border-[#FBF7F3]/50">
                   <button
                     onClick={() => handleQuantityChange('decrease')}
-                    className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center active:bg-background/40 transition-colors"
+                    className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center active:bg-[#FBF7F3]/40 transition-colors"
                     disabled={quantity <= 1}
                   >
                     <Minus size={16} className={quantity <= 1 ? "text-text/30" : "text-text"} />
@@ -556,7 +558,7 @@ const Product = () => {
                   />
                   <button
                     onClick={() => handleQuantityChange('increase')}
-                    className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center active:bg-background/40 transition-colors"
+                    className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center active:bg-[#FBF7F3]/40 transition-colors"
                   >
                     <Plus size={16} />
                   </button>
@@ -568,7 +570,7 @@ const Product = () => {
                 {!isAddedToCart ? (
                   <button
                     onClick={handleAddToCart}
-                    className="w-full py-3.5 sm:py-4 bg-secondary text-white font-semibold uppercase tracking-wider hover:bg-secondary/90 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
+                    className="w-full py-3.5 sm:py-4 bg-[#4F200D] text-white font-semibold uppercase tracking-wider hover:bg-[#4F200D]/90 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
                   >
                     {!size ? (
                       <>
@@ -597,7 +599,7 @@ const Product = () => {
                 {!isAddedToCart ? (
                   <button
                     onClick={handleAddToCart}
-                    className="w-full py-3.5 bg-secondary text-white font-semibold uppercase tracking-wider active:bg-secondary/90 transition-all duration-300 flex items-center justify-center gap-2 text-sm active:scale-95"
+                    className="w-full py-3.5 bg-[#4F200D] text-white font-semibold uppercase tracking-wider active:bg-[#4F200D]/90 transition-all duration-300 flex items-center justify-center gap-2 text-sm active:scale-95"
                   >
                     {!size ? (
                       <>
@@ -623,7 +625,7 @@ const Product = () => {
               </div>
 
               {/* Product Information */}
-              <div className="border-t border-background/50 pt-4 sm:pt-5">
+              <div className="border-t border-[#FBF7F3]/50 pt-4 sm:pt-5">
                 <div className="space-y-1">
                   {[
                     {
@@ -671,10 +673,10 @@ const Product = () => {
                       )
                     }
                   ].map((section) => (
-                    <div key={section.id} className="border-b border-background/30 last:border-b-0">
+                    <div key={section.id} className="border-b border-[#FBF7F3]/30 last:border-b-0">
                       <button
                         onClick={() => toggleSection(section.id)}
-                        className="w-full py-3 sm:py-4 flex justify-between items-center text-left font-semibold text-text active:text-secondary transition-colors"
+                        className="w-full py-3 sm:py-4 flex justify-between items-center text-left font-semibold text-text active:text-[#4F200D] transition-colors"
                       >
                         <span className="text-xs sm:text-sm uppercase tracking-wider">{section.title}</span>
                         {expandedSection === section.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -794,19 +796,19 @@ const Product = () => {
         <div className="flex items-center gap-3 px-4 py-3 safe-area-inset-bottom">
           <div className="flex-1">
             <p className="text-xs text-text/50 leading-none mb-0.5">Price</p>
-            <p className="text-base font-bold text-secondary">{currency}{productData.price?.toLocaleString()}</p>
+            <p className="text-base font-bold text-[#4F200D]">{currency}{productData.price?.toLocaleString()}</p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={handleWishlistToggle}
-              className={`w-11 h-11 flex items-center justify-center border rounded-xl transition-all ${isWishlisted ? 'border-secondary bg-secondary/10 text-secondary' : 'border-stone-200 text-stone-500'}`}
+              className={`w-11 h-11 flex items-center justify-center border rounded-xl transition-all ${isWishlisted ? 'border-[#4F200D] bg-[#4F200D]/10 text-[#4F200D]' : 'border-stone-200 text-stone-500'}`}
             >
               <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
             </button>
             {!isAddedToCart ? (
               <button
                 onClick={handleAddToCart}
-                className="flex items-center justify-center gap-2 px-5 py-2.5 bg-secondary text-white rounded-xl text-sm font-semibold active:bg-secondary/90 transition-all"
+                className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#4F200D] text-white rounded-xl text-sm font-semibold active:bg-[#4F200D]/90 transition-all"
               >
                 <ShoppingCart size={16} />
                 {!size ? 'Select Size' : 'Add to Cart'}

@@ -16,18 +16,18 @@ const RecentlyViewed = () => {
 
   return (
     <div className="bg-white rounded-lg border border-background shadow-lg overflow-hidden">
-      <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
+      <div className="p-6 border-b border-background bg-gradient-to-r from-[#FBF7F3]/20 to-primary">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <div>
-              <h2 className="text-2xl font-serif font-bold text-text">Recently Viewed</h2>
+              <h2 className="text-2xl font-serif font-bold text-text" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Recently Viewed</h2>
               <p className="text-sm text-text/60 font-light">Items you've checked out recently</p>
             </div>
           </div>
           {recentlyViewed.length > 5 && (
             <button 
               onClick={() => navigate && navigate('/collection')}
-              className="hidden sm:flex items-center gap-2 px-4 py-2 text-secondary hover:text-secondary/80 font-semibold transition-colors"
+              className="hidden sm:flex items-center gap-2 px-4 py-2 text-[#4F200D] hover:text-[#4F200D]/80 font-semibold transition-colors"
             >
               <span className="text-sm">View All</span>
               <ArrowRight size={16} />

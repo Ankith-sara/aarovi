@@ -93,9 +93,9 @@ const TrackOrder = () => {
     if (statusLower.includes('delivery') || statusLower.includes('shipping') || statusLower.includes('shipped')) {
       return 'text-blue-700 bg-blue-50 border-blue-200';
     }
-    if (statusLower.includes('processing')) return 'text-secondary bg-background/10 border-background';
-    if (statusLower.includes('placed')) return 'text-text/70 bg-background/5 border-background/30';
-    return 'text-text/70 bg-background/5 border-background/30';
+    if (statusLower.includes('processing')) return 'text-[#4F200D] bg-[#FBF7F3]/10 border-background';
+    if (statusLower.includes('placed')) return 'text-text/70 bg-[#FBF7F3]/5 border-[#FBF7F3]/30';
+    return 'text-text/70 bg-[#FBF7F3]/5 border-[#FBF7F3]/30';
   };
 
   const normalizeStatus = (status) => {
@@ -153,18 +153,18 @@ const TrackOrder = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-white to-background/20 mt-20">
+      <div className="min-h-screen bg-gradient-to-b from-white to-[#FBF7F3]/20 mt-20">
         <section className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
-              <h1 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-3">
+              <h1 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-3" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
                 Order Tracking
               </h1>
               <p className="text-text/60 font-light text-lg">Track your order progress</p>
             </div>
             <div className="flex items-center justify-center py-20">
               <div className="text-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-4 border-secondary border-t-transparent mx-auto mb-4"></div>
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#4F200D] border-t-transparent mx-auto mb-4"></div>
                 <span className="text-text/60 font-medium">Loading order details...</span>
               </div>
             </div>
@@ -176,17 +176,17 @@ const TrackOrder = () => {
 
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-white to-background/20 mt-20">
+      <div className="min-h-screen bg-gradient-to-b from-white to-[#FBF7F3]/20 mt-20">
         <section className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
-              <h1 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-3">
+              <h1 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-3" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
                 Order Tracking
               </h1>
               <p className="text-text/60 font-light text-lg">Track your order progress</p>
             </div>
-            <div className="flex flex-col items-center justify-center py-20 bg-white border border-background/20 rounded-xl shadow-sm">
-              <div className="w-20 h-20 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mb-6">
+            <div className="flex flex-col items-center justify-center py-20 bg-white border border-[#FBF7F3]/20 rounded-xl shadow-sm">
+              <div className="w-20 h-20 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-full flex items-center justify-center mb-6">
                 <AlertCircle size={40} className="text-red-400" />
               </div>
               <div className="text-center max-w-md mb-8">
@@ -197,7 +197,7 @@ const TrackOrder = () => {
               </div>
               <button
                 onClick={() => navigate('/orders')}
-                className="px-8 py-3 bg-secondary text-white font-semibold rounded-lg hover:bg-[#8B6F47] transition-all duration-300 shadow-md"
+                className="px-8 py-3 bg-[#4F200D] text-white font-semibold rounded-lg hover:bg-[#8B6F47] transition-all duration-300 shadow-md"
               >
                 VIEW ALL ORDERS
               </button>
@@ -218,11 +218,11 @@ const TrackOrder = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-background/20 mt-16">
+    <div className="min-h-screen bg-gradient-to-b from-white to-[#FBF7F3]/20 mt-16">
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-3">
+            <h1 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-3" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
               Track Your Order
             </h1>
             <p className="text-text/60 font-light text-lg">
@@ -234,23 +234,23 @@ const TrackOrder = () => {
 
       <section className="px-4 sm:px-6 lg:px-8 pb-20">
         <div className="max-w-7xl mx-auto space-y-6">
-          <div className="bg-white border border-background/20 rounded-xl shadow-md overflow-hidden">
-            <div className="p-6 border-b border-background/20 bg-gradient-to-r from-background/10 to-primary/5">
+          <div className="bg-white border border-[#FBF7F3]/20 rounded-xl shadow-md overflow-hidden">
+            <div className="p-6 border-b border-[#FBF7F3]/20 bg-gradient-to-r from-[#FBF7F3]/10 to-primary/5">
               <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-wrap">
                   <div className="flex items-center gap-2">
-                    <Hash size={14} className="text-secondary" />
+                    <Hash size={14} className="text-[#4F200D]" />
                     <span className="text-xs font-semibold text-text/60 uppercase tracking-wider">ORDER ID:</span>
                     <span className="font-semibold text-text tracking-wide">{order._id?.slice(-8) || orderId.slice(-8)}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Calendar size={14} className="text-secondary" />
+                    <Calendar size={14} className="text-[#4F200D]" />
                     <span className="text-sm text-text/70 font-medium">{formatDate(order.date)}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <CreditCard size={14} className="text-secondary" />
+                    <CreditCard size={14} className="text-[#4F200D]" />
                     <span className="text-sm text-text/70 font-medium">{order.paymentMethod || 'N/A'}</span>
                   </div>
                 </div>
@@ -271,7 +271,7 @@ const TrackOrder = () => {
                   <span className="uppercase tracking-wider">Order Progress</span>
                   <span className="font-semibold">{Math.round(getProgressPercentage())}% Complete</span>
                 </div>
-                <div className="w-full bg-background/30 h-2 rounded-full overflow-hidden">
+                <div className="w-full bg-[#FBF7F3]/30 h-2 rounded-full overflow-hidden">
                   <div
                     className="bg-gradient-to-r from-secondary to-[#8B6F47] h-2 transition-all duration-500 rounded-full"
                     style={{ width: `${getProgressPercentage()}%` }}
@@ -284,7 +284,7 @@ const TrackOrder = () => {
               <h3 className="text-xl font-serif font-semibold mb-8 text-text tracking-wide">Tracking Timeline</h3>
               <div className="hidden lg:block">
                 <div className="relative">
-                  <div className="absolute top-8 left-0 w-full h-1 bg-background/30 rounded-full"></div>
+                  <div className="absolute top-8 left-0 w-full h-1 bg-[#FBF7F3]/30 rounded-full"></div>
                   <div 
                     className="absolute top-8 left-0 h-1 bg-gradient-to-r from-secondary to-[#8B6F47] transition-all duration-1000 rounded-full"
                     style={{ width: `${getProgressPercentage()}%` }}
@@ -301,10 +301,10 @@ const TrackOrder = () => {
                             <div
                               className={`relative z-10 flex items-center justify-center w-16 h-16 rounded-full border-4 transition-all duration-300 shadow-md ${
                                 state === 'completed'
-                                  ? 'bg-secondary border-secondary text-white'
+                                  ? 'bg-[#4F200D] border-[#4F200D] text-white'
                                   : state === 'current'
-                                  ? 'bg-white border-secondary text-secondary animate-pulse'
-                                  : 'bg-white border-background/40 text-text/40'
+                                  ? 'bg-white border-[#4F200D] text-[#4F200D] animate-pulse'
+                                  : 'bg-white border-[#FBF7F3]/40 text-text/40'
                               }`}
                             >
                               {getStatusIcon(status)}
@@ -316,7 +316,7 @@ const TrackOrder = () => {
                                   state === 'upcoming'
                                     ? 'text-text/40'
                                     : state === 'current'
-                                    ? 'text-secondary'
+                                    ? 'text-[#4F200D]'
                                     : 'text-text'
                                 }`}
                               >
@@ -333,7 +333,7 @@ const TrackOrder = () => {
                                   </p>
                                   {historyItem.location && (
                                     <div className="flex items-center justify-center mt-2">
-                                      <MapPin size={10} className="text-secondary mr-1" />
+                                      <MapPin size={10} className="text-[#4F200D] mr-1" />
                                       <span className="text-xs text-text/60 font-medium">
                                         {historyItem.location}
                                       </span>
@@ -343,7 +343,7 @@ const TrackOrder = () => {
                               )}
 
                               {state === 'current' && !historyItem && (
-                                <p className="text-xs text-secondary mt-2 font-bold uppercase tracking-wider animate-pulse">In Progress</p>
+                                <p className="text-xs text-[#4F200D] mt-2 font-bold uppercase tracking-wider animate-pulse">In Progress</p>
                               )}
                             </div>
                           </div>
@@ -365,10 +365,10 @@ const TrackOrder = () => {
                       <div
                         className={`flex items-center justify-center w-12 h-12 rounded-full border-4 transition-all shadow-md flex-shrink-0 ${
                           state === 'completed'
-                            ? 'bg-secondary border-secondary text-white'
+                            ? 'bg-[#4F200D] border-[#4F200D] text-white'
                             : state === 'current'
-                            ? 'bg-white border-secondary text-secondary animate-pulse'
-                            : 'bg-white border-background/40 text-text/40'
+                            ? 'bg-white border-[#4F200D] text-[#4F200D] animate-pulse'
+                            : 'bg-white border-[#FBF7F3]/40 text-text/40'
                         }`}
                       >
                         {getStatusIcon(status)}
@@ -380,7 +380,7 @@ const TrackOrder = () => {
                             state === 'upcoming'
                               ? 'text-text/40'
                               : state === 'current'
-                              ? 'text-secondary'
+                              ? 'text-[#4F200D]'
                               : 'text-text'
                           }`}
                         >
@@ -394,7 +394,7 @@ const TrackOrder = () => {
                             </p>
                             {historyItem.location && (
                               <div className="flex items-center mt-1">
-                                <MapPin size={12} className="text-secondary mr-1" />
+                                <MapPin size={12} className="text-[#4F200D] mr-1" />
                                 <span className="text-sm text-text/60 font-medium">
                                   {historyItem.location}
                                 </span>
@@ -409,7 +409,7 @@ const TrackOrder = () => {
                         )}
 
                         {state === 'current' && !historyItem && (
-                          <p className="text-sm text-secondary font-bold uppercase tracking-wider mt-1 animate-pulse">In Progress</p>
+                          <p className="text-sm text-[#4F200D] font-bold uppercase tracking-wider mt-1 animate-pulse">In Progress</p>
                         )}
                       </div>
                     </div>
@@ -419,13 +419,13 @@ const TrackOrder = () => {
             </div>
           </div>
 
-          <div className="bg-white border border-background/20 rounded-xl shadow-md overflow-hidden">
+          <div className="bg-white border border-[#FBF7F3]/20 rounded-xl shadow-md overflow-hidden">
             <button
-              className="w-full p-6 flex justify-between items-center hover:bg-background/5 transition-colors border-b border-background/20"
+              className="w-full p-6 flex justify-between items-center hover:bg-[#FBF7F3]/5 transition-colors border-b border-[#FBF7F3]/20"
               onClick={() => setShowDetails(!showDetails)}
             >
               <h3 className="text-lg font-serif font-semibold text-text uppercase tracking-wide">Order Details</h3>
-              {showDetails ? <ChevronUp size={20} className="text-secondary" /> : <ChevronDown size={20} className="text-secondary" />}
+              {showDetails ? <ChevronUp size={20} className="text-[#4F200D]" /> : <ChevronDown size={20} className="text-[#4F200D]" />}
             </button>
 
             {showDetails && (
@@ -447,10 +447,10 @@ const TrackOrder = () => {
                             className={`flex gap-4 p-4 border rounded-lg hover:shadow-md transition-all duration-300 ${
                               isCustom 
                                 ? 'border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50' 
-                                : 'border-background/20 bg-gradient-to-br from-white to-background/5'
+                                : 'border-[#FBF7F3]/20 bg-gradient-to-br from-white to-[#FBF7F3]/5'
                             }`}
                           >
-                            <div className="w-20 h-20 bg-white border border-background/20 rounded-lg overflow-hidden flex-shrink-0">
+                            <div className="w-20 h-20 bg-white border border-[#FBF7F3]/20 rounded-lg overflow-hidden flex-shrink-0">
                               {item.image ? (
                                 <img
                                   src={item.image}
@@ -462,7 +462,7 @@ const TrackOrder = () => {
                                   }}
                                 />
                               ) : null}
-                              <div className={`w-full h-full ${item.image ? 'hidden' : 'flex'} items-center justify-center bg-background/10`}>
+                              <div className={`w-full h-full ${item.image ? 'hidden' : 'flex'} items-center justify-center bg-[#FBF7F3]/10`}>
                                 {isCustom ? (
                                   <Palette size={24} className="text-purple-400" />
                                 ) : (
@@ -486,7 +486,7 @@ const TrackOrder = () => {
                                   Qty: <span className="text-text font-semibold">{item.quantity || 1}</span>
                                 </span>
                               </div>
-                              <p className="text-lg font-serif font-bold text-secondary mt-2">
+                              <p className="text-lg font-serif font-bold text-[#4F200D] mt-2">
                                 {currency}{Number(itemPrice).toFixed(2)}
                               </p>
                               
@@ -511,7 +511,7 @@ const TrackOrder = () => {
                       <h4 className="text-sm font-semibold text-text/60 uppercase tracking-wider mb-4">
                         Shipping Address
                       </h4>
-                      <div className="border border-background/20 rounded-lg p-4 bg-gradient-to-br from-background/5 to-white">
+                      <div className="border border-[#FBF7F3]/20 rounded-lg p-4 bg-gradient-to-br from-[#FBF7F3]/5 to-white">
                         <address className="not-italic text-text/70 font-medium">
                           <p className="text-text font-semibold mb-2">
                             {order.address?.firstName || order.address?.Name} {order.address?.lastName || ''}
@@ -523,8 +523,8 @@ const TrackOrder = () => {
                           </p>
                           <p>{order.address?.country || 'N/A'}</p>
                           {order.address?.phone && (
-                            <div className="flex items-center mt-3 pt-3 border-t border-background/20">
-                              <Phone size={14} className="text-secondary mr-2" />
+                            <div className="flex items-center mt-3 pt-3 border-t border-[#FBF7F3]/20">
+                              <Phone size={14} className="text-[#4F200D] mr-2" />
                               <span className="font-semibold">{order.address.phone}</span>
                             </div>
                           )}
@@ -536,7 +536,7 @@ const TrackOrder = () => {
                       <h4 className="text-sm font-semibold text-text/60 uppercase tracking-wider mb-4">
                         Order Summary
                       </h4>
-                      <div className="border border-background/20 rounded-lg p-4 space-y-3 bg-gradient-to-br from-background/5 to-white">
+                      <div className="border border-[#FBF7F3]/20 rounded-lg p-4 space-y-3 bg-gradient-to-br from-[#FBF7F3]/5 to-white">
                         <div className="flex justify-between text-text/70 font-medium">
                           <span>Subtotal</span>
                           <span>
@@ -556,7 +556,7 @@ const TrackOrder = () => {
                             <span>{currency}{order.tax ? order.tax.toFixed(2) : '0.00'}</span>
                           </div>
                         )}
-                        <div className="pt-3 border-t border-background/30 flex justify-between text-lg font-serif font-bold text-secondary">
+                        <div className="pt-3 border-t border-[#FBF7F3]/30 flex justify-between text-lg font-serif font-bold text-[#4F200D]">
                           <span>Total</span>
                           <span>{currency}{order.amount ? order.amount.toFixed(2) : '0.00'}</span>
                         </div>
@@ -567,7 +567,7 @@ const TrackOrder = () => {
                       <h4 className="text-sm font-semibold text-text/60 uppercase tracking-wider mb-4">
                         Payment Method
                       </h4>
-                      <div className="border border-background/20 rounded-lg p-4 bg-gradient-to-br from-background/5 to-white">
+                      <div className="border border-[#FBF7F3]/20 rounded-lg p-4 bg-gradient-to-br from-[#FBF7F3]/5 to-white">
                         <div className="flex items-center justify-between">
                           <p className="text-text font-semibold">{order.paymentMethod || 'N/A'}</p>
                           <span className={`px-3 py-1 rounded-full text-xs font-bold ${
@@ -589,7 +589,7 @@ const TrackOrder = () => {
           <div className="flex justify-center items-center pt-8">
             <button
               onClick={() => navigate('/orders')}
-              className="inline-flex items-center gap-2 px-8 py-3 bg-secondary text-white font-semibold rounded-lg hover:bg-[#8B6F47] transition-all duration-300 shadow-md"
+              className="inline-flex items-center gap-2 px-8 py-3 bg-[#4F200D] text-white font-semibold rounded-lg hover:bg-[#8B6F47] transition-all duration-300 shadow-md"
             >
               <ArrowLeft size={16} />
               <span>BACK TO ORDERS</span>

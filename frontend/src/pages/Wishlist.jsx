@@ -46,20 +46,20 @@ const Wishlist = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-white pt-20">
-        <div className="animate-spin w-8 h-8 border-2 border-secondary border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-[#4F200D] border-t-transparent rounded-full" />
       </div>
     );
   }
 
   if (wishlistProducts.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center px-4 py-12">
+      <div className="min-h-screen" style={{ background: '#FBF7F3' }} flex items-center justify-center px-4 py-12">
         <div className="text-center max-w-md">
           <div className="relative inline-block mb-8">
             <div className="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center">
               <Heart size={64} className="text-gray-300" />
             </div>
-            <div className="absolute -top-2 -right-2 w-10 h-10 bg-secondary rounded-full flex items-center justify-center shadow-lg">
+            <div className="absolute -top-2 -right-2 w-10 h-10 bg-[#4F200D] rounded-full flex items-center justify-center shadow-lg">
               <span className="text-white text-lg font-bold">0</span>
             </div>
           </div>
@@ -67,7 +67,7 @@ const Wishlist = () => {
           <p className="text-gray-500 mb-8 text-base sm:text-lg">Save items you love and come back to them anytime!</p>
           <button
             onClick={() => navigate('/shop/collection')}
-            className="px-8 py-4 bg-secondary text-white rounded-full hover:bg-secondary/90 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="px-8 py-4 bg-[#4F200D] text-white rounded-full hover:bg-[#4F200D]/90 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             Explore Collection
           </button>
@@ -77,14 +77,14 @@ const Wishlist = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-20 mt-8">
+    <div className="min-h-screen" style={{ background: '#FBF7F3' }} py-20 mt-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
         <div className="mb-4 sm:mb-6">
           <button
             onClick={() => navigate('/shop/collection')}
-            className="flex items-center gap-2 text-gray-600 hover:text-secondary transition-colors mb-4 text-sm sm:text-base"
+            className="flex items-center gap-2 text-gray-600 hover:text-[#4F200D] transition-colors mb-4 text-sm sm:text-base"
           >
             <ArrowLeft size={18} /><span className="font-medium">Continue Shopping</span>
           </button>
@@ -94,7 +94,7 @@ const Wishlist = () => {
               <select
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
-                className="text-xs border border-stone-200 rounded-full px-3 py-2 text-gray-700 bg-white focus:outline-none focus:border-secondary"
+                className="text-xs border border-stone-200 rounded-full px-3 py-2 text-gray-700 bg-white focus:outline-none focus:border-[#4F200D]"
               >
                 <option value="recent">Recently Added</option>
                 <option value="price-low">Price: Low to High</option>
@@ -104,13 +104,13 @@ const Wishlist = () => {
               <div className="flex rounded-full border border-stone-200 overflow-hidden">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 transition-colors ${viewMode === 'grid' ? 'bg-secondary text-white' : 'bg-white text-stone-500'}`}
+                  className={`p-2 transition-colors ${viewMode === 'grid' ? 'bg-[#4F200D] text-white' : 'bg-white text-stone-500'}`}
                 >
                   <Grid3x3 size={15} />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2 transition-colors ${viewMode === 'list' ? 'bg-secondary text-white' : 'bg-white text-stone-500'}`}
+                  className={`p-2 transition-colors ${viewMode === 'list' ? 'bg-[#4F200D] text-white' : 'bg-white text-stone-500'}`}
                 >
                   <List size={15} />
                 </button>
@@ -142,7 +142,7 @@ const Wishlist = () => {
                     </Link>
                     <div className="flex-1 min-w-0">
                       <Link to={`/product/${product._id}`}>
-                        <h3 className="font-semibold text-sm sm:text-base md:text-lg text-gray-900 line-clamp-2 mb-2 hover:text-secondary transition-colors">
+                        <h3 className="font-semibold text-sm sm:text-base md:text-lg text-gray-900 line-clamp-2 mb-2 hover:text-[#4F200D] transition-colors">
                           {product.name}
                         </h3>
                       </Link>
@@ -152,19 +152,19 @@ const Wishlist = () => {
                             {product.category}
                           </span>
                           {product.subCategory && (
-                            <span className="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded-full font-medium capitalize">
+                            <span className="text-xs bg-[#4F200D]/10 text-[#4F200D] px-2 py-1 rounded-full font-medium capitalize">
                               {product.subCategory}
                             </span>
                           )}
                         </div>
                       )}
-                      <p className="text-lg sm:text-xl md:text-2xl font-bold text-secondary mb-3">
+                      <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#4F200D] mb-3">
                         {currency}{product.price?.toLocaleString()}
                       </p>
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => openSizeModal(product)}
-                          className="flex items-center gap-1.5 px-4 py-2 bg-secondary text-white rounded-full text-xs sm:text-sm font-semibold hover:bg-secondary/90 transition-all shadow-sm hover:shadow-md"
+                          className="flex items-center gap-1.5 px-4 py-2 bg-[#4F200D] text-white rounded-full text-xs sm:text-sm font-semibold hover:bg-[#4F200D]/90 transition-all shadow-sm hover:shadow-md"
                         >
                           <ShoppingCart size={14} /> Add to Cart
                         </button>
@@ -198,16 +198,16 @@ const Wishlist = () => {
                 </Link>
                 <div className="p-3 flex flex-col flex-1">
                   <Link to={`/product/${product._id}`}>
-                    <h3 className="text-xs sm:text-sm font-semibold text-gray-900 line-clamp-2 mb-1 hover:text-secondary transition-colors leading-snug">
+                    <h3 className="text-xs sm:text-sm font-semibold text-gray-900 line-clamp-2 mb-1 hover:text-[#4F200D] transition-colors leading-snug">
                       {product.name}
                     </h3>
                   </Link>
-                  <p className="text-sm sm:text-base font-bold text-secondary mt-1 mb-3">
+                  <p className="text-sm sm:text-base font-bold text-[#4F200D] mt-1 mb-3">
                     {currency}{product.price?.toLocaleString()}
                   </p>
                   <button
                     onClick={() => openSizeModal(product)}
-                    className="mt-auto w-full flex items-center justify-center gap-1.5 py-2 bg-secondary text-white text-xs font-semibold rounded-xl hover:bg-secondary/90 transition-all"
+                    className="mt-auto w-full flex items-center justify-center gap-1.5 py-2 bg-[#4F200D] text-white text-xs font-semibold rounded-xl hover:bg-[#4F200D]/90 transition-all"
                   >
                     <ShoppingCart size={13} /> Add to Cart
                   </button>
@@ -235,7 +235,7 @@ const Wishlist = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 text-sm leading-snug line-clamp-1">{selectedProduct.name}</h3>
-                  <p className="text-secondary font-bold text-sm mt-0.5">{currency}{selectedProduct.price?.toLocaleString()}</p>
+                  <p className="text-[#4F200D] font-bold text-sm mt-0.5">{currency}{selectedProduct.price?.toLocaleString()}</p>
                 </div>
               </div>
               <button onClick={closeSizeModal} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 flex-shrink-0">
@@ -250,8 +250,8 @@ const Wishlist = () => {
                   onClick={() => setSelectedSize(s)}
                   className={`px-4 py-2.5 rounded-xl text-sm font-medium border-2 transition-all ${
                     selectedSize === s
-                      ? 'border-secondary bg-secondary text-white'
-                      : 'border-stone-200 text-gray-700 hover:border-secondary/50'
+                      ? 'border-[#4F200D] bg-[#4F200D] text-white'
+                      : 'border-stone-200 text-gray-700 hover:border-[#4F200D]/50'
                   }`}
                 >
                   {s}
@@ -261,7 +261,7 @@ const Wishlist = () => {
             <button
               onClick={handleAddToCart}
               disabled={!selectedSize}
-              className="w-full py-3.5 bg-gradient-to-r from-secondary to-secondary/90 text-white rounded-xl font-semibold text-sm hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full py-3.5 bg-gradient-to-r from-secondary to-[#4F200D]/90 text-white rounded-xl font-semibold text-sm hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ShoppingCart size={15} /> Move to Cart
             </button>

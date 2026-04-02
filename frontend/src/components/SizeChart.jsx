@@ -148,8 +148,8 @@ const SizeChart = ({
     <div className={`bg-white rounded-lg ${compact ? 'p-4' : 'p-6'} ${className}`}>
       {/* Header */}
       <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-200">
-        <div className="w-10 h-10 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center border border-background">
-          <Ruler size={20} className="text-secondary" />
+        <div className="w-10 h-10 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-full flex items-center justify-center border border-background">
+          <Ruler size={20} className="text-[#4F200D]" />
         </div>
         <div>
           <h3 className="text-lg font-serif font-bold text-text">
@@ -165,7 +165,7 @@ const SizeChart = ({
       <div className={`overflow-x-auto rounded-lg border-2 border-background shadow-sm ${compact ? 'mb-3' : 'mb-6'}`}>
         <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-secondary text-white">
+            <tr className="bg-[#4F200D] text-white">
               {chart.headers.map((header, index) => (
                 <th 
                   key={index} 
@@ -180,12 +180,12 @@ const SizeChart = ({
             {chart.rows.map((row, rowIndex) => (
               <tr 
                 key={rowIndex} 
-                className={`${rowIndex % 2 === 0 ? 'bg-gradient-to-r from-background/10 to-primary' : 'bg-white'} hover:bg-background/20 transition-colors`}
+                className={`${rowIndex % 2 === 0 ? 'bg-gradient-to-r from-[#FBF7F3]/10 to-primary' : 'bg-white'} hover:bg-[#FBF7F3]/20 transition-colors`}
               >
                 {row.map((cell, cellIndex) => (
                   <td 
                     key={cellIndex} 
-                    className={`${compact ? 'px-2 py-2 text-xs' : 'px-4 py-2.5 text-sm'} ${cellIndex === 0 ? 'font-bold text-secondary' : 'text-text/70'} border-b border-background/30 whitespace-nowrap`}
+                    className={`${compact ? 'px-2 py-2 text-xs' : 'px-4 py-2.5 text-sm'} ${cellIndex === 0 ? 'font-bold text-[#4F200D]' : 'text-text/70'} border-b border-[#FBF7F3]/30 whitespace-nowrap`}
                   >
                     {cell}
                   </td>

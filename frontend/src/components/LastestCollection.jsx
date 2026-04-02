@@ -1,200 +1,116 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { ShopContext } from '../context/ShopContext';
-import Title from './Title';
-import ProductItem from './ProductItem';
+import ProductItem, { ProductItemSkeleton } from './ProductItem';
 import { NavLink } from 'react-router-dom';
-import { ChevronRight, ArrowRight, Sparkles, ShoppingBag } from 'lucide-react';
+import { ArrowRight, ShoppingBag } from 'lucide-react';
+
+const selectBalanced = (products, max = 10) => {
+  const seen = new Set();
+  const result = [];
+  // One pass: prefer variety by rotating through subCategories
+  const bySub = {};
+  products.forEach(p => {
+    const k = p.subCategory || 'other';
+    if (!bySub[k]) bySub[k] = [];
+    bySub[k].push(p);
+  });
+  const keys = Object.keys(bySub);
+  let i = 0;
+  while (result.length < max) {
+    let added = false;
+    for (const k of keys) {
+      if (result.length >= max) break;
+      const avail = bySub[k].find(p => !seen.has(p._id));
+      if (avail) { result.push(avail); seen.add(avail._id); added = true; }
+    }
+    if (!added) break;
+    if (++i > 20) break;
+  }
+  return result;
+};
 
 function LatestCollection() {
-  const { products } = useContext(ShopContext);
-  const [latestProducts, setLatestProducts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('All');
-
-  const getProductsByCategory = (products, categoryName, subcategories) => {
-    return products.filter(item => {
-      const itemCategory = item.category?.toLowerCase();
-      const itemSubCategory = item.subCategory?.toLowerCase();
-
-      return subcategories.some(sub =>
-        itemCategory?.includes(sub.toLowerCase()) ||
-        itemSubCategory?.includes(sub.toLowerCase())
-      );
-    });
-  };
-
-  const selectBalancedProducts = (products, categories, minPerCategory = 2) => {
-    const selectedProducts = [];
-    const usedProductIds = new Set();
-
-    categories.forEach(({ name, subcategories }) => {
-      const categoryProducts = getProductsByCategory(products, name, subcategories);
-
-      const productsBySubcategory = {};
-      subcategories.forEach(sub => {
-        productsBySubcategory[sub] = categoryProducts.filter(item =>
-          item.category?.toLowerCase().includes(sub.toLowerCase()) ||
-          item.subCategory?.toLowerCase().includes(sub.toLowerCase())
-        );
-      });
-
-      Object.values(productsBySubcategory).forEach(subProducts => {
-        const availableProducts = subProducts.filter(p => !usedProductIds.has(p._id));
-        const toSelect = Math.min(minPerCategory, availableProducts.length);
-
-        for (let i = 0; i < toSelect; i++) {
-          selectedProducts.push(availableProducts[i]);
-          usedProductIds.add(availableProducts[i]._id);
-        }
-      });
-    });
-
-    const remainingProducts = products.filter(p => !usedProductIds.has(p._id));
-    const remainingSlots = Math.max(0, 10 - selectedProducts.length);
-
-    for (let i = 0; i < Math.min(remainingSlots, remainingProducts.length); i++) {
-      selectedProducts.push(remainingProducts[i]);
-    }
-
-    return selectedProducts.slice(0, 10);
-  };
+  const context = useContext(ShopContext);
+  const products = context?.products ?? [];
+  const isLoading = context?.isLoading ?? false;
+  const [latest, setLatest] = useState([]);
+  const refs = useRef([]);
 
   useEffect(() => {
-    if (products && products.length > 0) {
-      if (selectedCategory === 'All') {
-        const allCategories = [
-          {
-            name: 'Women',
-            subcategories: ['Kurtis', 'Kurta Sets', 'Dresses']
-          },
-          {
-            name: 'Men',
-            subcategories: ['Shirts', 'Sleeve Shirts', 'Trousers']
-          },
-          {
-            name: 'Home',
-            subcategories: ['Home', 'Wall Decor', 'Kitchenware']
-          },
-          {
-            name: 'Accessories',
-            subcategories: ['Bags', 'Pouches', 'Accessories']
-          }
-        ];
+    if (products?.length) setLatest(selectBalanced(products, 10));
+    else setLatest([]);
+  }, [products]);
 
-        const balancedProducts = selectBalancedProducts(products, allCategories, 2);
-        setLatestProducts(balancedProducts);
+  useEffect(() => {
+    const io = new IntersectionObserver(entries => entries.forEach(e => e.isIntersecting && e.target.classList.add('visible')), { threshold: 0.1 });
+    refs.current.forEach(el => el && io.observe(el));
+    return () => io.disconnect();
+  }, [latest]);
 
-      } else {
-        if (categoryConfig.name) {
-          const balancedProducts = selectBalancedProducts(products, [categoryConfig], 2);
-          setLatestProducts(balancedProducts);
-        } else {
-          setLatestProducts(products.slice(0, 10));
-        }
-      }
-    } else {
-      setLatestProducts([]);
-    }
-  }, [products, selectedCategory]);
+  const r = el => { if (el && !refs.current.includes(el)) refs.current.push(el); };
 
   return (
-    <section className="bg-gradient-to-b from-white to-background/20 py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+    <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8" style={{ background: 'linear-gradient(to bottom, #ffffff, #FBF7F3)' }}>
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-12 gap-4">
+
+        {/* Header */}
+        <div ref={r} className="reveal flex flex-col lg:flex-row lg:items-end lg:justify-between mb-12 gap-4">
           <div>
-            <h2 className="text-4xl sm:text-5xl font-serif font-bold text-text mb-3">
+            <p className="text-[11px] uppercase tracking-[0.25em] font-semibold mb-3" style={{ color: '#AF8255' }}>New In</p>
+            <h2 className="text-4xl sm:text-5xl font-light tracking-tight mb-2" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", color: '#2A1506' }}>
               Latest Collection
             </h2>
-            <p className="text-text/60 font-light text-lg max-w-2xl">
-              Discover our newest handcrafted pieces, carefully curated to celebrate heritage and style
+            <p className="text-sm font-light" style={{ color: 'rgba(42,21,6,0.55)' }}>
+              Newest handcrafted pieces, celebrating heritage and style
             </p>
           </div>
-
-          <NavLink
-            to="/shop/collection"
-            className="group inline-flex items-center gap-2 bg-secondary text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary/90 transition-all duration-300 shadow-md hover:shadow-lg self-start lg:self-auto"
-          >
-            <span>View All Collection</span>
-            <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+          <NavLink to="/shop/collection"
+                   className="group inline-flex items-center gap-2 text-sm font-semibold tracking-wide transition-all duration-300 self-start lg:self-auto hover:-translate-y-0.5"
+                   style={{ color: '#4F200D' }}>
+            View All
+            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </NavLink>
         </div>
 
-        {latestProducts.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
-            {latestProducts.map((item, index) => (
-              <div
-                key={index}
-                className="group relative"
-                style={{
-                  animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
-                }}
-              >
-                <div className="relative overflow-hidden rounded-xl bg-white shadow-md hover:shadow-2xl transition-all duration-500 border border-background">
-                  <ProductItem
-                    id={item._id}
-                    image={item.images}
-                    name={item.name}
-                    price={item.price}
-                    company={item.company}
-                  />
-
-                  {index < 1 && (
-                    <div className="absolute top-3 right-3 z-10">
-                      <div className="bg-secondary text-white text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wide shadow-lg flex items-center gap-1">
-                        <Sparkles size={12} />
-                        <span>New</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
+        {/* Grid */}
+        {isLoading ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            {Array.from({ length: 10 }).map((_, i) => <ProductItemSkeleton key={i} />)}
+          </div>
+        ) : latest.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            {latest.map((item, i) => (
+              <div ref={r} key={item._id} className="reveal" style={{ transitionDelay: `${i * 0.05}s` }}>
+                <ProductItem id={item._id} image={item.images} name={item.name} price={item.price} />
               </div>
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-background shadow-sm">
-            <div className="w-20 h-20 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mb-6">
-              <ShoppingBag size={32} className="text-secondary" />
+          <div className="flex flex-col items-center justify-center py-20 rounded-2xl border" style={{ background: '#FBF7F3', borderColor: 'rgba(79,32,13,0.08)' }}>
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-5" style={{ background: 'rgba(79,32,13,0.07)' }}>
+              <ShoppingBag size={28} style={{ color: '#4F200D' }} />
             </div>
-            <h3 className="text-2xl font-serif font-semibold text-text mb-3">
-              No Products Available
-            </h3>
-            <p className="text-text/60 font-light text-lg mb-6">
-              New arrivals coming soon
-            </p>
-            <NavLink
-              to="/shop/collection"
-              className="inline-flex items-center gap-2 border-2 border-secondary text-secondary px-6 py-3 rounded-lg font-semibold hover:bg-secondary hover:text-white transition-all duration-300"
-            >
-              <span>Explore Other Collections</span>
-              <ArrowRight size={18} />
+            <h3 className="text-xl font-light mb-2" style={{ fontFamily: "'Cormorant Garamond',serif", color: '#2A1506' }}>No Products Available</h3>
+            <p className="text-sm font-light mb-6" style={{ color: 'rgba(42,21,6,0.5)' }}>New arrivals coming soon</p>
+            <NavLink to="/shop/collection"
+                     className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300"
+                     style={{ border: '2px solid #4F200D', color: '#4F200D' }}>
+              Explore Collections <ArrowRight size={15} />
             </NavLink>
           </div>
         )}
 
-        {latestProducts.length > 0 && (
-          <div className="mt-12 text-center lg:hidden">
-            <NavLink
-              to="/shop/collection"
-              className="inline-flex items-center gap-2 text-secondary font-semibold hover:text-secondary/80 transition-colors group"
-            >
-              <span>View All Products</span>
-              <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+        {latest.length > 0 && (
+          <div className="mt-10 text-center lg:hidden">
+            <NavLink to="/shop/collection"
+                     className="inline-flex items-center gap-2 text-sm font-semibold group transition-colors"
+                     style={{ color: '#4F200D' }}>
+              View All Products
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </NavLink>
           </div>
         )}
       </div>
-
-      <style>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </section>
   );
 }

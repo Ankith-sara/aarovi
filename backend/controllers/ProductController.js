@@ -1,5 +1,9 @@
 import { v2 as cloudinary } from 'cloudinary';
 import productModel from '../models/ProductModel.js';
+import { cache } from '../utils/cache.js';
+
+const PRODUCTS_CACHE_KEY = 'products:all';
+const PRODUCTS_TTL_MS    = 5 * 60 * 1000; // 5 minutes
 
 // Function for adding a product
 const addProduct = async (req, res) => {
@@ -44,6 +48,7 @@ const addProduct = async (req, res) => {
 
         const product = new productModel(productData);
         await product.save();
+        cache.del(PRODUCTS_CACHE_KEY); // bust so next public fetch is fresh
 
         res.json({ success: true, message: "Product Added Successfully", product });
     } catch (error) {
@@ -107,6 +112,7 @@ const editProduct = async (req, res) => {
             },
             { new: true }
         );
+        cache.del(PRODUCTS_CACHE_KEY); // bust so public fetch reflects update
 
         res.json({ success: true, message: "Product updated successfully", product: updatedProduct });
     } catch (error) {
@@ -127,10 +133,18 @@ const listProducts = async (req, res) => {
     }
 };
 
-// Public list all products
+// Public list all products — served from cache when warm
 const listAllProductsPublic = async (req, res) => {
     try {
-        const products = await productModel.find({});
+        const cached = cache.get(PRODUCTS_CACHE_KEY);
+        if (cached) {
+            res.setHeader('X-Cache', 'HIT');
+            return res.json({ success: true, products: cached });
+        }
+
+        const products = await productModel.find({}).lean();
+        cache.set(PRODUCTS_CACHE_KEY, products, PRODUCTS_TTL_MS);
+        res.setHeader('X-Cache', 'MISS');
         res.json({ success: true, products });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -147,6 +161,7 @@ const removeProduct = async (req, res) => {
         if (!deletedProduct) {
             return res.status(404).json({ success: false, message: "Product not found or not owned by you" });
         }
+        cache.del(PRODUCTS_CACHE_KEY);
         res.json({ success: true, message: "Product removed successfully" });
     } catch (error) {
         console.error("Error in removeProduct:", error);

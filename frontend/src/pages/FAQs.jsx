@@ -69,9 +69,9 @@ const FAQs = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
+      <div className="relative bg-[#FBF7F3] px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
             Frequently Asked Questions
           </h1>
           <p className="text-lg sm:text-xl text-text/70 font-light leading-relaxed max-w-3xl mx-auto">
@@ -88,11 +88,11 @@ const FAQs = () => {
               <div key={categoryIndex}>
                 <div className="text-center mb-10">
                   <div className="inline-flex items-center justify-center gap-4 mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-secondary/70 to-secondary/80 rounded-full flex items-center justify-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-[#4F200D]/70 to-[#4F200D]/80 rounded-full flex items-center justify-center">
                       <IconComponent className="text-white" size={24} />
                     </div>
                   </div>
-                  <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-[#2C1810]">
+                  <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-[#2C1810]" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
                     {category.title}
                   </h2>
                 </div>
@@ -140,11 +140,11 @@ const FAQs = () => {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <div className="inline-flex items-center justify-center gap-4 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-secondary/70 to-secondary/80 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#4F200D]/70 to-[#4F200D]/80 rounded-full flex items-center justify-center">
                 <HelpCircle className="text-white" size={24} />
               </div>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-text/90 mb-4">
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-text/90 mb-4" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
               Need More Help?
             </h2>
             <p className="text-text/70 leading-relaxed max-w-2xl mx-auto text-lg">
@@ -154,14 +154,14 @@ const FAQs = () => {
 
           <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center hover:shadow-md transition-shadow">
-              <Mail className="w-10 h-10 text-secondary mx-auto mb-4" />
+              <Mail className="w-10 h-10 text-[#4F200D] mx-auto mb-4" />
               <h4 className="font-serif font-semibold text-text mb-3">Email Support</h4>
               <p className="text-lg text-text mb-1">aaroviofficial@gmail.com</p>
               <p className="text-sm text-text/60 mt-2">Response within 24 hours</p>
             </div>
 
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center hover:shadow-md transition-shadow">
-              <Phone className="w-10 h-10 text-secondary mx-auto mb-4" />
+              <Phone className="w-10 h-10 text-[#4F200D] mx-auto mb-4" />
               <h4 className="font-serif font-semibold text-text mb-3">Helpdesk Phone</h4>
               <p className="text-lg text-text mb-1">+91 7416964805</p>
               <p className="text-sm text-text/60 mt-2">Mon–Sat: 9 AM – 6 PM IST</p>
@@ -173,7 +173,7 @@ const FAQs = () => {
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-primary to-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-text mb-4">
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-text mb-4" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
               Quick Support Topics
             </h2>
             <p className="text-text/70 text-lg">Common areas where we can assist you</p>
@@ -186,14 +186,14 @@ const FAQs = () => {
               { icon: RotateCcw, title: "Returns & Refunds", text: "Return process and refund status" }
             ].map(({ icon: Icon, title, text }, i) => (
               <div key={i} className="bg-white p-8 rounded-lg shadow-sm border border-background hover:shadow-md transition-all text-center">
-                <Icon className="text-secondary mx-auto mb-4" size={28} />
+                <Icon className="text-[#4F200D] mx-auto mb-4" size={28} />
                 <h4 className="font-serif font-semibold text-text mb-2 text-lg">{title}</h4>
                 <p className="text-sm text-text/70 leading-relaxed">{text}</p>
               </div>
             ))}
           </div>
 
-          <div className="bg-gradient-to-r from-secondary/90 to-secondary/80 text-white p-10 rounded-lg max-w-4xl mx-auto text-center shadow-lg">
+          <div className="bg-gradient-to-r from-[#4F200D]/90 to-[#4F200D]/80 text-white p-10 rounded-lg max-w-4xl mx-auto text-center shadow-lg">
             <h3 className="font-serif text-2xl font-semibold mb-4">Professional Support Team</h3>
             <p className="leading-relaxed text-white/90 text-lg">
               Our team understands the value of handcrafted artistry and ensures every Aarovi purchase brings satisfaction and pride.

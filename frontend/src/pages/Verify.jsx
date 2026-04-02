@@ -109,9 +109,9 @@ const Verify = () => {
     }, [token, orderId]);
 
     return (
-        <div className='min-h-screen bg-gradient-to-b from-white to-background/20 flex items-center justify-center px-4'>
+        <div className='min-h-screen bg-gradient-to-b from-white to-[#FBF7F3]/20 flex items-center justify-center px-4'>
             <div className='max-w-lg w-full'>
-                <div className='bg-white border border-background/20 rounded-xl shadow-lg overflow-hidden'>
+                <div className='bg-white border border-[#FBF7F3]/20 rounded-xl shadow-lg overflow-hidden'>
                     {loading && verificationStatus === 'verifying' ? (
                         <div className="p-12">
                             <div className="flex flex-col items-center gap-6">
@@ -121,18 +121,18 @@ const Verify = () => {
                                 </div>
 
                                 <div className="relative">
-                                    <div className="w-20 h-20 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center">
+                                    <div className="w-20 h-20 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-full flex items-center justify-center">
                                         {paymentMethod === 'cod' ? (
-                                            <Package size={32} className="text-secondary animate-bounce" />
+                                            <Package size={32} className="text-[#4F200D] animate-bounce" />
                                         ) : (
-                                            <CreditCard size={32} className="text-secondary animate-bounce" />
+                                            <CreditCard size={32} className="text-[#4F200D] animate-bounce" />
                                         )}
                                     </div>
-                                    <div className="absolute inset-0 border-4 border-secondary border-t-transparent rounded-full animate-spin"></div>
+                                    <div className="absolute inset-0 border-4 border-[#4F200D] border-t-transparent rounded-full animate-spin"></div>
                                 </div>
 
                                 <div className="text-center space-y-2">
-                                    <h2 className="text-2xl font-serif font-bold text-text">
+                                    <h2 className="text-2xl font-serif font-bold text-text" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
                                         {paymentMethod === 'cod' 
                                             ? 'Confirming Your Order' 
                                             : 'Verifying Payment'}
@@ -146,7 +146,7 @@ const Verify = () => {
                                 </div>
 
                                 {orderId && (
-                                    <div className="w-full mt-4 p-4 bg-gradient-to-r from-background/10 to-primary/5 rounded-lg border border-background/20">
+                                    <div className="w-full mt-4 p-4 bg-gradient-to-r from-[#FBF7F3]/10 to-primary/5 rounded-lg border border-[#FBF7F3]/20">
                                         <div className="flex items-center justify-between">
                                             <span className="text-xs font-semibold text-text/60 uppercase tracking-wider">Order ID:</span>
                                             <span className="font-mono font-semibold text-text text-sm">{orderId.slice(-8)}</span>
@@ -171,7 +171,7 @@ const Verify = () => {
                                 </div>
 
                                 <div className="text-center space-y-2">
-                                    <h2 className="text-2xl font-serif font-bold text-text">
+                                    <h2 className="text-2xl font-serif font-bold text-text" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
                                         Verification Complete!
                                     </h2>
                                     <p className="text-text/60 font-medium">
@@ -185,7 +185,7 @@ const Verify = () => {
                                 </div>
 
                                 <div className="w-full mt-4">
-                                    <div className="w-full bg-background/30 h-2 rounded-full overflow-hidden">
+                                    <div className="w-full bg-[#FBF7F3]/30 h-2 rounded-full overflow-hidden">
                                         <div className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full animate-progress"></div>
                                     </div>
                                 </div>
@@ -204,7 +204,7 @@ const Verify = () => {
                                 </div>
 
                                 <div className="text-center space-y-2">
-                                    <h2 className="text-2xl font-serif font-bold text-text">
+                                    <h2 className="text-2xl font-serif font-bold text-text" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
                                         Verification Failed
                                     </h2>
                                     <p className="text-text/60 font-medium">
@@ -221,7 +221,7 @@ const Verify = () => {
 
                 <div className="mt-6 text-center">
                     <p className="text-text/40 text-sm font-light">
-                        Having trouble? <button onClick={() => navigate('/contact')} className="text-secondary hover:text-[#8B6F47] font-medium underline">Contact Support</button>
+                        Having trouble? <button onClick={() => navigate('/contact')} className="text-[#4F200D] hover:text-[#8B6F47] font-medium underline">Contact Support</button>
                     </p>
                 </div>
             </div>

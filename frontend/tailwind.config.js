@@ -7,22 +7,32 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        Bodoni: ['Bodoni Moda', 'sans-serif'],
-        oswald: ['Oswald', 'sans-serif'],
+        serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        sans: ['Montserrat', 'system-ui', 'sans-serif'],
+        dancing: ['"Dancing Script"', 'cursive'],
+        // legacy aliases kept for any remaining usage
+        Bodoni: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        oswald: ['Montserrat', 'sans-serif'],
         montserrat: ['Montserrat', 'sans-serif'],
-        dancing: ['Dancing Script', 'cursive'],
-        hind: ['Hind Mysuru', 'sans-serif'],
-        outfit: ['Outfit', 'sans-serif'],
-        roboto: ['Roboto', 'sans-serif'],
-        dm: ['DM Sans', 'sans-serif'],
+        hind: ['Montserrat', 'sans-serif'],
       },
       colors: {
-        primary: "#FCFAFA",
-        secondary: "#4F200D",
-        text: "#131010",
-        background: "#EBD9D1",
+        // Design token palette
+        primary:    '#FBF7F3',   // warm off-white page bg
+        secondary:  '#4F200D',   // deep maroon brand colour
+        text:       '#2A1506',   // near-black body text
+        background: '#EBD9D1',   // warm blush (legacy, kept for compat)
+        gold:       '#AF8255',   // warm gold accent
+      },
+      transitionDuration: {
+        400: '400ms',
+        600: '600ms',
+      },
+      // Prevent layout shift on images
+      aspectRatio: {
+        '3/4': '3 / 4',
       },
     },
   },
   plugins: [],
-}
+};

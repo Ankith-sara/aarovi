@@ -1,90 +1,114 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ShopContext } from '../context/ShopContext';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
+import ProgressiveImage from './ProgressiveImage';
+
+const CATEGORIES = [
+  {
+    name: 'Kurtis',
+    imageUrl: 'https://tahiliya.com/cdn/shop/files/1_bed339ee-3f4f-44af-ab58-455caf8aac35.webp?v=1758201541&width=800',
+    tag: 'Women',
+    description: 'Elegant, handcrafted designs',
+  },
+  {
+    name: 'Lehangas',
+    imageUrl: 'https://static3.azafashions.com/tr:w-450/uploads/product_gallery/samirah_1506-0264510001623775747.jpg',
+    tag: 'Women',
+    description: 'Royal elegance redefined',
+  },
+  {
+    name: 'Kurtas',
+    imageUrl: 'https://img.perniaspopupshop.com/catalog/product/a/v/AVKPR052308_1.jpg?impolicy=detailimageprod',
+    tag: 'Men',
+    description: 'Classic and contemporary styles',
+  },
+  {
+    name: 'Sherwanis',
+    imageUrl: 'https://img.perniaspopupshop.com/catalog/product/s/e/SEGCM052529_1.jpeg?impolicy=detailimageprod',
+    tag: 'Men',
+    description: 'Regal attire for special moments',
+  },
+];
 
 const Collections = () => {
-  const { setSelectedSubCategory } = useContext(ShopContext);
+  const context = useContext(ShopContext);
+  const setSelectedSubCategory = context?.setSelectedSubCategory ?? (() => {});
+  const revealRefs = useRef([]);
 
-  const handleCategoryClick = (subCategory) => {
-    setSelectedSubCategory(subCategory);
-  };
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      entries => entries.forEach(e => e.isIntersecting && e.target.classList.add('visible')),
+      { threshold: 0.12 }
+    );
+    revealRefs.current.forEach(el => el && io.observe(el));
+    return () => io.disconnect();
+  }, []);
 
-  const categories = [
-    {
-      name: 'Kurtis',
-      imageUrl: 'https://tahiliya.com/cdn/shop/files/1_bed339ee-3f4f-44af-ab58-455caf8aac35.webp?v=1758201541&width=800',
-      description: 'Elegant, handcrafted designs'
-    },
-    {
-      name: 'Lehangas',
-      imageUrl: 'https://static3.azafashions.com/tr:w-450/uploads/product_gallery/samirah_1506-0264510001623775747.jpg',
-      description: 'Royal elegance redefined'
-    },
-    {
-      name: 'Kurtas',
-      imageUrl: 'https://img.perniaspopupshop.com/catalog/product/a/v/AVKPR052308_1.jpg?impolicy=detailimageprod',
-      description: 'Classic and contemporary styles'
-    },
-    {
-      name: 'Sherwanis',
-      imageUrl: 'https://img.perniaspopupshop.com/catalog/product/s/e/SEGCM052529_1.jpeg?impolicy=detailimageprod',
-      description: 'Regal attire for special moments'
-    },
-  ];
+  const r = el => { if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el); };
 
   return (
-    <section className="bg-gradient-to-b from-gray-50 to-white py-8 sm:py-16 px-4 sm:px-6 lg:px-8">
+    <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8" style={{ background: 'linear-gradient(to bottom, #f9f5f1, #ffffff)' }}>
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-6 sm:mb-12">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-gray-900 mb-3">
+
+        {/* Header */}
+        <div ref={r} className="reveal text-center mb-10 sm:mb-14">
+          <p className="text-[11px] uppercase tracking-[0.25em] font-semibold mb-3" style={{ color: '#AF8255' }}>
+            Explore
+          </p>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light tracking-tight mb-3"
+              style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", color: '#2A1506' }}>
             Our Collections
           </h2>
-          <p className="text-gray-600 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto px-4">
-            Explore handcrafted ethnic wear, each piece telling its own story
+          <p className="text-sm sm:text-base font-light max-w-md mx-auto" style={{ color: 'rgba(42,21,6,0.55)' }}>
+            Explore handcrafted ethnic wear — each piece telling its own story
           </p>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
-          {categories.map((category, index) => (
-            <div
-              key={category.name}
-              className="group h-full"
-              style={{
-                animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`
-              }}
-            >
+        {/* Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {CATEGORIES.map((cat, i) => (
+            <div ref={r} key={cat.name}
+                 className="reveal"
+                 style={{ transitionDelay: `${i * 0.07}s` }}>
               <NavLink
-                to={`/shop/${category.name}`}
-                onClick={() => handleCategoryClick(category.name)}
-                className="block h-full"
+                to={`/shop/${cat.name}`}
+                onClick={() => setSelectedSubCategory(cat.name)}
+                className="group block h-full"
               >
-                <div className="relative bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 active:scale-[0.98] h-full flex flex-col">
-                  <div className="relative overflow-hidden bg-gray-100 aspect-[3/4]">
-                    <img
-                      src={category.imageUrl}
-                      alt={category.name}
-                      className="absolute inset-0 w-full h-full object-cover object-top"
+                <div className="relative rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 bg-white active:scale-[0.98]">
+
+                  {/* Image */}
+                  <div className="relative aspect-[3/4] overflow-hidden bg-[#f0ece8]">
+                    <ProgressiveImage
+                      src={cat.imageUrl}
+                      alt={cat.name}
+                      width={500}
+                      className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </div>
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-400" />
 
-                  <div className="p-4 flex-grow flex flex-col justify-between">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-md lg:text-xl font-serif font-bold text-gray-900 mb-1.5 group-hover:text-secondary transition-colors duration-300">
-                          {category.name}
-                        </h3>
-                        <p className="text-sm sm:text-base text-gray-600 font-light leading-relaxed">
-                          {category.description}
-                        </p>
-                      </div>
-                      <div className="flex-shrink-0">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-                          <ArrowRight size={18} className="text-secondary transition-colors duration-300 group-hover:translate-x-0.5" />
-                        </div>
-                      </div>
+                    {/* Tag */}
+                    <div className="absolute top-3 left-3">
+                      <span className="text-[9px] uppercase tracking-widest font-semibold text-white/80 bg-white/15 backdrop-blur-sm border border-white/20 px-2.5 py-1 rounded-full">
+                        {cat.tag}
+                      </span>
+                    </div>
+
+                    {/* Arrow icon */}
+                    <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0">
+                      <ArrowUpRight size={14} className="text-white" />
+                    </div>
+
+                    {/* Bottom text over image */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
+                      <h3 className="text-white font-semibold text-base sm:text-lg leading-tight mb-0.5"
+                          style={{ fontFamily: "'Cormorant Garamond',serif", letterSpacing: '0.01em' }}>
+                        {cat.name}
+                      </h3>
+                      <p className="text-white/65 text-xs font-light">{cat.description}</p>
                     </div>
                   </div>
                 </div>
@@ -92,28 +116,8 @@ const Collections = () => {
             </div>
           ))}
         </div>
+
       </div>
-
-      <style>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        /* Smooth tap feedback for mobile */
-        @media (hover: none) {
-          .group:active {
-            transform: scale(0.98);
-            transition: transform 0.1s;
-          }
-        }
-      `}</style>
     </section>
   );
 };

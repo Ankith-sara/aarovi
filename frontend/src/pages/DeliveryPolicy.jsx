@@ -8,9 +8,9 @@ const ShippingDeliveryPolicy = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
+      <div className="relative bg-[#FBF7F3] px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold text-text mb-6" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
             Shipping & Delivery
           </h1>
           <p className="text-lg sm:text-xl text-text/70 mb-8 max-w-3xl mx-auto font-light">
@@ -22,8 +22,8 @@ const ShippingDeliveryPolicy = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <Package className="w-12 h-12 mx-auto mb-4 text-secondary" />
-            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Shipping Methods</h2>
+            <Package className="w-12 h-12 mx-auto mb-4 text-[#4F200D]" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-[#4F200D]" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Shipping Methods</h2>
             <p className="text-text/70 mt-4 max-w-2xl mx-auto">
               We partner with trusted courier services to deliver your orders safely
             </p>
@@ -31,9 +31,9 @@ const ShippingDeliveryPolicy = () => {
 
           <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
             <div className="bg-white rounded-lg shadow-sm border border-background overflow-hidden hover:shadow-md transition-shadow">
-              <div className="bg-gradient-to-r from-background/20 to-primary p-6 border-b border-background">
+              <div className="bg-gradient-to-r from-[#FBF7F3]/20 to-primary p-6 border-b border-background">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-secondary rounded-full flex items-center justify-center">
+                  <div className="w-14 h-14 bg-[#4F200D] rounded-full flex items-center justify-center">
                     <Globe size={28} className="text-white" />
                   </div>
                   <div>
@@ -48,22 +48,22 @@ const ShippingDeliveryPolicy = () => {
                   For our global customers, we ship through registered international courier companies and international speed post services.
                 </p>
                 
-                <div className="bg-gradient-to-br from-background/20 to-primary p-5 rounded-lg">
+                <div className="bg-gradient-to-br from-[#FBF7F3]/20 to-primary p-5 rounded-lg">
                   <h4 className="font-semibold text-text mb-3 flex items-center gap-2">
-                    <CheckCircle size={16} className="text-secondary" />
+                    <CheckCircle size={16} className="text-[#4F200D]" />
                     Available Services
                   </h4>
                   <ul className="space-y-2 text-sm text-text/80">
                     <li className="flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="w-1.5 h-1.5 bg-[#4F200D] rounded-full mt-2 flex-shrink-0"></div>
                       <span>Registered International Courier Companies</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="w-1.5 h-1.5 bg-[#4F200D] rounded-full mt-2 flex-shrink-0"></div>
                       <span>International Speed Post</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="w-1.5 h-1.5 bg-[#4F200D] rounded-full mt-2 flex-shrink-0"></div>
                       <span>Tracking & Insurance Included</span>
                     </li>
                   </ul>
@@ -79,9 +79,9 @@ const ShippingDeliveryPolicy = () => {
             </div>
 
             <div className="bg-white rounded-lg shadow-sm border border-background overflow-hidden hover:shadow-md transition-shadow">
-              <div className="bg-gradient-to-r from-background/20 to-primary p-6 border-b border-background">
+              <div className="bg-gradient-to-r from-[#FBF7F3]/20 to-primary p-6 border-b border-background">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-secondary rounded-full flex items-center justify-center">
+                  <div className="w-14 h-14 bg-[#4F200D] rounded-full flex items-center justify-center">
                     <MapPin size={28} className="text-white" />
                   </div>
                   <div>
@@ -96,22 +96,22 @@ const ShippingDeliveryPolicy = () => {
                   Within India, we ensure reliable delivery through registered domestic courier companies and speed post services.
                 </p>
                 
-                <div className="bg-gradient-to-br from-background/20 to-primary p-5 rounded-lg">
+                <div className="bg-gradient-to-br from-[#FBF7F3]/20 to-primary p-5 rounded-lg">
                   <h4 className="font-semibold text-text mb-3 flex items-center gap-2">
-                    <CheckCircle size={16} className="text-secondary" />
+                    <CheckCircle size={16} className="text-[#4F200D]" />
                     Available Services
                   </h4>
                   <ul className="space-y-2 text-sm text-text/80">
                     <li className="flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="w-1.5 h-1.5 bg-[#4F200D] rounded-full mt-2 flex-shrink-0"></div>
                       <span>Registered Domestic Courier Companies</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="w-1.5 h-1.5 bg-[#4F200D] rounded-full mt-2 flex-shrink-0"></div>
                       <span>Speed Post Services</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="w-1.5 h-1.5 bg-[#4F200D] rounded-full mt-2 flex-shrink-0"></div>
                       <span>Coverage Across Major Cities & Towns</span>
                     </li>
                   </ul>
@@ -132,8 +132,8 @@ const ShippingDeliveryPolicy = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-primary">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <Clock className="w-12 h-12 mx-auto mb-4 text-secondary" />
-            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Processing Timeline</h2>
+            <Clock className="w-12 h-12 mx-auto mb-4 text-[#4F200D]" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-[#4F200D]" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Processing Timeline</h2>
             <p className="text-text/70 mt-4 max-w-2xl mx-auto">
               Your order journey from confirmation to delivery
             </p>
@@ -141,9 +141,9 @@ const ShippingDeliveryPolicy = () => {
 
           <div className="max-w-5xl mx-auto">
             <div className="bg-white rounded-lg shadow-lg border border-background overflow-hidden mb-8">
-              <div className="bg-gradient-to-r from-background to-primary p-10 text-center">
+              <div className="bg-gradient-to-r from-[#FBF7F3] to-primary p-10 text-center">
                 <div className="inline-block mb-4">
-                  <div className="text-6xl font-serif font-bold text-secondary">0-7</div>
+                  <div className="text-6xl font-serif font-bold text-[#4F200D]">0-7</div>
                   <div className="text-xl font-semibold text-text mt-2">Business Days</div>
                 </div>
                 <h3 className="text-2xl font-serif font-semibold text-text mb-3">Order Processing & Shipping</h3>
@@ -156,24 +156,24 @@ const ShippingDeliveryPolicy = () => {
 
             <div className="grid md:grid-cols-3 gap-6">
               <div className="bg-white p-6 rounded-lg shadow-sm border border-background text-center hover:shadow-md transition-shadow">
-                <div className="w-16 h-16 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Package size={28} className="text-secondary" />
+                <div className="w-16 h-16 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Package size={28} className="text-[#4F200D]" />
                 </div>
                 <h4 className="font-serif font-semibold text-text mb-2">Order Confirmation</h4>
                 <p className="text-sm text-text/60">Within 24 hours of payment verification</p>
               </div>
               
               <div className="bg-white p-6 rounded-lg shadow-sm border border-background text-center hover:shadow-md transition-shadow">
-                <div className="w-16 h-16 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Clock size={28} className="text-secondary" />
+                <div className="w-16 h-16 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Clock size={28} className="text-[#4F200D]" />
                 </div>
                 <h4 className="font-serif font-semibold text-text mb-2">Processing Time</h4>
                 <p className="text-sm text-text/60">0-7 days preparation and quality check</p>
               </div>
               
               <div className="bg-white p-6 rounded-lg shadow-sm border border-background text-center hover:shadow-md transition-shadow">
-                <div className="w-16 h-16 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Truck size={28} className="text-secondary" />
+                <div className="w-16 h-16 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Truck size={28} className="text-[#4F200D]" />
                 </div>
                 <h4 className="font-serif font-semibold text-text mb-2">Shipment</h4>
                 <p className="text-sm text-text/60">Handed to courier with tracking</p>
@@ -186,8 +186,8 @@ const ShippingDeliveryPolicy = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <AlertCircle className="w-12 h-12 mx-auto mb-4 text-secondary" />
-            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary">Important Information</h2>
+            <AlertCircle className="w-12 h-12 mx-auto mb-4 text-[#4F200D]" />
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-[#4F200D]" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Important Information</h2>
             <p className="text-text/70 mt-4 max-w-2xl mx-auto">
               Please read these important shipping details carefully
             </p>
@@ -196,8 +196,8 @@ const ShippingDeliveryPolicy = () => {
           <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-6">
             <div className="bg-white p-6 rounded-lg shadow-sm border border-background">
               <div className="flex items-start gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center flex-shrink-0">
-                  <Clock size={20} className="text-secondary" />
+                <div className="w-10 h-10 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-full flex items-center justify-center flex-shrink-0">
+                  <Clock size={20} className="text-[#4F200D]" />
                 </div>
                 <h3 className="font-serif font-semibold text-text">Delivery Responsibility</h3>
               </div>
@@ -208,8 +208,8 @@ const ShippingDeliveryPolicy = () => {
 
             <div className="bg-white p-6 rounded-lg shadow-sm border border-background">
               <div className="flex items-start gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center flex-shrink-0">
-                  <MapPin size={20} className="text-secondary" />
+                <div className="w-10 h-10 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-full flex items-center justify-center flex-shrink-0">
+                  <MapPin size={20} className="text-[#4F200D]" />
                 </div>
                 <h3 className="font-serif font-semibold text-text">Delivery Address</h3>
               </div>
@@ -220,8 +220,8 @@ const ShippingDeliveryPolicy = () => {
 
             <div className="bg-white p-6 rounded-lg shadow-sm border border-background">
               <div className="flex items-start gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center flex-shrink-0">
-                  <Mail size={20} className="text-secondary" />
+                <div className="w-10 h-10 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-full flex items-center justify-center flex-shrink-0">
+                  <Mail size={20} className="text-[#4F200D]" />
                 </div>
                 <h3 className="font-serif font-semibold text-text">Tracking Information</h3>
               </div>
@@ -236,7 +236,7 @@ const ShippingDeliveryPolicy = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-background">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-secondary mb-4">Need Shipping Support?</h2>
+            <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-[#4F200D] mb-4" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Need Shipping Support?</h2>
             <p className="text-text/70 max-w-2xl mx-auto">
               For any issues with your shipment or delivery, our customer support team is ready to assist you.
             </p>
@@ -244,22 +244,22 @@ const ShippingDeliveryPolicy = () => {
           
           <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto mb-12">
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
-              <Phone className="w-10 h-10 text-secondary mx-auto mb-4" />
+              <Phone className="w-10 h-10 text-[#4F200D] mx-auto mb-4" />
               <h4 className="font-serif font-semibold text-text mb-3">Phone Support</h4>
               <p className="text-xl text-text mb-2">+91 7416964805</p>
               <p className="text-sm text-text/60">Mon-Sat: 9 AM - 6 PM</p>
             </div>
             
             <div className="bg-white p-8 rounded-lg shadow-sm border border-background text-center">
-              <Mail className="w-10 h-10 text-secondary mx-auto mb-4" />
+              <Mail className="w-10 h-10 text-[#4F200D] mx-auto mb-4" />
               <h4 className="font-serif font-semibold text-text mb-3">Email Support</h4>
               <p className="text-xl text-text mb-2">aaroviofficial@gmail.com</p>
               <p className="text-sm text-text/60">Response within 24 hours</p>
             </div>
           </div>
 
-          <div className="max-w-3xl mx-auto bg-gradient-to-r from-background to-primary p-10 rounded-lg text-center shadow-lg">
-            <Package className="w-12 h-12 text-secondary mx-auto mb-4" />
+          <div className="max-w-3xl mx-auto bg-gradient-to-r from-[#FBF7F3] to-primary p-10 rounded-lg text-center shadow-lg">
+            <Package className="w-12 h-12 text-[#4F200D] mx-auto mb-4" />
             <h3 className="font-serif text-2xl font-semibold text-text mb-4">Track Your Order</h3>
             <p className="text-text/90 leading-relaxed">
               Once your order is shipped, you'll receive a tracking number via email. 

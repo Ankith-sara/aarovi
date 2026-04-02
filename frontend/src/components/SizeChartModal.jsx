@@ -146,10 +146,10 @@ const SizeChartModal = ({ isOpen, onClose, productName, category, subCategory, g
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="sticky top-0 bg-gradient-to-r from-background/20 to-primary border-b border-background px-6 py-5 flex items-center justify-between z-10">
+          <div className="sticky top-0 bg-gradient-to-r from-[#FBF7F3]/20 to-primary border-b border-background px-6 py-5 flex items-center justify-between z-10">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center border border-background">
-                <Ruler size={20} className="text-secondary" />
+              <div className="w-10 h-10 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-full flex items-center justify-center border border-background">
+                <Ruler size={20} className="text-[#4F200D]" />
               </div>
               <div>
                 <h3 className="text-xl font-serif font-bold text-text">
@@ -162,7 +162,7 @@ const SizeChartModal = ({ isOpen, onClose, productName, category, subCategory, g
             </div>
             <button
               onClick={onClose}
-              className="w-10 h-10 hover:bg-background/20 rounded-full flex items-center justify-center transition-colors"
+              className="w-10 h-10 hover:bg-[#FBF7F3]/20 rounded-full flex items-center justify-center transition-colors"
               aria-label="Close"
             >
               <X size={20} className="text-text/60" />
@@ -175,7 +175,7 @@ const SizeChartModal = ({ isOpen, onClose, productName, category, subCategory, g
             <div className="overflow-x-auto rounded-lg border-2 border-background shadow-sm">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="bg-secondary text-white">
+                  <tr className="bg-[#4F200D] text-white">
                     {chart.headers.map((header, index) => (
                       <th key={index} className="px-4 py-4 text-left text-sm font-semibold uppercase tracking-wider whitespace-nowrap">
                         {header}
@@ -187,12 +187,12 @@ const SizeChartModal = ({ isOpen, onClose, productName, category, subCategory, g
                   {chart.rows.map((row, rowIndex) => (
                     <tr 
                       key={rowIndex} 
-                      className={`${rowIndex % 2 === 0 ? 'bg-gradient-to-r from-background/10 to-primary' : 'bg-white'} hover:bg-background/20 transition-colors`}
+                      className={`${rowIndex % 2 === 0 ? 'bg-gradient-to-r from-[#FBF7F3]/10 to-primary' : 'bg-white'} hover:bg-[#FBF7F3]/20 transition-colors`}
                     >
                       {row.map((cell, cellIndex) => (
                         <td 
                           key={cellIndex} 
-                          className={`px-4 py-3 text-sm ${cellIndex === 0 ? 'font-bold text-secondary' : 'text-text/70'} border-b border-background/30 whitespace-nowrap`}
+                          className={`px-4 py-3 text-sm ${cellIndex === 0 ? 'font-bold text-[#4F200D]' : 'text-text/70'} border-b border-[#FBF7F3]/30 whitespace-nowrap`}
                         >
                           {cell}
                         </td>
@@ -280,7 +280,7 @@ const SizeChartModal = ({ isOpen, onClose, productName, category, subCategory, g
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={onClose}
-                className="px-8 py-3 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-all duration-300 shadow-lg"
+                className="px-8 py-3 bg-[#4F200D] text-white font-semibold rounded-lg hover:bg-[#4F200D]/90 transition-all duration-300 shadow-lg"
               >
                 Got It
               </button>

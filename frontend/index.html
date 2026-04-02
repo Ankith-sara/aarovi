@@ -6,33 +6,65 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aarovi | Where style meets your soul</title>
 
-  <!-- SEO -->
-  <meta name="description"
-    content="Aarovi offers premium handcrafted ethnic wear, custom stitching, designer kurtis, 
-    and ready-made collections across India. Style your soul with Aarovi." />
+  <!-- ── Preconnects (cuts RTT for critical third-party origins) ── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://res.cloudinary.com" />
+  <link rel="dns-prefetch" href="https://checkout.razorpay.com" />
+
+  <!-- ── Fonts: trimmed weights; display=swap prevents FOIT ── -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600;700&family=Dancing+Script:wght@500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- ── SEO ── -->
+  <meta name="description" content="Aarovi offers premium handcrafted ethnic wear, custom stitching, designer kurtis, and ready-made collections across India. Style your soul with Aarovi." />
+  <meta name="keywords" content="Indian ethnic wear, handcrafted kurtis, custom stitching, lehengas, sherwanis, kurtas, Indian fashion online, designer ethnic wear India" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://aarovi.in/" />
 
-  <!-- Open Graph -->
+  <!-- ── Open Graph ── -->
   <meta property="og:title" content="Aarovi | Where style meets your soul" />
-  <meta property="og:description"
-    content="Discover handcrafted ethnic fashion, custom designs, and premium ready-made outfits at Aarovi." />
-  <meta property="og:image" content="https://aarovi.in/assets/icon.jpg" />
+  <meta property="og:description" content="Discover handcrafted ethnic fashion, custom designs, and premium ready-made outfits at Aarovi." />
+  <meta property="og:image" content="https://aarovi.in/assets/og-cover.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:url" content="https://aarovi.in/" />
   <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Aarovi" />
+  <meta property="og:locale" content="en_IN" />
 
-  <!-- Twitter -->
+  <!-- ── Twitter ── -->
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Aarovi | Where style meets your soul" />
+  <meta name="twitter:description" content="Discover handcrafted ethnic fashion, custom designs, and premium ready-made outfits at Aarovi." />
+  <meta name="twitter:image" content="https://aarovi.in/assets/og-cover.jpg" />
 
-  <!-- Favicon -->
+  <!-- ── Favicon ── -->
   <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <meta name="theme-color" content="#4F200D" />
+
+  <!-- ── JSON-LD structured data ── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ClothingStore",
+    "name": "Aarovi",
+    "url": "https://aarovi.in",
+    "logo": "https://aarovi.in/assets/icon.jpg",
+    "description": "Premium handcrafted Indian ethnic wear — kurtis, lehengas, kurtas, sherwanis and bespoke designs.",
+    "address": { "@type": "PostalAddress", "addressCountry": "IN" },
+    "sameAs": []
+  }
+  </script>
 </head>
 
 <body>
   <div id="root"></div>
-
   <script type="module" src="/src/main.jsx"></script>
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <!-- Razorpay loaded lazily inside PlaceOrder only when user reaches checkout -->
 </body>
 
 </html>

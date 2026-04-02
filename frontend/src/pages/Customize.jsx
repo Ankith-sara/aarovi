@@ -21,8 +21,8 @@ const SizeButton = ({ size, selected, onClick }) => (
     className={`
       relative px-4 py-3 rounded-xl border-2 font-bold text-sm transition-all duration-200 select-none
       ${selected
-        ? 'bg-secondary text-white border-secondary shadow-md scale-105'
-        : 'bg-white text-text/70 border-gray-200 hover:border-secondary hover:text-secondary hover:scale-105'
+        ? 'bg-[#4F200D] text-white border-[#4F200D] shadow-md scale-105'
+        : 'bg-white text-text/70 border-gray-200 hover:border-[#4F200D] hover:text-[#4F200D] hover:scale-105'
       }
     `}
   >
@@ -40,11 +40,11 @@ const VideoModal = ({ videoId, title, onClose }) => (
     <div className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
       <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-secondary/10 rounded-full flex items-center justify-center">
-            <PlayCircle size={18} className="text-secondary" />
+          <div className="w-9 h-9 bg-[#4F200D]/10 rounded-full flex items-center justify-center">
+            <PlayCircle size={18} className="text-[#4F200D]" />
           </div>
           <div>
-            <h2 className="text-base font-serif font-bold text-text">How to Measure</h2>
+            <h2 className="text-base font-serif font-bold text-text" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>How to Measure</h2>
             <p className="text-xs text-text/50 font-light">{title}</p>
           </div>
         </div>
@@ -292,12 +292,12 @@ const Customize = () => {
   // ── Render 
 
   return (
-    <div className="mt-12 sm:mt-16 min-h-screen bg-gradient-to-b from-white via-background/5 to-white pb-8">
+    <div className="mt-12 sm:mt-16 min-h-screen bg-gradient-to-b from-white via-[#FBF7F3]/5 to-white pb-8">
       {/* Hero */}
       <section className="relative py-12 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-background/10 via-primary/5 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#FBF7F3]/10 via-primary/5 to-transparent" />
         <div className="max-w-7xl mx-auto relative z-10 text-center">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-4 leading-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-4 leading-tight" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
             Design Your Custom Outfit
           </h1>
           <p className="text-base sm:text-lg text-text/60 font-light leading-relaxed max-w-2xl mx-auto">
@@ -308,7 +308,7 @@ const Customize = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Step indicator */}
-        <div className="mb-8 sm:mb-12 bg-white rounded-xl shadow-md border border-background/20 p-5 sm:p-6">
+        <div className="mb-8 sm:mb-12 bg-white rounded-xl shadow-md border border-[#FBF7F3]/20 p-5 sm:p-6">
           <div className="flex items-center justify-between">
             {[
               { num: 1, label: "Basic Details", icon: Shirt },
@@ -321,7 +321,7 @@ const Customize = () => {
               return (
                 <React.Fragment key={s.num}>
                   <div className="flex flex-col items-center flex-1">
-                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${isActive ? "bg-secondary text-white shadow-lg" : isCompleted ? "bg-green-500 text-white shadow-md" : "bg-gray-100 text-gray-400 border-2 border-gray-200"}`}>
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center font-semibold transition-all duration-300 ${isActive ? "bg-[#4F200D] text-white shadow-lg" : isCompleted ? "bg-green-500 text-white shadow-md" : "bg-gray-100 text-gray-400 border-2 border-gray-200"}`}>
                       {isCompleted ? <CheckCircle2 size={24} /> : <Icon size={24} />}
                     </div>
                     <span className={`text-xs sm:text-sm mt-3 font-semibold text-center transition-colors ${step >= s.num ? "text-text" : "text-text/40"}`}>
@@ -338,7 +338,7 @@ const Customize = () => {
         </div>
 
         <div
-          className="bg-white rounded-2xl shadow-lg border border-background/20 overflow-hidden"
+          className="bg-white rounded-2xl shadow-lg border border-[#FBF7F3]/20 overflow-hidden"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
@@ -347,28 +347,28 @@ const Customize = () => {
           {step === 1 && (
             <div className="p-6 sm:p-10 lg:p-12 space-y-8 sm:space-y-10">
               <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 bg-secondary/10 text-secondary px-4 py-2 rounded-full mb-4">
+                <div className="inline-flex items-center gap-2 bg-[#4F200D]/10 text-[#4F200D] px-4 py-2 rounded-full mb-4">
                   <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">Step 1 of 3</span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-text mb-3">Select Your Preferences</h2>
+                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-text mb-3" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Select Your Preferences</h2>
                 <p className="text-sm sm:text-base text-text/60 font-light max-w-2xl mx-auto">Choose your style essentials to begin customisation</p>
               </div>
 
               {/* Gender */}
               <div>
                 <label className="flex items-center gap-3 font-bold text-base sm:text-lg mb-5 text-text">
-                  <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center"><span className="text-secondary font-bold text-sm">1</span></div>
+                  <div className="w-8 h-8 rounded-full bg-[#4F200D]/10 flex items-center justify-center"><span className="text-[#4F200D] font-bold text-sm">1</span></div>
                   Select Gender <span className="text-red-500">*</span>
                 </label>
                 <div className="grid grid-cols-2 gap-4 sm:gap-5">
                   {["Women", "Men"].map((gender) => (
                     <button key={gender} onClick={() => handleGenderChange(gender)}
-                      className={`group relative p-6 rounded-xl border-2 transition-all duration-300 ${form.gender === gender ? "border-secondary bg-background/20 shadow-md" : "border-gray-200 hover:border-secondary/40 hover:shadow-sm"}`}>
+                      className={`group relative p-6 rounded-xl border-2 transition-all duration-300 ${form.gender === gender ? "border-[#4F200D] bg-[#FBF7F3]/20 shadow-md" : "border-gray-200 hover:border-[#4F200D]/40 hover:shadow-sm"}`}>
                       <div className="text-center">
                         <div className="font-bold text-lg sm:text-xl text-text">{gender}</div>
                       </div>
                       {form.gender === gender && (
-                        <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-secondary flex items-center justify-center shadow-md">
+                        <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-[#4F200D] flex items-center justify-center shadow-md">
                           <CheckCircle2 size={16} className="text-white" />
                         </div>
                       )}
@@ -381,14 +381,14 @@ const Customize = () => {
               {form.gender && (
                 <div className="animate-fadeIn">
                   <label className="flex items-center gap-3 font-bold text-base sm:text-lg mb-5 text-text">
-                    <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center"><span className="text-secondary font-bold text-sm">2</span></div>
+                    <div className="w-8 h-8 rounded-full bg-[#4F200D]/10 flex items-center justify-center"><span className="text-[#4F200D] font-bold text-sm">2</span></div>
                     Select Dress Type <span className="text-red-500">*</span>
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
                     {dressTypes[form.gender].map((dress) => (
                       <button key={dress.value} onClick={() => handleDressTypeChange(dress.value)}
-                        className={`p-4 flex flex-row gap-2 justify-center items-center rounded-xl border-2 transition-all duration-300 ${form.dressType === dress.value ? "border-secondary bg-background/20 shadow-md" : "border-gray-200 hover:border-secondary/40 hover:shadow-sm"}`}>
-                        {form.dressType === dress.value && <CheckCircle2 size={16} className="text-secondary" />}
+                        className={`p-4 flex flex-row gap-2 justify-center items-center rounded-xl border-2 transition-all duration-300 ${form.dressType === dress.value ? "border-[#4F200D] bg-[#FBF7F3]/20 shadow-md" : "border-gray-200 hover:border-[#4F200D]/40 hover:shadow-sm"}`}>
+                        {form.dressType === dress.value && <CheckCircle2 size={16} className="text-[#4F200D]" />}
                         <div className="font-semibold text-sm text-text text-center">{dress.label}</div>
                       </button>
                     ))}
@@ -400,7 +400,7 @@ const Customize = () => {
               {form.dressType && (
                 <div className="animate-fadeIn">
                   <label className="flex items-center gap-3 font-bold text-base sm:text-lg mb-5 text-text">
-                    <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center"><span className="text-secondary font-bold text-sm">3</span></div>
+                    <div className="w-8 h-8 rounded-full bg-[#4F200D]/10 flex items-center justify-center"><span className="text-[#4F200D] font-bold text-sm">3</span></div>
                     Select Fabric <span className="text-red-500">*</span>
                   </label>
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
@@ -408,15 +408,15 @@ const Customize = () => {
                       const priceRange = PRICING_MATRIX[form.dressType]?.[fabric.value] || null;
                       return (
                         <button key={fabric.value} onClick={() => setForm({ ...form, fabric: fabric.value })}
-                          className={`p-5 rounded-xl border-2 transition-all duration-300 text-left ${form.fabric === fabric.value ? "border-secondary bg-background/20 shadow-md" : "border-gray-200 hover:border-secondary/40 hover:shadow-sm"}`}>
+                          className={`p-5 rounded-xl border-2 transition-all duration-300 text-left ${form.fabric === fabric.value ? "border-[#4F200D] bg-[#FBF7F3]/20 shadow-md" : "border-gray-200 hover:border-[#4F200D]/40 hover:shadow-sm"}`}>
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex-1">
                               <div className="font-bold text-base text-text">{fabric.label}</div>
                             </div>
-                            {form.fabric === fabric.value && <CheckCircle2 size={18} className="text-secondary flex-shrink-0 ml-2" />}
+                            {form.fabric === fabric.value && <CheckCircle2 size={18} className="text-[#4F200D] flex-shrink-0 ml-2" />}
                           </div>
                           {priceRange && (
-                            <div className="pt-1 text-secondary font-bold text-sm">
+                            <div className="pt-1 text-[#4F200D] font-bold text-sm">
                               {formatRange(priceRange)}
                             </div>
                           )}
@@ -430,7 +430,7 @@ const Customize = () => {
               <div className="flex justify-end items-center pt-8 border-t border-gray-200">
                 <button onClick={() => { if (validateStep(1)) setStep(2); }}
                   disabled={!form.gender || !form.dressType || !form.fabric}
-                  className="group px-8 sm:px-10 py-3 sm:py-4 bg-secondary text-white rounded-lg hover:shadow-lg transition-all duration-300 flex items-center gap-2 font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
+                  className="group px-8 sm:px-10 py-3 sm:py-4 bg-[#4F200D] text-white rounded-lg hover:shadow-lg transition-all duration-300 flex items-center gap-2 font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
                   <span>Continue to Design</span>
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </button>
@@ -442,10 +442,10 @@ const Customize = () => {
           {step === 2 && (
             <div className="p-6 sm:p-10">
               <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 bg-secondary/10 text-secondary px-4 py-2 rounded-full mb-4">
+                <div className="inline-flex items-center gap-2 bg-[#4F200D]/10 text-[#4F200D] px-4 py-2 rounded-full mb-4">
                   <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">Step 2 of 3</span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-text mb-3">Customise Your Design</h2>
+                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-text mb-3" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Customise Your Design</h2>
                 <p className="text-sm sm:text-base text-text/60 font-light max-w-2xl mx-auto">Choose colours and add patterns to different zones of your garment</p>
               </div>
 
@@ -488,11 +488,11 @@ const Customize = () => {
               )}
 
               <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
-                <button onClick={() => setStep(1)} className="px-6 sm:px-8 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-secondary/5 transition-all font-semibold flex items-center gap-2">
+                <button onClick={() => setStep(1)} className="px-6 sm:px-8 py-3 border-2 border-[#4F200D] text-[#4F200D] rounded-lg hover:bg-[#4F200D]/5 transition-all font-semibold flex items-center gap-2">
                   <ArrowLeft size={18} /><span>Back</span>
                 </button>
                 <button onClick={() => { if (validateStep(2)) setStep(3); }}
-                  className="group px-8 sm:px-10 py-3 bg-secondary text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2 font-semibold">
+                  className="group px-8 sm:px-10 py-3 bg-[#4F200D] text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2 font-semibold">
                   <span>Continue</span><ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
@@ -503,21 +503,21 @@ const Customize = () => {
           {step === 3 && (
             <div className="p-6 sm:p-10 lg:p-12 space-y-8">
               <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 bg-secondary/10 text-secondary px-4 py-2 rounded-full mb-4">
+                <div className="inline-flex items-center gap-2 bg-[#4F200D]/10 text-[#4F200D] px-4 py-2 rounded-full mb-4">
                   <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">Step 3 of 3</span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-text mb-3">Size & Final Details</h2>
+                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-text mb-3" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Size & Final Details</h2>
                 <p className="text-sm sm:text-base text-text/60 font-light max-w-2xl mx-auto">
                   Pick your size, add reference images and any design notes
                 </p>
               </div>
 
               {/* ── SIZE SELECTOR ── */}
-              <div className="rounded-2xl border-2 border-secondary/20 bg-gradient-to-br from-background/10 to-white p-6 sm:p-8">
+              <div className="rounded-2xl border-2 border-[#4F200D]/20 bg-gradient-to-br from-[#FBF7F3]/10 to-white p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
-                      <Ruler size={20} className="text-secondary" />
+                    <div className="w-10 h-10 bg-[#4F200D]/10 rounded-full flex items-center justify-center">
+                      <Ruler size={20} className="text-[#4F200D]" />
                     </div>
                     <div>
                       <h3 className="text-lg font-serif font-bold text-text">
@@ -531,7 +531,7 @@ const Customize = () => {
                   <div className="flex gap-2 flex-wrap">
                     <button
                       onClick={() => setShowSizeChart(true)}
-                      className="flex items-center gap-2 text-sm font-semibold text-secondary border-2 border-secondary rounded-lg px-4 py-2 hover:bg-secondary/10 transition-all"
+                      className="flex items-center gap-2 text-sm font-semibold text-[#4F200D] border-2 border-[#4F200D] rounded-lg px-4 py-2 hover:bg-[#4F200D]/10 transition-all"
                     >
                       <Info size={15} />
                       Size Chart
@@ -539,7 +539,7 @@ const Customize = () => {
                     {form.dressType && (
                       <button
                         onClick={() => setShowVideo(true)}
-                        className="flex items-center gap-2 text-sm font-semibold text-white bg-secondary rounded-lg px-4 py-2 hover:bg-secondary/80 transition-all shadow-sm"
+                        className="flex items-center gap-2 text-sm font-semibold text-white bg-[#4F200D] rounded-lg px-4 py-2 hover:bg-[#4F200D]/80 transition-all shadow-sm"
                       >
                         <PlayCircle size={15} />
                         How to measure
@@ -576,13 +576,13 @@ const Customize = () => {
               {/* ── REFERENCE IMAGES ── */}
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                 <label className="flex items-center gap-3 font-bold text-base mb-4 text-text">
-                  <Upload size={20} className="text-secondary" />
+                  <Upload size={20} className="text-[#4F200D]" />
                   <span>Reference Images</span>
                   <span className="text-sm text-text/50 font-normal">(Optional, Max 5)</span>
                 </label>
                 <p className="text-sm text-text/60 mb-4">Upload images of designs you like for inspiration</p>
                 <input type="file" multiple accept="image/*" onChange={handleImageChange}
-                  className="block w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-6 focus:border-secondary transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-secondary file:text-white file:font-semibold hover:file:bg-secondary/90 cursor-pointer text-sm bg-white" />
+                  className="block w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-6 focus:border-[#4F200D] transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-[#4F200D] file:text-white file:font-semibold hover:file:bg-[#4F200D]/90 cursor-pointer text-sm bg-white" />
                 {form.referenceImages.length > 0 && (
                   <div className="mt-5 grid grid-cols-3 sm:grid-cols-5 gap-3">
                     {form.referenceImages.map((img, idx) => (
@@ -597,22 +597,22 @@ const Customize = () => {
               {/* ── DESIGN NOTES ── */}
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                 <label className="flex items-center gap-3 font-bold text-base mb-4 text-text">
-                  <Info size={20} className="text-secondary" />
+                  <Info size={20} className="text-[#4F200D]" />
                   <span>Design Notes & Special Instructions</span>
                   <span className="text-sm text-text/50 font-normal">(Optional)</span>
                 </label>
                 <textarea name="designNotes" value={form.designNotes}
                   placeholder="Share your vision: embroidery preferences, colour combinations, traditional or modern look, special occasions, or any specific requirements"
                   onChange={handleChange}
-                  className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 h-32 focus:border-secondary focus:outline-none transition-all resize-none text-sm"
+                  className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 h-32 focus:border-[#4F200D] focus:outline-none transition-all resize-none text-sm"
                   rows="4" />
               </div>
 
               {/* ── PRICE ESTIMATE ── */}
               {estimatedPrice && (
-                <div className="rounded-xl p-6 border-2 border-secondary/30 bg-gradient-to-br from-background/10 to-white">
+                <div className="rounded-xl p-6 border-2 border-[#4F200D]/30 bg-gradient-to-br from-[#FBF7F3]/10 to-white">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-[#4F200D] flex items-center justify-center">
                       <IndianRupee size={20} className="text-white" />
                     </div>
                     <h3 className="text-xl font-serif font-bold text-text">Price Estimate</h3>
@@ -621,7 +621,7 @@ const Customize = () => {
                     <div>
                       <p className="text-sm text-text/60 mb-2">Based on your selections</p>
                       <div className="flex flex-wrap gap-2">
-                        <span className="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-sm font-semibold">{form.dressType}</span>
+                        <span className="px-3 py-1 bg-[#4F200D]/10 text-[#4F200D] rounded-full text-sm font-semibold">{form.dressType}</span>
                         <span className="px-3 py-1 bg-gray-100 text-text rounded-full text-sm font-semibold">{form.fabric}</span>
                         {form.size && <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">Size {form.size}</span>}
                         {form.neckStyle && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold capitalize">{form.neckStyle} neck</span>}
@@ -629,7 +629,7 @@ const Customize = () => {
                       </div>
                     </div>
                     <div className="text-left sm:text-right">
-                      <p className="text-3xl sm:text-4xl font-bold text-secondary">{formatRange(estimatedPrice)}</p>
+                      <p className="text-3xl sm:text-4xl font-bold text-[#4F200D]">{formatRange(estimatedPrice)}</p>
                       <p className="text-xs text-text/50 mt-1">Final price may vary based on customisations</p>
                     </div>
                   </div>
@@ -639,16 +639,16 @@ const Customize = () => {
               {/* ── ACTIONS ── */}
               <div className="flex flex-col sm:flex-row justify-between gap-4 pt-8 border-t border-gray-200">
                 <button onClick={() => setStep(2)}
-                  className="w-full sm:w-auto px-8 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-secondary/5 transition-all font-semibold flex items-center justify-center gap-2">
+                  className="w-full sm:w-auto px-8 py-3 border-2 border-[#4F200D] text-[#4F200D] rounded-lg hover:bg-[#4F200D]/5 transition-all font-semibold flex items-center justify-center gap-2">
                   <ArrowLeft size={18} /><span>Back</span>
                 </button>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button onClick={handleSaveDraft} disabled={loading}
-                    className="w-full sm:w-auto px-6 py-3 border-2 border-secondary text-secondary rounded-lg hover:bg-secondary/5 transition-all font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="w-full sm:w-auto px-6 py-3 border-2 border-[#4F200D] text-[#4F200D] rounded-lg hover:bg-[#4F200D]/5 transition-all font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
                     <Save size={18} /><span>{loading ? "Saving..." : "Save Draft"}</span>
                   </button>
                   <button onClick={handleAddToCart} disabled={loading}
-                    className="group w-full sm:w-auto px-10 py-3 bg-secondary text-white rounded-lg hover:shadow-lg transition-all flex items-center justify-center gap-2 font-semibold disabled:opacity-50">
+                    className="group w-full sm:w-auto px-10 py-3 bg-[#4F200D] text-white rounded-lg hover:shadow-lg transition-all flex items-center justify-center gap-2 font-semibold disabled:opacity-50">
                     <ShoppingCart size={18} /><span>{loading ? "Adding..." : "Add to Cart"}</span>
                   </button>
                 </div>

@@ -1,82 +1,104 @@
-import React from 'react';
-import { Sparkles, ShoppingBag, Users, ArrowRight } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import { Sparkles, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const features = [
-  {
-    icon: Sparkles,
-    title: 'AI Design Suggestions',
-    description: 'Intelligent recommendations rooted in traditional ethnic wear principles.',
-  },
-  {
-    icon: ShoppingBag,
-    title: 'Curated Collection',
-    description: 'Kurtis, lehengas, kurtas, and sherwanis — ready to wear, ready to love.',
-  },
-  {
-    icon: Users,
-    title: 'Expert Consultation',
-    description: 'Work with our design team to create your perfect traditional ensemble.',
-  },
+const FEATURES = [
+  { icon: '✦', title: 'AI Design Studio',      desc: 'Co-create your outfit using our intelligent design canvas rooted in ethnic wear principles.' },
+  { icon: '◈', title: 'Curated Collection',     desc: 'Kurtis, lehengas, kurtas & sherwanis — each piece hand-selected for quality and craft.' },
+  { icon: '◎', title: 'Expert Consultation',    desc: 'Work directly with our design team to bring your perfect traditional ensemble to life.' },
 ];
 
-const Hero = () => (
-  <div className="mt-16 min-h-screen">
-    {/* ── Banner ── */}
-    <section className="relative bg-gradient-to-b from-background to-primary px-4 sm:px-6 lg:px-8 py-24 overflow-hidden">
-      {/* Decorative blobs */}
-      <div className="absolute -top-24 -right-24 w-80 h-80 bg-secondary/5 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
-      <div className="absolute -bottom-16 -left-16 w-60 h-60 bg-secondary/5 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+const Hero = () => {
+  const revealRefs = useRef([]);
 
-      <div className="max-w-3xl mx-auto text-center relative z-10">
-        <p className="text-xs uppercase tracking-[0.3em] text-secondary font-semibold mb-5">
-          Handcrafted Indian fashion
-        </p>
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      entries => entries.forEach(e => e.isIntersecting && e.target.classList.add('visible')),
+      { threshold: 0.15 }
+    );
+    revealRefs.current.forEach(el => el && io.observe(el));
+    return () => io.disconnect();
+  }, []);
 
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-light text-text mb-5 tracking-wide leading-[1.15]">
-          Elegant Styles<br className="hidden sm:block" /> Await You
-        </h1>
+  const r = el => { if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el); };
 
-        <div className="w-16 h-[2px] bg-secondary mx-auto mb-6" />
+  return (
+    <div className="mt-[68px]">
 
-        <p className="text-base sm:text-lg text-text/65 font-light leading-relaxed max-w-xl mx-auto mb-10">
-          Find the perfect dress for any occasion — ready-made or made entirely for you.
-        </p>
+      {/* ── Banner ─────────────────────────────────────────────── */}
+      <section className="relative min-h-[92vh] flex items-center overflow-hidden" style={{ background: '#FBF7F3' }}>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            to="/customize"
-            className="inline-flex items-center justify-center gap-2 bg-secondary text-white px-7 py-3.5 rounded-full font-semibold text-sm hover:bg-secondary/90 hover:shadow-lg hover:shadow-secondary/30 hover:-translate-y-0.5 transition-all duration-300"
-          >
-            <Sparkles size={16} />
-            Start Designing
-          </Link>
-          <Link
-            to="/shop/collection"
-            className="inline-flex items-center justify-center gap-2 border-2 border-secondary text-secondary px-7 py-3.5 rounded-full font-semibold text-sm hover:bg-secondary/5 hover:-translate-y-0.5 transition-all duration-300 group"
-          >
-            Browse Collection
-            <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
-          </Link>
+        {/* Atmospheric background */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute -top-32 -right-32 w-[560px] h-[560px] rounded-full"
+               style={{ background: 'radial-gradient(circle, rgba(79,32,13,0.065) 0%, transparent 70%)' }} />
+          <div className="absolute -bottom-20 -left-20 w-[380px] h-[380px] rounded-full"
+               style={{ background: 'radial-gradient(circle, rgba(175,130,85,0.07) 0%, transparent 70%)' }} />
+          <div className="absolute inset-0 opacity-[0.022]"
+               style={{ backgroundImage: 'repeating-linear-gradient(0deg,#4F200D 0,#4F200D 1px,transparent 1px,transparent 64px),repeating-linear-gradient(90deg,#4F200D 0,#4F200D 1px,transparent 1px,transparent 64px)' }} />
         </div>
-      </div>
-    </section>
 
-    {/* ── Feature cards ── */}
-    <section className="bg-white px-4 sm:px-6 lg:px-8 py-16">
-      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-        {features.map(({ icon: Icon, title, description }) => (
-          <div key={title} className="group text-center p-8 rounded-2xl border border-gray-100 hover:border-secondary/30 hover:shadow-lg transition-all duration-300">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-secondary/8 mb-5 group-hover:bg-secondary/15 transition-colors duration-300">
-              <Icon className="w-7 h-7 text-secondary" />
+        <div className="flex items-center justify-center text-center z-10 max-w-7xl mx-auto px-5 lg:px-8 w-full py-20 lg:py-28">
+          <div className="max-w-4xl">
+
+            {/* Headline */}
+            <h1 ref={r} className="reveal leading-[1.08] tracking-tight mb-6"
+                style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 'clamp(2.8rem,6vw,4.5rem)', fontWeight: 300, color: '#2A1506', transitionDelay: '0.1s' }}>
+              Where Style<br />
+              <em className="not-italic" style={{ color: '#4F200D' }}>Meets Your Soul</em>
+            </h1>
+
+            {/* Rule */}
+            <div ref={r} className="reveal flex items-center justify-center gap-4 mb-7" style={{ transitionDelay: '0.18s' }}>
+              <div className="h-px w-10" style={{ background: '#AF8255' }} />
+              <span className="text-[10px] tracking-[0.28em] uppercase font-medium" style={{ color: '#AF8255' }}>Est. Tradition</span>
+              <div className="h-px w-14" style={{ background: 'rgba(175,130,85,0.35)' }} />
             </div>
-            <h3 className="font-serif text-base font-semibold mb-2 text-text">{title}</h3>
-            <p className="text-text/60 text-sm leading-relaxed font-light">{description}</p>
+
+            <p ref={r} className="reveal text-base sm:text-lg font-light leading-relaxed max-w-xl mb-10"
+               style={{ color: 'rgba(42,21,6,0.6)', transitionDelay: '0.22s' }}>
+              Find the perfect dress for any occasion — ready-made from our curated collection,
+              or crafted entirely to your vision.
+            </p>
+
+            {/* CTAs */}
+            <div ref={r} className="reveal flex flex-col sm:flex-row justify-center gap-3 sm:gap-4" style={{ transitionDelay: '0.3s' }}>
+              <Link to="/customize"
+                    className="group inline-flex items-center justify-center gap-2.5 text-white px-7 py-4 rounded-full font-semibold text-sm tracking-wide transition-all duration-300 hover:-translate-y-0.5"
+                    style={{ background: '#4F200D', boxShadow: '0 8px 32px rgba(79,32,13,0.28)' }}>
+                <Sparkles size={15} className="group-hover:rotate-12 transition-transform duration-300" />
+                Start Designing
+              </Link>
+              <Link to="/shop/collection"
+                    className="group inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-full font-semibold text-sm tracking-wide transition-all duration-300 hover:-translate-y-0.5"
+                    style={{ border: '2px solid rgba(79,32,13,0.25)', color: '#4F200D' }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = '#4F200D'}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(79,32,13,0.25)'}>
+                Browse Collection
+                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform duration-300" />
+              </Link>
+            </div>
           </div>
-        ))}
-      </div>
-    </section>
-  </div>
-);
+        </div>
+      </section>
+
+      {/* ── Feature strip ─────────────────────────────────────── */}
+      <section className="bg-white py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 overflow-hidden rounded-2xl shadow-sm" style={{ border: '1px solid #f0ece8', gap: '1px', background: '#f0ece8' }}>
+          {FEATURES.map(({ icon, title, desc }, i) => (
+            <div ref={r} key={title}
+                 className="reveal group bg-white p-8 sm:p-10 hover:bg-[#FBF7F3] transition-colors duration-300 cursor-default"
+                 style={{ transitionDelay: `${i * 0.08}s` }}>
+              <div className="text-2xl mb-5 font-light group-hover:scale-110 transition-transform duration-300 origin-left" style={{ color: '#AF8255' }}>{icon}</div>
+              <h3 className="font-semibold mb-2.5 text-sm tracking-wide" style={{ color: '#2A1506' }}>{title}</h3>
+              <p className="text-sm leading-relaxed font-light" style={{ color: 'rgba(42,21,6,0.55)' }}>{desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+    </div>
+  );
+};
 
 export default Hero;

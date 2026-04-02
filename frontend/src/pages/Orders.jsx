@@ -85,7 +85,7 @@ const Orders = () => {
       case 'shipped': case 'out for delivery': case 'shipping': return 'text-blue-700 bg-blue-50 border-blue-200';
       case 'processing':                                        return 'text-amber-700 bg-amber-50 border-amber-200';
       case 'cancelled':                                         return 'text-red-700 bg-red-50 border-red-200';
-      default:                                                  return 'text-text/70 bg-background/20 border-background';
+      default:                                                  return 'text-text/70 bg-[#FBF7F3]/20 border-background';
     }
   };
 
@@ -124,7 +124,7 @@ const Orders = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen mt-20">
+      <div className="min-h-screen mt-[68px]" style={{ background: "#FBF7F3" }}>
         <section className="py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <div className="h-8 bg-gray-200 rounded-lg w-48 animate-pulse mb-3" />
@@ -155,10 +155,11 @@ const Orders = () => {
   }
 
   return (
-    <div className="min-h-screen mt-20">
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen mt-[68px]" style={{ background: "#FBF7F3" }}>
+      <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-text mb-4">Order History</h1>
+          <p className="text-[11px] uppercase tracking-[0.25em] font-semibold mb-3" style={{ color: "#AF8255" }}>Your Orders</p>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight mb-4" style={{ fontFamily: "'Cormorant Garamond',serif", color: "#2A1506" }}>Order History</h1>
           {orderData.length > 0 && (
             <p className="text-text/60 font-light text-lg">
               Track and manage your {orderData.length} order{orderData.length !== 1 ? 's' : ''}
@@ -175,7 +176,7 @@ const Orders = () => {
             <>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 {[
-                  { label: 'Total Orders', value: stats.total,     icon: Package,      bg: 'from-background/30 to-primary', border: 'border-background', vc: 'text-text',       ic: 'text-secondary' },
+                  { label: 'Total Orders', value: stats.total,     icon: Package,      bg: 'from-[#FBF7F3]/30 to-primary', border: 'border-background', vc: 'text-text',       ic: 'text-[#4F200D]' },
                   { label: 'Delivered',    value: stats.delivered, icon: CheckCircle,  bg: 'from-green-50 to-green-100',    border: 'border-green-200',  vc: 'text-green-700',  ic: 'text-green-600' },
                   { label: 'In Transit',   value: stats.processing,icon: Truck,        bg: 'from-blue-50 to-blue-100',      border: 'border-blue-200',   vc: 'text-blue-700',   ic: 'text-blue-600'  },
                 ].map(({ label, value, icon: Icon, bg, border, vc, ic }) => (
@@ -187,12 +188,12 @@ const Orders = () => {
                     <p className={`text-3xl font-bold ${vc}`}>{value}</p>
                   </div>
                 ))}
-                <div className="bg-gradient-to-br from-background/30 to-primary rounded-lg p-6 border border-background">
+                <div className="bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-lg p-6 border border-background">
                   <div className="flex items-center gap-3 mb-2">
-                    <CreditCard size={20} className="text-secondary" />
+                    <CreditCard size={20} className="text-[#4F200D]" />
                     <span className="text-xs font-semibold text-text/50 uppercase tracking-wider">Total Spent</span>
                   </div>
-                  <p className="text-3xl font-bold text-secondary">{currency}{stats.totalSpent.toFixed(2)}</p>
+                  <p className="text-3xl font-bold text-[#4F200D]">{currency}{stats.totalSpent.toFixed(2)}</p>
                 </div>
               </div>
 
@@ -211,8 +212,8 @@ const Orders = () => {
                         onClick={() => setFilterStatus(key)}
                         className={`px-5 py-2.5 text-sm font-semibold tracking-wide rounded-lg border-2 transition-all duration-300 ${
                           filterStatus === key
-                            ? 'bg-secondary text-white border-secondary shadow-md'
-                            : 'bg-white text-text border-background hover:border-secondary hover:text-secondary'
+                            ? 'bg-[#4F200D] text-white border-[#4F200D] shadow-md'
+                            : 'bg-white text-text border-background hover:border-[#4F200D] hover:text-[#4F200D]'
                         }`}
                       >
                         {label}
@@ -224,7 +225,7 @@ const Orders = () => {
                     <select
                       value={sortOrder}
                       onChange={(e) => setSortOrder(e.target.value)}
-                      className="appearance-none border-2 border-background bg-white px-4 py-2.5 pr-8 font-semibold rounded-lg focus:border-secondary focus:outline-none transition-colors cursor-pointer"
+                      className="appearance-none border-2 border-background bg-white px-4 py-2.5 pr-8 font-semibold rounded-lg focus:border-[#4F200D] focus:outline-none transition-colors cursor-pointer"
                     >
                       <option value="newest">Newest First</option>
                       <option value="oldest">Oldest First</option>
@@ -238,8 +239,8 @@ const Orders = () => {
           {/* Empty state */}
           {orderData.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 bg-white rounded-lg border border-background shadow-sm">
-              <div className="w-20 h-20 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mb-6">
-                <ShoppingBag size={40} className="text-secondary" />
+              <div className="w-20 h-20 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-full flex items-center justify-center mb-6">
+                <ShoppingBag size={40} className="text-[#4F200D]" />
               </div>
               <div className="text-center max-w-md mb-8">
                 <h3 className="text-2xl font-serif font-semibold mb-3 text-text">No Orders Yet</h3>
@@ -249,7 +250,7 @@ const Orders = () => {
               </div>
               <button
                 onClick={() => navigate('/shop/collection')}
-                className="px-8 py-4 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-all duration-300 flex items-center gap-2 shadow-lg"
+                className="px-8 py-4 bg-[#4F200D] text-white font-semibold rounded-lg hover:bg-[#4F200D]/90 transition-all duration-300 flex items-center gap-2 shadow-lg"
               >
                 <span>Browse Collection</span>
                 <ArrowRight size={18} />
@@ -263,7 +264,7 @@ const Orders = () => {
                   className="bg-white rounded-lg border border-background shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group"
                 >
                   {/* Order header */}
-                  <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
+                  <div className="p-6 border-b border-background bg-gradient-to-r from-[#FBF7F3]/20 to-primary">
                     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-wrap">
                         <div className="flex items-center gap-2">
@@ -305,7 +306,7 @@ const Orders = () => {
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               {item.type === 'CUSTOM'
-                                ? <Sparkles size={40} className="text-secondary/80" />
+                                ? <Sparkles size={40} className="text-[#4F200D]/80" />
                                 : <Package size={40} className="text-text/30" />
                               }
                             </div>
@@ -316,11 +317,11 @@ const Orders = () => {
                       <div className="flex-grow flex flex-col lg:flex-row justify-between gap-6">
                         <div className="flex-grow space-y-4">
                           <div>
-                            <h3 className="font-serif font-semibold text-xl text-text mb-2 tracking-wide group-hover:text-secondary transition-colors line-clamp-2">
+                            <h3 className="font-serif font-semibold text-xl text-text mb-2 tracking-wide group-hover:text-[#4F200D] transition-colors line-clamp-2">
                               {item.name}
                             </h3>
                             {item.type === 'CUSTOM' && (
-                              <span className="inline-block px-3 py-1 bg-secondary text-white text-xs font-bold rounded-full uppercase tracking-wider">
+                              <span className="inline-block px-3 py-1 bg-[#4F200D] text-white text-xs font-bold rounded-full uppercase tracking-wider">
                                 Custom Design
                               </span>
                             )}
@@ -340,7 +341,7 @@ const Orders = () => {
                               <span className="block text-xs font-semibold text-text/50 uppercase tracking-wider">
                                 {item.type === 'CUSTOM' ? 'Size' : 'Size'}
                               </span>
-                              <span className="inline-block px-3 py-1 bg-gradient-to-br from-background/30 to-primary rounded-md font-semibold text-text text-sm">
+                              <span className="inline-block px-3 py-1 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-md font-semibold text-text text-sm">
                                 {item.type === 'CUSTOM'
                                   ? (item.customization?.size || item.size || 'Custom')
                                   : (item.size || 'Standard')}
@@ -348,7 +349,7 @@ const Orders = () => {
                             </div>
                             <div className="space-y-1">
                               <span className="block text-xs font-semibold text-text/50 uppercase tracking-wider">Total</span>
-                              <span className="font-bold text-secondary text-lg">
+                              <span className="font-bold text-[#4F200D] text-lg">
                                 {currency}{(Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2)}
                               </span>
                             </div>
@@ -388,7 +389,7 @@ const Orders = () => {
                           {item.type === 'CUSTOM' && item.productionStatus && (
                             <div className="mt-4 p-3 bg-primary/80 border border-gray-200 rounded-lg">
                               <div className="flex items-center gap-2 flex-wrap">
-                                <Package size={16} className="text-secondary" />
+                                <Package size={16} className="text-[#4F200D]" />
                                 <span className="text-xs font-semibold text-text uppercase tracking-wider">Production:</span>
                                 <span className={`px-3 py-1 border-2 text-xs font-bold uppercase tracking-wider rounded-md ${getProductionStatusColor(item.productionStatus)}`}>
                                   {item.productionStatus.replace('_', ' ')}
@@ -415,7 +416,7 @@ const Orders = () => {
 
                         <div className="flex lg:flex-col items-center lg:items-end justify-start lg:justify-center gap-3">
                           <button
-                            className="flex items-center justify-center gap-2 px-6 py-3 bg-secondary text-white font-semibold tracking-wide rounded-lg hover:bg-secondary/80 transition-all duration-300 shadow-md hover:shadow-lg"
+                            className="flex items-center justify-center gap-2 px-6 py-3 bg-[#4F200D] text-white font-semibold tracking-wide rounded-lg hover:bg-[#4F200D]/80 transition-all duration-300 shadow-md hover:shadow-lg"
                             onClick={() => navigate(`/status/${item.orderId}`)}
                           >
                             <Truck size={16} />
@@ -436,14 +437,14 @@ const Orders = () => {
                 </div>
               )}
 
-              <div className="mt-12 bg-gradient-to-br from-background/20 to-primary rounded-lg border border-background p-8 text-center shadow-sm">
+              <div className="mt-12 bg-gradient-to-br from-[#FBF7F3]/20 to-primary rounded-lg border border-background p-8 text-center shadow-sm">
                 <h3 className="text-2xl font-serif font-semibold text-text mb-3 tracking-wide">Want to Order More?</h3>
                 <p className="text-text/70 font-light leading-relaxed mb-6 max-w-md mx-auto">
                   Discover new arrivals and trending products in our collection of handcrafted fashion.
                 </p>
                 <button
                   onClick={() => navigate('/shop/collection')}
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-secondary text-white font-semibold rounded-lg hover:bg-secondary/90 transition-all duration-300 shadow-lg"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-[#4F200D] text-white font-semibold rounded-lg hover:bg-[#4F200D]/90 transition-all duration-300 shadow-lg"
                 >
                   <span>Continue Shopping</span>
                 </button>

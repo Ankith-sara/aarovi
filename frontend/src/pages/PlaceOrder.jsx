@@ -64,9 +64,9 @@ const SearchableSelect = ({ label, placeholder, options, value, onChange, disabl
           onClick={() => { if (!disabled) { setOpen(o => !o); setQuery(''); } }}
           className={`w-full px-4 py-3 border rounded-lg bg-white text-left flex items-center justify-between transition-all font-light text-sm
             ${disabled
-              ? 'bg-background/10 text-text/30 cursor-not-allowed border-background/30'
-              : 'border-background/50 hover:border-background cursor-pointer focus:outline-none'}
-            ${open ? 'border-secondary ring-2 ring-secondary/20' : ''}`}
+              ? 'bg-[#FBF7F3]/10 text-text/30 cursor-not-allowed border-[#FBF7F3]/30'
+              : 'border-[#FBF7F3]/50 hover:border-background cursor-pointer focus:outline-none'}
+            ${open ? 'border-[#4F200D] ring-2 ring-[#4F200D]/20' : ''}`}
         >
           <span className={selected ? 'text-text' : 'text-text/40'}>
             {selected ? selected.label : placeholder}
@@ -75,8 +75,8 @@ const SearchableSelect = ({ label, placeholder, options, value, onChange, disabl
         </button>
 
         {open && (
-          <div className="absolute left-0 right-0 top-full mt-1 z-30 bg-white border border-background/50 rounded-xl shadow-xl overflow-hidden">
-            <div className="p-2 border-b border-background/20 flex items-center gap-2 bg-background/5">
+          <div className="absolute left-0 right-0 top-full mt-1 z-30 bg-white border border-[#FBF7F3]/50 rounded-xl shadow-xl overflow-hidden">
+            <div className="p-2 border-b border-[#FBF7F3]/20 flex items-center gap-2 bg-[#FBF7F3]/5">
               <Search size={12} className="text-text/40 flex-shrink-0" />
               <input
                 autoFocus
@@ -95,8 +95,8 @@ const SearchableSelect = ({ label, placeholder, options, value, onChange, disabl
                     key={opt.value}
                     type="button"
                     onClick={() => { onChange(opt.value, opt.label); setQuery(''); setOpen(false); }}
-                    className={`w-full text-left px-3 py-2 text-xs hover:bg-secondary/5 transition-colors
-                      ${opt.value === value ? 'bg-secondary/10 font-medium text-secondary' : 'font-light text-text'}`}
+                    className={`w-full text-left px-3 py-2 text-xs hover:bg-[#4F200D]/5 transition-colors
+                      ${opt.value === value ? 'bg-[#4F200D]/10 font-medium text-[#4F200D]' : 'font-light text-text'}`}
                   >
                     {opt.label}
                   </button>
@@ -136,7 +136,7 @@ const DialCodeSelect = ({ options, value, onChange }) => {
         type="button"
         onClick={() => { setOpen(o => !o); setQuery(''); }}
         className={`h-full px-3 py-3 border rounded-l-lg bg-white flex items-center gap-1.5 hover:border-background transition-all cursor-pointer min-w-[88px]
-          ${open ? 'border-secondary ring-2 ring-secondary/20' : 'border-background/50'}`}
+          ${open ? 'border-[#4F200D] ring-2 ring-[#4F200D]/20' : 'border-[#FBF7F3]/50'}`}
       >
         <span className="text-sm font-light text-text whitespace-nowrap">
           {selected ? selected.label : '+?'}
@@ -145,8 +145,8 @@ const DialCodeSelect = ({ options, value, onChange }) => {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full mt-1 z-40 bg-white border border-background/50 rounded-xl shadow-xl w-64 overflow-hidden">
-          <div className="p-2 border-b border-background/20 flex items-center gap-2 bg-background/5">
+        <div className="absolute left-0 top-full mt-1 z-40 bg-white border border-[#FBF7F3]/50 rounded-xl shadow-xl w-64 overflow-hidden">
+          <div className="p-2 border-b border-[#FBF7F3]/20 flex items-center gap-2 bg-[#FBF7F3]/5">
             <Search size={12} className="text-text/40 flex-shrink-0" />
             <input
               autoFocus
@@ -165,8 +165,8 @@ const DialCodeSelect = ({ options, value, onChange }) => {
                   key={`${opt.isoCode}-${opt.value}`}
                   type="button"
                   onClick={() => { onChange(opt.value); setQuery(''); setOpen(false); }}
-                  className={`w-full text-left px-3 py-2 text-xs hover:bg-secondary/5 transition-colors flex items-center justify-between gap-2
-                    ${opt.value === value ? 'bg-secondary/10 font-medium text-secondary' : 'font-light text-text'}`}
+                  className={`w-full text-left px-3 py-2 text-xs hover:bg-[#4F200D]/5 transition-colors flex items-center justify-between gap-2
+                    ${opt.value === value ? 'bg-[#4F200D]/10 font-medium text-[#4F200D]' : 'font-light text-text'}`}
                 >
                   <span>{opt.label}</span>
                   <span className="text-text/40 text-[10px] truncate">{opt.country}</span>
@@ -508,14 +508,14 @@ const PlaceOrder = () => {
   return (
     <div className="mt-20 min-h-screen">
       {/* Header */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 border-b border-background/30">
+      <section className="py-12 px-4 sm:px-6 lg:px-8 border-b border-[#FBF7F3]/30">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-2">Checkout</h1>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-2" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Checkout</h1>
               <p className="text-text/50 font-light flex items-center gap-2"><Package size={16} /> Complete your purchase</p>
             </div>
-            <button onClick={() => navigate('/cart')} className="hidden sm:flex items-center gap-2 px-6 py-3 text-secondary hover:text-secondary/80 font-medium transition-colors">
+            <button onClick={() => navigate('/cart')} className="hidden sm:flex items-center gap-2 px-6 py-3 text-[#4F200D] hover:text-[#4F200D]/80 font-medium transition-colors">
               <ArrowLeft size={18} /><span>Back to Cart</span>
             </button>
           </div>
@@ -526,12 +526,12 @@ const PlaceOrder = () => {
       {showQRModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl my-8">
-            <div className="p-4 sm:p-6 border-b border-background/30 flex items-center justify-between">
+            <div className="p-4 sm:p-6 border-b border-[#FBF7F3]/30 flex items-center justify-between">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-secondary/10 rounded-full flex items-center justify-center">
-                  <QrCode size={18} className="text-secondary" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#4F200D]/10 rounded-full flex items-center justify-center">
+                  <QrCode size={18} className="text-[#4F200D]" />
                 </div>
-                <h2 className="text-lg sm:text-xl font-serif font-bold text-text">Scan QR to Pay</h2>
+                <h2 className="text-lg sm:text-xl font-serif font-bold text-text" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Scan QR to Pay</h2>
               </div>
               <button onClick={() => { setShowQRModal(false); setTransactionId(''); setTransactionIdError(''); }} className="text-text/50 hover:text-text transition-colors">
                 <X size={20} />
@@ -539,12 +539,12 @@ const PlaceOrder = () => {
             </div>
             <div className="p-4 sm:p-6">
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-gradient-to-br from-background/10 to-background/5 rounded-xl p-4 flex flex-col items-center justify-center">
+                <div className="bg-gradient-to-br from-[#FBF7F3]/10 to-[#FBF7F3]/5 rounded-xl p-4 flex flex-col items-center justify-center">
                   <div className="bg-white p-3 rounded-lg shadow-lg mb-3">
                     <img src={assets.Qr_img} alt="Payment QR Code" className="w-40 h-40 sm:w-48 sm:h-48 object-contain" />
                   </div>
                   <p className="text-xs sm:text-sm text-text/70 text-center font-light mb-2">Scan with any UPI app</p>
-                  <p className="text-xl sm:text-2xl font-bold text-secondary">₹{(getCartAmount() + shippingFee).toLocaleString()}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-[#4F200D]">₹{(getCartAmount() + shippingFee).toLocaleString()}</p>
                 </div>
                 <div className="flex flex-col justify-center space-y-4">
                   <div className="bg-blue-50 rounded-lg p-3">
@@ -560,7 +560,7 @@ const PlaceOrder = () => {
                       className={`w-full px-3 py-2.5 sm:px-4 sm:py-3 border rounded-lg bg-white focus:outline-none focus:ring-2 transition-all font-light text-sm ${
                         transactionIdError
                           ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                          : 'border-background/50 focus:border-secondary focus:ring-secondary/20'
+                          : 'border-[#FBF7F3]/50 focus:border-[#4F200D] focus:ring-[#4F200D]/20'
                       }`}
                       required
                     />
@@ -576,8 +576,8 @@ const PlaceOrder = () => {
                     disabled={isLoading || !transactionId.trim() || !!transactionIdError}
                     className={`w-full py-3 sm:py-3.5 font-bold rounded-full transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base ${
                       !transactionId.trim() || transactionIdError
-                        ? 'bg-background/30 text-text/40 cursor-not-allowed'
-                        : 'bg-secondary text-white hover:bg-secondary/90'
+                        ? 'bg-[#FBF7F3]/30 text-text/40 cursor-not-allowed'
+                        : 'bg-[#4F200D] text-white hover:bg-[#4F200D]/90'
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     {isLoading
@@ -599,14 +599,14 @@ const PlaceOrder = () => {
             <div className="space-y-6">
 
               {/* Delivery Information */}
-              <div className="bg-white rounded-2xl border border-background/50 shadow-lg overflow-hidden">
-                <div className="p-6 bg-gradient-to-r from-background/20 to-background/10 border-b border-background/30">
+              <div className="bg-white rounded-2xl border border-[#FBF7F3]/50 shadow-lg overflow-hidden">
+                <div className="p-6 bg-gradient-to-r from-[#FBF7F3]/20 to-[#FBF7F3]/10 border-b border-[#FBF7F3]/30">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
-                      <Home size={18} className="text-secondary" />
+                    <div className="w-10 h-10 bg-[#4F200D]/10 rounded-full flex items-center justify-center">
+                      <Home size={18} className="text-[#4F200D]" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-serif font-bold text-text">Delivery Information</h2>
+                      <h2 className="text-xl font-serif font-bold text-text" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Delivery Information</h2>
                       <p className="text-xs text-text/50 font-light">Where should we send your order?</p>
                     </div>
                   </div>
@@ -616,13 +616,13 @@ const PlaceOrder = () => {
                   {/* Personal Details */}
                   <div className="space-y-4">
                     <h3 className="text-sm font-semibold text-text uppercase tracking-wider flex items-center gap-2">
-                      <User size={14} className="text-secondary" /> Personal Details
+                      <User size={14} className="text-[#4F200D]" /> Personal Details
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">Full Name *</label>
                         <input onChange={onChangeHandler} name="Name" value={formData.Name}
-                          className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
+                          className="w-full px-4 py-3 border border-[#FBF7F3]/50 rounded-lg bg-white focus:outline-none focus:border-[#4F200D] focus:ring-2 focus:ring-[#4F200D]/20 transition-all font-light"
                           type="text" placeholder="Enter your full name" required />
                       </div>
                       <div className="space-y-2">
@@ -630,7 +630,7 @@ const PlaceOrder = () => {
                         <div className="relative">
                           <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/40" />
                           <input onChange={onChangeHandler} name="email" value={formData.email}
-                            className="w-full pl-10 pr-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
+                            className="w-full pl-10 pr-4 py-3 border border-[#FBF7F3]/50 rounded-lg bg-white focus:outline-none focus:border-[#4F200D] focus:ring-2 focus:ring-[#4F200D]/20 transition-all font-light"
                             type="email" placeholder="you@example.com" required />
                         </div>
                       </div>
@@ -644,7 +644,7 @@ const PlaceOrder = () => {
                         <input
                           value={phoneNumber}
                           onChange={e => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
-                          className="flex-1 px-4 py-3 border border-l-0 border-background/50 rounded-r-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light text-sm"
+                          className="flex-1 px-4 py-3 border border-l-0 border-[#FBF7F3]/50 rounded-r-lg bg-white focus:outline-none focus:border-[#4F200D] focus:ring-2 focus:ring-[#4F200D]/20 transition-all font-light text-sm"
                           type="tel" placeholder="Phone number" required
                         />
                       </div>
@@ -652,16 +652,16 @@ const PlaceOrder = () => {
                   </div>
 
                   {/* Delivery Address */}
-                  <div className="space-y-4 pt-6 border-t border-background/30">
+                  <div className="space-y-4 pt-6 border-t border-[#FBF7F3]/30">
                     <h3 className="text-sm font-semibold text-text uppercase tracking-wider flex items-center gap-2">
-                      <MapPin size={14} className="text-secondary" /> Delivery Address
+                      <MapPin size={14} className="text-[#4F200D]" /> Delivery Address
                     </h3>
 
                     {/* Street */}
                     <div className="space-y-2">
                       <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">Street Address *</label>
                       <input onChange={onChangeHandler} name="street" value={formData.street}
-                        className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
+                        className="w-full px-4 py-3 border border-[#FBF7F3]/50 rounded-lg bg-white focus:outline-none focus:border-[#4F200D] focus:ring-2 focus:ring-[#4F200D]/20 transition-all font-light"
                         type="text" placeholder="House number, street name" required />
                     </div>
 
@@ -701,7 +701,7 @@ const PlaceOrder = () => {
                       <div className="space-y-2">
                         <label className="block text-xs font-medium text-text/70 uppercase tracking-wider">Postal Code *</label>
                         <input onChange={onChangeHandler} name="pincode" value={formData.pincode}
-                          className="w-full px-4 py-3 border border-background/50 rounded-lg bg-white focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-light"
+                          className="w-full px-4 py-3 border border-[#FBF7F3]/50 rounded-lg bg-white focus:outline-none focus:border-[#4F200D] focus:ring-2 focus:ring-[#4F200D]/20 transition-all font-light"
                           type="text" maxLength={12}
                           placeholder={
                             countryCode === 'IN' ? 'e.g. 500032'
@@ -717,17 +717,17 @@ const PlaceOrder = () => {
                   </div>
 
                   {/* Terms */}
-                  <div className="pt-6 border-t border-background/30">
-                    <div className="bg-background/10 rounded-xl p-5">
+                  <div className="pt-6 border-t border-[#FBF7F3]/30">
+                    <div className="bg-[#FBF7F3]/10 rounded-xl p-5">
                       <div className="flex items-start gap-3">
                         <input type="checkbox" id="agree-terms" checked={agreeToTerms}
                           onChange={e => setAgreeToTerms(e.target.checked)}
-                          className="mt-1 w-5 h-5 text-secondary bg-white border-background/50 focus:ring-secondary focus:ring-2 cursor-pointer rounded" required />
+                          className="mt-1 w-5 h-5 text-[#4F200D] bg-white border-[#FBF7F3]/50 focus:ring-secondary focus:ring-2 cursor-pointer rounded" required />
                         <label htmlFor="agree-terms" className="block text-sm text-text/80 cursor-pointer leading-relaxed font-light">
                           I agree to the{' '}
-                          <a href="/termsconditions" target="_blank" className="text-secondary font-medium underline hover:text-secondary/80">Terms & Conditions</a>,{' '}
-                          <a href="/privacypolicy"   target="_blank" className="text-secondary font-medium underline hover:text-secondary/80">Privacy Policy</a>, and{' '}
-                          <a href="/shippingpolicy"  target="_blank" className="text-secondary font-medium underline hover:text-secondary/80">Shipping Policy</a>.
+                          <a href="/termsconditions" target="_blank" className="text-[#4F200D] font-medium underline hover:text-[#4F200D]/80">Terms & Conditions</a>,{' '}
+                          <a href="/privacypolicy"   target="_blank" className="text-[#4F200D] font-medium underline hover:text-[#4F200D]/80">Privacy Policy</a>, and{' '}
+                          <a href="/shippingpolicy"  target="_blank" className="text-[#4F200D] font-medium underline hover:text-[#4F200D]/80">Shipping Policy</a>.
                           I understand that orders are processed within 0-7 days and Aarovi is not liable for courier delays. *
                         </label>
                       </div>
@@ -740,15 +740,15 @@ const PlaceOrder = () => {
                       )}
                     </div>
 
-                    <div className="mt-4 p-5 border border-background/30 rounded-xl bg-gradient-to-br from-background/5 to-background/10">
+                    <div className="mt-4 p-5 border border-[#FBF7F3]/30 rounded-xl bg-gradient-to-br from-[#FBF7F3]/5 to-[#FBF7F3]/10">
                       <h4 className="font-semibold text-text text-sm mb-3 flex items-center gap-2">
-                        <CheckCircle size={14} className="text-secondary" /> Key Policy Highlights
+                        <CheckCircle size={14} className="text-[#4F200D]" /> Key Policy Highlights
                       </h4>
                       <ul className="text-xs text-text/70 space-y-2 font-light">
-                        <li className="flex items-start gap-2"><span className="text-secondary mt-0.5">•</span><span>Processing time: 0-7 days from order confirmation</span></li>
-                        <li className="flex items-start gap-2"><span className="text-secondary mt-0.5">•</span><span>Shipping via registered courier services (domestic & international)</span></li>
-                        <li className="flex items-start gap-2"><span className="text-secondary mt-0.5">•</span><span>Aarovi ensures timely handover to courier companies</span></li>
-                        <li className="flex items-start gap-2"><span className="text-secondary mt-0.5">•</span><span>Support available at +91 9063284008 or aaroviofficial@gmail.com</span></li>
+                        <li className="flex items-start gap-2"><span className="text-[#4F200D] mt-0.5">•</span><span>Processing time: 0-7 days from order confirmation</span></li>
+                        <li className="flex items-start gap-2"><span className="text-[#4F200D] mt-0.5">•</span><span>Shipping via registered courier services (domestic & international)</span></li>
+                        <li className="flex items-start gap-2"><span className="text-[#4F200D] mt-0.5">•</span><span>Aarovi ensures timely handover to courier companies</span></li>
+                        <li className="flex items-start gap-2"><span className="text-[#4F200D] mt-0.5">•</span><span>Support available at +91 9063284008 or aaroviofficial@gmail.com</span></li>
                       </ul>
                     </div>
                   </div>
@@ -756,14 +756,14 @@ const PlaceOrder = () => {
               </div>
 
               {/* Payment Method */}
-              <div className="bg-white rounded-2xl border border-background/50 shadow-lg overflow-hidden">
-                <div className="p-6 bg-gradient-to-r from-background/20 to-background/10 border-b border-background/30">
+              <div className="bg-white rounded-2xl border border-[#FBF7F3]/50 shadow-lg overflow-hidden">
+                <div className="p-6 bg-gradient-to-r from-[#FBF7F3]/20 to-[#FBF7F3]/10 border-b border-[#FBF7F3]/30">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
-                      <CreditCard size={18} className="text-secondary" />
+                    <div className="w-10 h-10 bg-[#4F200D]/10 rounded-full flex items-center justify-center">
+                      <CreditCard size={18} className="text-[#4F200D]" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-serif font-bold text-text">Payment Method</h2>
+                      <h2 className="text-xl font-serif font-bold text-text" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Payment Method</h2>
                       <p className="text-xs text-text/50 font-light">Choose how you'd like to pay</p>
                     </div>
                   </div>
@@ -778,24 +778,24 @@ const PlaceOrder = () => {
 
             {/* Order Summary */}
             <div className="space-y-6">
-              <div className="bg-gradient-to-br from-white to-background/20 rounded-2xl border border-background/50 shadow-xl sticky top-6">
-                <div className="p-6 bg-gradient-to-r from-background/20 to-background/10 border-b border-background/30">
+              <div className="bg-gradient-to-br from-white to-[#FBF7F3]/20 rounded-2xl border border-[#FBF7F3]/50 shadow-xl sticky top-6">
+                <div className="p-6 bg-gradient-to-r from-[#FBF7F3]/20 to-[#FBF7F3]/10 border-b border-[#FBF7F3]/30">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
-                      <Package size={18} className="text-secondary" />
+                    <div className="w-10 h-10 bg-[#4F200D]/10 rounded-full flex items-center justify-center">
+                      <Package size={18} className="text-[#4F200D]" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-serif font-bold text-text">Order Summary</h2>
+                      <h2 className="text-xl font-serif font-bold text-text" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Order Summary</h2>
                       <p className="text-xs text-text/50 font-light">Review your purchase</p>
                     </div>
                   </div>
                 </div>
                 <div className="p-6 space-y-6">
                   <CartTotal overrideShipping={shippingFee} />
-                  <div className="space-y-3 pt-6 border-t border-background/30">
+                  <div className="space-y-3 pt-6 border-t border-[#FBF7F3]/30">
                     <button type="submit" disabled={isLoading || !agreeToTerms}
                       className={`group w-full py-4 font-bold rounded-full transition-all duration-300 flex items-center justify-center gap-3 ${
-                        !agreeToTerms ? 'bg-background/30 text-text/40 cursor-not-allowed' : 'bg-secondary text-white hover:bg-secondary/90'
+                        !agreeToTerms ? 'bg-[#FBF7F3]/30 text-text/40 cursor-not-allowed' : 'bg-[#4F200D] text-white hover:bg-[#4F200D]/90'
                       } disabled:opacity-50 disabled:cursor-not-allowed`}>
                       {isLoading
                         ? <><div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" /><span>Processing...</span></>
@@ -803,11 +803,11 @@ const PlaceOrder = () => {
                       }
                     </button>
                     <button type="button" onClick={() => navigate('/cart')}
-                      className="w-full py-4 bg-background/30 text-text font-semibold rounded-full hover:bg-background/50 transition-all duration-300 flex items-center justify-center gap-2">
+                      className="w-full py-4 bg-[#FBF7F3]/30 text-text font-semibold rounded-full hover:bg-[#FBF7F3]/50 transition-all duration-300 flex items-center justify-center gap-2">
                       <span>Back to Cart</span>
                     </button>
                   </div>
-                  <div className="pt-4 border-t border-background/30">
+                  <div className="pt-4 border-t border-[#FBF7F3]/30">
                     <div className="flex items-center justify-center gap-2 text-xs text-text/60 font-medium bg-green-50 py-3 rounded-xl">
                       <Shield size={16} className="text-green-600" />
                       <span>Secure SSL Encrypted Checkout</span>
@@ -826,12 +826,12 @@ const PlaceOrder = () => {
         <div className="flex items-center gap-3 max-w-lg mx-auto">
           <div className="flex-1">
             <p className="text-xs text-stone-500">Total</p>
-            <p className="text-base font-bold text-secondary">₹{(getCartAmount() + shippingFee).toLocaleString()}</p>
+            <p className="text-base font-bold text-[#4F200D]">₹{(getCartAmount() + shippingFee).toLocaleString()}</p>
           </div>
           <button
             onClick={e => { e.preventDefault(); onSubmitHandler(e); }}
             disabled={isLoading || !agreeToTerms}
-            className="flex-shrink-0 px-6 py-3 bg-secondary text-white rounded-xl text-sm font-semibold disabled:opacity-40 flex items-center gap-2"
+            className="flex-shrink-0 px-6 py-3 bg-[#4F200D] text-white rounded-xl text-sm font-semibold disabled:opacity-40 flex items-center gap-2"
           >
             {isLoading
               ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -848,15 +848,15 @@ const PaymentOption = ({ method, setMethod, type, logo }) => (
   <div
     onClick={() => setMethod(type)}
     className={`group flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition-all duration-300 ${
-      method === type ? 'border-secondary bg-secondary/5 shadow-lg' : 'border-background/50 hover:border-background hover:shadow-md'
+      method === type ? 'border-[#4F200D] bg-[#4F200D]/5 shadow-lg' : 'border-[#FBF7F3]/50 hover:border-background hover:shadow-md'
     }`}
   >
-    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${method === type ? 'border-secondary' : 'border-background/50'}`}>
-      {method === type && <div className="w-2.5 h-2.5 bg-secondary rounded-full" />}
+    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${method === type ? 'border-[#4F200D]' : 'border-[#FBF7F3]/50'}`}>
+      {method === type && <div className="w-2.5 h-2.5 bg-[#4F200D] rounded-full" />}
     </div>
     {type === 'qr' ? (
       <div className="flex items-center gap-3 flex-1">
-        <div className="bg-background/20 p-2 rounded-lg group-hover:bg-background/30 transition-colors"><QrCode size={18} className="text-text" /></div>
+        <div className="bg-[#FBF7F3]/20 p-2 rounded-lg group-hover:bg-[#FBF7F3]/30 transition-colors"><QrCode size={18} className="text-text" /></div>
         <div className="flex flex-col">
           <span className="font-semibold text-text">QR Code Payment</span>
           <span className="text-xs text-text/50 font-light">Pay via UPI by scanning QR code</span>
@@ -872,7 +872,7 @@ const PaymentOption = ({ method, setMethod, type, logo }) => (
       </div>
     ) : (
       <div className="flex items-center gap-3 flex-1">
-        <div className="bg-background/20 p-2 rounded-lg group-hover:bg-background/30 transition-colors"><Package size={18} className="text-text" /></div>
+        <div className="bg-[#FBF7F3]/20 p-2 rounded-lg group-hover:bg-[#FBF7F3]/30 transition-colors"><Package size={18} className="text-text" /></div>
         <div className="flex flex-col">
           <span className="font-semibold text-text">Cash on Delivery</span>
           <span className="text-xs text-text/50 font-light">Pay when you receive your order</span>

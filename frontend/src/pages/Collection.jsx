@@ -298,13 +298,13 @@ const Collection = () => {
   ];
 
   const FilterSection = ({ title, isExpanded, onToggle, children, icon: Icon }) => (
-    <div className="border-b border-background/30 last:border-b-0">
+    <div className="border-b border-[#FBF7F3]/30 last:border-b-0">
       <button
         onClick={onToggle}
-        className="w-full py-4 flex justify-between items-center text-left font-semibold text-sm hover:text-secondary transition-colors active:scale-[0.99]"
+        className="w-full py-4 flex justify-between items-center text-left font-semibold text-sm hover:text-[#4F200D] transition-colors active:scale-[0.99]"
       >
         <div className="flex items-center gap-2">
-          {Icon && <Icon size={16} className="text-secondary" />}
+          {Icon && <Icon size={16} className="text-[#4F200D]" />}
           <span className="uppercase tracking-wider">{title}</span>
         </div>
         {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -319,16 +319,16 @@ const Collection = () => {
 
   const FilterPanel = ({ isMobile = false }) => (
     <div className={`bg-white ${isMobile ? '' : 'border border-background shadow-sm'} overflow-hidden`}>
-      <div className={`p-4 sm:p-6 border-b border-background ${isMobile ? 'bg-white' : 'bg-gradient-to-r from-background/20 to-primary'}`}>
+      <div className={`p-4 sm:p-6 border-b border-background ${isMobile ? 'bg-white' : 'bg-gradient-to-r from-[#FBF7F3]/20 to-primary'}`}>
         <div className="flex items-center justify-between">
           <h3 className="text-base sm:text-lg font-serif font-semibold tracking-wide">FILTERS</h3>
           {activeFiltersCount > 0 && (
             <button
               onClick={clearFilters}
-              className="text-xs uppercase tracking-wider text-secondary hover:text-[#8B6F47] transition-colors font-semibold flex items-center gap-2 active:scale-95"
+              className="text-xs uppercase tracking-wider text-[#4F200D] hover:text-[#8B6F47] transition-colors font-semibold flex items-center gap-2 active:scale-95"
             >
               <span>Clear</span>
-              <span className="w-5 h-5 bg-secondary text-white rounded-full text-xs flex items-center justify-center">
+              <span className="w-5 h-5 bg-[#4F200D] text-white rounded-full text-xs flex items-center justify-center">
                 {activeFiltersCount}
               </span>
             </button>
@@ -363,7 +363,7 @@ const Collection = () => {
                         setPriceRange({ ...priceRange, min: newMin });
                       }
                     }}
-                    className="w-full border-2 border-background pl-8 pr-3 py-2.5 text-sm font-medium focus:border-secondary focus:outline-none transition-colors"
+                    className="w-full border-2 border-background pl-8 pr-3 py-2.5 text-sm font-medium focus:border-[#4F200D] focus:outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -385,7 +385,7 @@ const Collection = () => {
                         setPriceRange({ ...priceRange, max: newMax });
                       }
                     }}
-                    className="w-full border-2 border-background pl-8 pr-3 py-2.5 text-sm font-medium focus:border-secondary focus:outline-none transition-colors"
+                    className="w-full border-2 border-background pl-8 pr-3 py-2.5 text-sm font-medium focus:border-[#4F200D] focus:outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -393,9 +393,9 @@ const Collection = () => {
 
             {/* Range Slider Visual */}
             <div className="px-2">
-              <div className="h-1 bg-background rounded-full relative">
+              <div className="h-1 bg-[#FBF7F3] rounded-full relative">
                 <div
-                  className="absolute h-full bg-secondary rounded-full"
+                  className="absolute h-full bg-[#4F200D] rounded-full"
                   style={{
                     left: `${((isMobile ? tempPriceRange.min : priceRange.min) - priceStats.min) / (priceStats.max - priceStats.min) * 100}%`,
                     right: `${100 - ((isMobile ? tempPriceRange.max : priceRange.max) - priceStats.min) / (priceStats.max - priceStats.min) * 100}%`
@@ -423,8 +423,8 @@ const Collection = () => {
                   }}
                   className={`px-3 py-2 border-2 text-xs font-medium transition-all duration-300 active:scale-95 ${(isMobile ? tempPriceRange.min : priceRange.min) === range.min &&
                     (isMobile ? tempPriceRange.max : priceRange.max) === range.max
-                    ? 'border-secondary bg-secondary/10 text-secondary'
-                    : 'border-background hover:border-secondary'
+                    ? 'border-[#4F200D] bg-[#4F200D]/10 text-[#4F200D]'
+                    : 'border-background hover:border-[#4F200D]'
                     }`}
                 >
                   {range.label}
@@ -452,15 +452,15 @@ const Collection = () => {
                     className="sr-only"
                   />
                   <div className={`w-5 h-5 border-2 transition-all duration-300 ${category.includes(item)
-                    ? 'bg-secondary border-secondary'
-                    : 'border-background group-hover:border-secondary'
+                    ? 'bg-[#4F200D] border-[#4F200D]'
+                    : 'border-background group-hover:border-[#4F200D]'
                     }`}>
                     {category.includes(item) && (
                       <Check size={14} className="text-white absolute top-0.5 left-0.5" />
                     )}
                   </div>
                 </div>
-                <span className="ml-3 text-sm font-medium group-hover:text-secondary transition-colors">
+                <span className="ml-3 text-sm font-medium group-hover:text-[#4F200D] transition-colors">
                   {item}
                 </span>
               </label>
@@ -487,15 +487,15 @@ const Collection = () => {
                       className="sr-only"
                     />
                     <div className={`w-5 h-5 border-2 transition-all duration-300 ${subCategory.includes(item)
-                      ? 'bg-secondary border-secondary'
-                      : 'border-background group-hover:border-secondary'
+                      ? 'bg-[#4F200D] border-[#4F200D]'
+                      : 'border-background group-hover:border-[#4F200D]'
                       }`}>
                       {subCategory.includes(item) && (
                         <Check size={14} className="text-white absolute top-0.5 left-0.5" />
                       )}
                     </div>
                   </div>
-                  <span className="ml-3 text-sm font-medium group-hover:text-secondary transition-colors">
+                  <span className="ml-3 text-sm font-medium group-hover:text-[#4F200D] transition-colors">
                     {item}
                   </span>
                 </label>
@@ -521,15 +521,15 @@ const Collection = () => {
                   className="sr-only"
                 />
                 <div className={`w-5 h-5 border-2 transition-all duration-300 ${giftingIdea
-                  ? 'bg-secondary border-secondary'
-                  : 'border-background group-hover:border-secondary'
+                  ? 'bg-[#4F200D] border-[#4F200D]'
+                  : 'border-background group-hover:border-[#4F200D]'
                   }`}>
                   {giftingIdea && (
                     <Check size={14} className="text-white absolute top-0.5 left-0.5" />
                   )}
                 </div>
               </div>
-              <span className="ml-3 text-sm font-medium group-hover:text-secondary transition-colors">
+              <span className="ml-3 text-sm font-medium group-hover:text-[#4F200D] transition-colors">
                 Gifting Ideas
               </span>
             </label>
@@ -543,15 +543,15 @@ const Collection = () => {
                   className="sr-only"
                 />
                 <div className={`w-5 h-5 border-2 transition-all duration-300 ${budgetFriendly
-                  ? 'bg-secondary border-secondary'
-                  : 'border-background group-hover:border-secondary'
+                  ? 'bg-[#4F200D] border-[#4F200D]'
+                  : 'border-background group-hover:border-[#4F200D]'
                   }`}>
                   {budgetFriendly && (
                     <Check size={14} className="text-white absolute top-0.5 left-0.5" />
                   )}
                 </div>
               </div>
-              <span className="ml-3 text-sm font-medium group-hover:text-secondary transition-colors">
+              <span className="ml-3 text-sm font-medium group-hover:text-[#4F200D] transition-colors">
                 Budget Friendly (Under ₹1K)
               </span>
             </label>
@@ -565,15 +565,15 @@ const Collection = () => {
                   className="sr-only"
                 />
                 <div className={`w-5 h-5 border-2 transition-all duration-300 ${rareItems
-                  ? 'bg-secondary border-secondary'
-                  : 'border-background group-hover:border-secondary'
+                  ? 'bg-[#4F200D] border-[#4F200D]'
+                  : 'border-background group-hover:border-[#4F200D]'
                   }`}>
                   {rareItems && (
                     <Check size={14} className="text-white absolute top-0.5 left-0.5" />
                   )}
                 </div>
               </div>
-              <span className="ml-3 text-sm font-medium group-hover:text-secondary transition-colors">
+              <span className="ml-3 text-sm font-medium group-hover:text-[#4F200D] transition-colors">
                 Rare & Limited
               </span>
             </label>
@@ -584,33 +584,34 @@ const Collection = () => {
   );
 
   return (
-    <div className="min-h-screen bg-white mt-16 sm:mt-20">
-      <section className="py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8 border-b border-background/30">
+    <div className="min-h-screen mt-[68px]" style={{ background: '#FBF7F3' }}>
+      <section className="py-10 sm:py-14 px-4 sm:px-6 lg:px-8 border-b" style={{ borderColor: 'rgba(79,32,13,0.1)', background: '#FBF7F3' }}>
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-6 sm:mb-8">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-3">
-              AAROVI COLLECTION
+          <div className="text-center mb-8">
+            <p className="text-[11px] uppercase tracking-[0.25em] font-semibold mb-3" style={{ color: '#AF8255' }}>Handcrafted Ethnic Wear</p>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight mb-3" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", color: '#2A1506' }}>
+              Aarovi Collection
             </h1>
             {filterProducts.length > 0 && (
-              <p className="text-text/60 font-light text-base sm:text-lg">
-                Discover {filterProducts.length} carefully curated piece{filterProducts.length !== 1 ? 's' : ''}
+              <p className="text-sm font-light" style={{ color: 'rgba(42,21,6,0.55)' }}>
+                {filterProducts.length} carefully curated piece{filterProducts.length !== 1 ? 's' : ''}
                 {showSearch && search && ` matching "${search}"`}
               </p>
             )}
           </div>
 
-          <div className="hidden sm:flex justify-between items-center gap-4 p-5 bg-white border border-background shadow-sm">
+          <div className="hidden sm:flex justify-between items-center gap-4 p-4 bg-white rounded-2xl border shadow-sm" style={{ borderColor: 'rgba(79,32,13,0.08)' }}>
             <div className="flex items-center gap-3">
               <div className="flex items-center border-2 border-background overflow-hidden">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2.5 transition-all duration-300 ${viewMode === 'grid' ? 'bg-secondary text-white' : 'bg-white text-text/60 hover:text-secondary'}`}
+                  className={`p-2.5 transition-all duration-300 ${viewMode === 'grid' ? 'bg-[#4F200D] text-white' : 'bg-white text-text/60 hover:text-[#4F200D]'}`}
                 >
                   <Grid3x3 size={18} />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2.5 transition-all duration-300 ${viewMode === 'list' ? 'bg-secondary text-white' : 'bg-white text-text/60 hover:text-secondary'}`}
+                  className={`p-2.5 transition-all duration-300 ${viewMode === 'list' ? 'bg-[#4F200D] text-white' : 'bg-white text-text/60 hover:text-[#4F200D]'}`}
                 >
                   <List size={18} />
                 </button>
@@ -626,7 +627,7 @@ const Collection = () => {
                 <select
                   value={sortType}
                   onChange={(e) => setSortType(e.target.value)}
-                  className="appearance-none border-2 border-background bg-white px-4 py-2.5 pr-10 font-medium text-sm focus:border-secondary focus:outline-none transition-colors"
+                  className="appearance-none border-2 border-background bg-white px-4 py-2.5 pr-10 font-medium text-sm focus:border-[#4F200D] focus:outline-none transition-colors"
                 >
                   {sortOptions.map(option => (
                     <option key={option.value} value={option.value}>{option.label}</option>
@@ -639,35 +640,35 @@ const Collection = () => {
         </div>
       </section>
 
-      <div className="sm:hidden sticky top-16 z-30 bg-white border-b border-background/30 shadow-sm">
+      <div className="sm:hidden sticky top-16 z-30 bg-white border-b border-[#FBF7F3]/30 shadow-sm">
         <div className="flex items-center p-3 gap-2">
           <button
             onClick={() => setShowFilter(true)}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-background bg-white active:bg-background/20 transition-all relative"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-background bg-white active:bg-[#FBF7F3]/20 transition-all relative"
           >
             <SlidersHorizontal size={18} />
             <span className="font-semibold text-sm tracking-wide uppercase">Filter</span>
             {activeFiltersCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-secondary text-white rounded-full text-xs flex items-center justify-center font-semibold">
+              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#4F200D] text-white rounded-full text-xs flex items-center justify-center font-semibold">
                 {activeFiltersCount}
               </span>
             )}
           </button>
           <button
             onClick={() => setShowSortModal(true)}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-background bg-white active:bg-background/20 transition-all"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-background bg-white active:bg-[#FBF7F3]/20 transition-all"
           >
             <ChevronDown size={18} />
             <span className="font-semibold text-sm tracking-wide uppercase">Sort</span>
           </button>
           <button
             onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-            className={`p-3 border-2 border-background transition-all ${viewMode === 'grid' ? 'bg-secondary text-white' : 'bg-white text-text'}`}
+            className={`p-3 border-2 border-background transition-all ${viewMode === 'grid' ? 'bg-[#4F200D] text-white' : 'bg-white text-text'}`}
           >
             {viewMode === 'grid' ? <Grid3x3 size={18} /> : <List size={18} />}
           </button>
         </div>
-        <div className="px-4 py-2 text-xs text-text/50 font-medium text-center border-t border-background/20">
+        <div className="px-4 py-2 text-xs text-text/50 font-medium text-center border-t border-[#FBF7F3]/20">
           Showing {displayedProducts.length} of {filterProducts.length} items
         </div>
       </div>
@@ -676,9 +677,9 @@ const Collection = () => {
       {showFilter && (
         <div className="sm:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex flex-col">
           <div className="bg-white flex-1 flex flex-col overflow-hidden animate-slideUp">
-            <div className="flex justify-between items-center p-4 border-b border-background bg-gradient-to-r from-background/20 to-primary">
+            <div className="flex justify-between items-center p-4 border-b border-background bg-gradient-to-r from-[#FBF7F3]/20 to-primary">
               <h3 className="text-lg font-serif font-semibold uppercase tracking-wide">Filters</h3>
-              <button onClick={() => setShowFilter(false)} className="p-2 hover:bg-background/20 rounded-full transition-colors active:scale-95">
+              <button onClick={() => setShowFilter(false)} className="p-2 hover:bg-[#FBF7F3]/20 rounded-full transition-colors active:scale-95">
                 <X size={20} />
               </button>
             </div>
@@ -694,7 +695,7 @@ const Collection = () => {
               </button>
               <button
                 onClick={applyFilters}
-                className="flex-1 py-3 bg-secondary text-white font-semibold tracking-wide uppercase active:scale-[0.98] transition-transform"
+                className="flex-1 py-3 bg-[#4F200D] text-white font-semibold tracking-wide uppercase active:scale-[0.98] transition-transform"
               >
                 Apply
               </button>
@@ -721,9 +722,9 @@ const Collection = () => {
                     setSortType(option.value);
                     setShowSortModal(false);
                   }}
-                  className={`w-full text-left px-5 py-4 transition-all duration-300 active:scale-[0.99] border-b border-background/30 last:border-b-0 ${sortType === option.value
-                    ? 'bg-secondary text-white font-semibold'
-                    : 'bg-white text-text hover:bg-background/20'
+                  className={`w-full text-left px-5 py-4 transition-all duration-300 active:scale-[0.99] border-b border-[#FBF7F3]/30 last:border-b-0 ${sortType === option.value
+                    ? 'bg-[#4F200D] text-white font-semibold'
+                    : 'bg-white text-text hover:bg-[#FBF7F3]/20'
                     }`}
                 >
                   {option.label}
@@ -798,7 +799,7 @@ const Collection = () => {
                           <div className="flex-1 min-w-0 flex flex-col justify-between">
                             <div>
                               <div className="flex items-start justify-between mb-2">
-                                <h3 className="font-serif font-semibold text-base sm:text-lg text-text line-clamp-2 group-hover:text-secondary transition-colors flex-1">
+                                <h3 className="font-serif font-semibold text-base sm:text-lg text-text line-clamp-2 group-hover:text-[#4F200D] transition-colors flex-1">
                                   {product.name}
                                 </h3>
                                 {product.rating && (
@@ -816,9 +817,9 @@ const Collection = () => {
                               )}
                             </div>
 
-                            <div className="flex items-center justify-between pt-2 border-t border-background/30">
+                            <div className="flex items-center justify-between pt-2 border-t border-[#FBF7F3]/30">
                               <div className="flex items-center gap-2">
-                                <div className="text-xl sm:text-2xl font-serif font-bold text-secondary">
+                                <div className="text-xl sm:text-2xl font-serif font-bold text-[#4F200D]">
                                   {currency}{product.price}
                                 </div>
                                 {product.discount && (
@@ -828,7 +829,7 @@ const Collection = () => {
                                 )}
                               </div>
                               {product.bestseller && (
-                                <span className="hidden sm:inline px-2 py-1 bg-secondary/10 text-secondary text-xs font-semibold uppercase tracking-wide">
+                                <span className="hidden sm:inline px-2 py-1 bg-[#4F200D]/10 text-[#4F200D] text-xs font-semibold uppercase tracking-wide">
                                   Bestseller
                                 </span>
                               )}
@@ -848,7 +849,7 @@ const Collection = () => {
 
                   {/* End of Results */}
                   {!hasMore && displayedProducts.length > 0 && (
-                    <div className="text-center py-8 border-t border-background/30 mt-8">
+                    <div className="text-center py-8 border-t border-[#FBF7F3]/30 mt-8">
                       <p className="text-text/60 font-medium text-sm">
                         You have reached the end of the collection
                       </p>
@@ -857,8 +858,8 @@ const Collection = () => {
                 </>
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 bg-white border border-background shadow-sm">
-                  <div className="w-20 h-20 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mb-6">
-                    <ShoppingBag size={40} className="text-secondary" />
+                  <div className="w-20 h-20 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-full flex items-center justify-center mb-6">
+                    <ShoppingBag size={40} className="text-[#4F200D]" />
                   </div>
                   <div className="text-center max-w-md px-4">
                     <h3 className="text-xl sm:text-2xl font-serif font-semibold mb-3">No Products Found</h3>
@@ -869,13 +870,13 @@ const Collection = () => {
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <button
                         onClick={clearFilters}
-                        className="px-6 py-3 bg-secondary text-white font-semibold hover:bg-[#8B6F47] transition-all active:scale-95 text-sm sm:text-base uppercase tracking-wide"
+                        className="px-6 py-3 bg-[#4F200D] text-white font-semibold hover:bg-[#8B6F47] transition-all active:scale-95 text-sm sm:text-base uppercase tracking-wide"
                       >
                         Clear Filters
                       </button>
                       <button
                         onClick={() => navigate('/')}
-                        className="px-6 py-3 border-2 border-background bg-white text-text font-semibold hover:bg-background/20 transition-all active:scale-95 text-sm sm:text-base uppercase tracking-wide"
+                        className="px-6 py-3 border-2 border-background bg-white text-text font-semibold hover:bg-[#FBF7F3]/20 transition-all active:scale-95 text-sm sm:text-base uppercase tracking-wide"
                       >
                         Browse All
                       </button>
@@ -892,7 +893,7 @@ const Collection = () => {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 w-12 h-12 bg-secondary text-white rounded-full shadow-xl flex items-center justify-center hover:bg-[#8B6F47] transition-all duration-300 z-40 active:scale-95"
+          className="fixed bottom-6 right-6 w-12 h-12 bg-[#4F200D] text-white rounded-full shadow-xl flex items-center justify-center hover:bg-[#8B6F47] transition-all duration-300 z-40 active:scale-95"
           aria-label="Scroll to top"
         >
           <ArrowUp size={20} />

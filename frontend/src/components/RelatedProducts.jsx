@@ -18,10 +18,10 @@ const RelatedProducts = ({ category, subCategory, currentProductId }) => {
 
   return (
     <div className="bg-white rounded-lg border border-background shadow-lg overflow-hidden">
-      <div className="p-6 border-b border-background bg-gradient-to-r from-background/20 to-primary">
+      <div className="p-6 border-b border-background bg-gradient-to-r from-[#FBF7F3]/20 to-primary">
         <div className="flex items-center">
           <div>
-            <h2 className="text-2xl font-serif font-bold text-text">Related Products</h2>
+            <h2 className="text-2xl font-serif font-bold text-text" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Related Products</h2>
             <p className="text-sm text-text/60 font-light">You might also like these items</p>
           </div>
         </div>
@@ -30,8 +30,8 @@ const RelatedProducts = ({ category, subCategory, currentProductId }) => {
       <div className="p-6">
         {related.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <div className="w-16 h-16 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mb-6">
-              <Package size={28} className="text-secondary" />
+            <div className="w-16 h-16 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-full flex items-center justify-center mb-6">
+              <Package size={28} className="text-[#4F200D]" />
             </div>
             <div className="text-center max-w-md">
               <h3 className="text-xl font-serif font-semibold text-text mb-2">No Related Products</h3>

@@ -195,7 +195,7 @@ const MyProfile = () => {
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-center py-20">
               <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto mb-4"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4F200D] mx-auto mb-4"></div>
                 <span className="text-text/60 font-light">Loading your profile...</span>
               </div>
             </div>
@@ -289,7 +289,7 @@ const MyProfile = () => {
             <div className="px-6 sm:px-8 pb-6 sm:pb-8">
               <button
                 onClick={() => setErrorModal({ open: false, message: "" })}
-                className="w-full py-3 sm:py-3.5 bg-secondary text-white font-semibold rounded-xl hover:bg-secondary/90 transition-all duration-300 text-sm sm:text-base"
+                className="w-full py-3 sm:py-3.5 bg-[#4F200D] text-white font-semibold rounded-xl hover:bg-[#4F200D]/90 transition-all duration-300 text-sm sm:text-base"
               >
                 Got it
               </button>
@@ -314,7 +314,7 @@ const MyProfile = () => {
             <div className="px-6 sm:px-8 pb-6 sm:pb-8">
               <button
                 onClick={() => setSuccessModal({ open: false, message: "" })}
-                className="w-full py-3 sm:py-3.5 bg-secondary text-white font-semibold rounded-xl hover:bg-secondary/90 transition-all duration-300 text-sm sm:text-base"
+                className="w-full py-3 sm:py-3.5 bg-[#4F200D] text-white font-semibold rounded-xl hover:bg-[#4F200D]/90 transition-all duration-300 text-sm sm:text-base"
               >
                 Done
               </button>
@@ -327,7 +327,7 @@ const MyProfile = () => {
       <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-serif font-bold text-text mb-2">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-serif font-bold text-text mb-2" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
               My Profile
             </h1>
             <p className="text-sm sm:text-base text-text/50 font-light flex items-center gap-2">
@@ -344,10 +344,10 @@ const MyProfile = () => {
           <div className="grid lg:grid-cols-[350px_1fr] xl:grid-cols-[380px_1fr] gap-6 lg:gap-10">
             {/* Sidebar */}
             <div className="space-y-4">
-              <div className="bg-white rounded-2xl p-4 sm:p-6 border border-background/50 shadow-lg">
+              <div className="bg-white rounded-2xl p-4 sm:p-6 border border-[#FBF7F3]/50 shadow-lg">
                 <div className="flex flex-col items-center mb-6">
                   <div className="relative group">
-                    <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-background/30">
+                    <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-[#FBF7F3]/30">
                       <img
                         src={userData.image}
                         alt="Profile"
@@ -355,7 +355,7 @@ const MyProfile = () => {
                       />
                     </div>
                     <button
-                      className="absolute bottom-0 right-0 w-9 h-9 sm:w-10 sm:h-10 bg-secondary text-white rounded-full flex items-center justify-center shadow-lg hover:bg-secondary/90 transition-all duration-300"
+                      className="absolute bottom-0 right-0 w-9 h-9 sm:w-10 sm:h-10 bg-[#4F200D] text-white rounded-full flex items-center justify-center shadow-lg hover:bg-[#4F200D]/90 transition-all duration-300"
                       onClick={() => setActiveSection("Edit Profile")}
                       title="Edit Photo"
                     >
@@ -372,9 +372,9 @@ const MyProfile = () => {
                 </div>
 
                 <div className="space-y-3 mb-6">
-                  <div className="bg-background/20 rounded-xl p-3 sm:p-4">
+                  <div className="bg-[#FBF7F3]/20 rounded-xl p-3 sm:p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <Calendar size={14} className="text-secondary flex-shrink-0" />
+                      <Calendar size={14} className="text-[#4F200D] flex-shrink-0" />
                       <span className="text-xs font-semibold text-text/50 uppercase tracking-wider">Member Since</span>
                     </div>
                     <p className="text-xs sm:text-sm text-text font-medium">
@@ -389,7 +389,7 @@ const MyProfile = () => {
 
                 <div className="space-y-3">
                   <button
-                    className="w-full py-3 sm:py-4 bg-secondary text-white font-semibold rounded-full hover:bg-secondary/90 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
+                    className="w-full py-3 sm:py-4 bg-[#4F200D] text-white font-semibold rounded-full hover:bg-[#4F200D]/90 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
                     onClick={() => setActiveSection("Edit Profile")}
                   >
                     <Edit2 size={16} />
@@ -397,7 +397,7 @@ const MyProfile = () => {
                   </button>
 
                   <button
-                    className="w-full py-3 sm:py-4 bg-background/40 text-text font-semibold rounded-full hover:bg-background/60 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
+                    className="w-full py-3 sm:py-4 bg-[#FBF7F3]/40 text-text font-semibold rounded-full hover:bg-[#FBF7F3]/60 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"
                     onClick={() => setLogoutModal(true)}
                   >
                     <LogOut size={16} />
@@ -409,20 +409,20 @@ const MyProfile = () => {
 
             {/* Main Content */}
             <div className="space-y-6">
-              <div className="bg-white rounded-2xl border border-background/50 shadow-lg overflow-hidden">
-                <div className="p-4 sm:p-6 border-b border-background/30">
+              <div className="bg-white rounded-2xl border border-[#FBF7F3]/50 shadow-lg overflow-hidden">
+                <div className="p-4 sm:p-6 border-b border-[#FBF7F3]/30">
                   <h3 className="text-lg sm:text-xl font-serif font-bold text-text">Quick Actions</h3>
                 </div>
-                <div className="divide-y divide-background/30">
+                <div className="divide-y divide-[#FBF7F3]/30">
                   {menuItems.map((item, index) => {
                     const content = (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-4 sm:p-6 hover:bg-background/10 transition-colors duration-300 cursor-pointer group"
+                        className="flex items-center justify-between p-4 sm:p-6 hover:bg-[#FBF7F3]/10 transition-colors duration-300 cursor-pointer group"
                         onClick={() => !item.link && setActiveSection(item.text)}
                       >
                         <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-xl bg-background/30 text-secondary flex-shrink-0">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-xl bg-[#FBF7F3]/30 text-[#4F200D] flex-shrink-0">
                             {item.icon}
                           </div>
                           <div className="min-w-0 flex-1">
@@ -430,7 +430,7 @@ const MyProfile = () => {
                             <p className="text-xs sm:text-sm text-text/60 font-light hidden sm:block">{item.description}</p>
                           </div>
                         </div>
-                        <ChevronRight size={18} className="text-text/40 group-hover:text-secondary transition-colors flex-shrink-0" />
+                        <ChevronRight size={18} className="text-text/40 group-hover:text-[#4F200D] transition-colors flex-shrink-0" />
                       </div>
                     );
 
@@ -446,7 +446,7 @@ const MyProfile = () => {
               </div>
 
               {/* Recently Viewed */}
-              <div className="bg-white rounded-2xl border border-background/50 shadow-lg overflow-hidden">
+              <div className="bg-white rounded-2xl border border-[#FBF7F3]/50 shadow-lg overflow-hidden">
                 <RecentlyViewed />
               </div>
             </div>
@@ -458,11 +458,11 @@ const MyProfile = () => {
       {activeSection === "Edit Profile" && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl my-8">
-            <div className="p-4 sm:p-6 border-b border-background/30 flex items-center justify-between">
-              <h2 className="text-xl sm:text-2xl font-serif font-bold text-text">Edit Profile</h2>
+            <div className="p-4 sm:p-6 border-b border-[#FBF7F3]/30 flex items-center justify-between">
+              <h2 className="text-xl sm:text-2xl font-serif font-bold text-text" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Edit Profile</h2>
               <button
                 onClick={() => setActiveSection(null)}
-                className="p-2 hover:bg-background/20 rounded-lg transition-colors"
+                className="p-2 hover:bg-[#FBF7F3]/20 rounded-lg transition-colors"
               >
                 <X size={20} />
               </button>
@@ -470,14 +470,14 @@ const MyProfile = () => {
             <form className="p-4 sm:p-6 space-y-4 sm:space-y-6" onSubmit={handleEditProfileSubmit}>
               <div className="flex items-center gap-4 sm:gap-6">
                 <div className="relative flex-shrink-0">
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-background/30 overflow-hidden flex items-center justify-center">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#FBF7F3]/30 overflow-hidden flex items-center justify-center">
                     {editProfile.image ? (
                       <img src={editProfile.image} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
                       <User size={28} className="text-text/40" />
                     )}
                   </div>
-                  <label className="absolute -bottom-1 -right-1 bg-secondary text-white p-2 rounded-full cursor-pointer hover:bg-secondary/90 transition-colors shadow-lg">
+                  <label className="absolute -bottom-1 -right-1 bg-[#4F200D] text-white p-2 rounded-full cursor-pointer hover:bg-[#4F200D]/90 transition-colors shadow-lg">
                     <Camera size={14} />
                     <input
                       type="file"
@@ -499,7 +499,7 @@ const MyProfile = () => {
                     Full Name
                   </label>
                   <input
-                    className="w-full px-4 py-3 border border-background/50 rounded-xl bg-white focus:outline-none focus:border-secondary transition-colors font-light text-sm sm:text-base"
+                    className="w-full px-4 py-3 border border-[#FBF7F3]/50 rounded-xl bg-white focus:outline-none focus:border-[#4F200D] transition-colors font-light text-sm sm:text-base"
                     value={editProfile.name}
                     onChange={e => setEditProfile({ ...editProfile, name: e.target.value })}
                     placeholder="Enter your name"
@@ -512,7 +512,7 @@ const MyProfile = () => {
                     Email Address
                   </label>
                   <input
-                    className="w-full px-4 py-3 border border-background/50 rounded-xl bg-white focus:outline-none focus:border-secondary transition-colors font-light text-sm sm:text-base"
+                    className="w-full px-4 py-3 border border-[#FBF7F3]/50 rounded-xl bg-white focus:outline-none focus:border-[#4F200D] transition-colors font-light text-sm sm:text-base"
                     value={editProfile.email}
                     onChange={e => setEditProfile({ ...editProfile, email: e.target.value })}
                     placeholder="Enter your email"
@@ -524,14 +524,14 @@ const MyProfile = () => {
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-secondary text-white px-4 sm:px-6 py-3 sm:py-4 rounded-full hover:bg-secondary/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg shadow-secondary/30 text-sm sm:text-base"
+                  className="flex-1 bg-[#4F200D] text-white px-4 sm:px-6 py-3 sm:py-4 rounded-full hover:bg-[#4F200D]/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg shadow-[#4F200D]/30 text-sm sm:text-base"
                   disabled={loading}
                 >
                   {loading ? "Saving..." : "Save Changes"}
                 </button>
                 <button
                   type="button"
-                  className="px-4 sm:px-6 py-3 sm:py-4 bg-background/40 text-text rounded-full hover:bg-background/60 transition-all duration-300 font-semibold text-sm sm:text-base"
+                  className="px-4 sm:px-6 py-3 sm:py-4 bg-[#FBF7F3]/40 text-text rounded-full hover:bg-[#FBF7F3]/60 transition-all duration-300 font-semibold text-sm sm:text-base"
                   onClick={() => setActiveSection(null)}
                 >
                   Cancel
@@ -548,18 +548,18 @@ const MyProfile = () => {
       {activeSection === "Delivery Address" && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl my-8">
-            <div className="p-4 sm:p-6 border-b border-background/30 sticky top-0 z-10 bg-white">
+            <div className="p-4 sm:p-6 border-b border-[#FBF7F3]/30 sticky top-0 z-10 bg-white">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <MapPinHouse size={20} className="text-secondary flex-shrink-0" />
+                  <MapPinHouse size={20} className="text-[#4F200D] flex-shrink-0" />
                   <div className="min-w-0">
-                    <h2 className="text-xl sm:text-2xl font-serif font-bold text-text truncate">Delivery Addresses</h2>
+                    <h2 className="text-xl sm:text-2xl font-serif font-bold text-text truncate" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>Delivery Addresses</h2>
                     <p className="text-text/60 text-xs sm:text-sm font-light hidden sm:block">Manage your delivery locations</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setAddressModal({ open: true, address: {}, index: -1 })}
-                  className="flex items-center justify-center gap-2 bg-secondary text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/30 text-sm sm:text-base whitespace-nowrap"
+                  className="flex items-center justify-center gap-2 bg-[#4F200D] text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-[#4F200D]/90 transition-all shadow-lg shadow-[#4F200D]/30 text-sm sm:text-base whitespace-nowrap"
                 >
                   <Plus size={16} />
                   <span className="hidden sm:inline">Add New</span>
@@ -572,7 +572,7 @@ const MyProfile = () => {
               {(!userData.addresses || userData.addresses.length === 0) ? (
                 <div className="flex flex-col items-center justify-center">
                   <div className="relative mb-4 sm:mb-6">
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-background/20 rounded-full flex items-center justify-center">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-[#FBF7F3]/20 rounded-full flex items-center justify-center">
                       <MapPinHouse size={36} className="text-text/30" strokeWidth={1.5} />
                     </div>
                   </div>
@@ -582,7 +582,7 @@ const MyProfile = () => {
                   </div>
                   <button
                     onClick={() => setAddressModal({ open: true, address: {}, index: -1 })}
-                    className="group px-8 sm:px-10 py-3 sm:py-4 bg-secondary text-white font-semibold rounded-full hover:bg-secondary/90 transition-all duration-300 flex items-center gap-2 sm:gap-3 shadow-xl shadow-secondary/30 text-sm sm:text-base"
+                    className="group px-8 sm:px-10 py-3 sm:py-4 bg-[#4F200D] text-white font-semibold rounded-full hover:bg-[#4F200D]/90 transition-all duration-300 flex items-center gap-2 sm:gap-3 shadow-xl shadow-[#4F200D]/30 text-sm sm:text-base"
                   >
                     <span>Add Address</span>
                     <Plus size={18} className="group-hover:scale-110 transition-transform" />
@@ -591,11 +591,11 @@ const MyProfile = () => {
               ) : (
                 <div className="space-y-3 sm:space-y-4">
                   {userData.addresses.map((addr, idx) => (
-                    <div key={idx} className="group bg-white rounded-2xl p-4 sm:p-6 border border-background/50 transition-all duration-300">
+                    <div key={idx} className="group bg-white rounded-2xl p-4 sm:p-6 border border-[#FBF7F3]/50 transition-all duration-300">
                       <div className="flex justify-between items-start gap-3">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-2 sm:mb-3">
-                            <MapPinHouse size={16} className="text-secondary flex-shrink-0" />
+                            <MapPinHouse size={16} className="text-[#4F200D] flex-shrink-0" />
                             <h4 className="font-serif font-bold text-text text-base sm:text-lg truncate">
                               {addr.label || `Address ${idx + 1}`}
                             </h4>
@@ -615,7 +615,7 @@ const MyProfile = () => {
                         <div className="flex gap-2 flex-shrink-0">
                           <button
                             onClick={() => setAddressModal({ open: true, address: addr, index: idx })}
-                            className="p-2 sm:p-2.5 text-text/40 hover:text-secondary hover:bg-background/30 rounded-xl transition-all duration-300"
+                            className="p-2 sm:p-2.5 text-text/40 hover:text-[#4F200D] hover:bg-[#FBF7F3]/30 rounded-xl transition-all duration-300"
                           >
                             <Edit2 size={16} />
                           </button>
@@ -632,10 +632,10 @@ const MyProfile = () => {
                 </div>
               )}
 
-              <div className="flex justify-end mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-background/30">
+              <div className="flex justify-end mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-[#FBF7F3]/30">
                 <button
                   onClick={() => setActiveSection(null)}
-                  className="px-5 sm:px-6 py-2.5 sm:py-3 bg-background/40 text-text font-semibold rounded-full hover:bg-background/60 transition-all duration-300 text-sm sm:text-base"
+                  className="px-5 sm:px-6 py-2.5 sm:py-3 bg-[#FBF7F3]/40 text-text font-semibold rounded-full hover:bg-[#FBF7F3]/60 transition-all duration-300 text-sm sm:text-base"
                 >
                   Close
                 </button>
@@ -649,13 +649,13 @@ const MyProfile = () => {
       {addressModal.open && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4 overflow-y-auto">
           <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl my-8">
-            <div className="p-4 sm:p-6 border-b border-background/30 flex items-center justify-between">
-              <h2 className="text-xl sm:text-2xl font-serif font-bold text-text">
+            <div className="p-4 sm:p-6 border-b border-[#FBF7F3]/30 flex items-center justify-between">
+              <h2 className="text-xl sm:text-2xl font-serif font-bold text-text" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
                 {addressModal.index >= 0 ? "Edit Address" : "Add New Address"}
               </h2>
               <button
                 onClick={() => setAddressModal({ open: false, address: {}, index: -1 })}
-                className="p-2 hover:bg-background/20 rounded-lg transition-colors"
+                className="p-2 hover:bg-[#FBF7F3]/20 rounded-lg transition-colors"
               >
                 <X size={20} />
               </button>
@@ -700,7 +700,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
           Address Label (Optional)
         </label>
         <input
-          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-background/50 rounded-xl focus:outline-none focus:border-secondary transition-colors font-light text-sm sm:text-base"
+          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#FBF7F3]/50 rounded-xl focus:outline-none focus:border-[#4F200D] transition-colors font-light text-sm sm:text-base"
           value={form.label}
           onChange={e => setForm(f => ({ ...f, label: e.target.value }))}
           placeholder="e.g., Home, Office"
@@ -712,7 +712,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
           Street Address
         </label>
         <input
-          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-background/50 rounded-xl focus:outline-none focus:border-secondary transition-colors font-light text-sm sm:text-base"
+          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#FBF7F3]/50 rounded-xl focus:outline-none focus:border-[#4F200D] transition-colors font-light text-sm sm:text-base"
           value={form.address}
           onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
           placeholder="Enter your street address"
@@ -726,7 +726,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
             City
           </label>
           <input
-            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-background/50 rounded-xl focus:outline-none focus:border-secondary transition-colors font-light text-sm sm:text-base"
+            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#FBF7F3]/50 rounded-xl focus:outline-none focus:border-[#4F200D] transition-colors font-light text-sm sm:text-base"
             value={form.city}
             onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
             placeholder="City"
@@ -738,7 +738,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
             State
           </label>
           <input
-            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-background/50 rounded-xl focus:outline-none focus:border-secondary transition-colors font-light text-sm sm:text-base"
+            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#FBF7F3]/50 rounded-xl focus:outline-none focus:border-[#4F200D] transition-colors font-light text-sm sm:text-base"
             value={form.state}
             onChange={e => setForm(f => ({ ...f, state: e.target.value }))}
             placeholder="State"
@@ -753,7 +753,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
             ZIP Code
           </label>
           <input
-            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-background/50 rounded-xl focus:outline-none focus:border-secondary transition-colors font-light text-sm sm:text-base"
+            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#FBF7F3]/50 rounded-xl focus:outline-none focus:border-[#4F200D] transition-colors font-light text-sm sm:text-base"
             value={form.zip}
             onChange={e => setForm(f => ({ ...f, zip: e.target.value }))}
             placeholder="ZIP"
@@ -765,7 +765,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
             Country
           </label>
           <input
-            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-background/50 rounded-xl focus:outline-none focus:border-secondary transition-colors font-light text-sm sm:text-base"
+            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#FBF7F3]/50 rounded-xl focus:outline-none focus:border-[#4F200D] transition-colors font-light text-sm sm:text-base"
             value={form.country}
             onChange={e => setForm(f => ({ ...f, country: e.target.value }))}
             placeholder="Country"
@@ -780,7 +780,7 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
         </label>
         <input
           type="tel"
-          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-background/50 rounded-xl focus:outline-none focus:border-secondary transition-colors font-light text-sm sm:text-base"
+          className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-[#FBF7F3]/50 rounded-xl focus:outline-none focus:border-[#4F200D] transition-colors font-light text-sm sm:text-base"
           value={form.phone}
           onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
           placeholder="Enter phone number"
@@ -790,14 +790,14 @@ function AddressForm({ initial, onSave, onCancel, loading }) {
       <div className="flex gap-3 pt-4">
         <button
           type="submit"
-          className="flex-1 bg-secondary text-white px-4 sm:px-6 py-3 sm:py-4 rounded-full font-semibold hover:bg-secondary/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-secondary/30 text-sm sm:text-base"
+          className="flex-1 bg-[#4F200D] text-white px-4 sm:px-6 py-3 sm:py-4 rounded-full font-semibold hover:bg-[#4F200D]/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#4F200D]/30 text-sm sm:text-base"
           disabled={loading}
         >
           {loading ? "Saving..." : "Save Address"}
         </button>
         <button
           type="button"
-          className="px-4 sm:px-6 py-3 sm:py-4 bg-background/40 text-text font-semibold rounded-full hover:bg-background/60 transition-all duration-300 text-sm sm:text-base"
+          className="px-4 sm:px-6 py-3 sm:py-4 bg-[#FBF7F3]/40 text-text font-semibold rounded-full hover:bg-[#FBF7F3]/60 transition-all duration-300 text-sm sm:text-base"
           onClick={onCancel}
         >
           Cancel

@@ -36,6 +36,15 @@ connectCloudinary();
 app.use(helmet());
 app.use(compression());
 
+// Enable ETag support for conditional GET (saves bandwidth on unchanged data)
+app.set('etag', 'strong');
+
+// Cache-control helper — attach to read-only public routes
+export const publicCacheHeaders = (_req, res, next) => {
+    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+    next();
+};
+
 // ── CORS ────────────────────────────────────────────────────────────
 app.use(cors({
     origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',

@@ -252,13 +252,13 @@ const ProductPage = () => {
   ];
 
   const FilterSection = ({ title, isExpanded, onToggle, children, icon: Icon }) => (
-    <div className="border-b border-background/30 last:border-b-0">
+    <div className="border-b border-[#FBF7F3]/30 last:border-b-0">
       <button
         onClick={onToggle}
-        className="w-full py-4 flex justify-between items-center text-left font-semibold text-sm hover:text-secondary transition-colors active:scale-[0.99]"
+        className="w-full py-4 flex justify-between items-center text-left font-semibold text-sm hover:text-[#4F200D] transition-colors active:scale-[0.99]"
       >
         <div className="flex items-center gap-2">
-          {Icon && <Icon size={16} className="text-secondary" />}
+          {Icon && <Icon size={16} className="text-[#4F200D]" />}
           <span className="uppercase tracking-wider">{title}</span>
         </div>
         {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -273,16 +273,16 @@ const ProductPage = () => {
 
   const FilterPanel = ({ isMobile = false }) => (
     <div className={`bg-white ${isMobile ? '' : 'border border-background shadow-sm'} overflow-hidden`}>
-      <div className={`p-4 sm:p-6 border-b border-background ${isMobile ? 'bg-white' : 'bg-gradient-to-r from-background/20 to-primary'}`}>
+      <div className={`p-4 sm:p-6 border-b border-background ${isMobile ? 'bg-white' : 'bg-gradient-to-r from-[#FBF7F3]/20 to-primary'}`}>
         <div className="flex items-center justify-between">
           <h3 className="text-base sm:text-lg font-serif font-semibold tracking-wide">FILTERS</h3>
           {activeFiltersCount > 0 && (
             <button
               onClick={clearFilters}
-              className="text-xs uppercase tracking-wider text-secondary hover:text-[#8B6F47] transition-colors font-semibold flex items-center gap-2 active:scale-95"
+              className="text-xs uppercase tracking-wider text-[#4F200D] hover:text-[#8B6F47] transition-colors font-semibold flex items-center gap-2 active:scale-95"
             >
               <span>Clear</span>
-              <span className="w-5 h-5 bg-secondary text-white rounded-full text-xs flex items-center justify-center">
+              <span className="w-5 h-5 bg-[#4F200D] text-white rounded-full text-xs flex items-center justify-center">
                 {activeFiltersCount}
               </span>
             </button>
@@ -310,7 +310,7 @@ const ProductPage = () => {
                     max={tempPriceRange.max}
                     value={tempPriceRange.min}
                     onChange={(e) => setTempPriceRange({ ...tempPriceRange, min: Number(e.target.value) })}
-                    className="w-full border-2 border-background pl-8 pr-3 py-2.5 text-sm font-medium focus:border-secondary focus:outline-none transition-colors"
+                    className="w-full border-2 border-background pl-8 pr-3 py-2.5 text-sm font-medium focus:border-[#4F200D] focus:outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -325,7 +325,7 @@ const ProductPage = () => {
                     max={priceStats.max}
                     value={tempPriceRange.max}
                     onChange={(e) => setTempPriceRange({ ...tempPriceRange, max: Number(e.target.value) })}
-                    className="w-full border-2 border-background pl-8 pr-3 py-2.5 text-sm font-medium focus:border-secondary focus:outline-none transition-colors"
+                    className="w-full border-2 border-background pl-8 pr-3 py-2.5 text-sm font-medium focus:border-[#4F200D] focus:outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -333,9 +333,9 @@ const ProductPage = () => {
 
             {/* Range Slider Visual */}
             <div className="px-2">
-              <div className="h-1 bg-background rounded-full relative">
+              <div className="h-1 bg-[#FBF7F3] rounded-full relative">
                 <div 
-                  className="absolute h-full bg-secondary rounded-full"
+                  className="absolute h-full bg-[#4F200D] rounded-full"
                   style={{
                     left: `${((tempPriceRange.min - priceStats.min) / (priceStats.max - priceStats.min)) * 100}%`,
                     right: `${100 - ((tempPriceRange.max - priceStats.min) / (priceStats.max - priceStats.min)) * 100}%`
@@ -357,8 +357,8 @@ const ProductPage = () => {
                   onClick={() => setTempPriceRange({ min: range.min, max: range.max })}
                   className={`px-3 py-2 border-2 text-xs font-medium transition-all duration-300 active:scale-95 ${
                     tempPriceRange.min === range.min && tempPriceRange.max === range.max
-                      ? 'border-secondary bg-secondary/10 text-secondary'
-                      : 'border-background hover:border-secondary'
+                      ? 'border-[#4F200D] bg-[#4F200D]/10 text-[#4F200D]'
+                      : 'border-background hover:border-[#4F200D]'
                   }`}
                 >
                   {range.label}
@@ -370,7 +370,7 @@ const ProductPage = () => {
             {!isMobile && (
               <button
                 onClick={() => setPriceRange(tempPriceRange)}
-                className="w-full py-2.5 bg-secondary text-white font-semibold tracking-wide uppercase hover:bg-[#8B6F47] transition-all active:scale-[0.98]"
+                className="w-full py-2.5 bg-[#4F200D] text-white font-semibold tracking-wide uppercase hover:bg-[#8B6F47] transition-all active:scale-[0.98]"
               >
                 Apply Price Filter
               </button>
@@ -395,15 +395,15 @@ const ProductPage = () => {
                   className="sr-only"
                 />
                 <div className={`w-5 h-5 border-2 transition-all duration-300 ${showOnSale
-                    ? 'bg-secondary border-secondary'
-                    : 'border-background group-hover:border-secondary'
+                    ? 'bg-[#4F200D] border-[#4F200D]'
+                    : 'border-background group-hover:border-[#4F200D]'
                   }`}>
                   {showOnSale && (
                     <Check size={14} className="text-white absolute top-0.5 left-0.5" />
                   )}
                 </div>
               </div>
-              <span className="ml-3 text-sm font-medium group-hover:text-secondary transition-colors">
+              <span className="ml-3 text-sm font-medium group-hover:text-[#4F200D] transition-colors">
                 On Sale
               </span>
             </label>
@@ -417,15 +417,15 @@ const ProductPage = () => {
                   className="sr-only"
                 />
                 <div className={`w-5 h-5 border-2 transition-all duration-300 ${showNewArrivals
-                    ? 'bg-secondary border-secondary'
-                    : 'border-background group-hover:border-secondary'
+                    ? 'bg-[#4F200D] border-[#4F200D]'
+                    : 'border-background group-hover:border-[#4F200D]'
                   }`}>
                   {showNewArrivals && (
                     <Check size={14} className="text-white absolute top-0.5 left-0.5" />
                   )}
                 </div>
               </div>
-              <span className="ml-3 text-sm font-medium group-hover:text-secondary transition-colors">
+              <span className="ml-3 text-sm font-medium group-hover:text-[#4F200D] transition-colors">
                 New Arrivals
               </span>
               <span className="ml-auto text-xs text-text/50 font-medium">Last 30 days</span>
@@ -439,10 +439,10 @@ const ProductPage = () => {
   return (
     <div className="min-h-screen bg-white mt-16 sm:mt-20">
       {/* Header Section */}
-      <section className="py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8 border-b border-background/30">
+      <section className="py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8 border-b border-[#FBF7F3]/30">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-6 sm:mb-8">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-3">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-3" style={{ fontFamily: "'Cormorant Garamond',Georgia,serif" }}>
               {getCollectionTitle()}
             </h1>
             {filteredProducts.length > 0 && (
@@ -458,14 +458,14 @@ const ProductPage = () => {
               <div className="flex items-center border-2 border-background overflow-hidden">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2.5 transition-all duration-300 ${viewMode === 'grid' ? 'bg-secondary text-white' : 'bg-white text-text/60 hover:text-secondary'
+                  className={`p-2.5 transition-all duration-300 ${viewMode === 'grid' ? 'bg-[#4F200D] text-white' : 'bg-white text-text/60 hover:text-[#4F200D]'
                     }`}
                 >
                   <Grid3x3 size={18} />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2.5 transition-all duration-300 ${viewMode === 'list' ? 'bg-secondary text-white' : 'bg-white text-text/60 hover:text-secondary'
+                  className={`p-2.5 transition-all duration-300 ${viewMode === 'list' ? 'bg-[#4F200D] text-white' : 'bg-white text-text/60 hover:text-[#4F200D]'
                     }`}
                 >
                   <List size={18} />
@@ -482,7 +482,7 @@ const ProductPage = () => {
                 <select
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
-                  className="appearance-none border-2 border-background bg-white px-4 py-2.5 pr-10 font-medium text-sm focus:border-secondary focus:outline-none transition-colors"
+                  className="appearance-none border-2 border-background bg-white px-4 py-2.5 pr-10 font-medium text-sm focus:border-[#4F200D] focus:outline-none transition-colors"
                 >
                   {sortOptions.map(option => (
                     <option key={option.value} value={option.value}>{option.label}</option>
@@ -496,35 +496,35 @@ const ProductPage = () => {
       </section>
 
       {/* Mobile Sticky Controls */}
-      <div className="sm:hidden sticky top-16 z-30 bg-white border-b border-background/30 shadow-sm">
+      <div className="sm:hidden sticky top-16 z-30 bg-white border-b border-[#FBF7F3]/30 shadow-sm">
         <div className="flex items-center p-3 gap-2">
           <button
             onClick={() => setShowFilters(true)}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-background bg-white active:bg-background/20 transition-all relative"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-background bg-white active:bg-[#FBF7F3]/20 transition-all relative"
           >
             <SlidersHorizontal size={18} />
             <span className="font-semibold text-sm tracking-wide uppercase">Filter</span>
             {activeFiltersCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-secondary text-white rounded-full text-xs flex items-center justify-center font-semibold">
+              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#4F200D] text-white rounded-full text-xs flex items-center justify-center font-semibold">
                 {activeFiltersCount}
               </span>
             )}
           </button>
           <button
             onClick={() => setShowSortModal(true)}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-background bg-white active:bg-background/20 transition-all"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-background bg-white active:bg-[#FBF7F3]/20 transition-all"
           >
             <ChevronDown size={18} />
             <span className="font-semibold text-sm tracking-wide uppercase">Sort</span>
           </button>
           <button
             onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-            className={`p-3 border-2 border-background transition-all ${viewMode === 'grid' ? 'bg-secondary text-white' : 'bg-white text-text'}`}
+            className={`p-3 border-2 border-background transition-all ${viewMode === 'grid' ? 'bg-[#4F200D] text-white' : 'bg-white text-text'}`}
           >
             {viewMode === 'grid' ? <Grid3x3 size={18} /> : <List size={18} />}
           </button>
         </div>
-        <div className="px-4 py-2 text-xs text-text/50 font-medium text-center border-t border-background/20">
+        <div className="px-4 py-2 text-xs text-text/50 font-medium text-center border-t border-[#FBF7F3]/20">
           Showing {displayedProducts.length} of {filteredProducts.length} items
         </div>
       </div>
@@ -533,9 +533,9 @@ const ProductPage = () => {
       {showFilters && (
         <div className="sm:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex flex-col">
           <div className="bg-white flex-1 flex flex-col overflow-hidden animate-slideUp">
-            <div className="flex justify-between items-center p-4 border-b border-background bg-gradient-to-r from-background/20 to-primary">
+            <div className="flex justify-between items-center p-4 border-b border-background bg-gradient-to-r from-[#FBF7F3]/20 to-primary">
               <h3 className="text-lg font-serif font-semibold uppercase tracking-wide">Filters</h3>
-              <button onClick={() => setShowFilters(false)} className="p-2 hover:bg-background/20 rounded-full transition-colors active:scale-95">
+              <button onClick={() => setShowFilters(false)} className="p-2 hover:bg-[#FBF7F3]/20 rounded-full transition-colors active:scale-95">
                 <X size={20} />
               </button>
             </div>
@@ -551,7 +551,7 @@ const ProductPage = () => {
               </button>
               <button
                 onClick={applyFilters}
-                className="flex-1 py-3 bg-secondary text-white font-semibold tracking-wide uppercase active:scale-[0.98] transition-transform"
+                className="flex-1 py-3 bg-[#4F200D] text-white font-semibold tracking-wide uppercase active:scale-[0.98] transition-transform"
               >
                 Apply
               </button>
@@ -578,10 +578,10 @@ const ProductPage = () => {
                     setSortOption(option.value);
                     setShowSortModal(false);
                   }}
-                  className={`w-full text-left px-5 py-4 transition-all duration-300 active:scale-[0.99] border-b border-background/30 last:border-b-0 ${
+                  className={`w-full text-left px-5 py-4 transition-all duration-300 active:scale-[0.99] border-b border-[#FBF7F3]/30 last:border-b-0 ${
                     sortOption === option.value
-                      ? 'bg-secondary text-white font-semibold'
-                      : 'bg-white text-text hover:bg-background/20'
+                      ? 'bg-[#4F200D] text-white font-semibold'
+                      : 'bg-white text-text hover:bg-[#FBF7F3]/20'
                   }`}
                 >
                   {option.label}
@@ -635,7 +635,7 @@ const ProductPage = () => {
                           onClick={() => navigate(`/product/${product._id}`)}
                           className="flex gap-4 p-4 bg-white border border-background hover:shadow-lg transition-all duration-300 cursor-pointer group active:scale-[0.99]"
                         >
-                          <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden bg-gradient-to-br from-background/20 to-primary">
+                          <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden bg-gradient-to-br from-[#FBF7F3]/20 to-primary">
                             <img
                               src={product.images[0]}
                               alt={product.name}
@@ -643,7 +643,7 @@ const ProductPage = () => {
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-serif font-semibold text-base sm:text-lg text-text mb-2 line-clamp-2 group-hover:text-secondary transition-colors">
+                            <h3 className="font-serif font-semibold text-base sm:text-lg text-text mb-2 line-clamp-2 group-hover:text-[#4F200D] transition-colors">
                               {product.name}
                             </h3>
                             {product.description && (
@@ -652,11 +652,11 @@ const ProductPage = () => {
                               </p>
                             )}
                             <div className="flex items-center gap-3">
-                              <div className="text-xl sm:text-2xl font-serif font-bold text-secondary">
+                              <div className="text-xl sm:text-2xl font-serif font-bold text-[#4F200D]">
                                 {currency}{product.price}
                               </div>
                               {product.bestseller && (
-                                <span className="px-2 py-1 bg-secondary/10 text-secondary text-xs font-semibold uppercase tracking-wide">
+                                <span className="px-2 py-1 bg-[#4F200D]/10 text-[#4F200D] text-xs font-semibold uppercase tracking-wide">
                                   Bestseller
                                 </span>
                               )}
@@ -676,7 +676,7 @@ const ProductPage = () => {
 
                   {/* End of Results */}
                   {!hasMore && displayedProducts.length > 0 && (
-                    <div className="text-center py-8 border-t border-background/30 mt-8">
+                    <div className="text-center py-8 border-t border-[#FBF7F3]/30 mt-8">
                       <p className="text-text/60 font-medium text-sm">
                         You have reached the end of the collection
                       </p>
@@ -685,8 +685,8 @@ const ProductPage = () => {
                 </>
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 bg-white border border-background shadow-sm">
-                  <div className="w-20 h-20 bg-gradient-to-br from-background/30 to-primary rounded-full flex items-center justify-center mb-6">
-                    <ShoppingBag size={40} className="text-secondary" />
+                  <div className="w-20 h-20 bg-gradient-to-br from-[#FBF7F3]/30 to-primary rounded-full flex items-center justify-center mb-6">
+                    <ShoppingBag size={40} className="text-[#4F200D]" />
                   </div>
                   <div className="text-center max-w-md px-4">
                     <h3 className="text-xl sm:text-2xl font-serif font-semibold mb-3">No Products Found</h3>
@@ -696,13 +696,13 @@ const ProductPage = () => {
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <button
                         onClick={clearFilters}
-                        className="px-6 py-3 bg-secondary text-white font-semibold hover:bg-[#8B6F47] transition-all active:scale-95 text-sm sm:text-base uppercase tracking-wide"
+                        className="px-6 py-3 bg-[#4F200D] text-white font-semibold hover:bg-[#8B6F47] transition-all active:scale-95 text-sm sm:text-base uppercase tracking-wide"
                       >
                         Clear Filters
                       </button>
                       <button
                         onClick={() => navigate('/')}
-                        className="px-6 py-3 border-2 border-background bg-white text-text font-semibold hover:bg-background/20 transition-all active:scale-95 text-sm sm:text-base uppercase tracking-wide"
+                        className="px-6 py-3 border-2 border-background bg-white text-text font-semibold hover:bg-[#FBF7F3]/20 transition-all active:scale-95 text-sm sm:text-base uppercase tracking-wide"
                       >
                         Browse All
                       </button>
@@ -719,7 +719,7 @@ const ProductPage = () => {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 w-12 h-12 bg-secondary text-white rounded-full shadow-xl flex items-center justify-center hover:bg-[#8B6F47] transition-all duration-300 z-40 active:scale-95"
+          className="fixed bottom-6 right-6 w-12 h-12 bg-[#4F200D] text-white rounded-full shadow-xl flex items-center justify-center hover:bg-[#8B6F47] transition-all duration-300 z-40 active:scale-95"
           aria-label="Scroll to top"
         >
           <ArrowUp size={20} />
