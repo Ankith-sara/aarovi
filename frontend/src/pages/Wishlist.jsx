@@ -45,7 +45,7 @@ const Wishlist = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-white pt-20">
+      <div className="min-h-screen flex items-center justify-center pt-20" style={{ background: '#FBF7F3' }}>
         <div className="animate-spin w-8 h-8 border-2 border-[#4F200D] border-t-transparent rounded-full" />
       </div>
     );
@@ -53,7 +53,7 @@ const Wishlist = () => {
 
   if (wishlistProducts.length === 0) {
     return (
-      <div className="min-h-screen" style={{ background: '#FBF7F3' }} flex items-center justify-center px-4 py-12">
+      <div className="min-h-screen flex items-center justify-center px-4 py-12" style={{ background: '#FBF7F3' }}>
         <div className="text-center max-w-md">
           <div className="relative inline-block mb-8">
             <div className="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center">
@@ -77,7 +77,7 @@ const Wishlist = () => {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#FBF7F3' }} py-20 mt-8">
+    <div className="min-h-screen py-20 mt-8" style={{ background: '#FBF7F3' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
