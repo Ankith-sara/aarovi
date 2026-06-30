@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
-import { backendUrl, currency } from '../App';
+import { backendUrl, currency } from '../AdminLayout';
 import { toast } from 'react-toastify';
 import {
   Upload, Package, Tag, Star, AlertCircle,
@@ -138,7 +138,9 @@ const Add = ({ token }) => {
       console.error("Error while submitting the product:", error);
       if (error.response?.status === 401) {
         toast.error('Session expired. Please login again');
-        window.location.href = '/login';
+        localStorage.removeItem('token');
+        localStorage.removeItem('adminToken');
+        window.location.reload();
       } else {
         toast.error(error.response?.data?.message || 'Failed to add product');
       }
@@ -166,31 +168,31 @@ const Add = ({ token }) => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <section className="py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background">
+      <section className="py-8 px-4 sm:px-6 lg:px-8 font-inter">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-12">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-2">
+          <div className="mb-10">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-polysans tracking-tight font-bold text-text mb-2">
               Add New Product
             </h1>
-            <p className="text-text/50 font-light leading-relaxed">
+            <p className="text-text/50 font-light leading-relaxed text-sm">
               Create a new product listing with images, details, and pricing
             </p>
           </div>
 
           <div className="space-y-6">
             {/* Image Upload Section */}
-            <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
-              <div className="p-6 border-b border-background/30">
+            <div className="bg-primary rounded-lg border border-secondary/15 overflow-hidden shadow-sm">
+              <div className="p-6 border-b border-secondary/10 bg-background/30">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
-                      <Image size={20} className="text-secondary" />
+                      <Image size={18} className="text-secondary" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-serif font-bold text-text">Product Images</h2>
-                      <p className="text-sm text-text/50 font-light">{images.length}/6 images uploaded</p>
+                      <h2 className="text-lg font-polysans tracking-tight font-bold text-text">Product Images</h2>
+                      <p className="text-xs text-text/50 font-light">{images.length}/6 images uploaded</p>
                     </div>
                   </div>
                 </div>
@@ -204,9 +206,9 @@ const Add = ({ token }) => {
                   onDragOver={handleDrag}
                   onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`relative border-2 border-dashed rounded-2xl p-12 transition-all duration-300 cursor-pointer ${dragActive
+                  className={`relative border-2 border-dashed rounded-lg p-10 transition-all duration-300 cursor-pointer ${dragActive
                       ? 'border-secondary bg-secondary/5 scale-[1.01]'
-                      : 'border-background/40 hover:border-secondary/50 hover:bg-background/20'
+                      : 'border-secondary/20 hover:border-secondary/40 hover:bg-background/30'
                     }`}
                 >
                   <input
@@ -219,19 +221,19 @@ const Add = ({ token }) => {
                   />
 
                   <div className="text-center">
-                    <div className="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <Upload size={36} className="text-secondary" />
+                    <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Upload size={28} className="text-secondary" />
                     </div>
-                    <h3 className="text-xl font-serif font-bold text-text mb-3">
+                    <h3 className="text-lg font-polysans tracking-tight font-bold text-text mb-2">
                       {dragActive ? 'Drop images here' : 'Upload Product Images'}
                     </h3>
-                    <p className="text-text/50 font-light mb-6">
+                    <p className="text-text/50 font-light mb-4 text-sm">
                       Drag & drop images here, or click to browse
                     </p>
-                    <div className="flex items-center justify-center gap-3 text-sm text-text/40">
-                      <span className="px-3 py-1 bg-background/30 rounded-full">JPG, PNG, GIF</span>
+                    <div className="flex items-center justify-center gap-3 text-xs text-text/50 font-semibold">
+                      <span className="px-3 py-1 bg-secondary/5 border border-secondary/10 rounded-full">JPG, PNG, GIF</span>
                       <span>•</span>
-                      <span className="px-3 py-1 bg-background/30 rounded-full">Max 6 images</span>
+                      <span className="px-3 py-1 bg-secondary/5 border border-secondary/10 rounded-full">Max 6 images</span>
                     </div>
                   </div>
                 </div>
@@ -241,7 +243,7 @@ const Add = ({ token }) => {
                   <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
                     {images.map((image, index) => (
                       <div key={index} className="relative group">
-                        <div className="border-2 border-background/30 bg-white">
+                        <div className="border border-secondary/15 bg-primary overflow-hidden rounded-lg aspect-square">
                           <img
                             src={URL.createObjectURL(image)}
                             alt={`Product ${index + 1}`}
@@ -251,12 +253,12 @@ const Add = ({ token }) => {
                         <button
                           type="button"
                           onClick={() => removeImage(index)}
-                          className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-lg"
+                          className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all shadow-sm"
                         >
-                          <X size={14} />
+                          <X size={12} />
                         </button>
                         {index === 0 && (
-                          <div className="absolute bottom-2 left-2 bg-secondary text-white px-2 py-1 rounded-lg text-xs font-semibold">
+                          <div className="absolute bottom-2 left-2 bg-secondary text-primary px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase">
                             Primary
                           </div>
                         )}
@@ -266,12 +268,12 @@ const Add = ({ token }) => {
                 )}
 
                 {images.length === 0 && (
-                  <div className="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4">
+                  <div className="mt-6 bg-gold/10 border border-gold/20 rounded-lg p-4">
                     <div className="flex items-start gap-3">
-                      <AlertCircle size={18} className="text-amber-600 flex-shrink-0 mt-0.5" />
+                      <AlertCircle size={16} className="text-gold flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-sm font-semibold text-amber-800 mb-1">No images uploaded</p>
-                        <p className="text-xs text-amber-700 font-light">Please upload at least one product image to continue</p>
+                        <p className="text-xs font-semibold text-text mb-0.5">No images uploaded</p>
+                        <p className="text-xs text-text/60 font-light">Please upload at least one product image to continue</p>
                       </div>
                     </div>
                   </div>
@@ -282,28 +284,28 @@ const Add = ({ token }) => {
             {/* Two Column Layout */}
             <div className="grid lg:grid-cols-2 gap-6">
               {/* Product Information */}
-              <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
-                <div className="p-6 border-b border-background/30">
+              <div className="bg-primary rounded-lg border border-secondary/15 overflow-hidden shadow-sm">
+                <div className="p-6 border-b border-secondary/10 bg-background/30">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
-                      <Package size={20} className="text-secondary" />
+                      <Package size={18} className="text-secondary" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-serif font-bold text-text">Product Details</h2>
-                      <p className="text-sm text-text/50 font-light">Basic information</p>
+                      <h2 className="text-lg font-polysans tracking-tight font-bold text-text">Product Details</h2>
+                      <p className="text-xs text-text/50 font-light">Basic information</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="p-6 space-y-6">
                   <div>
-                    <label className="block text-sm font-semibold text-text/70 mb-2">
+                    <label className="block text-xs font-semibold text-text/70 mb-2 uppercase tracking-wide">
                       Product Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       onChange={(e) => setName(e.target.value)}
                       value={name}
-                      className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-colors bg-white font-light"
+                      className="w-full px-4 py-2.5 border border-secondary/20 rounded-lg bg-primary focus:outline-none focus:border-secondary text-text font-light text-sm"
                       type="text"
                       placeholder="e.g., Elegant Cotton Kurti Set"
                       required
@@ -311,13 +313,13 @@ const Add = ({ token }) => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-text/70 mb-2">
+                    <label className="block text-xs font-semibold text-text/70 mb-2 uppercase tracking-wide">
                       Product Description <span className="text-red-500">*</span>
                     </label>
                     <textarea
                       onChange={(e) => setDescription(e.target.value)}
                       value={description}
-                      className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-colors resize-none bg-white font-light"
+                      className="w-full px-4 py-2.5 border border-secondary/20 rounded-lg bg-primary focus:outline-none focus:border-secondary text-text font-light text-sm resize-none"
                       rows={5}
                       placeholder="Describe your product in detail..."
                       required
@@ -327,15 +329,15 @@ const Add = ({ token }) => {
               </div>
 
               {/* Category & Pricing */}
-              <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
-                <div className="p-6 border-b border-background/30">
+              <div className="bg-primary rounded-lg border border-secondary/15 overflow-hidden shadow-sm">
+                <div className="p-6 border-b border-secondary/10 bg-background/30">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
-                      <Tag size={20} className="text-secondary" />
+                      <Tag size={18} className="text-secondary" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-serif font-bold text-text">Category & Pricing</h2>
-                      <p className="text-sm text-text/50 font-light">Classification details</p>
+                      <h2 className="text-lg font-polysans tracking-tight font-bold text-text">Category & Pricing</h2>
+                      <p className="text-xs text-text/50 font-light">Classification details</p>
                     </div>
                   </div>
                 </div>
@@ -343,13 +345,13 @@ const Add = ({ token }) => {
                 <div className="p-6 space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-text/70 mb-2">
+                      <label className="block text-xs font-semibold text-text/70 mb-2 uppercase tracking-wide">
                         Category <span className="text-red-500">*</span>
                       </label>
                       <select
                         onChange={(e) => { setCategory(e.target.value); setSubCategory(""); setSizes([]); }}
                         value={category}
-                        className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-colors bg-white font-light"
+                        className="w-full px-4 py-2.5 border border-secondary/20 rounded-lg bg-primary focus:outline-none focus:border-secondary text-text font-semibold text-sm appearance-none cursor-pointer"
                       >
                         {Object.keys(categoryData).map(cat => (
                           <option key={cat} value={cat}>{cat}</option>
@@ -358,13 +360,13 @@ const Add = ({ token }) => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-text/70 mb-2">
+                      <label className="block text-xs font-semibold text-text/70 mb-2 uppercase tracking-wide">
                         Sub-Category <span className="text-red-500">*</span>
                       </label>
                       <select
                         onChange={(e) => setSubCategory(e.target.value)}
                         value={subCategory}
-                        className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-colors bg-white font-light"
+                        className="w-full px-4 py-2.5 border border-secondary/20 rounded-lg bg-primary focus:outline-none focus:border-secondary text-text font-semibold text-sm appearance-none cursor-pointer"
                         required
                       >
                         {currentCategoryData.subCategories.map((subCat, index) => (
@@ -375,15 +377,15 @@ const Add = ({ token }) => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-text/70 mb-2">
+                    <label className="block text-xs font-semibold text-text/70 mb-2 uppercase tracking-wide">
                       Price ({currency}) <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text/40 font-semibold">₹</span>
+                      <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text/40 font-semibold text-sm">₹</span>
                       <input
                         onChange={(e) => setPrice(e.target.value)}
                         value={price}
-                        className="w-full pl-9 pr-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-colors bg-white font-light"
+                        className="w-full pl-9 pr-4 py-2.5 border border-secondary/20 rounded-lg bg-primary focus:outline-none focus:border-secondary text-text font-light text-sm"
                         type="number"
                         placeholder="0.00"
                         min="0"
@@ -397,22 +399,22 @@ const Add = ({ token }) => {
             </div>
 
             {/* Wash Care Instructions */}
-            <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
-              <div className="p-6 border-b border-background/30">
+            <div className="bg-primary rounded-lg border border-secondary/15 overflow-hidden shadow-sm">
+              <div className="p-6 border-b border-secondary/10 bg-background/30">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
-                      <Droplet size={20} className="text-secondary" />
+                      <Droplet size={18} className="text-secondary" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-serif font-bold text-text">Wash Care Instructions</h2>
-                      <p className="text-sm text-text/50 font-light">Care and maintenance guidelines</p>
+                      <h2 className="text-lg font-polysans tracking-tight font-bold text-text">Wash Care Instructions</h2>
+                      <p className="text-xs text-text/50 font-light">Care and maintenance guidelines</p>
                     </div>
                   </div>
                   <button
                     type="button"
                     onClick={handleUseDefaultWashCare}
-                    className="px-4 py-2 text-sm bg-secondary/10 text-secondary hover:bg-secondary/20 rounded-lg font-semibold transition-colors"
+                    className="px-4 py-1.5 text-xs bg-secondary/10 text-text hover:bg-secondary/20 rounded-full border border-secondary/15 font-semibold transition-colors"
                   >
                     Use Default
                   </button>
@@ -423,7 +425,7 @@ const Add = ({ token }) => {
                 <textarea
                   onChange={(e) => setWashCare(e.target.value)}
                   value={washCare}
-                  className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-colors resize-none bg-white font-light"
+                  className="w-full px-4 py-2.5 border border-secondary/20 rounded-lg bg-primary focus:outline-none focus:border-secondary text-text font-light text-sm resize-none"
                   rows={6}
                   placeholder="Enter wash care instructions, each on a new line...&#10;Example:&#10;Dry clean or hand wash with mild detergent&#10;Do not machine wash or soak&#10;Wash separately, dry inside out in shade"
                 />
@@ -432,29 +434,29 @@ const Add = ({ token }) => {
 
             {/* Sizes */}
             {currentCategoryData.sizes.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
-                <div className="p-6 border-b border-background/30">
+              <div className="bg-primary rounded-lg border border-secondary/15 overflow-hidden shadow-sm">
+                <div className="p-6 border-b border-secondary/10 bg-background/30">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
-                      <Package size={20} className="text-secondary" />
+                      <Package size={18} className="text-secondary" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-serif font-bold text-text">Available Sizes</h2>
-                      <p className="text-sm text-text/50 font-light">Select all applicable sizes</p>
+                      <h2 className="text-lg font-polysans tracking-tight font-bold text-text">Available Sizes</h2>
+                      <p className="text-xs text-text/50 font-light">Select all applicable sizes</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="p-6">
-                  <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap gap-2.5">
                     {currentCategoryData.sizes.map((size) => (
                       <button
                         key={size}
                         type="button"
                         onClick={() => toggleSize(size)}
-                        className={`px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 ${sizes.includes(size)
-                            ? 'bg-secondary text-white shadow-lg shadow-secondary/30'
-                            : 'bg-background/30 text-text hover:bg-background/50'
+                        className={`px-5 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${sizes.includes(size)
+                            ? 'bg-secondary text-primary shadow-sm'
+                            : 'bg-secondary/10 text-text hover:bg-secondary/20'
                           }`}
                       >
                         {size}
@@ -463,10 +465,10 @@ const Add = ({ token }) => {
                   </div>
 
                   {sizes.length > 0 && (
-                    <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-4">
+                    <div className="mt-4 bg-green-500/10 border border-green-500/20 rounded-lg p-4">
                       <div className="flex items-center gap-2">
-                        <CheckCircle2 size={16} className="text-green-600" />
-                        <span className="text-sm font-semibold text-green-700">
+                        <CheckCircle2 size={14} className="text-green-700" />
+                        <span className="text-xs font-semibold text-green-700">
                           {sizes.length} size{sizes.length !== 1 ? 's' : ''} selected
                         </span>
                       </div>
@@ -477,44 +479,44 @@ const Add = ({ token }) => {
             )}
 
             {/* Bestseller */}
-            <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
+            <div className="bg-primary rounded-lg border border-secondary/15 overflow-hidden shadow-sm">
               <div className="p-6">
-                <label className="flex items-center gap-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl cursor-pointer hover:bg-yellow-100 transition-colors">
+                <label className="flex items-center gap-4 p-4 bg-gold/10 border border-gold/20 rounded-lg cursor-pointer hover:bg-gold/15 transition-colors">
                   <input
                     type="checkbox"
                     checked={bestseller}
                     onChange={() => setBestseller(prev => !prev)}
-                    className="w-5 h-5 text-yellow-600 border-yellow-300 rounded focus:ring-yellow-500"
+                    className="w-5 h-5 text-gold border-gold/30 rounded focus:ring-gold bg-primary"
                   />
                   <div className="flex items-center gap-2">
-                    <Star className="text-yellow-500" size={20} fill="currentColor" />
-                    <span className="font-serif font-bold text-text">Mark as Bestseller</span>
+                    <Star className="text-gold" size={18} fill="currentColor" />
+                    <span className="font-polysans tracking-tight font-bold text-text">Mark as Bestseller</span>
                   </div>
                 </label>
               </div>
             </div>
 
             {/* Submit Buttons */}
-            <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden sticky bottom-4 z-10">
+            <div className="bg-primary/90 backdrop-blur-md rounded-lg border border-secondary/15 overflow-hidden sticky bottom-4 z-10 shadow-md">
               <div className="p-6">
                 <div className="flex flex-col sm:flex-row gap-4">
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="flex-1 px-6 py-4 bg-background/40 text-text font-semibold rounded-xl hover:bg-background/60 transition-all duration-300"
+                    className="flex-1 px-6 py-3 bg-background/50 border border-secondary/15 text-text font-semibold rounded-full hover:bg-background/80 transition-all text-xs"
                     disabled={loading}
                   >
                     Reset Form
                   </button>
                   <button
                     onClick={handleSubmit}
-                    className="flex-1 px-8 py-4 bg-secondary text-white font-semibold rounded-xl transition-all duration-300 hover:bg-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-secondary/30"
+                    className="flex-1 px-8 py-3 bg-secondary text-primary font-semibold rounded-full transition-all hover:bg-secondary/95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm text-xs"
                     type="button"
                     disabled={loading}
                   >
                     {loading ? (
                       <>
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
                         <span>Adding Product...</span>
                       </>
                     ) : (

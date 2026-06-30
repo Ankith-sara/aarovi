@@ -69,10 +69,6 @@ const editProduct = async (req, res) => {
             return res.status(404).json({ success: false, message: "Product not found" });
         }
 
-        if (existingProduct.adminId.toString() !== adminId) {
-            return res.status(403).json({ success: false, message: "Forbidden: You can only edit your own products." });
-        }
-
         const imageFiles = [
             req.files?.image1?.[0],
             req.files?.image2?.[0],
@@ -121,11 +117,9 @@ const editProduct = async (req, res) => {
     }
 };
 
-// Function for listing products (per admin)
 const listProducts = async (req, res) => {
     try {
-        const adminId = req.user.id;
-        const products = await productModel.find({ adminId });
+        const products = await productModel.find({});
         res.json({ success: true, products });
     } catch (error) {
         console.error(error);
@@ -155,11 +149,10 @@ const listAllProductsPublic = async (req, res) => {
 const removeProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const adminId = req.user.id;
 
-        const deletedProduct = await productModel.findOneAndDelete({ _id: id, adminId });
+        const deletedProduct = await productModel.findByIdAndDelete(id);
         if (!deletedProduct) {
-            return res.status(404).json({ success: false, message: "Product not found or not owned by you" });
+            return res.status(404).json({ success: false, message: "Product not found" });
         }
         cache.del(PRODUCTS_CACHE_KEY);
         res.json({ success: true, message: "Product removed successfully" });

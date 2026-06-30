@@ -13,7 +13,7 @@ import {
     ChevronLeft, ChevronRight
 } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
-import { backendUrl, currency } from "../App";
+import { backendUrl, currency } from "../AdminLayout";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement, ArcElement);
 
@@ -33,7 +33,9 @@ const AdminPanel = ({ token, setToken }) => {
             } catch (error) {
                 if (error.response?.status === 401) {
                     toast.error('Session expired');
-                    navigate("/login");
+                    setToken('');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('adminToken');
                 }
             }
         };
@@ -41,42 +43,42 @@ const AdminPanel = ({ token, setToken }) => {
     }, [token, navigate]);
 
     return (
-        <div className="min-h-screen bg-white">
-            <section className="sticky top-0 z-30 bg-white/95 backdrop-blur-xl border-b border-background/30 shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="min-h-screen bg-background">
+            <section className="sticky top-0 z-30 bg-primary/90 backdrop-blur-xl border-b border-secondary/15">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center">
-                                <Shield size={24} className="text-secondary" />
+                            <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
+                                <Shield size={22} className="text-secondary" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-serif font-bold text-text">Admin Dashboard</h1>
-                                <p className="text-sm text-text/50 font-light">Management & Analytics</p>
+                                <h1 className="text-2xl font-polysans tracking-tight font-bold text-text">Admin Dashboard</h1>
+                                <p className="text-xs text-text/50 font-light font-inter">Management & Analytics</p>
                             </div>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex bg-background/60 border border-secondary/10 rounded-full p-1 shadow-sm">
                             <button
                                 onClick={() => setActiveTab("dashboard")}
-                                className={`px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 ${
-                                    activeTab === 'dashboard' ? 'bg-secondary text-white shadow-lg shadow-secondary/30' : 'text-text/70 hover:bg-background/30'
+                                className={`px-6 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 ${
+                                    activeTab === 'dashboard' ? 'bg-secondary text-primary shadow-sm' : 'text-text/70 hover:text-text'
                                 }`}
                             >
-                                <span className="flex items-center gap-2"><BarChart2 size={18} />Dashboard</span>
+                                <span className="flex items-center gap-2"><BarChart2 size={15} />Dashboard</span>
                             </button>
                             <button
                                 onClick={() => setActiveTab("profile")}
-                                className={`px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 ${
-                                    activeTab === 'profile' ? 'bg-secondary text-white shadow-lg shadow-secondary/30' : 'text-text/70 hover:bg-background/30'
+                                className={`px-6 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 ${
+                                    activeTab === 'profile' ? 'bg-secondary text-primary shadow-sm' : 'text-text/70 hover:text-text'
                                 }`}
                             >
-                                <span className="flex items-center gap-2"><User size={18} />Profile</span>
+                                <span className="flex items-center gap-2"><User size={15} />Profile</span>
                             </button>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <main className="px-4 sm:px-6 lg:px-8 py-12">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 font-inter">
                 {activeTab === "dashboard" && <AdminDashboard token={token} />}
                 {activeTab === "profile" && <AdminProfile token={token} adminData={adminData} setAdminData={setAdminData} />}
             </main>
@@ -187,13 +189,13 @@ const AdminDashboard = ({ token }) => {
         datasets: [{
             label: "Revenue",
             data: orders.slice(0, 12).reverse().map(o => parseFloat(o.amount || 0)),
-            borderColor: "#e11d48",
-            backgroundColor: "rgba(225, 29, 72, 0.1)",
+            borderColor: "#4F200D",
+            backgroundColor: "rgba(79, 32, 13, 0.06)",
             fill: true,
             tension: 0.4,
-            borderWidth: 3,
-            pointRadius: 4,
-            pointHoverRadius: 6,
+            borderWidth: 2,
+            pointRadius: 3,
+            pointHoverRadius: 5,
         }]
     };
 
@@ -234,7 +236,7 @@ const AdminDashboard = ({ token }) => {
                 orders.filter(o => o.payment).length, 
                 orders.filter(o => !o.payment).length
             ],
-            backgroundColor: ['#10b981', '#f59e0b'],
+            backgroundColor: ['#4F200D', '#AF8255'],
             borderWidth: 0,
         }]
     };
@@ -271,7 +273,7 @@ const AdminDashboard = ({ token }) => {
         datasets: [{
             label: 'Products by Category',
             data: Object.values(categoryData),
-            backgroundColor: ['#e11d48', '#8b5cf6', '#3b82f6', '#10b981'],
+            backgroundColor: ['#4F200D', '#AF8255', 'rgba(79, 32, 13, 0.6)', 'rgba(175, 130, 85, 0.6)'],
             borderWidth: 0,
         }]
     };
@@ -322,19 +324,19 @@ const AdminDashboard = ({ token }) => {
     return (
         <div className="max-w-7xl mx-auto space-y-8">
             {/* Welcome Banner */}
-            <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
-                <div className="p-8 bg-gradient-to-br from-secondary/10 to-secondary/5">
+            <div className="bg-primary rounded-lg border border-secondary/15 overflow-hidden shadow-sm">
+                <div className="p-8 bg-background/30">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-3xl font-serif font-bold text-text mb-2">Welcome back, Admin!</h2>
-                            <p className="text-text/60 font-light">Here's what's happening with your store today</p>
+                            <h2 className="text-3xl font-polysans tracking-tight font-bold text-text mb-1">Welcome back, Admin!</h2>
+                            <p className="text-text/60 font-light text-sm">Here's what's happening with your store today</p>
                         </div>
                         <button
                             onClick={() => { fetchOrders(); fetchProducts(); }}
                             disabled={loading}
-                            className="flex items-center gap-2 px-4 py-2 bg-secondary/10 text-secondary hover:bg-secondary/20 rounded-xl transition-all duration-300 disabled:opacity-50 font-semibold"
+                            className="flex items-center gap-2 px-4 py-2 bg-secondary/10 text-text hover:bg-secondary/20 rounded-full border border-secondary/15 transition-all duration-300 disabled:opacity-50 font-semibold text-xs"
                         >
-                            <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+                            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
                             Refresh
                         </button>
                     </div>
@@ -346,8 +348,8 @@ const AdminDashboard = ({ token }) => {
                 {[
                     { 
                         icon: IndianRupee, 
-                        bgColor: 'bg-green-50', 
-                        iconColor: 'text-green-600', 
+                        bgColor: 'bg-secondary/5', 
+                        iconColor: 'text-secondary', 
                         label: 'Total Revenue', 
                         value: `${currency}${stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 
                         trend: `${stats.revenueGrowth >= 0 ? '+' : ''}${stats.revenueGrowth}%`,
@@ -355,44 +357,44 @@ const AdminDashboard = ({ token }) => {
                     },
                     { 
                         icon: ShoppingBag, 
-                        bgColor: 'bg-blue-50', 
-                        iconColor: 'text-blue-600', 
+                        bgColor: 'bg-gold/5', 
+                        iconColor: 'text-gold', 
                         label: 'Total Orders', 
                         value: stats.totalOrders,
                         subValue: `${stats.deliveredOrders} delivered`
                     },
                     { 
                         icon: Package, 
-                        bgColor: 'bg-purple-50', 
-                        iconColor: 'text-purple-600', 
+                        bgColor: 'bg-secondary/5', 
+                        iconColor: 'text-secondary', 
                         label: 'Total Products', 
                         value: stats.totalProducts,
                         subValue: `${Object.keys(categoryData).length} categories`
                     },
                     { 
                         icon: Sparkles, 
-                        bgColor: 'bg-pink-50', 
-                        iconColor: 'text-pink-600', 
+                        bgColor: 'bg-gold/5', 
+                        iconColor: 'text-gold', 
                         label: 'Custom Orders', 
                         value: stats.customOrders,
                         subValue: `${stats.pendingOrders} pending payment`
                     }
                 ].map((stat, i) => (
-                    <div key={i} className="group bg-white rounded-2xl shadow-md border border-background/50 p-6 hover:shadow-xl transition-all duration-300">
+                    <div key={i} className="group bg-primary rounded-lg border border-secondary/15 p-6 shadow-sm hover:border-secondary/30 transition-all duration-300">
                         <div className="flex items-start justify-between mb-4">
-                            <div className={`w-12 h-12 ${stat.bgColor} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                                <stat.icon className={stat.iconColor} size={24} />
+                            <div className={`w-12 h-12 ${stat.bgColor} rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform`}>
+                                <stat.icon className={stat.iconColor} size={22} />
                             </div>
                             {stat.trend && (
-                                <div className={`flex items-center gap-1 ${stat.trendUp ? 'text-green-600' : 'text-red-600'} text-sm font-bold`}>
-                                    {stat.trendUp ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+                                <div className={`flex items-center gap-1 ${stat.trendUp ? 'text-green-700' : 'text-red-700'} text-xs font-bold`}>
+                                    {stat.trendUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                                     <span>{stat.trend}</span>
                                 </div>
                             )}
                         </div>
-                        <p className="text-text/60 text-sm font-semibold mb-1">{stat.label}</p>
-                        <p className="text-3xl font-serif font-bold text-text mb-1">{stat.value}</p>
-                        {stat.subValue && <p className="text-xs text-text/50 font-light">{stat.subValue}</p>}
+                        <p className="text-text/50 text-xs font-semibold uppercase tracking-wider mb-1">{stat.label}</p>
+                        <p className="text-3xl font-polysans tracking-tight font-bold text-text mb-1">{stat.value}</p>
+                        {stat.subValue && <p className="text-xs text-text/40 font-light">{stat.subValue}</p>}
                     </div>
                 ))}
             </div>
@@ -400,16 +402,16 @@ const AdminDashboard = ({ token }) => {
             {/* Charts */}
             <div className="grid lg:grid-cols-3 gap-6">
                 {/* Revenue Analytics */}
-                <div className="lg:col-span-2 bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
-                    <div className="p-6 border-b border-background/30 bg-gradient-to-br from-secondary/5 to-secondary/10">
+                <div className="lg:col-span-2 bg-primary rounded-lg border border-secondary/15 overflow-hidden shadow-sm">
+                    <div className="p-6 border-b border-secondary/15 bg-background/30">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
-                                    <TrendingUp size={20} className="text-secondary" />
+                                <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                                    <TrendingUp size={18} className="text-secondary" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-serif font-bold text-text">Revenue Analytics</h3>
-                                    <p className="text-sm text-text/50 font-light">Last 12 orders trend</p>
+                                    <h3 className="text-lg font-polysans tracking-tight font-bold text-text">Revenue Analytics</h3>
+                                    <p className="text-xs text-text/50 font-light">Last 12 orders trend</p>
                                 </div>
                             </div>
                         </div>
@@ -422,15 +424,15 @@ const AdminDashboard = ({ token }) => {
                 </div>
 
                 {/* Payment Status */}
-                <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
-                    <div className="p-6 border-b border-background/30 bg-gradient-to-br from-secondary/5 to-secondary/10">
+                <div className="bg-primary rounded-lg border border-secondary/15 overflow-hidden shadow-sm">
+                    <div className="p-6 border-b border-secondary/15 bg-background/30">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
-                                <CheckCircle size={20} className="text-secondary" />
+                            <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                                <CheckCircle size={18} className="text-secondary" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-serif font-bold text-text">Payment Status</h3>
-                                <p className="text-sm text-text/50 font-light">Order distribution</p>
+                                <h3 className="text-lg font-polysans tracking-tight font-bold text-text">Payment Status</h3>
+                                <p className="text-xs text-text/50 font-light">Order distribution</p>
                             </div>
                         </div>
                     </div>
@@ -444,15 +446,15 @@ const AdminDashboard = ({ token }) => {
 
             {/* Category Distribution */}
             {Object.keys(categoryData).length > 0 && (
-                <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
-                    <div className="p-6 border-b border-background/30 bg-gradient-to-br from-secondary/5 to-secondary/10">
+                <div className="bg-primary rounded-lg border border-secondary/15 overflow-hidden shadow-sm">
+                    <div className="p-6 border-b border-secondary/15 bg-background/30">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
-                                <Package size={20} className="text-secondary" />
+                            <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                                <Package size={18} className="text-secondary" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-serif font-bold text-text">Product Categories</h3>
-                                <p className="text-sm text-text/50 font-light">Distribution by category</p>
+                                <h3 className="text-lg font-polysans tracking-tight font-bold text-text">Product Categories</h3>
+                                <p className="text-xs text-text/50 font-light">Distribution by category</p>
                             </div>
                         </div>
                     </div>
@@ -465,38 +467,43 @@ const AdminDashboard = ({ token }) => {
             )}
 
             {/* Orders Table */}
-            <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
-                <div className="p-6 border-b border-background/30 bg-gradient-to-br from-secondary/5 to-secondary/10">
+            <div className="bg-primary rounded-lg border border-secondary/15 overflow-hidden shadow-sm">
+                <div className="p-6 border-b border-secondary/15 bg-background/30">
                     <div className="flex flex-col lg:flex-row justify-between gap-4">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
-                                <ShoppingBag size={20} className="text-secondary" />
+                            <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                                <ShoppingBag size={18} className="text-secondary" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-serif font-bold text-text">Recent Orders</h3>
-                                <p className="text-sm text-text/50 font-light">{filteredOrders.length} orders found</p>
+                                <h3 className="text-lg font-polysans tracking-tight font-bold text-text">Recent Orders</h3>
+                                <p className="text-xs text-text/50 font-light">{filteredOrders.length} orders found</p>
                             </div>
                         </div>
                         <div className="flex gap-3">
                             <div className="relative">
-                                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/40" />
+                                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text/40" />
                                 <input
                                     type="text"
                                     placeholder="Search customer..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-10 pr-4 py-2 border border-background/40 rounded-xl focus:outline-none focus:border-secondary text-sm font-light"
+                                    className="pl-10 pr-4 py-2 border border-secondary/15 bg-primary rounded-full focus:outline-none focus:border-secondary text-sm font-light text-text"
                                 />
                             </div>
-                            <select
-                                value={filterStatus}
-                                onChange={(e) => setFilterStatus(e.target.value)}
-                                className="px-4 py-2 border border-background/40 rounded-xl focus:outline-none focus:border-secondary text-sm font-semibold appearance-none bg-white"
-                            >
-                                <option value="all">All Orders</option>
-                                <option value="paid">Paid</option>
-                                <option value="pending">Pending</option>
-                            </select>
+                            <div className="relative">
+                                <select
+                                    value={filterStatus}
+                                    onChange={(e) => setFilterStatus(e.target.value)}
+                                    className="pl-5 pr-10 py-2 border border-secondary/15 bg-primary text-text rounded-full focus:outline-none focus:border-secondary text-sm font-semibold appearance-none cursor-pointer"
+                                >
+                                    <option value="all">All Orders</option>
+                                    <option value="paid">Paid</option>
+                                    <option value="pending">Pending</option>
+                                </select>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text/55">
+                                    <Filter size={12} />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -504,43 +511,43 @@ const AdminDashboard = ({ token }) => {
                     {loading ? (
                         <div className="flex items-center justify-center py-20">
                             <div className="flex flex-col items-center gap-4">
-                                <div className="w-12 h-12 border-3 border-secondary border-t-transparent rounded-full animate-spin"></div>
-                                <span className="text-lg text-text/60 font-light">Loading orders...</span>
+                                <div className="w-10 h-10 border-2 border-secondary border-t-transparent rounded-full animate-spin"></div>
+                                <span className="text-sm text-text/60 font-light">Loading orders...</span>
                             </div>
                         </div>
                     ) : filteredOrders.length === 0 ? (
                         <div className="text-center py-20">
-                            <div className="w-20 h-20 bg-background/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <ShoppingBag className="text-text/30" size={40} />
+                            <div className="w-16 h-16 bg-background/40 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <ShoppingBag className="text-text/30" size={30} />
                             </div>
-                            <h3 className="text-2xl font-serif font-bold text-text mb-3">No orders found</h3>
-                            <p className="text-text/50 font-light">Try adjusting your filters</p>
+                            <h3 className="text-xl font-polysans tracking-tight font-bold text-text mb-2">No orders found</h3>
+                            <p className="text-text/50 font-light text-sm">Try adjusting your filters</p>
                         </div>
                     ) : (
                         <>
-                            <div className="overflow-x-auto rounded-xl border border-background/30">
+                            <div className="overflow-x-auto rounded-lg border border-secondary/15">
                                 <table className="w-full">
-                                    <thead className="bg-background/20">
+                                    <thead className="bg-background/40">
                                         <tr>
                                             {['Order', 'Customer', 'Items', 'Amount', 'Status', 'Date'].map(h => (
-                                                <th key={h} className="px-6 py-4 text-left text-xs font-bold text-text/70 uppercase tracking-wider">{h}</th>
+                                                <th key={h} className="px-6 py-3.5 text-left text-xs font-semibold text-text/60 uppercase tracking-wider">{h}</th>
                                             ))}
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-background/30">
+                                    <tbody className="divide-y divide-secondary/10">
                                         {currentItems.map((order, i) => (
-                                            <tr key={order._id} className="hover:bg-background/10 transition-colors">
+                                            <tr key={order._id} className="hover:bg-background/30 transition-colors">
                                                 <td className="px-6 py-4">
                                                     <span className="text-sm font-bold text-text">#{(indexOfFirstItem + i + 1).toString().padStart(4, '0')}</span>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
-                                                            <User size={18} className="text-secondary" />
+                                                        <div className="w-9 h-9 bg-secondary/10 rounded-full flex items-center justify-center">
+                                                            <User size={15} className="text-secondary" />
                                                         </div>
                                                         <div>
                                                             <p className="text-sm font-semibold text-text">{order.address?.Name || 'N/A'}</p>
-                                                            <p className="text-xs text-text/50 font-light">{order.address?.phone || 'N/A'}</p>
+                                                            <p className="text-xs text-text/45 font-light">{order.address?.phone || 'N/A'}</p>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -552,23 +559,23 @@ const AdminDashboard = ({ token }) => {
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-1">
-                                                        <IndianRupee size={14} className="text-secondary" />
+                                                        <IndianRupee size={12} className="text-secondary" />
                                                         <span className="text-sm font-bold text-secondary">{parseFloat(order.amount || 0).toLocaleString()}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
                                                         order.payment 
-                                                            ? 'bg-green-50 text-green-700 border-green-200' 
-                                                            : 'bg-amber-50 text-amber-700 border-amber-200'
+                                                            ? 'bg-green-500/10 text-green-700 border-green-500/20' 
+                                                            : 'bg-gold/10 text-gold border-gold/20'
                                                     }`}>
-                                                        {order.payment ? <CheckCircle size={12} /> : <Clock size={12} />}
+                                                        {order.payment ? <CheckCircle size={10} /> : <Clock size={10} />}
                                                         {order.payment ? "Paid" : "Pending"}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-2 text-text/60">
-                                                        <Calendar size={14} />
+                                                        <Calendar size={13} />
                                                         <span className="text-sm font-light">{new Date(order.date).toLocaleDateString()}</span>
                                                     </div>
                                                 </td>
@@ -584,9 +591,9 @@ const AdminDashboard = ({ token }) => {
                                     <button
                                         onClick={() => paginate(currentPage - 1)}
                                         disabled={currentPage === 1}
-                                        className="p-2 rounded-lg border border-background/40 hover:bg-background/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                        className="p-2 rounded-full border border-secondary/20 hover:bg-secondary/5 disabled:opacity-50 disabled:cursor-not-allowed text-text transition-all"
                                     >
-                                        <ChevronLeft size={20} />
+                                        <ChevronLeft size={18} />
                                     </button>
 
                                     <div className="flex gap-2">
@@ -600,17 +607,17 @@ const AdminDashboard = ({ token }) => {
                                                     <button
                                                         key={page}
                                                         onClick={() => paginate(page)}
-                                                        className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                                                        className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
                                                             currentPage === page
-                                                                ? 'bg-secondary text-white shadow-lg shadow-secondary/30'
-                                                                : 'bg-background/20 text-text hover:bg-background/40'
+                                                                ? 'bg-secondary text-primary shadow-sm'
+                                                                : 'bg-secondary/10 text-text hover:bg-secondary/20'
                                                         }`}
                                                     >
                                                         {page}
                                                     </button>
                                                 );
                                             } else if (page === currentPage - 2 || page === currentPage + 2) {
-                                                return <span key={page} className="px-2 py-2 text-text/40">...</span>;
+                                                return <span key={page} className="px-2 py-1.5 text-xs text-text/40">...</span>;
                                             }
                                             return null;
                                         })}
@@ -619,9 +626,9 @@ const AdminDashboard = ({ token }) => {
                                     <button
                                         onClick={() => paginate(currentPage + 1)}
                                         disabled={currentPage === totalPages}
-                                        className="p-2 rounded-lg border border-background/40 hover:bg-background/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                        className="p-2 rounded-full border border-secondary/20 hover:bg-secondary/5 disabled:opacity-50 disabled:cursor-not-allowed text-text transition-all"
                                     >
-                                        <ChevronRight size={20} />
+                                        <ChevronRight size={18} />
                                     </button>
                                 </div>
                             )}
@@ -632,50 +639,50 @@ const AdminDashboard = ({ token }) => {
 
             {/* Quick Insights */}
             <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-white rounded-2xl shadow-md border border-background/50 p-6">
+                <div className="bg-primary rounded-lg border border-secondary/15 p-6 shadow-sm">
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
-                            <TrendingUp size={20} className="text-blue-600" />
+                        <div className="w-10 h-10 bg-gold/10 rounded-lg flex items-center justify-center">
+                            <TrendingUp size={18} className="text-gold" />
                         </div>
                         <div>
-                            <h3 className="text-lg font-serif font-bold text-text">Average Order Value</h3>
-                            <p className="text-sm text-text/50 font-light">Per transaction</p>
+                            <h3 className="text-lg font-polysans tracking-tight font-bold text-text">Average Order Value</h3>
+                            <p className="text-xs text-text/50 font-light font-inter">Per transaction</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <IndianRupee size={32} className="text-blue-600" />
-                        <span className="text-4xl font-serif font-bold text-text">
+                        <IndianRupee size={28} className="text-gold" />
+                        <span className="text-4xl font-polysans tracking-tight font-bold text-text">
                             {stats.avgOrderValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-md border border-background/50 p-6">
+                <div className="bg-primary rounded-lg border border-secondary/15 p-6 shadow-sm">
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
-                            <Activity size={20} className="text-purple-600" />
+                        <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center">
+                            <Activity size={18} className="text-secondary" />
                         </div>
                         <div>
-                            <h3 className="text-lg font-serif font-bold text-text">Recent Activity</h3>
-                            <p className="text-sm text-text/50 font-light">Last 7 days</p>
+                            <h3 className="text-lg font-polysans tracking-tight font-bold text-text">Recent Activity</h3>
+                            <p className="text-xs text-text/50 font-light font-inter">Last 7 days</p>
                         </div>
                     </div>
-                    <div className="space-y-3">
+                    <div className="space-y-3 font-inter">
                         {orders.slice(0, 3).map((order, i) => (
-                            <div key={i} className="flex items-center justify-between p-3 bg-background/10 rounded-xl">
+                            <div key={i} className="flex items-center justify-between p-3 bg-background/20 rounded-lg border border-secondary/5">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 bg-secondary/10 rounded-full flex items-center justify-center">
-                                        <ShoppingBag size={14} className="text-secondary" />
+                                        <ShoppingBag size={13} className="text-secondary" />
                                     </div>
                                     <div>
                                         <p className="text-sm font-semibold text-text">{order.address?.Name}</p>
-                                        <p className="text-xs text-text/50 font-light">
+                                        <p className="text-xs text-text/45 font-light">
                                             {new Date(order.date).toLocaleDateString()}
                                         </p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-1 text-secondary font-bold">
-                                    <IndianRupee size={12} />
+                                    <IndianRupee size={11} />
                                     <span className="text-sm">{parseFloat(order.amount || 0).toLocaleString()}</span>
                                 </div>
                             </div>
@@ -750,8 +757,8 @@ const AdminProfile = ({ token, adminData, setAdminData }) => {
         return (
             <div className="flex justify-center py-20">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-3 border-secondary border-t-transparent rounded-full animate-spin"></div>
-                    <span className="text-lg text-text/60 font-light">Loading profile...</span>
+                    <div className="w-10 h-10 border-2 border-secondary border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-sm text-text/60 font-light">Loading profile...</span>
                 </div>
             </div>
         );
@@ -759,15 +766,15 @@ const AdminProfile = ({ token, adminData, setAdminData }) => {
 
     return (
         <div className="max-w-5xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-xl border border-background/50 overflow-hidden">
+            <div className="bg-primary rounded-lg border border-secondary/15 overflow-hidden shadow-sm">
                 {/* Header Banner */}
-                <div className="h-48 bg-gradient-to-br from-secondary/10 to-secondary/5 relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-secondary/20 to-transparent"></div>
+                <div className="h-40 bg-background/40 relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-secondary/5 to-transparent"></div>
                 </div>
 
-                <div className="px-8 pb-8 relative">
+                <div className="px-8 pb-8 relative font-inter">
                     {/* Profile Image */}
-                    <div className="w-36 h-36 rounded-2xl border-4 border-white overflow-hidden -mt-20 mb-6 shadow-2xl bg-white">
+                    <div className="w-32 h-32 rounded-lg border-4 border-primary overflow-hidden -mt-16 mb-6 shadow-sm bg-primary">
                         <img 
                             src={adminData.image || 'https://via.placeholder.com/150'} 
                             alt="Admin" 
@@ -778,19 +785,19 @@ const AdminProfile = ({ token, adminData, setAdminData }) => {
                     <div className="flex flex-col lg:flex-row justify-between gap-8">
                         <div className="flex-1">
                             <div className="flex items-center gap-3 mb-3">
-                                <h2 className="text-4xl font-serif font-bold text-text">{adminData.name}</h2>
-                                <span className="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-xs font-bold flex items-center gap-1">
+                                <h2 className="text-4xl font-polysans tracking-tight font-bold text-text">{adminData.name}</h2>
+                                <span className="px-3 py-1 bg-secondary/10 text-text border border-secondary/20 rounded-full text-xs font-bold flex items-center gap-1">
                                     <Shield size={12} />
                                     ADMIN
                                 </span>
                             </div>
-                            <div className="flex items-center gap-2 text-text/60 mb-4">
-                                <Mail size={18} />
-                                <span className="text-lg font-light">{adminData.email}</span>
+                            <div className="flex items-center gap-2 text-text/60 mb-4 text-sm font-light">
+                                <Mail size={16} />
+                                <span>{adminData.email}</span>
                             </div>
-                            <div className="flex gap-6 text-sm text-text/50 mb-6">
+                            <div className="flex gap-6 text-xs text-text/50 mb-6 font-light">
                                 <span className="flex items-center gap-2">
-                                    <Calendar size={16} />
+                                    <Calendar size={14} />
                                     Joined {new Date(adminData.createdAt).toLocaleDateString('en-US', { 
                                         year: 'numeric', 
                                         month: 'long', 
@@ -798,7 +805,7 @@ const AdminProfile = ({ token, adminData, setAdminData }) => {
                                     })}
                                 </span>
                                 <span className="flex items-center gap-2">
-                                    <Activity size={16} />
+                                    <Activity size={14} />
                                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                                     Active Now
                                 </span>
@@ -809,34 +816,34 @@ const AdminProfile = ({ token, adminData, setAdminData }) => {
                                 {[
                                     { 
                                         icon: Shield, 
-                                        bgColor: 'bg-green-50', 
-                                        iconColor: 'text-green-600', 
+                                        bgColor: 'bg-secondary/5', 
+                                        iconColor: 'text-secondary border border-secondary/10', 
                                         label: 'Account Status', 
                                         value: 'Active' 
                                     },
                                     { 
                                         icon: Users, 
-                                        bgColor: 'bg-secondary/10', 
-                                        iconColor: 'text-secondary', 
+                                        bgColor: 'bg-gold/5', 
+                                        iconColor: 'text-gold border border-gold/10', 
                                         label: 'Role', 
                                         value: 'Administrator' 
                                     },
                                     { 
                                         icon: Calendar, 
-                                        bgColor: 'bg-orange-50', 
-                                        iconColor: 'text-orange-600', 
+                                        bgColor: 'bg-secondary/5', 
+                                        iconColor: 'text-secondary border border-secondary/10', 
                                         label: 'Last Login', 
                                         value: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
                                     }
                                 ].map((stat, i) => (
-                                    <div key={i} className="bg-background/20 rounded-xl p-5 border border-background/30">
+                                    <div key={i} className="bg-background/30 rounded-lg p-5 border border-secondary/10">
                                         <div className="flex items-center gap-4">
-                                            <div className={`w-12 h-12 ${stat.bgColor} rounded-xl flex items-center justify-center`}>
-                                                <stat.icon size={22} className={stat.iconColor} />
+                                            <div className={`w-12 h-12 ${stat.bgColor} rounded-lg flex items-center justify-center`}>
+                                                <stat.icon size={20} className={stat.iconColor} />
                                             </div>
                                             <div>
-                                                <p className="text-sm text-text/60 font-semibold">{stat.label}</p>
-                                                <p className="font-bold text-text">{stat.value}</p>
+                                                <p className="text-xs text-text/50 font-semibold">{stat.label}</p>
+                                                <p className="font-bold text-text text-sm">{stat.value}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -846,9 +853,9 @@ const AdminProfile = ({ token, adminData, setAdminData }) => {
 
                         <button
                             onClick={() => setEditModalOpen(true)}
-                            className="px-6 py-3 bg-secondary text-white font-semibold rounded-xl hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/30 flex items-center gap-2 h-fit"
+                            className="px-6 py-3 bg-secondary text-primary font-semibold rounded-full hover:bg-secondary/90 transition-all shadow-sm flex items-center justify-center gap-2 h-fit text-sm"
                         >
-                            <Edit2 size={18} />
+                            <Edit2 size={16} />
                             Edit Profile
                         </button>
                     </div>
@@ -857,36 +864,36 @@ const AdminProfile = ({ token, adminData, setAdminData }) => {
 
             {/* Edit Modal */}
             {editModalOpen && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
-                        <div className="p-6 border-b border-background/30 bg-gradient-to-br from-secondary/5 to-secondary/10 flex items-center justify-between">
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-primary rounded-lg w-full max-w-md border border-secondary/20 shadow-lg overflow-hidden">
+                        <div className="p-6 border-b border-secondary/15 bg-background/30 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
-                                    <Edit2 size={20} className="text-secondary" />
+                                <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                                    <Edit2 size={18} className="text-secondary" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-serif font-bold text-text">Edit Profile</h3>
-                                    <p className="text-sm text-text/50 font-light">Update your information</p>
+                                    <h3 className="text-lg font-polysans tracking-tight font-bold text-text">Edit Profile</h3>
+                                    <p className="text-xs text-text/50 font-light font-inter">Update your information</p>
                                 </div>
                             </div>
                             <button 
                                 onClick={() => setEditModalOpen(false)} 
-                                className="p-2 text-text/40 hover:text-text hover:bg-background/30 rounded-xl transition-all duration-300"
+                                className="p-2 text-text/40 hover:text-text hover:bg-secondary/10 rounded-full transition-all duration-300"
                             >
-                                <X size={20} />
+                                <X size={18} />
                             </button>
                         </div>
 
-                        <form onSubmit={handleEditProfileSubmit} className="p-6 space-y-6">
+                        <form onSubmit={handleEditProfileSubmit} className="p-6 space-y-5 font-inter">
                             <div className="flex justify-center">
                                 <div className="relative">
                                     <img 
                                         src={editProfile.imagePreview || 'https://via.placeholder.com/150'} 
                                         alt="Preview" 
-                                        className="w-28 h-28 rounded-xl object-cover border-4 border-background/30" 
+                                        className="w-24 h-24 rounded-lg object-cover border-2 border-secondary/15" 
                                     />
-                                    <label className="absolute -bottom-2 -right-2 bg-secondary text-white p-2.5 rounded-xl cursor-pointer shadow-lg hover:bg-secondary/90 transition-all">
-                                        <Camera size={16} />
+                                    <label className="absolute -bottom-2 -right-2 bg-secondary text-primary p-2 rounded-full cursor-pointer shadow-sm hover:bg-secondary/90 transition-all">
+                                        <Camera size={14} />
                                         <input 
                                             type="file" 
                                             accept="image/*" 
@@ -898,22 +905,22 @@ const AdminProfile = ({ token, adminData, setAdminData }) => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-text/70 mb-2">Name</label>
+                                <label className="block text-xs font-semibold text-text/70 mb-2 uppercase tracking-wide">Name</label>
                                 <input
                                     value={editProfile.name}
                                     onChange={e => setEditProfile({ ...editProfile, name: e.target.value })}
-                                    className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-all duration-300 font-light"
+                                    className="w-full px-4 py-2.5 border border-secondary/20 rounded-lg bg-primary text-text focus:outline-none focus:border-secondary transition-all text-sm"
                                     required
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-text/70 mb-2">Email</label>
+                                <label className="block text-xs font-semibold text-text/70 mb-2 uppercase tracking-wide">Email</label>
                                 <input
                                     type="email"
                                     value={editProfile.email}
                                     onChange={e => setEditProfile({ ...editProfile, email: e.target.value })}
-                                    className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-all duration-300 font-light"
+                                    className="w-full px-4 py-2.5 border border-secondary/20 rounded-lg bg-primary text-text focus:outline-none focus:border-secondary transition-all text-sm"
                                     required
                                 />
                             </div>
@@ -922,14 +929,14 @@ const AdminProfile = ({ token, adminData, setAdminData }) => {
                                 <button 
                                     type="button"
                                     onClick={() => setEditModalOpen(false)} 
-                                    className="flex-1 px-6 py-3 bg-background/40 text-text rounded-xl font-semibold hover:bg-background/60 transition-all duration-300"
+                                    className="flex-1 px-6 py-2.5 bg-background/50 text-text border border-secondary/15 rounded-full font-semibold text-xs hover:bg-background/80 transition-all"
                                 >
                                     Cancel
                                 </button>
                                 <button 
                                     type="submit"
                                     disabled={loading} 
-                                    className="flex-1 px-6 py-3 bg-secondary text-white rounded-xl font-semibold hover:bg-secondary/90 shadow-lg shadow-secondary/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                                    className="flex-1 px-6 py-2.5 bg-secondary text-primary rounded-full font-semibold text-xs hover:bg-secondary/90 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                 >
                                     {loading ? 'Saving...' : 'Save Changes'}
                                 </button>

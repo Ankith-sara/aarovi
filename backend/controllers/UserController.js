@@ -15,15 +15,12 @@ const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString()
 const createToken = (id, role = 'user') =>
   jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
-// ── helpers ────────────────────────────────────────────────────────────────
-
-/** Send an OTP to any email, creating or updating the user record.
- *  Works for both new users (signup) and existing verified users (login). */
+// helpers 
 async function issueOtp(email, name, role = 'user') {
   let user = await userModel.findOne({ email });
 
   // Rate-limit: don't resend if a valid OTP was sent in the last 60 s
-  if (user?.otpExpiry && user.otpExpiry > new Date(Date.now() - 4 * 60 * 1000)) {
+  if (user?.otpExpiry && user.otpExpiry > new Date(Date.now() + 4 * 60 * 1000)) {
     const secsLeft = Math.ceil((user.otpExpiry - new Date()) / 1000);
     if (secsLeft > 0) {
       const err = new Error(`OTP already sent. Wait ${secsLeft}s before requesting again.`);
@@ -49,8 +46,7 @@ async function issueOtp(email, name, role = 'user') {
   return user;
 }
 
-// ── USER: send OTP (signup + login unified) ────────────────────────────────
-
+// USER: send OTP
 export const sendOtp = async (req, res) => {
   try {
     const { email, name } = req.body;
@@ -75,8 +71,7 @@ export const sendOtp = async (req, res) => {
   }
 };
 
-// ── USER: verify OTP (signup + login unified) ──────────────────────────────
-
+// USER: verify OTP 
 export const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -110,8 +105,7 @@ export const verifyOtp = async (req, res) => {
   }
 };
 
-// ── GOOGLE SIGN-IN ─────────────────────────────────────────────────────────
-
+// GOOGLE SIGN-IN 
 export const googleSignIn = async (req, res) => {
   try {
     const { credential } = req.body;
@@ -149,8 +143,47 @@ export const googleSignIn = async (req, res) => {
   }
 };
 
-// ── ADMIN: send OTP ────────────────────────────────────────────────────────
+// ADMIN: Google Sign-in
+export const adminGoogleSignIn = async (req, res) => {
+  try {
+    const { credential } = req.body;
+    if (!credential) {
+      return res.status(400).json({ success: false, message: 'Google credential is required' });
+    }
 
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const { sub: googleId, email, name, picture } = ticket.getPayload();
+
+    let user = await userModel.findOne({ email });
+
+    if (!user || user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'This email is not authorised for admin access.',
+      });
+    }
+
+    // Link Google ID if this email existed without it
+    if (!user.googleId) user.googleId = googleId;
+    if (picture && (!user.image || user.image.includes('wikipedia') || user.image.includes('placeholder'))) {
+      user.image = picture;
+    }
+    user.isVerified = true;
+    await user.save();
+
+    const token = createToken(user._id, 'admin');
+    res.json({ success: true, token, name: user.name, role: 'admin', message: `Welcome ${user.name}!` });
+  } catch (err) {
+    logger.error('Admin Google sign-in error:', err);
+    res.status(401).json({ success: false, message: 'Google sign-in failed. Please try again.' });
+  }
+};
+
+
+// ADMIN: send OTP
 export const sendAdminOtp = async (req, res) => {
   try {
     const { email } = req.body;
@@ -176,8 +209,7 @@ export const sendAdminOtp = async (req, res) => {
   }
 };
 
-// ── ADMIN: verify OTP ──────────────────────────────────────────────────────
-
+// ADMIN: verify OTP
 export const verifyAdminOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -214,8 +246,7 @@ export const verifyAdminOtp = async (req, res) => {
   }
 };
 
-// ── PROFILE ────────────────────────────────────────────────────────────────
-
+// PROFILE
 export const getUserProfile = async (req, res) => {
   try {
     const user = await userModel.findById(req.body.userId).select('-otp -otpExpiry');

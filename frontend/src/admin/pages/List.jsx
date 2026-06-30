@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { backendUrl, currency } from '../App';
+import { backendUrl, currency } from '../AdminLayout';
 import { toast } from 'react-toastify';
 import { Package, Edit3, Trash2, Search, Filter, Star, Image as ImageIcon, Upload, X, Save, CheckCircle2, IndianRupee, Grid, List as ListIcon, Tag, ChevronLeft, ChevronRight, Droplet, AlertCircle } from 'lucide-react';
 
@@ -8,26 +8,26 @@ const ImageUpload = ({ id, image, currentImage, setImage, index, onRemove }) => 
   <div className="relative group">
     <label
       htmlFor={id}
-      className="w-28 h-28 bg-white border-2 border-background/30 hover:border-secondary flex items-center justify-center rounded-xl cursor-pointer overflow-hidden transition-all duration-300"
+      className="w-28 h-28 bg-primary border border-secondary/15 hover:border-secondary flex items-center justify-center rounded-lg cursor-pointer overflow-hidden transition-all duration-300"
     >
       {image ? (
         <>
-          <img src={URL.createObjectURL(image)} alt={`Upload ${id}`} className="object-cover w-full h-full rounded-xl" />
-          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center rounded-xl">
-            <ImageIcon className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={20} />
+          <img src={URL.createObjectURL(image)} alt={`Upload ${id}`} className="object-cover w-full h-full rounded-lg" />
+          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center rounded-lg">
+            <ImageIcon className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={18} />
           </div>
         </>
       ) : currentImage ? (
         <>
-          <img src={currentImage} alt={`Current ${id}`} className="object-cover w-full h-full rounded-xl" />
-          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center rounded-xl">
-            <ImageIcon className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={20} />
+          <img src={currentImage} alt={`Current ${id}`} className="object-cover w-full h-full rounded-lg" />
+          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center rounded-lg">
+            <ImageIcon className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={18} />
           </div>
         </>
       ) : (
         <div className="flex flex-col items-center justify-center text-text/40">
-          <Upload size={20} className="mb-1" />
-          <span className="text-xs font-medium">Add Image</span>
+          <Upload size={16} className="mb-1" />
+          <span className="text-[10px] font-semibold uppercase tracking-wider">Add Image</span>
         </div>
       )}
     </label>
@@ -35,9 +35,9 @@ const ImageUpload = ({ id, image, currentImage, setImage, index, onRemove }) => 
       <button
         type="button"
         onClick={() => onRemove(index)}
-        className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg"
+        className="absolute -top-1.5 -right-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-sm"
       >
-        <Trash2 size={12} />
+        <Trash2 size={10} />
       </button>
     )}
     <input
@@ -51,8 +51,8 @@ const ImageUpload = ({ id, image, currentImage, setImage, index, onRemove }) => 
 );
 
 const ProductCard = ({ item, index, onEdit, onRemove, currency }) => (
-  <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-    <div className="relative h-80">
+  <div className="bg-primary rounded-lg border border-secondary/15 overflow-hidden hover:border-secondary/35 transition-all duration-300 shadow-sm flex flex-col h-full font-inter">
+    <div className="relative h-72 bg-background/25 p-4 flex items-center justify-center">
       <img
         src={item.images?.[0] || '/api/placeholder/300/200'}
         alt={item.name}
@@ -62,42 +62,44 @@ const ProductCard = ({ item, index, onEdit, onRemove, currency }) => (
         }}
       />
       {item.bestseller && (
-        <div className="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-lg">
-          <Star size={14} fill="white" />
+        <div className="absolute top-3 left-3 bg-gold text-primary px-3 py-1 rounded-full text-[10px] font-bold tracking-wider flex items-center gap-1 shadow-sm">
+          <Star size={10} fill="currentColor" />
           BESTSELLER
         </div>
       )}
-      <div className="absolute top-3 right-3 bg-secondary text-white rounded-xl px-3 py-1.5 shadow-lg">
-        <span className="text-xs font-bold">#{index + 1}</span>
+      <div className="absolute top-3 right-3 bg-secondary/10 text-text border border-secondary/20 rounded-full px-2.5 py-0.5 shadow-sm">
+        <span className="text-[10px] font-bold">#{index + 1}</span>
       </div>
     </div>
 
-    <div className="p-5">
-      <h3 className="font-serif font-bold text-text mb-2 line-clamp-2 text-lg">{item.name}</h3>
+    <div className="p-5 flex-1 flex flex-col justify-between">
+      <div>
+        <h3 className="font-polysans tracking-tight font-bold text-text mb-2 line-clamp-2 text-base">{item.name}</h3>
 
-      <div className="flex items-center gap-2 mb-3">
-        <Tag size={14} className="text-text/40" />
-        <span className="text-sm text-text/70 font-medium">{item.category}</span>
-        {item.subCategory && (
-          <>
-            <span className="text-text/30">•</span>
-            <span className="text-sm text-text/60 font-light">{item.subCategory}</span>
-          </>
-        )}
+        <div className="flex items-center gap-2 mb-4">
+          <Tag size={12} className="text-text/40" />
+          <span className="text-xs text-text/60 font-semibold">{item.category}</span>
+          {item.subCategory && (
+            <>
+              <span className="text-text/30">•</span>
+              <span className="text-xs text-text/50 font-light">{item.subCategory}</span>
+            </>
+          )}
+        </div>
       </div>
 
-      <div className="flex items-center justify-between pt-3 border-t border-background/30">
-        <div className="flex items-center gap-1">
-          <IndianRupee size={18} className="text-secondary" />
-          <span className="font-bold text-secondary text-xl">{item.price}</span>
+      <div className="flex items-center justify-between pt-3 border-t border-secondary/10">
+        <div className="flex items-center gap-0.5">
+          <IndianRupee size={16} className="text-secondary" />
+          <span className="font-polysans font-bold text-secondary text-lg">{item.price}</span>
         </div>
         <div className="flex gap-2">
           <button
             onClick={() => onEdit(item)}
-            className="p-2.5 text-secondary bg-secondary/10 hover:bg-secondary/20 rounded-xl transition-all duration-300"
+            className="p-2 text-text hover:text-secondary hover:bg-secondary/15 border border-secondary/15 rounded-full transition-all duration-300"
             title="Edit Product"
           >
-            <Edit3 size={16} />
+            <Edit3 size={14} />
           </button>
           <button
             onClick={() => {
@@ -105,10 +107,10 @@ const ProductCard = ({ item, index, onEdit, onRemove, currency }) => (
                 onRemove(item._id);
               }
             }}
-            className="p-2.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-all duration-300"
+            className="p-2 text-red-600 hover:bg-red-700 hover:text-white bg-red-500/10 border border-red-500/15 rounded-full transition-all duration-300"
             title="Delete Product"
           >
-            <Trash2 size={16} />
+            <Trash2 size={14} />
           </button>
         </div>
       </div>
@@ -335,35 +337,35 @@ const List = ({ token }) => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <section className="py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background">
+      <section className="py-8 px-4 sm:px-6 lg:px-8 font-inter">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-12">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-text mb-2">
+          <div className="mb-10">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-polysans tracking-tight font-bold text-text mb-2">
               Product Inventory
             </h1>
-            <p className="text-text/50 font-light leading-relaxed">
+            <p className="text-text/50 font-light leading-relaxed text-sm">
               Manage your product catalog, update listings, and track inventory
             </p>
           </div>
 
           {/* Search and Filters */}
-          <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden mb-6">
-            <div className="p-6 border-b border-background/30 bg-gradient-to-br from-secondary/5 to-secondary/10">
+          <div className="bg-primary rounded-lg border border-secondary/15 overflow-hidden shadow-sm mb-6">
+            <div className="p-6 border-b border-secondary/10 bg-background/30">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
-                    <Search size={20} className="text-secondary" />
+                  <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                    <Search size={18} className="text-secondary" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-serif font-bold text-text">Search & Filter</h2>
-                    <p className="text-sm text-text/50 font-light">Find products quickly</p>
+                    <h2 className="text-lg font-polysans tracking-tight font-bold text-text">Search & Filter</h2>
+                    <p className="text-xs text-text/50 font-light">Find products quickly</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-3xl font-serif font-bold text-secondary">{filteredList.length}</div>
-                  <div className="text-sm text-text/50 font-light">Products Found</div>
+                  <div className="text-3xl font-polysans tracking-tight font-bold text-secondary">{filteredList.length}</div>
+                  <div className="text-xs text-text/50 font-light font-semibold uppercase tracking-wider">Products Found</div>
                 </div>
               </div>
             </div>
@@ -372,28 +374,28 @@ const List = ({ token }) => {
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {/* Search */}
                 <div className="lg:col-span-2">
-                  <label className="block text-sm font-semibold text-text/70 mb-2">Search Products</label>
+                  <label className="block text-xs font-semibold text-text/70 mb-2 uppercase tracking-wide">Search Products</label>
                   <div className="relative">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text/40" size={20} />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text/40" size={16} />
                     <input
                       type="text"
                       placeholder="Search by name, category, or description..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-all duration-300 bg-white font-light"
+                      className="w-full pl-10 pr-4 py-2 border border-secondary/20 rounded-lg focus:outline-none focus:border-secondary bg-primary text-sm text-text font-light"
                     />
                   </div>
                 </div>
 
                 {/* Category Filter */}
                 <div>
-                  <label className="block text-sm font-semibold text-text/70 mb-2">Category</label>
+                  <label className="block text-xs font-semibold text-text/70 mb-2 uppercase tracking-wide">Category</label>
                   <div className="relative">
-                    <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text/40" size={20} />
+                    <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text/40" size={16} />
                     <select
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-all duration-300 appearance-none bg-white font-light"
+                      className="w-full pl-10 pr-4 py-2 border border-secondary/20 rounded-lg focus:outline-none focus:border-secondary bg-primary text-sm text-text cursor-pointer appearance-none font-semibold"
                     >
                       <option value="">All Categories</option>
                       {Object.keys(categoryData).map(category => (
@@ -405,13 +407,13 @@ const List = ({ token }) => {
 
                 {/* Subcategory Filter */}
                 <div>
-                  <label className="block text-sm font-semibold text-text/70 mb-2">Sub-Category</label>
+                  <label className="block text-xs font-semibold text-text/70 mb-2 uppercase tracking-wide">Sub-Category</label>
                   <div className="relative">
-                    <Tag className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text/40" size={20} />
+                    <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text/40" size={16} />
                     <select
                       value={selectedSubCategory}
                       onChange={(e) => setSelectedSubCategory(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-all duration-300 appearance-none bg-white font-light"
+                      className="w-full pl-10 pr-4 py-2 border border-secondary/20 rounded-lg focus:outline-none focus:border-secondary bg-primary text-sm text-text cursor-pointer appearance-none font-semibold"
                       disabled={!selectedCategory}
                     >
                       <option value="">All Sub-Categories</option>
@@ -424,60 +426,60 @@ const List = ({ token }) => {
               </div>
 
               {/* View Mode Toggle & Active Filters */}
-              <div className="flex justify-between items-center mt-6 pt-6 border-t border-background/30">
+              <div className="flex justify-between items-center mt-6 pt-6 border-t border-secondary/10">
                 <div className="flex flex-col gap-2">
-                  <div className="text-sm text-text/60 font-light">
+                  <div className="text-xs text-text/60 font-light">
                     Showing {currentItems.length} of {filteredList.length} products
                     {totalPages > 1 && ` (Page ${currentPage} of ${totalPages})`}
                   </div>
                   {(searchTerm || selectedCategory || selectedSubCategory) && (
                     <div className="flex items-center gap-2 flex-wrap">
                       {searchTerm && (
-                        <span className="px-3 py-1 bg-secondary/10 text-secondary text-xs font-medium rounded-full">
+                        <span className="px-3 py-1 bg-secondary/10 text-text border border-secondary/15 text-xs font-semibold rounded-full">
                           Search: "{searchTerm}"
                         </span>
                       )}
                       {selectedCategory && (
-                        <span className="px-3 py-1 bg-secondary/10 text-secondary text-xs font-medium rounded-full">
+                        <span className="px-3 py-1 bg-secondary/10 text-text border border-secondary/15 text-xs font-semibold rounded-full">
                           Category: {selectedCategory}
                         </span>
                       )}
                       {selectedSubCategory && (
-                        <span className="px-3 py-1 bg-secondary/10 text-secondary text-xs font-medium rounded-full">
+                        <span className="px-3 py-1 bg-secondary/10 text-text border border-secondary/15 text-xs font-semibold rounded-full">
                           Sub: {selectedSubCategory}
                         </span>
                       )}
                       <button
                         onClick={clearAllFilters}
-                        className="px-3 py-1 bg-red-50 text-red-600 text-xs font-medium rounded-full hover:bg-red-100 transition-colors"
+                        className="px-3 py-1 bg-red-500/10 text-red-600 border border-red-500/20 text-xs font-semibold rounded-full hover:bg-red-500/20 transition-colors"
                       >
                         Clear All
                       </button>
                     </div>
                   )}
                 </div>
-                <div className="flex bg-background/30 rounded-xl p-1">
+                <div className="flex bg-secondary/5 border border-secondary/15 rounded-full p-0.5">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`px-4 py-2 rounded-lg transition-all duration-300 font-semibold ${
+                    className={`p-1.5 rounded-full transition-all duration-300 ${
                       viewMode === 'grid' 
-                        ? 'bg-secondary text-white shadow-lg shadow-secondary/30' 
-                        : 'text-text/60 hover:bg-background/50'
+                        ? 'bg-secondary text-primary shadow-sm' 
+                        : 'text-text/60 hover:bg-secondary/10'
                     }`}
                     title="Grid View"
                   >
-                    <Grid size={18} />
+                    <Grid size={16} />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`px-4 py-2 rounded-lg transition-all duration-300 font-semibold ${
+                    className={`p-1.5 rounded-full transition-all duration-300 ${
                       viewMode === 'list' 
-                        ? 'bg-secondary text-white shadow-lg shadow-secondary/30' 
-                        : 'text-text/60 hover:bg-background/50'
+                        ? 'bg-secondary text-primary shadow-sm' 
+                        : 'text-text/60 hover:bg-secondary/10'
                     }`}
                     title="List View"
                   >
-                    <ListIcon size={18} />
+                    <ListIcon size={16} />
                   </button>
                 </div>
               </div>
@@ -485,15 +487,15 @@ const List = ({ token }) => {
           </div>
 
           {/* Products Display */}
-          <div className="bg-white rounded-2xl shadow-md border border-background/50 overflow-hidden">
-            <div className="p-6 border-b border-background/30 bg-gradient-to-br from-secondary/5 to-secondary/10">
+          <div className="bg-primary rounded-lg border border-secondary/15 overflow-hidden shadow-sm">
+            <div className="p-6 border-b border-secondary/10 bg-background/30">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
-                  <Package size={20} className="text-secondary" />
+                <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                  <Package size={18} className="text-secondary" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-serif font-bold text-text">Product Collection</h2>
-                  <p className="text-sm text-text/50 font-light">Your complete inventory</p>
+                  <h2 className="text-lg font-polysans tracking-tight font-bold text-text">Product Collection</h2>
+                  <p className="text-xs text-text/50 font-light">Your complete inventory</p>
                 </div>
               </div>
             </div>
@@ -502,19 +504,19 @@ const List = ({ token }) => {
               {loading ? (
                 <div className="flex items-center justify-center py-20">
                   <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-3 border-secondary border-t-transparent rounded-full animate-spin"></div>
-                    <span className="text-lg text-text/60 font-light">Loading products...</span>
+                    <div className="w-10 h-10 border-2 border-secondary border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-sm text-text/60 font-light">Loading products...</span>
                   </div>
                 </div>
               ) : filteredList.length === 0 ? (
                 <div className="text-center py-20">
-                  <div className="w-20 h-20 bg-background/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Package className="text-text/30" size={40} />
+                  <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Package className="text-text/30" size={32} />
                   </div>
-                  <h3 className="text-2xl font-serif font-bold text-text mb-3">
+                  <h3 className="text-xl font-polysans tracking-tight font-bold text-text mb-2">
                     {list.length === 0 ? "No products found" : "No matching products"}
                   </h3>
-                  <p className="text-text/50 font-light max-w-md mx-auto mb-6">
+                  <p className="text-sm text-text/50 font-light max-w-md mx-auto mb-6">
                     {list.length === 0
                       ? "Start building your product catalog by adding your first product"
                       : "Try adjusting your search terms or filters to find what you're looking for"
@@ -523,7 +525,7 @@ const List = ({ token }) => {
                   {(searchTerm || selectedCategory || selectedSubCategory) && (
                     <button
                       onClick={clearAllFilters}
-                      className="px-6 py-3 bg-secondary text-white font-semibold rounded-xl hover:bg-secondary/90 transition-all duration-300 shadow-lg shadow-secondary/30"
+                      className="px-6 py-2.5 bg-secondary text-primary font-semibold rounded-full hover:bg-secondary/95 shadow-sm text-xs"
                     >
                       Clear All Filters
                     </button>
@@ -544,62 +546,64 @@ const List = ({ token }) => {
                         />
                       ))
                     ) : (
-                      <div className="bg-background/20 rounded-2xl overflow-hidden">
+                      <div className="bg-background/25 rounded-lg border border-secondary/15 overflow-hidden">
                         <div className="overflow-x-auto">
                           <table className="w-full">
-                            <thead className="bg-gradient-to-r from-secondary to-secondary/90 text-white">
+                            <thead className="bg-background/40 text-text border-b border-secondary/15">
                               <tr>
-                                <th className="px-6 py-4 text-left text-sm font-serif font-bold">#</th>
-                                <th className="px-6 py-4 text-left text-sm font-serif font-bold">Image</th>
-                                <th className="px-6 py-4 text-left text-sm font-serif font-bold">Product Details</th>
-                                <th className="px-6 py-4 text-left text-sm font-serif font-bold">Category</th>
-                                <th className="px-6 py-4 text-left text-sm font-serif font-bold">Price</th>
-                                <th className="px-6 py-4 text-center text-sm font-serif font-bold">Actions</th>
+                                <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-text/75">#</th>
+                                <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-text/75">Image</th>
+                                <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-text/75">Product Details</th>
+                                <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-text/75">Category</th>
+                                <th className="px-6 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-text/75">Price</th>
+                                <th className="px-6 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-text/75">Actions</th>
                               </tr>
                             </thead>
-                            <tbody className="divide-y divide-background/30">
+                            <tbody className="divide-y divide-secondary/10">
                               {currentItems.map((item, index) => (
-                                <tr key={item._id} className="hover:bg-background/10 transition-colors">
-                                  <td className="px-6 py-4 font-bold text-text/60">#{indexOfFirstItem + index + 1}</td>
-                                  <td className="px-6 py-4">
-                                    <div className="relative w-16 h-16">
+                                <tr key={item._id} className="hover:bg-secondary/5 transition-colors">
+                                  <td className="px-6 py-3.5 font-bold text-text/60 text-sm">#{indexOfFirstItem + index + 1}</td>
+                                  <td className="px-6 py-3.5">
+                                    <div className="relative w-14 h-14 bg-primary rounded-lg overflow-hidden border border-secondary/15 flex items-center justify-center p-1">
                                       <img
                                         src={item.images?.[0] || '/api/placeholder/100/100'}
                                         alt={item.name}
-                                        className="w-16 h-16 object-cover rounded-xl border-2 border-background/30"
+                                        className="w-full h-full object-contain"
                                         onError={(e) => {
                                           e.target.src = '/api/placeholder/100/100';
                                         }}
                                       />
                                       {item.bestseller && (
-                                        <Star className="absolute -top-1 -right-1 text-yellow-500 fill-yellow-500" size={16} />
+                                        <div className="absolute top-0.5 right-0.5 bg-gold text-primary p-0.5 rounded-full shadow-sm">
+                                          <Star className="fill-currentColor" size={10} />
+                                        </div>
                                       )}
                                     </div>
                                   </td>
-                                  <td className="px-6 py-4">
-                                    <h3 className="font-serif font-bold text-text mb-1">{item.name}</h3>
-                                    <p className="text-sm text-text/60 font-light line-clamp-2">{item.description}</p>
+                                  <td className="px-6 py-3.5 max-w-sm">
+                                    <h3 className="font-polysans tracking-tight font-bold text-text text-sm mb-0.5">{item.name}</h3>
+                                    <p className="text-xs text-text/50 font-light line-clamp-2">{item.description}</p>
                                   </td>
-                                  <td className="px-6 py-4">
-                                    <div className="font-semibold text-text">{item.category}</div>
+                                  <td className="px-6 py-3.5">
+                                    <div className="text-xs font-semibold text-text">{item.category}</div>
                                     {item.subCategory && (
-                                      <div className="text-sm text-text/60 font-light">{item.subCategory}</div>
+                                      <div className="text-[11px] text-text/55 font-light">{item.subCategory}</div>
                                     )}
                                   </td>
-                                  <td className="px-6 py-4">
-                                    <div className="flex items-center gap-1 font-bold text-secondary">
-                                      <IndianRupee size={16} />
+                                  <td className="px-6 py-3.5">
+                                    <div className="flex items-center gap-0.5 font-semibold text-secondary text-sm">
+                                      <IndianRupee size={13} />
                                       {item.price}
                                     </div>
                                   </td>
-                                  <td className="px-6 py-4 text-center">
+                                  <td className="px-6 py-3.5 text-center">
                                     <div className="flex justify-center gap-2">
                                       <button
                                         onClick={() => openEditModal(item)}
-                                        className="p-2.5 text-secondary bg-secondary/10 hover:bg-secondary/20 rounded-xl transition-all duration-300"
+                                        className="p-2 text-text hover:text-secondary hover:bg-secondary/15 border border-secondary/15 rounded-full transition-all duration-300"
                                         title="Edit Product"
                                       >
-                                        <Edit3 size={16} />
+                                        <Edit3 size={14} />
                                       </button>
                                       <button
                                         onClick={() => {
@@ -607,10 +611,10 @@ const List = ({ token }) => {
                                             removeProduct(item._id);
                                           }
                                         }}
-                                        className="p-2.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-all duration-300"
+                                        className="p-2 text-red-600 hover:bg-red-700 hover:text-white bg-red-500/10 border border-red-500/15 rounded-full transition-all duration-300"
                                         title="Delete Product"
                                       >
-                                        <Trash2 size={16} />
+                                        <Trash2 size={14} />
                                       </button>
                                     </div>
                                   </td>
@@ -629,14 +633,13 @@ const List = ({ token }) => {
                       <button
                         onClick={() => paginate(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className="p-2 rounded-lg border border-background/40 hover:bg-background/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="p-2 rounded-full border border-secondary/15 hover:bg-background/60 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                       >
-                        <ChevronLeft size={20} />
+                        <ChevronLeft size={16} />
                       </button>
 
                       <div className="flex gap-2">
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                          // Show first page, last page, current page, and pages around current
                           if (
                             page === 1 ||
                             page === totalPages ||
@@ -646,17 +649,17 @@ const List = ({ token }) => {
                               <button
                                 key={page}
                                 onClick={() => paginate(page)}
-                                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
+                                className={`px-3 py-1.5 text-xs font-semibold transition-all ${
                                   currentPage === page
-                                    ? 'bg-secondary text-white shadow-lg shadow-secondary/30'
-                                    : 'bg-background/20 text-text hover:bg-background/40'
+                                    ? 'bg-secondary text-primary shadow-sm rounded-full'
+                                    : 'bg-secondary/10 text-text hover:bg-secondary/20 rounded-full'
                                 }`}
                               >
                                 {page}
                               </button>
                             );
                           } else if (page === currentPage - 2 || page === currentPage + 2) {
-                            return <span key={page} className="px-2 py-2 text-text/40">...</span>;
+                            return <span key={page} className="px-1.5 py-1.5 text-text/40 text-xs">...</span>;
                           }
                           return null;
                         })}
@@ -665,9 +668,9 @@ const List = ({ token }) => {
                       <button
                         onClick={() => paginate(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className="p-2 rounded-lg border border-background/40 hover:bg-background/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="p-2 rounded-full border border-secondary/15 hover:bg-background/60 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                       >
-                        <ChevronRight size={20} />
+                        <ChevronRight size={16} />
                       </button>
                     </div>
                   )}
@@ -678,38 +681,38 @@ const List = ({ token }) => {
 
           {/* Edit Product Modal */}
           {isEditing && editedProduct && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+              <div className="bg-primary rounded-lg border border-secondary/20 shadow-lg w-full max-w-5xl max-h-[90vh] overflow-y-auto">
                 {/* Modal Header */}
-                <div className="p-6 border-b border-background/30 bg-gradient-to-br from-secondary/5 to-secondary/10 flex items-center justify-between sticky top-0 z-10 bg-white">
+                <div className="p-6 border-b border-secondary/15 bg-background/30 flex items-center justify-between sticky top-0 z-10">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
-                      <Edit3 size={20} className="text-secondary" />
+                    <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                      <Edit3 size={18} className="text-secondary" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-serif font-bold text-text">Edit Product</h2>
-                      <p className="text-sm text-text/50 font-light">Update product information</p>
+                      <h2 className="text-lg font-polysans tracking-tight font-bold text-text">Edit Product</h2>
+                      <p className="text-xs text-text/50 font-light font-inter">Update product information</p>
                     </div>
                   </div>
                   <button
                     onClick={closeEditModal}
-                    className="p-2 text-text/40 hover:text-text hover:bg-background/30 rounded-xl transition-all duration-300"
+                    className="p-2 text-text/40 hover:text-text hover:bg-secondary/10 rounded-full transition-all duration-300"
                     disabled={loading}
                   >
-                    <X size={20} />
+                    <X size={18} />
                   </button>
                 </div>
 
                 <form onSubmit={(e) => { e.preventDefault(); editProduct(); }} className="p-6 space-y-6">
                   {/* Product Images */}
-                  <div className="bg-background/20 rounded-2xl p-6 border border-background/30">
+                  <div className="bg-background/25 rounded-lg p-6 border border-secondary/10">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
-                        <ImageIcon size={20} className="text-secondary" />
+                      <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                        <ImageIcon size={18} className="text-secondary" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-serif font-bold text-text">Product Images ({uploadedImagesCount}/6)</h3>
-                        <p className="text-sm text-text/50 font-light">Upload new images to replace existing ones</p>
+                        <h3 className="text-base font-polysans tracking-tight font-bold text-text">Product Images ({uploadedImagesCount}/6)</h3>
+                        <p className="text-xs text-text/50 font-light font-inter">Upload new images to replace existing ones</p>
                       </div>
                     </div>
 
@@ -729,26 +732,26 @@ const List = ({ token }) => {
                   </div>
 
                   {/* Two Column Layout */}
-                  <div className="grid lg:grid-cols-2 gap-6">
-                    {/* Product Information */}
-                    <div className="bg-background/20 rounded-2xl p-6 border border-background/30">
+                  <div className="grid lg:grid-cols-2 gap-6 font-inter">
+                    {/* Product Details */}
+                    <div className="bg-background/25 rounded-lg p-6 border border-secondary/10">
                       <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
-                          <Package size={20} className="text-secondary" />
+                        <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                          <Package size={18} className="text-secondary" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-serif font-bold text-text">Product Details</h3>
-                          <p className="text-sm text-text/50 font-light">Basic information</p>
+                          <h3 className="text-base font-polysans tracking-tight font-bold text-text">Product Details</h3>
+                          <p className="text-xs text-text/50 font-light">Basic information</p>
                         </div>
                       </div>
 
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-semibold text-text/70 mb-2">Product Name *</label>
+                          <label className="block text-xs font-semibold text-text/70 mb-2 uppercase tracking-wide">Product Name *</label>
                           <input
                             value={editedProduct.name}
                             onChange={(e) => setEditedProduct(prev => ({ ...prev, name: e.target.value }))}
-                            className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-all duration-300 bg-white font-light"
+                            className="w-full px-4 py-2.5 border border-secondary/20 rounded-lg bg-primary focus:outline-none focus:border-secondary text-text font-light text-sm"
                             type="text"
                             placeholder="Enter product name"
                             required
@@ -756,11 +759,11 @@ const List = ({ token }) => {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-semibold text-text/70 mb-2">Description *</label>
+                          <label className="block text-xs font-semibold text-text/70 mb-2 uppercase tracking-wide">Description *</label>
                           <textarea
                             value={editedProduct.description}
                             onChange={(e) => setEditedProduct(prev => ({ ...prev, description: e.target.value }))}
-                            className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-all duration-300 resize-none bg-white font-light"
+                            className="w-full px-4 py-2.5 border border-secondary/20 rounded-lg bg-primary focus:outline-none focus:border-secondary text-text font-light text-sm resize-none"
                             rows="5"
                             placeholder="Enter product description"
                             required
@@ -770,20 +773,20 @@ const List = ({ token }) => {
                     </div>
 
                     {/* Category & Pricing */}
-                    <div className="bg-background/20 rounded-2xl p-6 border border-background/30">
+                    <div className="bg-background/25 rounded-lg p-6 border border-secondary/10">
                       <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
-                          <Tag size={20} className="text-secondary" />
+                        <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                          <Tag size={18} className="text-secondary" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-serif font-bold text-text">Category & Pricing</h3>
-                          <p className="text-sm text-text/50 font-light">Classification details</p>
+                          <h3 className="text-base font-polysans tracking-tight font-bold text-text">Category & Pricing</h3>
+                          <p className="text-xs text-text/50 font-light">Classification details</p>
                         </div>
                       </div>
 
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-semibold text-text/70 mb-2">Category *</label>
+                          <label className="block text-xs font-semibold text-text/70 mb-2 uppercase tracking-wide">Category *</label>
                           <select
                             value={editedProduct.category}
                             onChange={(e) => setEditedProduct(prev => ({
@@ -792,7 +795,7 @@ const List = ({ token }) => {
                               subCategory: "",
                               sizes: []
                             }))}
-                            className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-all duration-300 bg-white font-light"
+                            className="w-full px-4 py-2.5 border border-secondary/20 rounded-lg bg-primary focus:outline-none focus:border-secondary text-text font-semibold text-sm appearance-none cursor-pointer"
                           >
                             {Object.keys(categoryData).map(cat => (
                               <option key={cat} value={cat}>{cat}</option>
@@ -801,11 +804,11 @@ const List = ({ token }) => {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-semibold text-text/70 mb-2">Sub-Category *</label>
+                          <label className="block text-xs font-semibold text-text/70 mb-2 uppercase tracking-wide">Sub-Category *</label>
                           <select
                             value={editedProduct.subCategory}
                             onChange={(e) => setEditedProduct(prev => ({ ...prev, subCategory: e.target.value }))}
-                            className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-all duration-300 bg-white font-light"
+                            className="w-full px-4 py-2.5 border border-secondary/20 rounded-lg bg-primary focus:outline-none focus:border-secondary text-text font-semibold text-sm appearance-none cursor-pointer"
                             required
                           >
                             <option value="">Select Sub-Category</option>
@@ -816,13 +819,13 @@ const List = ({ token }) => {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-semibold text-text/70 mb-2">Price ({currency}) *</label>
+                          <label className="block text-xs font-semibold text-text/70 mb-2 uppercase tracking-wide">Price ({currency}) *</label>
                           <div className="relative">
-                            <IndianRupee className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text/40" size={18} />
+                            <IndianRupee className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text/40" size={16} />
                             <input
                               value={editedProduct.price}
                               onChange={(e) => setEditedProduct(prev => ({ ...prev, price: e.target.value }))}
-                              className="w-full pl-12 pr-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-all duration-300 bg-white font-light"
+                              className="w-full pl-9 pr-4 py-2.5 border border-secondary/20 rounded-lg bg-primary focus:outline-none focus:border-secondary text-text font-light text-sm"
                               type="number"
                               placeholder="0.00"
                               min="0"
@@ -836,21 +839,21 @@ const List = ({ token }) => {
                   </div>
 
                   {/* Wash Care Instructions */}
-                  <div className="bg-background/20 rounded-2xl p-6 border border-background/30">
+                  <div className="bg-background/25 rounded-lg p-6 border border-secondary/10 font-inter">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
-                          <Droplet size={20} className="text-secondary" />
+                        <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                          <Droplet size={18} className="text-secondary" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-serif font-bold text-text">Wash Care Instructions</h3>
-                          <p className="text-sm text-text/50 font-light">Care and maintenance guidelines</p>
+                          <h3 className="text-base font-polysans tracking-tight font-bold text-text">Wash Care Instructions</h3>
+                          <p className="text-xs text-text/50 font-light">Care and maintenance guidelines</p>
                         </div>
                       </div>
                       <button
                         type="button"
                         onClick={handleUseDefaultWashCare}
-                        className="px-4 py-2 text-sm bg-secondary/10 text-secondary hover:bg-secondary/20 rounded-lg font-semibold transition-colors"
+                        className="px-4 py-1.5 text-xs bg-secondary/10 text-text hover:bg-secondary/20 rounded-full border border-secondary/15 font-semibold transition-colors"
                       >
                         Use Default
                       </button>
@@ -859,7 +862,7 @@ const List = ({ token }) => {
                     <textarea
                       value={editedProduct.washCare}
                       onChange={(e) => setEditedProduct(prev => ({ ...prev, washCare: e.target.value }))}
-                      className="w-full px-4 py-3 border border-background/40 rounded-xl focus:outline-none focus:border-secondary transition-all duration-300 resize-none bg-white font-light"
+                      className="w-full px-4 py-2.5 border border-secondary/20 rounded-lg bg-primary focus:outline-none focus:border-secondary text-text font-light text-sm resize-none"
                       rows="6"
                       placeholder="Enter wash care instructions, each on a new line...&#10;Example:&#10;Dry clean or hand wash with mild detergent&#10;Do not machine wash or soak&#10;Wash separately, dry inside out in shade"
                     />
@@ -867,27 +870,27 @@ const List = ({ token }) => {
 
                   {/* Sizes */}
                   {currentCategoryData.sizes.length > 0 && (
-                    <div className="bg-background/20 rounded-2xl p-6 border border-background/30">
+                    <div className="bg-background/25 rounded-lg p-6 border border-secondary/10 font-inter">
                       <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
-                          <Package size={20} className="text-secondary" />
+                        <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                          <Package size={18} className="text-secondary" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-serif font-bold text-text">Available Sizes</h3>
-                          <p className="text-sm text-text/50 font-light">Select all applicable sizes</p>
+                          <h3 className="text-base font-polysans tracking-tight font-bold text-text">Available Sizes</h3>
+                          <p className="text-xs text-text/50 font-light">Select all applicable sizes</p>
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-2.5">
                         {currentCategoryData.sizes.map((size) => (
                           <button
                             key={size}
                             type="button"
                             onClick={() => toggleSize(size)}
-                            className={`px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 ${
+                            className={`px-5 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${
                               editedProduct.sizes?.includes(size)
-                                ? 'bg-secondary text-white shadow-lg shadow-secondary/30'
-                                : 'bg-background/30 text-text hover:bg-background/50'
+                                ? 'bg-secondary text-primary shadow-sm'
+                                : 'bg-secondary/10 text-text hover:bg-secondary/20'
                             }`}
                           >
                             {size}
@@ -896,10 +899,10 @@ const List = ({ token }) => {
                       </div>
 
                       {editedProduct.sizes?.length > 0 && (
-                        <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-4">
+                        <div className="mt-4 bg-green-500/10 border border-green-500/20 rounded-lg p-4">
                           <div className="flex items-center gap-2">
-                            <CheckCircle2 size={16} className="text-green-600" />
-                            <span className="text-sm font-semibold text-green-700">
+                            <CheckCircle2 size={14} className="text-green-700" />
+                            <span className="text-xs font-semibold text-green-700">
                               {editedProduct.sizes.length} size{editedProduct.sizes.length !== 1 ? 's' : ''} selected
                             </span>
                           </div>
@@ -909,27 +912,27 @@ const List = ({ token }) => {
                   )}
 
                   {/* Bestseller */}
-                  <div className="bg-background/20 rounded-2xl p-6 border border-background/30">
-                    <label className="flex items-center gap-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl cursor-pointer hover:bg-yellow-100 transition-colors">
+                  <div className="bg-background/25 rounded-lg p-6 border border-secondary/10">
+                    <label className="flex items-center gap-4 p-4 bg-gold/10 border border-gold/20 rounded-lg cursor-pointer hover:bg-gold/15 transition-colors">
                       <input
                         type="checkbox"
                         checked={editedProduct.bestseller}
                         onChange={() => setEditedProduct(prev => ({ ...prev, bestseller: !prev.bestseller }))}
-                        className="w-5 h-5 text-yellow-600 border-yellow-300 rounded focus:ring-yellow-500"
+                        className="w-5 h-5 text-gold border-gold/30 rounded focus:ring-gold bg-primary"
                       />
                       <div className="flex items-center gap-2">
-                        <Star className="text-yellow-500" size={20} fill="currentColor" />
-                        <span className="font-serif font-bold text-text">Mark as Bestseller</span>
+                        <Star className="text-gold" size={18} fill="currentColor" />
+                        <span className="font-polysans tracking-tight font-bold text-text">Mark as Bestseller</span>
                       </div>
                     </label>
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-4 justify-end pt-6 border-t border-background/30 sticky bottom-0 bg-white">
+                  <div className="flex flex-col sm:flex-row gap-4 justify-end pt-6 border-t border-secondary/15 sticky bottom-0 bg-primary/95 backdrop-blur-md">
                     <button
                       type="button"
                       onClick={closeEditModal}
-                      className="px-6 py-3 bg-background/40 text-text font-semibold rounded-xl hover:bg-background/60 transition-all duration-300"
+                      className="px-6 py-2.5 bg-background/50 text-text border border-secondary/15 rounded-full font-semibold text-xs hover:bg-background/80 transition-all"
                       disabled={loading}
                     >
                       Cancel
@@ -937,16 +940,16 @@ const List = ({ token }) => {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="px-8 py-3 bg-secondary text-white font-semibold rounded-xl transition-all duration-300 hover:bg-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-w-[160px] shadow-lg shadow-secondary/30"
+                      className="px-8 py-2.5 bg-secondary text-primary rounded-full font-semibold text-xs hover:bg-secondary/95 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-w-[160px] transition-all"
                     >
                       {loading ? (
                         <>
-                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
                           Saving...
                         </>
                       ) : (
                         <>
-                          <Save size={18} />
+                          <Save size={14} />
                           Save Changes
                         </>
                       )}

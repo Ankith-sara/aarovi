@@ -39,15 +39,11 @@ const validateTransactionId = (transactionId) => {
   return { valid: true, transactionId: trimmedId };
 };
 
-// ── Process order items ──────────────────────────────────────────────────────
-// Handles both READY_MADE (regular products) and CUSTOM (design studio) items.
-// READY_MADE items now carry neckStyle, sleeveStyle, and specialInstructions
-// so that style customisations chosen on the Product page are persisted to the
-// order document and visible in the admin panel and user order history.
+// Process order items 
 const processOrderItems = (items) => {
   return items.map(item => {
     if (item.type === 'customization') {
-      // ── Custom design studio order ───────────────────────────────────────
+      // Custom design studio order 
       return {
         type: 'CUSTOM',
         name: `Custom ${item.gender || ''}'s ${item.dressType || 'Design'}`,
@@ -60,7 +56,7 @@ const processOrderItems = (items) => {
           dressType: item.dressType || '',
           fabric: item.fabric || '',
           color: item.color || '',
-          size: item.size || '',                     // ← XS–XXXL from form
+          size: item.size || '',                     
           neckStyle: item.neckStyle || '',
           sleeveStyle: item.canvasDesign?.sleeveStyle || item.sleeveStyle || '',
           specialInstructions: item.specialInstructions || '',
@@ -90,9 +86,7 @@ const processOrderItems = (items) => {
         image: item.canvasDesign?.pngUrl || item.canvasDesign?.png || item.image || ''
       };
     } else {
-      // ── Regular ready-made product ───────────────────────────────────────
-      // Preserve all style customisations the customer selected on the Product
-      // page (neckStyle, sleeveStyle, specialInstructions).
+      // Regular ready-made product 
       return {
         productId: item.productId || item._id,
         type: 'READY_MADE',
@@ -110,7 +104,7 @@ const processOrderItems = (items) => {
   });
 };
 
-// ── COD ──────────────────────────────────────────────────────────────────────
+// COD 
 const placeOrder = async (req, res) => {
   try {
     const { userId, items, amount, address } = req.body;
@@ -162,7 +156,7 @@ const placeOrder = async (req, res) => {
   }
 };
 
-// ── QR Payment ───────────────────────────────────────────────────────────────
+// QR Payment
 const placeOrderQR = async (req, res) => {
   try {
     const { userId, items, amount, address, transactionId } = req.body;
@@ -230,7 +224,7 @@ const placeOrderQR = async (req, res) => {
   }
 };
 
-// ── COD Verify ───────────────────────────────────────────────────────────────
+// COD Verify
 const verifyCOD = async (req, res) => {
   try {
     const { orderId } = req.body;
@@ -247,7 +241,7 @@ const verifyCOD = async (req, res) => {
   }
 };
 
-// ── Razorpay Create Order ─────────────────────────────────────────────────────
+// Razorpay Create Order 
 const placeOrderRazorpay = async (req, res) => {
   try {
     const { userId, items, amount, address } = req.body;
@@ -287,7 +281,7 @@ const placeOrderRazorpay = async (req, res) => {
   }
 };
 
-// ── Razorpay Verify ───────────────────────────────────────────────────────────
+// Razorpay Verify 
 const verifyRazorpay = async (req, res) => {
   try {
     const { orderId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
@@ -340,7 +334,7 @@ const verifyRazorpay = async (req, res) => {
   }
 };
 
-// ── All orders (admin) ────────────────────────────────────────────────────────
+// All orders (admin)
 const allOrders = async (req, res) => {
   try {
     const orders = await orderModel.find({}).sort({ date: -1 });
@@ -351,7 +345,7 @@ const allOrders = async (req, res) => {
   }
 };
 
-// ── User orders ───────────────────────────────────────────────────────────────
+// User orders
 const userOrders = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -363,7 +357,7 @@ const userOrders = async (req, res) => {
   }
 };
 
-// ── Update order status ───────────────────────────────────────────────────────
+// Update order status
 const updateStatus = async (req, res) => {
   try {
     const { orderId, status } = req.body;
@@ -392,7 +386,7 @@ const updateStatus = async (req, res) => {
   }
 };
 
-// ── Update production status ──────────────────────────────────────────────────
+// Update production status
 const updateProductionStatus = async (req, res) => {
   try {
     const { orderId, itemIndex, productionStatus } = req.body;
@@ -427,7 +421,7 @@ const updateProductionStatus = async (req, res) => {
   }
 };
 
-// ── Order status tracking ─────────────────────────────────────────────────────
+// Order status tracking
 const orderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;

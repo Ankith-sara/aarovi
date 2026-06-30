@@ -30,6 +30,7 @@ const FAQs = lazy(() => import('./pages/FAQs'));
 const Support = lazy(() => import('./pages/Support'));
 const Wishlist = lazy(() => import('./pages/Wishlist'));
 const Customize = lazy(() => import('./pages/Customize'));
+const AdminLayout = lazy(() => import('./admin/AdminLayout'));
 
 const PageLoader = () => (
   <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
@@ -40,7 +41,7 @@ const PageLoader = () => (
 
 const App = () => {
   const location = useLocation();
-  const hideNavAndFooter = location.pathname === '/login';
+  const hideNavAndFooter = location.pathname === '/login' || location.pathname.startsWith('/admin');
 
   return (
     <div>
@@ -72,6 +73,7 @@ const App = () => {
             <Route path='/privacypolicy' element={<PrivacyPolicy />} />
             <Route path='/faqs' element={<FAQs />} />
             <Route path='/support' element={<Support />} />
+            <Route path='/admin/*' element={<AdminLayout />} />
           </Routes>
         </Suspense>
       </ErrorBoundary>

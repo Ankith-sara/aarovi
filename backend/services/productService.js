@@ -11,5 +11,5 @@ export const createProduct = (data) => new productModel(data).save();
 export const updateProduct = (id, data) =>
     productModel.findByIdAndUpdate(id, data, { new: true, runValidators: true });
 
-export const deleteProduct = (id, adminId) =>
-    productModel.findOneAndDelete({ _id: id, adminId });
+export const deleteProduct = (id) =>
+    productModel.findByIdAndDelete(id);

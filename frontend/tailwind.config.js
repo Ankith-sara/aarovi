@@ -10,19 +10,41 @@ export default {
         serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
         sans: ['Montserrat', 'system-ui', 'sans-serif'],
         dancing: ['"Dancing Script"', 'cursive'],
-        // legacy aliases kept for any remaining usage
         Bodoni: ['"Cormorant Garamond"', 'Georgia', 'serif'],
         oswald: ['Montserrat', 'sans-serif'],
         montserrat: ['Montserrat', 'sans-serif'],
         hind: ['Montserrat', 'sans-serif'],
+        polysans: ['"Space Grotesk"', 'sans-serif'],
+        inter: ['Inter', 'sans-serif'],
       },
       colors: {
-        // Design token palette
-        primary:    '#FBF7F3',   // warm off-white page bg
-        secondary:  '#4F200D',   // deep maroon brand colour
-        text:       '#2A1506',   // near-black body text
-        background: '#EBD9D1',   // warm blush (legacy, kept for compat)
-        gold:       '#AF8255',   // warm gold accent
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        text: 'hsl(var(--text))',
+        gold: 'hsl(var(--gold))',
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
       },
       transitionDuration: {
         400: '400ms',
