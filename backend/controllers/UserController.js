@@ -1,277 +1,202 @@
 import jwt from 'jsonwebtoken';
 import validator from 'validator';
 import { v2 as cloudinary } from 'cloudinary';
-import { OAuth2Client } from 'google-auth-library';
+import bcrypt from 'bcryptjs';
 import userModel from '../models/UserModel.js';
-import sendOtpMail from '../middlewares/sendOtpMail.js';
 import sendWelcomeMail from '../middlewares/sendWelcomeMail.js';
 import sendNewsletterMail from '../middlewares/sendNewsletterMail.js';
 import logger from '../utils/logger.js';
 
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
-const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
-
 const createToken = (id, role = 'user') =>
   jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
-// helpers 
-async function issueOtp(email, name, role = 'user') {
-  let user = await userModel.findOne({ email });
-
-  // Rate-limit: don't resend if a valid OTP was sent in the last 60 s
-  if (user?.otpExpiry && user.otpExpiry > new Date(Date.now() + 4 * 60 * 1000)) {
-    const secsLeft = Math.ceil((user.otpExpiry - new Date()) / 1000);
-    if (secsLeft > 0) {
-      const err = new Error(`OTP already sent. Wait ${secsLeft}s before requesting again.`);
-      err.status = 429;
-      throw err;
-    }
-  }
-
-  const otp = generateOtp();
-  const otpExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 min
-
-  if (user) {
-    // Keep existing name unless this is a registration call with a real name
-    if (name && name !== 'User' && name !== 'Admin') user.name = name;
-    user.otp = otp;
-    user.otpExpiry = otpExpiry;
-    if (role) user.role = role;
-  } else {
-    user = new userModel({ email, name, role, otp, otpExpiry });
-  }
-
-  await user.save();
-  const emailSent = await sendOtpMail(email, otp, role);
-  if (!emailSent) {
-    throw new Error('Failed to send verification email. Please check the server SMTP configuration or try again.');
-  }
-  return user;
-}
-
-// USER: send OTP
-export const sendOtp = async (req, res) => {
+// USER: Register
+export const registerUser = async (req, res) => {
   try {
-    const { email, name } = req.body;
+    const { name, email, password } = req.body;
 
-    if (!validator.isEmail(email)) {
-      return res.status(400).json({ success: false, message: 'Invalid email address' });
+    if (!name || name.trim().length < 2) {
+      return res.status(400).json({ success: false, message: 'Name is required (min 2 characters)' });
+    }
+    if (!email || !validator.isEmail(email)) {
+      return res.status(400).json({ success: false, message: 'Please provide a valid email address' });
+    }
+    if (!password || password.length < 8) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long' });
     }
 
-    const existing = await userModel.findOne({ email });
-    const isNewUser = !existing || !existing.isVerified;
-
-    // For login: name is not required (we already have it). For signup: require it.
-    if (isNewUser && (!name || name.trim().length < 2)) {
-      return res.status(400).json({ success: false, message: 'Name is required for new accounts' });
+    const exists = await userModel.findOne({ email });
+    if (exists) {
+      return res.status(400).json({ success: false, message: 'User already exists with this email' });
     }
 
-    await issueOtp(email, name || existing?.name || 'User', 'user');
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    res.json({ success: true, isNewUser, message: 'Verification code sent to your email.' });
-  } catch (err) {
-    res.status(err.status || 500).json({ success: false, message: err.message });
+    const user = new userModel({
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      password: hashedPassword,
+      isVerified: true,
+      authProviders: ['password']
+    });
+
+    await user.save();
+    logger.info(`New user registered: ${email}`);
+
+    try {
+      await sendWelcomeMail(email, name);
+    } catch (mailErr) {
+      logger.error(`Welcome email send failure for ${email}:`, mailErr);
+    }
+
+    const token = createToken(user._id, user.role);
+    res.json({ success: true, token, name: user.name, role: user.role });
+  } catch (error) {
+    logger.error('Register User Error:', error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// USER: verify OTP 
-export const verifyOtp = async (req, res) => {
+// USER: Login
+export const loginUser = async (req, res) => {
   try {
-    const { email, otp } = req.body;
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: 'Email and password are required' });
+    }
 
     const user = await userModel.findOne({ email });
     if (!user) {
-      return res.status(404).json({ success: false, message: 'No account found. Please start again.' });
-    }
-    if (!user.otp || !user.otpExpiry) {
-      return res.status(400).json({ success: false, message: 'No OTP requested. Please request a new code.' });
-    }
-    if (user.otpExpiry < new Date()) {
-      return res.status(401).json({ success: false, message: 'Code expired. Please request a new one.' });
-    }
-    if (user.otp !== otp) {
-      return res.status(401).json({ success: false, message: 'Invalid code. Please try again.' });
+      return res.status(404).json({ success: false, message: 'No account found with this email' });
     }
 
-    const isFirstTime = !user.isVerified;
-    user.isVerified = true;
-    user.otp = undefined;
-    user.otpExpiry = undefined;
-    await user.save();
-
-    if (isFirstTime) await sendWelcomeMail(email, user.name);
-
-    const token = createToken(user._id, user.role);
-    res.json({ success: true, token, name: user.name, role: user.role });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
-
-// GOOGLE SIGN-IN 
-export const googleSignIn = async (req, res) => {
-  try {
-    const { credential } = req.body;
-    if (!credential) {
-      return res.status(400).json({ success: false, message: 'Google credential is required' });
-    }
-
-    const ticket = await googleClient.verifyIdToken({
-      idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    const { sub: googleId, email, name, picture } = ticket.getPayload();
-
-    let user = await userModel.findOne({ $or: [{ googleId }, { email }] });
-
-    if (user) {
-      // Link Google ID if this email existed without it
-      if (!user.googleId) user.googleId = googleId;
-      if (picture && user.image?.includes('wikipedia')) user.image = picture;
-      user.isVerified = true;
-      await user.save();
-    } else {
-      user = await userModel.create({
-        name, email, googleId, image: picture,
-        role: 'user', isVerified: true,
-      });
-      await sendWelcomeMail(email, name);
-    }
-
-    const token = createToken(user._id, user.role);
-    res.json({ success: true, token, name: user.name, role: user.role });
-  } catch (err) {
-    logger.error('Google sign-in error:', err);
-    res.status(401).json({ success: false, message: 'Google sign-in failed. Please try again.' });
-  }
-};
-
-export const adminGoogleSignIn = async (req, res) => {
-  try {
-    const { credential } = req.body;
-    if (!credential) {
-      return res.status(400).json({ success: false, message: 'Google credential is required' });
-    }
-
-    const ticket = await googleClient.verifyIdToken({
-      idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    const { sub: googleId, email, name, picture } = ticket.getPayload();
-
-    let user = await userModel.findOne({ email });
-
-    if (!user) {
-      // Auto-register as admin if the email does not exist yet
-      user = await userModel.create({
-        name, email, googleId, image: picture,
-        role: 'admin', isVerified: true,
-      });
-      await sendWelcomeMail(email, name);
-    } else {
-      // Promote to admin (since they successfully logged into admin panel with Google)
-      user.role = 'admin';
-      // Link Google ID if this email existed without it
-      if (!user.googleId) user.googleId = googleId;
-      if (picture && (!user.image || user.image.includes('wikipedia') || user.image.includes('placeholder'))) {
-        user.image = picture;
-      }
-      user.isVerified = true;
-      await user.save();
-    }
-
-    const token = createToken(user._id, 'admin');
-    res.json({ success: true, token, name: user.name, role: 'admin', message: `Welcome ${user.name}!` });
-  } catch (err) {
-    logger.error('Admin Google sign-in error:', err);
-    res.status(401).json({ success: false, message: 'Google sign-in failed. Please try again.' });
-  }
-};
-
-
-// ADMIN: send OTP
-export const sendAdminOtp = async (req, res) => {
-  try {
-    const { email, name } = req.body;
-
-    if (!validator.isEmail(email)) {
-      return res.status(400).json({ success: false, message: 'Invalid email address' });
-    }
-
-    const existing = await userModel.findOne({ email });
-    const isRegistering = !!name;
-
-    // If logging in (not registering) and account does not exist or has non-admin role, reject
-    if (!isRegistering && (!existing || existing.role !== 'admin')) {
-      return res.status(403).json({
-        success: false,
-        message: 'This email is not authorised for admin access.',
-      });
-    }
-
-    // If registering and user already exists as an admin, guide them to login
-    if (isRegistering && existing && existing.role === 'admin') {
+    if (!user.password) {
       return res.status(400).json({
         success: false,
-        message: 'Account already exists. Please sign in instead.',
+        message: 'This account was created using Google Sign-In. Please sign in with Google.'
       });
     }
 
-    const isNewUser = !existing || !existing.isVerified;
-    if (isNewUser && (!name || name.trim().length < 2)) {
-      return res.status(400).json({ success: false, message: 'Name is required for new admin accounts' });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: 'Invalid password' });
     }
 
-    await issueOtp(email, name || existing?.name || 'Admin', 'admin');
-
-    res.json({ success: true, isNewUser, message: 'Verification code sent to your email.' });
-  } catch (err) {
-    res.status(err.status || 500).json({ success: false, message: err.message });
+    const token = createToken(user._id, user.role);
+    res.json({ success: true, token, name: user.name, role: user.role });
+  } catch (error) {
+    logger.error('Login User Error:', error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// ADMIN: verify OTP
-export const verifyAdminOtp = async (req, res) => {
+// ADMIN: Register
+export const registerAdmin = async (req, res) => {
   try {
-    const { email, otp } = req.body;
+    const { name, email, password } = req.body;
+
+    if (!name || name.trim().length < 2) {
+      return res.status(400).json({ success: false, message: 'Name is required (min 2 characters)' });
+    }
+    if (!email || !validator.isEmail(email)) {
+      return res.status(400).json({ success: false, message: 'Please provide a valid email address' });
+    }
+    if (!password || password.length < 8) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long' });
+    }
+
+    const exists = await userModel.findOne({ email });
+    if (exists) {
+      if (exists.role === 'admin') {
+        return res.status(400).json({ success: false, message: 'Admin account already exists. Please sign in.' });
+      } else {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        exists.role = 'admin';
+        exists.password = hashedPassword;
+        if (!exists.authProviders.includes('password')) {
+          exists.authProviders.push('password');
+        }
+        await exists.save();
+        logger.info(`Existing user promoted to admin: ${email}`);
+        const token = createToken(exists._id, 'admin');
+        return res.json({ success: true, token, name: exists.name, role: 'admin', message: 'Welcome back admin!' });
+      }
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const user = new userModel({
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      password: hashedPassword,
+      isVerified: true,
+      role: 'admin',
+      authProviders: ['password']
+    });
+
+    await user.save();
+    logger.info(`New admin registered: ${email}`);
+
+    try {
+      await sendWelcomeMail(email, name);
+    } catch (mailErr) {
+      logger.error(`Welcome email send failure for admin ${email}:`, mailErr);
+    }
+
+    const token = createToken(user._id, 'admin');
+    res.json({ success: true, token, name: user.name, role: 'admin', message: `Welcome Admin ${user.name}!` });
+  } catch (error) {
+    logger.error('Register Admin Error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ADMIN: Login
+export const loginAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: 'Email and password are required' });
+    }
 
     const user = await userModel.findOne({ email });
     if (!user) {
-      return res.status(404).json({ success: false, message: 'Admin account not found.' });
+      return res.status(404).json({ success: false, message: 'No admin account found with this email' });
     }
+
     if (user.role !== 'admin') {
-      return res.status(403).json({ success: false, message: 'This account does not have admin access.' });
-    }
-    if (!user.otp || !user.otpExpiry) {
-      return res.status(400).json({ success: false, message: 'No OTP requested. Please request a new code.' });
-    }
-    if (user.otpExpiry < new Date()) {
-      return res.status(401).json({ success: false, message: 'Code expired. Please request a new one.' });
-    }
-    if (user.otp !== otp) {
-      return res.status(401).json({ success: false, message: 'Invalid code. Please try again.' });
+      return res.status(403).json({ success: false, message: 'This email is not authorised for admin access.' });
     }
 
-    const isFirstTime = !user.isVerified;
-    user.isVerified = true;
-    user.otp = undefined;
-    user.otpExpiry = undefined;
-    await user.save();
+    if (!user.password) {
+      return res.status(400).json({
+        success: false,
+        message: 'This admin account was created using Google Sign-In. Please sign in with Google.'
+      });
+    }
 
-    if (isFirstTime) await sendWelcomeMail(email, user.name);
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: 'Invalid password' });
+    }
 
     const token = createToken(user._id, 'admin');
     res.json({ success: true, token, name: user.name, role: 'admin', message: `Welcome ${user.name}!` });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+  } catch (error) {
+    logger.error('Login Admin Error:', error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
 // PROFILE
 export const getUserProfile = async (req, res) => {
   try {
-    const user = await userModel.findById(req.body.userId).select('-otp -otpExpiry');
+    const user = await userModel.findById(req.body.userId).select('-password');
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
     res.json({ success: true, user });
   } catch (err) {
@@ -281,7 +206,7 @@ export const getUserProfile = async (req, res) => {
 
 export const getUserDetails = async (req, res) => {
   try {
-    const user = await userModel.findById(req.params.id).select('-otp -otpExpiry');
+    const user = await userModel.findById(req.params.id).select('-password');
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
     res.json({ success: true, user });
   } catch (err) {
@@ -302,7 +227,7 @@ export const updateUserProfile = async (req, res) => {
     }
 
     const user = await userModel.findByIdAndUpdate(req.params.id, updates, { new: true })
-      .select('-otp -otpExpiry');
+      .select('-password');
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
     res.json({ success: true, user });
   } catch (err) {

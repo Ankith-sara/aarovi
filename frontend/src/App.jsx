@@ -7,6 +7,7 @@ import Footer from './components/Footer';
 import SearchBar from './components/SearchBar';
 import ScrollToTop from './components/ScrollToTop';
 import ErrorBoundary from './ErrorBoundary';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Lazy-loaded pages for better performance
 const Index = lazy(() => import('./pages/Index'));
@@ -63,11 +64,11 @@ const App = () => {
             <Route path='/cart' element={<Cart />} />
             <Route path='/wishlist' element={<Wishlist />} />
             <Route path='/login' element={<Login />} />
-            <Route path='/place-order' element={<PlaceOrder />} />
-            <Route path='/orders' element={<Orders />} />
+            <Route path='/place-order' element={<ProtectedRoute><PlaceOrder /></ProtectedRoute>} />
+            <Route path='/orders' element={<ProtectedRoute><Orders /></ProtectedRoute>} />
             <Route path='/status/:orderId' element={<TrackOrder />} />
             <Route path='/verify' element={<Verify />} />
-            <Route path='/profile/:id' element={<MyProfile />} />
+            <Route path='/profile/:id' element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
             <Route path='/refundpolicy' element={<CancellationRefundPolicy />} />
             <Route path='/shippingpolicy' element={<ShippingDeliveryPolicy />} />
             <Route path='/termsconditions' element={<TermsConditions />} />

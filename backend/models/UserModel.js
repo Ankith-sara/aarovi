@@ -16,6 +16,19 @@ const userSchema = new mongoose.Schema({
   image:    { type: String, default: 'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png' },
   googleId: { type: String, sparse: true },
 
+  // Firebase integration fields
+  firebaseUid:   { type: String, sparse: true, unique: true },
+  fullName:      { type: String, trim: true },
+  firstName:     { type: String, trim: true },
+  lastName:      { type: String, trim: true },
+  profileImage:  { type: String },
+  phone:         { type: String, trim: true },
+  authProviders: { type: [String], default: ['password'] },
+  emailVerified: { type: Boolean, default: false },
+  status:        { type: String, enum: ['active', 'inactive', 'suspended'], default: 'active' },
+  preferences:   { type: Object, default: {} },
+  lastLogin:     { type: Date },
+
   addresses:           { type: [addressSchema], default: [] },
   wishlist:            { type: [String], default: [] },
   savedCustomizations: [{ type: mongoose.Schema.Types.ObjectId, ref: 'customization' }],
@@ -23,10 +36,7 @@ const userSchema = new mongoose.Schema({
 
   role:       { type: String, enum: ['user', 'admin'], default: 'user' },
   isVerified: { type: Boolean, default: false },
-
-  // Shared OTP field – used for both signup and login
-  otp:       { type: String },
-  otpExpiry: { type: Date },
+  password:   { type: String }
 }, { timestamps: true, minimize: false });
 
 export default mongoose.models.user || mongoose.model('user', userSchema);

@@ -48,9 +48,9 @@ describe('User API', () => {
     });
   });
 
-  describe('POST /api/user/google-signin', () => {
-    it('should return 400 if credential is missing', async () => {
-      const res = await request(app).post('/api/user/google-signin').send({});
+  describe('POST /api/auth/google', () => {
+    it('should return 400 if idToken is missing', async () => {
+      const res = await request(app).post('/api/auth/google').send({});
       expect(res.statusCode).toBe(400);
       expect(res.body.success).toBe(false);
     });

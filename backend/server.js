@@ -7,6 +7,7 @@ import compression from 'compression';
 import connectDB from './config/mongodb.js';
 import connectCloudinary from './config/cloudinary.js';
 import userRouter from './routes/UserRoute.js';
+import authRouter from './routes/AuthRoute.js';
 import productRouter from './routes/ProductRoute.js';
 import cartRouter from './routes/CartRoute.js';
 import orderRouter from './routes/OrderRoute.js';
@@ -67,6 +68,7 @@ app.use('/api', apiLimiter);
 
 // ── API Endpoints ────────────────────────────────────────────────────
 app.use('/api/user', userRouter);
+app.use('/api/auth', authRouter);
 app.use('/api/product', productRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/order', orderRouter);

@@ -1,24 +1,22 @@
 import express from 'express';
 import upload from '../middlewares/multer.js';
 import authUser from '../middlewares/Auth.js';
-import { authLimiter, otpLimiter } from '../middlewares/rateLimiter.js';
-import { verifyOtpValidation, newsletterValidation } from '../middlewares/validators.js';
+import { authLimiter } from '../middlewares/rateLimiter.js';
+import { newsletterValidation } from '../middlewares/validators.js';
 import {
-  sendOtp, verifyOtp, googleSignIn, sendAdminOtp, verifyAdminOtp,
-  adminGoogleSignIn, getUserDetails, getUserProfile,
+  registerUser, loginUser, registerAdmin, loginAdmin,
+  getUserDetails, getUserProfile,
   updateUserProfile, addOrUpdateAddress, deleteAddress, subscribeNewsletter,
 } from '../controllers/UserController.js';
 
 const userRouter = express.Router();
 
 // ── Auth ───────────────────────────────────────────────────────────────────
-userRouter.post('/send-otp', otpLimiter, sendOtp);
-userRouter.post('/verify-otp', authLimiter, verifyOtpValidation, verifyOtp);
-userRouter.post('/google-signin', authLimiter, googleSignIn);
+userRouter.post('/register', authLimiter, registerUser);
+userRouter.post('/login', authLimiter, loginUser);
 // ── Admin auth ─────────────────────────────────────────────────────────────
-userRouter.post('/send-admin-otp', otpLimiter, sendAdminOtp);
-userRouter.post('/verify-admin-otp', authLimiter, verifyOtpValidation, verifyAdminOtp);
-userRouter.post('/admin-google-signin', authLimiter, adminGoogleSignIn);
+userRouter.post('/register-admin', authLimiter, registerAdmin);
+userRouter.post('/login-admin', authLimiter, loginAdmin);
 // ── Newsletter ─────────────────────────────────────────────────────────────
 userRouter.post('/newsletter/subscribe', newsletterValidation, subscribeNewsletter);
 // ── Profile ────────────────────────────────────────────────────────────────

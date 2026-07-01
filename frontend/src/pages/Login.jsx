@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { ArrowRight, Mail } from 'lucide-react';
+import { auth, googleProvider } from '../configs/firebase';
+import { signInWithPopup } from 'firebase/auth';
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const C = { primary: '#4F200D', gold: '#AF8255', bg: '#FBF7F3', text: '#2A1506' };
 
 const Label = ({ children }) => (
@@ -19,8 +20,8 @@ const Input = ({ error, ...props }) => (
     onBlur={e => { if (!error) e.target.style.borderColor = 'rgba(79,32,13,0.18)'; }} />
 );
 
-const PrimaryBtn = ({ children, loading, disabled, onClick }) => (
-  <button onClick={onClick} disabled={disabled || loading}
+const PrimaryBtn = ({ children, loading, disabled, type = 'button', onClick }) => (
+  <button type={type} onClick={onClick} disabled={disabled || loading}
     className="w-full py-3.5 rounded-xl text-sm font-semibold tracking-wide transition-all disabled:opacity-50 flex items-center justify-center gap-2 hover:-translate-y-0.5"
     style={{ background: C.primary, color: 'white', boxShadow: '0 4px 20px rgba(79,32,13,0.22)' }}>
     {loading
@@ -31,93 +32,89 @@ const PrimaryBtn = ({ children, loading, disabled, onClick }) => (
 
 const Login = () => {
   const { token, setToken, navigate, backendUrl } = useContext(ShopContext);
-  const [step, setStep] = useState('email');
+  const [mode, setMode] = useState('login'); // 'login' or 'signup'
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [isNewUser, setIsNewUser] = useState(false);
-  const [otpDigits, setOtpDigits] = useState(Array(6).fill(''));
-  const [otpTimer, setOtpTimer] = useState(0);
   const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [nameError, setNameError] = useState('');
-  const otpRefs = useRef([]);
 
-  useEffect(() => { if (token) { const r = sessionStorage.getItem('returnUrl'); sessionStorage.removeItem('returnUrl'); navigate(r || '/'); } }, [token]);
-  useEffect(() => { document.title = 'Sign In | Aarovi'; }, []);
-  useEffect(() => { if (otpTimer <= 0) return; const t = setTimeout(() => setOtpTimer(v => v - 1), 1000); return () => clearTimeout(t); }, [otpTimer]);
-  useEffect(() => { if (!GOOGLE_CLIENT_ID || window.google) return; const s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.async = true; document.head.appendChild(s); }, []);
+  useEffect(() => { 
+    if (token) { 
+      const r = sessionStorage.getItem('returnUrl'); 
+      sessionStorage.removeItem('returnUrl'); 
+      navigate(r || '/'); 
+    } 
+  }, [token]);
+
+  useEffect(() => { 
+    document.title = mode === 'login' ? 'Sign In | Aarovi' : 'Sign Up | Aarovi'; 
+  }, [mode]);
 
   const isValidEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
-  const handleOtpChange = (i, val) => {
-    if (!/^\d?$/.test(val)) return;
-    const next = [...otpDigits]; next[i] = val; setOtpDigits(next);
-    if (val && i < 5) otpRefs.current[i + 1]?.focus();
-  };
-  const handleOtpKey = (i, e) => { if (e.key === 'Backspace' && !otpDigits[i] && i > 0) otpRefs.current[i - 1]?.focus(); };
+  const handleAuthSubmit = async (e) => {
+    if (e) e.preventDefault();
+    
+    let valid = true;
+    if (!isValidEmail(email)) { setEmailError('Enter a valid email address'); valid = false; } else { setEmailError(''); }
+    if (!password || password.length < 8) { setPasswordError('Password must be at least 8 characters'); valid = false; } else { setPasswordError(''); }
+    if (mode === 'signup' && (!name.trim() || name.trim().length < 2)) { setNameError('Enter your full name (min 2 characters)'); valid = false; } else { setNameError(''); }
 
-  const handleEmailContinue = async () => {
-    if (!isValidEmail(email)) { setEmailError('Enter a valid email address'); return; }
-    setEmailError(''); setLoading(true);
+    if (!valid) return;
+    setLoading(true);
+
     try {
-      const res = await axios.post(`${backendUrl}/api/user/send-otp`, { email, name: '' });
-      if (res.data.success) { setIsNewUser(false); setStep('otp'); setOtpTimer(60); setOtpDigits(Array(6).fill('')); toast.success('Verification code sent'); }
+      if (mode === 'login') {
+        const res = await axios.post(`${backendUrl}/api/user/login`, { email, password });
+        if (res.data.success) {
+          toast.success(`Welcome back, ${res.data.name || 'User'}!`);
+          setToken(res.data.token);
+          localStorage.setItem('token', res.data.token);
+        }
+      } else {
+        const res = await axios.post(`${backendUrl}/api/user/register`, { name: name.trim(), email, password });
+        if (res.data.success) {
+          toast.success(`Welcome, ${res.data.name}! Your account has been created.`);
+          setToken(res.data.token);
+          localStorage.setItem('token', res.data.token);
+        }
+      }
     } catch (err) {
-      const msg = err.response?.data?.message || '';
-      if (msg.toLowerCase().includes('name is required')) { setIsNewUser(true); setStep('name'); }
-      else if (msg.toLowerCase().includes('wait')) { setIsNewUser(false); setStep('otp'); toast.info(msg); }
-      else toast.error(msg || 'Something went wrong.');
-    } finally { setLoading(false); }
+      toast.error(err.response?.data?.message || 'Authentication failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleNameContinue = async () => {
-    if (!name.trim() || name.trim().length < 2) { setNameError('Enter your full name (min 2 characters)'); return; }
-    setNameError(''); setLoading(true);
-    try {
-      const res = await axios.post(`${backendUrl}/api/user/send-otp`, { email, name: name.trim() });
-      if (res.data.success) { setStep('otp'); setOtpTimer(60); setOtpDigits(Array(6).fill('')); toast.success('Verification code sent'); }
-      else toast.error(res.data.message || 'Failed to send code');
-    } catch (err) { toast.error(err.response?.data?.message || 'Error sending code'); }
-    finally { setLoading(false); }
-  };
-
-  const handleResend = async () => {
-    setLoading(true);
-    try { await axios.post(`${backendUrl}/api/user/send-otp`, { email, name: name.trim() || undefined }); setOtpTimer(60); setOtpDigits(Array(6).fill('')); toast.success('New code sent'); }
-    catch (err) { toast.error(err.response?.data?.message || 'Error resending code'); }
-    finally { setLoading(false); }
-  };
-
-  const handleVerifyOtp = async () => {
-    const otp = otpDigits.join('');
-    if (otp.length < 6) { toast.error('Enter all 6 digits'); return; }
+  const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      const res = await axios.post(`${backendUrl}/api/user/verify-otp`, { email, otp });
-      if (res.data.success) { toast.success(isNewUser ? `Welcome, ${res.data.name}!` : 'Welcome back!'); setToken(res.data.token); localStorage.setItem('token', res.data.token); }
-      else toast.error(res.data.message || 'Invalid code');
-    } catch (err) { toast.error(err.response?.data?.message || 'Verification failed'); }
-    finally { setLoading(false); }
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+      
+      const res = await axios.post(`${backendUrl}/api/auth/google`, { idToken });
+      
+      if (res.data.success) {
+        toast.success(`Welcome, ${res.data.user?.fullName || res.data.user?.name || 'User'}!`);
+        setToken(res.data.accessToken);
+        localStorage.setItem('token', res.data.accessToken);
+      } else {
+        toast.error(res.data.message || 'Google sign-in failed.');
+      }
+    } catch (err) {
+      console.error('Google Sign-In Error:', err);
+      if (err.code === 'auth/popup-closed-by-user') {
+        toast.info('Google sign-in popup closed.');
+      } else {
+        toast.error(err.response?.data?.message || err.message || 'Google sign-in failed.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
-
-  const handleGoogleSignIn = () => {
-    if (!window.google || !GOOGLE_CLIENT_ID) { toast.info('Google Sign-In is not configured yet.'); return; }
-    window.google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: async ({ credential }) => {
-        setLoading(true);
-        try {
-          const res = await axios.post(`${backendUrl}/api/user/google-signin`, { credential });
-          if (res.data.success) { toast.success(`Welcome, ${res.data.name}!`); setToken(res.data.token); localStorage.setItem('token', res.data.token); }
-          else toast.error(res.data.message || 'Google sign-in failed');
-        } catch (err) { toast.error(err.response?.data?.message || 'Google sign-in failed'); }
-        finally { setLoading(false); }
-      },
-    });
-    window.google.accounts.id.prompt();
-  };
-
-  const resetToEmail = () => { setStep('email'); setName(''); setIsNewUser(false); setOtpDigits(Array(6).fill('')); setOtpTimer(0); setNameError(''); };
 
   return (
     <div className="min-h-screen flex">
@@ -152,101 +149,75 @@ const Login = () => {
         <div className="w-full max-w-sm mx-auto">
           <div className="mb-8">
             <h2 className="text-2xl sm:text-3xl font-light tracking-tight" style={{ color: C.text }}>
-              {step === 'email' && 'Sign in or sign up'}
-              {step === 'name' && 'Create your account'}
-              {step === 'otp' && (isNewUser ? 'Verify your email' : 'Welcome back')}
+              {mode === 'login' ? 'Sign In' : 'Create Account'}
             </h2>
             <p className="text-sm font-light mt-2" style={{ color: 'rgba(42,21,6,0.5)' }}>
-              {step === 'email' && 'Enter your email to continue'}
-              {step === 'name' && 'What should we call you?'}
-              {step === 'otp' && `We sent a 6-digit code to ${email}`}
+              {mode === 'login' ? 'Enter your credentials to sign in' : 'Fill in the form to get started'}
             </p>
           </div>
 
-          {step === 'email' && (
-            <div className="space-y-4">
-              <button onClick={handleGoogleSignIn}
-                      className="w-full flex items-center justify-center gap-3 py-3.5 px-4 rounded-xl text-sm font-medium transition-all hover:shadow-md"
-                      style={{ background: 'white', border: '1.5px solid rgba(79,32,13,0.15)', color: C.text }}>
-                <svg width="17" height="17" viewBox="0 0 18 18" aria-hidden="true">
-                  <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
-                  <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
-                  <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-                  <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-                </svg>
-                Continue with Google
-              </button>
+          <form onSubmit={handleAuthSubmit} className="space-y-4">
+            <button type="button" onClick={handleGoogleSignIn}
+                    className="w-full flex items-center justify-center gap-3 py-3.5 px-4 rounded-xl text-sm font-medium transition-all hover:shadow-md"
+                    style={{ background: 'white', border: '1.5px solid rgba(79,32,13,0.15)', color: C.text }}>
+              <svg width="17" height="17" viewBox="0 0 18 18" aria-hidden="true">
+                <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+                <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
+                <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+                <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+              </svg>
+              Continue with Google
+            </button>
 
-              <div className="flex items-center gap-3">
-                <div className="flex-1 h-px" style={{ background: 'rgba(79,32,13,0.1)' }} />
-                <span className="text-[10px] uppercase tracking-wider" style={{ color: 'rgba(42,21,6,0.4)' }}>or</span>
-                <div className="flex-1 h-px" style={{ background: 'rgba(79,32,13,0.1)' }} />
-              </div>
-
-              <div>
-                <Label>Email address</Label>
-                <div className="relative">
-                  <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'rgba(42,21,6,0.35)' }} />
-                  <input type="email" value={email} onChange={e => { setEmail(e.target.value); setEmailError(''); }}
-                         onKeyDown={e => e.key === 'Enter' && handleEmailContinue()}
-                         placeholder="you@example.com" autoFocus
-                         className="w-full pl-10 pr-4 py-3.5 rounded-xl text-sm outline-none transition-all font-light"
-                         style={{ background: 'white', border: `1.5px solid ${emailError ? '#ef4444' : 'rgba(79,32,13,0.18)'}`, color: C.text }}
-                         onFocus={e => { if (!emailError) e.target.style.borderColor = C.primary; }}
-                         onBlur={e => { if (!emailError) e.target.style.borderColor = 'rgba(79,32,13,0.18)'; }} />
-                </div>
-                {emailError && <p className="text-red-500 text-xs mt-1.5">{emailError}</p>}
-              </div>
-
-              <PrimaryBtn onClick={handleEmailContinue} loading={loading}>
-                <span>Continue</span> <ArrowRight size={15} />
-              </PrimaryBtn>
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px" style={{ background: 'rgba(79,32,13,0.1)' }} />
+              <span className="text-[10px] uppercase tracking-wider" style={{ color: 'rgba(42,21,6,0.4)' }}>or</span>
+              <div className="flex-1 h-px" style={{ background: 'rgba(79,32,13,0.1)' }} />
             </div>
-          )}
 
-          {step === 'name' && (
-            <div className="space-y-4">
+            {mode === 'signup' && (
               <div>
-                <Label>Your full name</Label>
+                <Label>Full Name</Label>
                 <Input type="text" value={name} onChange={e => { setName(e.target.value); setNameError(''); }}
-                       onKeyDown={e => e.key === 'Enter' && handleNameContinue()}
-                       placeholder="Priya Sharma" autoFocus error={nameError} />
+                       placeholder="Priya Sharma" error={nameError} />
                 {nameError && <p className="text-red-500 text-xs mt-1.5">{nameError}</p>}
               </div>
-              <PrimaryBtn onClick={handleNameContinue} loading={loading}><span>Send verification code</span><ArrowRight size={15} /></PrimaryBtn>
-              <button onClick={resetToEmail} className="w-full text-xs py-1 transition-colors" style={{ color: 'rgba(42,21,6,0.4)' }}>← Change email</button>
-            </div>
-          )}
+            )}
 
-          {step === 'otp' && (
-            <div className="space-y-6">
-              <div>
-                <Label>Verification code</Label>
-                <div className="flex gap-2">
-                  {otpDigits.map((d, i) => (
-                    <input key={i} ref={el => { otpRefs.current[i] = el; }}
-                           type="text" inputMode="numeric" maxLength="1" value={d}
-                           onChange={e => handleOtpChange(i, e.target.value)}
-                           onKeyDown={e => handleOtpKey(i, e)}
-                           className="flex-1 h-13 sm:h-14 text-center text-lg font-semibold rounded-xl outline-none transition-all"
-                           style={{ border: `2px solid ${d ? C.primary : 'rgba(79,32,13,0.2)'}`, background: d ? 'rgba(79,32,13,0.05)' : 'white', color: C.text }} />
-                  ))}
-                </div>
+            <div>
+              <Label>Email address</Label>
+              <div className="relative">
+                <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'rgba(42,21,6,0.35)' }} />
+                <input type="email" value={email} onChange={e => { setEmail(e.target.value); setEmailError(''); }}
+                       placeholder="you@example.com"
+                       className="w-full pl-10 pr-4 py-3.5 rounded-xl text-sm outline-none transition-all font-light"
+                       style={{ background: 'white', border: `1.5px solid ${emailError ? '#ef4444' : 'rgba(79,32,13,0.18)'}`, color: C.text }}
+                       onFocus={e => { if (!emailError) e.target.style.borderColor = C.primary; }}
+                       onBlur={e => { if (!emailError) e.target.style.borderColor = 'rgba(79,32,13,0.18)'; }} />
               </div>
-              <PrimaryBtn onClick={handleVerifyOtp} loading={loading} disabled={otpDigits.join('').length < 6}>
-                {isNewUser ? 'Create Account' : 'Sign In'}
-              </PrimaryBtn>
-              <div className="text-center space-y-3">
-                <button onClick={handleResend} disabled={otpTimer > 0 || loading}
-                        className="text-xs font-medium transition-colors disabled:cursor-not-allowed"
-                        style={{ color: otpTimer > 0 ? 'rgba(42,21,6,0.35)' : C.primary }}>
-                  {otpTimer > 0 ? `Resend code in ${otpTimer}s` : 'Resend code'}
-                </button>
-                <br />
-                <button onClick={resetToEmail} className="text-xs transition-colors" style={{ color: 'rgba(42,21,6,0.4)' }}>Change email</button>
-              </div>
+              {emailError && <p className="text-red-500 text-xs mt-1.5">{emailError}</p>}
             </div>
-          )}
+
+            <div>
+              <Label>Password</Label>
+              <Input type="password" value={password} onChange={e => { setPassword(e.target.value); setPasswordError(''); }}
+                     placeholder="Min. 8 characters" error={passwordError} />
+              {passwordError && <p className="text-red-500 text-xs mt-1.5">{passwordError}</p>}
+            </div>
+
+            <div className="pt-2">
+              <PrimaryBtn type="submit" loading={loading}>
+                <span>{mode === 'login' ? 'Sign In' : 'Register'}</span> <ArrowRight size={15} />
+              </PrimaryBtn>
+            </div>
+          </form>
+
+          <div className="text-center mt-6">
+            <button onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setEmailError(''); setPasswordError(''); setNameError(''); }}
+                    className="text-xs transition-colors hover:underline" style={{ color: C.primary }}>
+              {mode === 'login' ? "Don't have an account? Sign Up" : 'Already have an account? Sign In'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
