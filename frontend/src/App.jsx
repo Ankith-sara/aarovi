@@ -31,6 +31,7 @@ const Support = lazy(() => import('./pages/Support'));
 const Wishlist = lazy(() => import('./pages/Wishlist'));
 const Customize = lazy(() => import('./pages/Customize'));
 const AdminLayout = lazy(() => import('./admin/AdminLayout'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 const PageLoader = () => (
   <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
@@ -74,6 +75,7 @@ const App = () => {
             <Route path='/faqs' element={<FAQs />} />
             <Route path='/support' element={<Support />} />
             <Route path='/admin/*' element={<AdminLayout />} />
+            <Route path='*' element={<NotFound />} />
           </Routes>
         </Suspense>
       </ErrorBoundary>

@@ -43,7 +43,10 @@ async function issueOtp(email, name, role = 'user') {
   }
 
   await user.save();
-  await sendOtpMail(email, otp, role);
+  const emailSent = await sendOtpMail(email, otp, role);
+  if (!emailSent) {
+    throw new Error('Failed to send verification email. Please check the server SMTP configuration or try again.');
+  }
   return user;
 }
 

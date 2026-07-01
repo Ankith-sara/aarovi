@@ -159,7 +159,7 @@ const AdminLogin = ({ setToken }) => {
           <p className="text-sm text-text/60 font-light mt-1">Aarovi management dashboard</p>
         </div>
 
-        <div className="bg-primary rounded-lg border border-secondary/15 p-8 shadow-sm">
+        <div className="space-y-6">
 
           {step === 'email' && (
             <div className="flex rounded-lg bg-background/50 p-1 mb-6">
@@ -262,7 +262,7 @@ const AdminLogin = ({ setToken }) => {
                 </p>
               </div>
 
-              <div className="flex justify-center gap-2">
+              <div className="flex justify-center gap-3">
                 {otpDigits.map((d, i) => (
                   <input
                     key={i}
@@ -273,8 +273,14 @@ const AdminLogin = ({ setToken }) => {
                     value={d}
                     onChange={e => handleOtpChange(i, e.target.value)}
                     onKeyDown={e => handleOtpKey(i, e)}
-                    style={{ height: '52px' }}
-                    className="w-11 text-center text-lg font-bold border border-secondary/20 rounded-lg bg-primary text-text focus:border-secondary focus:outline-none transition-colors"
+                    className={`
+                      w-12 h-14 sm:w-14 sm:h-16 text-center text-xl font-bold rounded-xl border-2 transition-all duration-300
+                      ${d 
+                        ? 'border-gold bg-white text-text shadow-sm' 
+                        : 'border-secondary/15 bg-background/25 text-text/80'
+                      }
+                      focus:border-gold focus:ring-4 focus:ring-gold/15 focus:outline-none
+                    `}
                   />
                 ))}
               </div>

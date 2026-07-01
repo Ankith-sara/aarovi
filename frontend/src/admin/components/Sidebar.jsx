@@ -45,6 +45,7 @@ const Sidebar = ({ token, setToken }) => {
   const NavItem = ({ item, mobile = false }) => (
     <NavLink
       to={item.to}
+      end
       onClick={() => mobile && setIsMobileMenuOpen(false)}
       className={({ isActive }) => `
         group relative flex items-center gap-3 p-2.5 rounded-full transition-all duration-300
